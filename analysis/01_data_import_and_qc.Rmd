@@ -1,0 +1,238 @@
+---
+title: "01_data_import_and_qc"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+# Setup {.tabset}
+
+## Packages
+```{r packages}
+# Utility Packages
+library(tidyverse)   # Data manipulation
+library(readxl)      # Reading messy Excel files
+library(data.table)  # High-performance data wrangling
+library(here)        # Safe file paths
+library(matrixStats) # Fast matrix math for QC and Imputation
+```
+
+## Directories
+```{r Directories_and_source}
+# Get current file name to make folder
+current_file <- "01_data_import_and_qc"
+#Output paths
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
+
+if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
+
+# Source global formatting (colors, themes, seed)
+source(here::here("code", "00_config.R"))
+```
+
+## knitr configuration
+```{r knitr config, cache=FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+```
+
+
+# Configuration
+```{r config}
+# Define thresholds and critical column names
+qc_config <- list(
+  max_missing_pct_prot = 0.05,
+  max_missing_pct_pat = 0.05,
+  selected_col    = "SELECTED", # Column flagging study inclusion
+  
+  # Replace these with the EXACT column names from your Excel file that need date conversion
+  date_cols       = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum") 
+)
+  
+```
+
+# Data Ingestion and Cleanup
+## Clinical Data Cleanup
+```{r clin_cleanup}
+
+cat("Importing Clinical Data and ID Maps...\n")
+
+# ------------------------------------------------------------------------------
+# 1. Process Master Clinical File (Sheet 1 only)
+# ------------------------------------------------------------------------------
+raw_clin <- read_excel(here::here("data", "Patients__20022025_105625_modified.xlsx"), sheet = 1)
+setDT(raw_clin) 
+
+# Force the clinical ID to be a character string for safe merging (Silenced)
+raw_clin <- raw_clin[, inCentraxx := as.character(inCentraxx)]
+
+# Strict Filter: Keep ONLY samples explicitly marked for this study
+raw_clin <- raw_clin[get(qc_config$selected_col) == 1 | get(qc_config$selected_col) == "1"]
+
+# ------------------------------------------------------------------------------
+# 1.5 Fix Excel Numeric Dates
+# ------------------------------------------------------------------------------
+# Safely target only the date columns that actually exist in the file
+valid_date_cols <- intersect(qc_config$date_cols, names(raw_clin))
+
+if(length(valid_date_cols) > 0) {
+  # Silenced assignment
+  raw_clin <- raw_clin[, (valid_date_cols) := lapply(.SD, function(x) {
+    # Suppress warnings in case there is text like "N/A" which will safely become NA
+    suppressWarnings(as.Date(as.numeric(x), origin = "1899-12-30"))
+  }), .SDcols = valid_date_cols]
+}
+
+# ------------------------------------------------------------------------------
+# 2. Process Mapping File & Coalesce IDs
+# ------------------------------------------------------------------------------
+id_map <- read_excel(here::here("data", "Samples for OLink submitted_final_0226.xlsx"))
+setDT(id_map)
+
+# Explicitly drop the follow-up sample to enforce cross-sectional design
+id_map <- id_map[`Subject ID` != "Act_4_2"]
+
+# Force both ID columns to character (Silenced)
+id_map <- id_map[, `Subject-ID (EUSTAR)`      := as.character(`Subject-ID (EUSTAR)`)]
+id_map <- id_map[, `Subject-ID (Biobank RUZ)` := as.character(`Subject-ID (Biobank RUZ)`)]
+
+# COALESCE: Create a master 'Merge_ID' (Silenced)
+id_map <- id_map[, Merge_ID := fifelse(
+  is.na(`Subject-ID (EUSTAR)`) | `Subject-ID (EUSTAR)` == "", 
+  `Subject-ID (Biobank RUZ)`, 
+  `Subject-ID (EUSTAR)`
+)]
+
+# Drop rows from the mapping file that have no ID in either column
+id_map <- id_map[!is.na(Merge_ID) & Merge_ID != ""]
+
+# ------------------------------------------------------------------------------
+# 3. Merge and Structure
+# ------------------------------------------------------------------------------
+# Inner join: keeps only participants present in BOTH the clinical and mapping files
+master_spine <- merge(
+  raw_clin, 
+  id_map, 
+  by.x = "inCentraxx", 
+  by.y = "Merge_ID", 
+  all = FALSE
+)
+
+# ------------------------------------------------------------------------------
+# 4. Group Assignment
+# ------------------------------------------------------------------------------
+master_spine <- setnames(master_spine, old = "Subject ID", new = "Subject_ID", skip_absent = TRUE)
+
+# Assign Cohort Group based on the Subject_ID prefix (Silenced)
+master_spine <- master_spine[, cohort_group := fcase(
+  str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
+  str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
+  str_detect(Subject_ID, "^Ctrl"),   GRP_CONTROL,
+  default = NA_character_
+)]
+
+# Drop any rows that couldn't be classified (failsafe)
+master_spine <- master_spine[!is.na(cohort_group)]
+
+# Reorder columns to make Subject_ID the true Primary Key at the front
+master_spine <- setcolorder(master_spine, c("Subject_ID", "cohort_group", "inCentraxx"))
+
+cat(sprintf("Clinical Spine generated for %d unique cross-sectional samples.\n", nrow(master_spine)))
+print(table(master_spine$cohort_group))
+
+rm(raw_clin, id_map)
+gc()
+```
+## OLINK import
+```{r olink_import}
+cat("Importing and Pivoting Olink Data...\n")
+
+# Load Long-format Olink Data (Update filename if necessary)
+raw_olink <- fread(here::here("data", "pre_quant.csv"))
+
+# SubjectID is the identifier in the master_spine
+# SampleID is the identifier in the OLINK file
+# They both contain the same information
+raw_olink <- raw_olink[SampleID %in% master_spine$Subject_ID]
+
+# Pivot Long to Wide (Rows = Proteins, Cols = Patients)
+# Assuming "Assay" is the protein name and "NPX" is the read value
+wide_olink <- dcast(raw_olink, Assay ~ SampleID, value.var = "NPX")
+
+# Convert to standard numeric matrix
+olink_mat <- as.matrix(wide_olink[, -1, with = FALSE])
+rownames(olink_mat) <- wide_olink$Assay
+
+cat(sprintf("- Initial Matrix: %d Proteins | %d Samples\n", nrow(olink_mat), ncol(olink_mat)))
+
+# Clean up RAM
+rm(raw_olink, wide_olink)
+gc()
+```
+
+## Proteomics QC, Imputation and Sync
+```{r qc_imputation_sync}
+cat("Running Missingness QC and Imputation...\n")
+
+# 1. Quality Control (Missingness Rules from qc_config)
+miss_prots <- rowMeans(is.na(olink_mat))
+miss_samps <- colMeans(is.na(olink_mat))
+
+valid_prots <- miss_prots < qc_config$max_missing_pct_prot
+valid_samps <- miss_samps < qc_config$max_missing_pct_pat
+
+# Extract the names of the failures before we drop them
+failed_prots <- rownames(olink_mat)[!valid_prots]
+failed_samps <- colnames(olink_mat)[!valid_samps]
+
+# --- Print Protein QC Results ---
+if(length(failed_prots) > 0) {
+  cat(sprintf("! Dropped %d Proteins (>= %s%% missing):\n  %s\n", 
+              length(failed_prots), qc_config$max_missing_pct_prot * 100, paste(failed_prots, collapse = ", ")))
+} else {
+  cat(sprintf("✓ All proteins passed QC (< %s%% missing).\n", qc_config$max_missing_pct_prot * 100))
+}
+
+# --- Print Patient QC Results ---
+if(length(failed_samps) > 0) {
+  cat(sprintf("! Dropped %d Patients (>= %s%% missing):\n  %s\n", 
+              length(failed_samps), qc_config$max_missing_pct_pat * 100, paste(failed_samps, collapse = ", ")))
+} else {
+  cat(sprintf("✓ All patients passed QC (< %s%% missing).\n", qc_config$max_missing_pct_pat * 100))
+}
+
+# Apply the filters
+qc_mat <- olink_mat[valid_prots, valid_samps, drop = FALSE]
+cat(sprintf("\n- Post-QC Matrix: %d Proteins | %d Samples\n", nrow(qc_mat), ncol(qc_mat)))
+
+# 2. Impute remaining NAs (Zero-Copy Median Imputation)
+row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
+na_coords <- which(is.na(qc_mat), arr.ind = TRUE)
+qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
+
+# 3. Synchronize Clinical Spine
+# Ensure our clinical spine ONLY contains samples that passed Olink QC
+master_spine <- master_spine[Subject_ID %in% colnames(qc_mat)]
+
+# Ensure matrix columns perfectly align with the spine 
+qc_mat <- qc_mat[, master_spine$Subject_ID, drop = FALSE]
+```
+## Export final Data
+```{r export}
+# 4. Export Final Data
+cat("Saving finalized datasets to output folder...\n")
+saveRDS(master_spine, file.path(output_dir_data, "clinical_spine.rds"))
+saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
+
+cat("Script 01 Complete! Data is ready for analysis.\n")
+```
+
+
