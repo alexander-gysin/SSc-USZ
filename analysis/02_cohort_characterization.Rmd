@@ -1,0 +1,453 @@
+---
+title: "02_cohort_characterization"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Setup and import
+
+```{r setup_import}
+library(tidyverse)
+library(data.table)
+library(lubridate)   # Crucial for the date math you requested
+library(gtsummary)   # The Table 1 engine
+library(here)
+library(patchwork)
+library(ggpubr)
+library(gt)
+
+# Knmitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "02_cohort_characterization"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Load global configuration (colors, groups)
+source(here::here("code", "00_config.R"))
+
+# Load the clinical spine from Script 01
+master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
+```
+
+# Configuration
+```{r configuration}
+# 1. Global Variables & Feature Engineering ------------------------------------
+
+olink_date <- as.Date("2026-03-30")
+default_control_date <- as.Date("2024-01-01") 
+
+stat_config <- list(
+  shapiro_alpha = 0.05, 
+  variance_alpha = 0.05, 
+  p_cutoff = 0.05
+)
+
+# Helper function to determine parametric status (DRY principle)
+check_parametric <- function(df, var_col, group_col, config, transform = NULL) { 
+  test_vec <- df[[var_col]][!is.na(df[[var_col]])]
+  group_vec <- df[[group_col]][!is.na(df[[var_col]])]
+  
+  if (length(unique(group_vec)) < 2 || length(test_vec) < 3) return(FALSE)
+  
+  if (!is.null(transform) && transform == "log10") {
+    valid_idx <- test_vec > 0
+    test_vec <- log10(test_vec[valid_idx])
+    group_vec <- group_vec[valid_idx]
+    
+    if (length(unique(group_vec)) < 2 || length(test_vec) < 3) return(FALSE)
+  }
+  
+  shapiro_p <- tryCatch(shapiro.test(test_vec)$p.value, error = function(e) 0)
+  bartlett_p <- tryCatch(bartlett.test(test_vec ~ group_vec)$p.value, error = function(e) 0)
+  
+  return(shapiro_p > config$shapiro_alpha && bartlett_p > config$variance_alpha)
+}
+
+# Clean and calculate features
+clean_spine <- master_spine %>%
+  mutate(
+    Birth_Year = as.numeric(trimws(Geburtsdatum)),
+    
+    Entnahmedatum_Clean = case_when(
+      !is.na(Entnahmedatum) ~ as.Date(Entnahmedatum),
+      is.na(Entnahmedatum) & cohort_group == GRP_CONTROL ~ default_control_date,
+      TRUE ~ NA_Date_
+    ),
+    
+    Age = year(Entnahmedatum_Clean) - Birth_Year,
+    Sample_Age_Years = as.numeric(difftime(olink_date, Entnahmedatum_Clean, units = "days")) / 365.25,
+    
+    Sex = case_when(
+      Geschlecht == "weiblich" ~ "Female",
+      Geschlecht == "männlich" ~ "Male",
+      TRUE ~ NA_character_
+    ),
+    
+    Creatinine = as.numeric(gsub(",", ".", `OR serum creatinine (micromoles/L)`)),
+    CRP = as.numeric(gsub(",", ".", `CRP (mg/dl)`)),
+    CRP = if_else(CRP <= 0, NA_real_, CRP),
+    
+    cohort_group = factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))
+  )
+
+
+# 2. Table Configurations ------------------------------------------------------
+
+table_configs <- list(
+  table_1 = list(
+    title = "Baseline Demographics and Clinical Characteristics",
+    group_by = "cohort_group",
+    pairwise = TRUE, # Trigger pairwise columns in the table engine
+    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age_Years"),
+    labels = list(
+      Age = "Patient Age (Years)",
+      Sex = "Biological Sex",
+      CRP = "CRP (mg/dl)",
+      Creatinine = "Serum Creatinine (µmol/L)",
+      Sample_Age_Years = "Sample Storage Time (Years)"
+    )
+  )
+)
+
+
+# 3. Figure Configurations -----------------------------------------------------
+
+figure_configs <- list(
+  figure_1 = list(
+    figure_title = "Baseline Clinical Distributions", 
+    plots = list(
+      plot_1 = list(
+        title = "Age and Sex Distribution", 
+        type = "stacked_histogram",
+        x_var = "Age",
+        fill_var = "Sex",
+        fill_palette = get_project_colors(c(SEX_FEMALE, SEX_MALE)), # Uses the unified dictionary
+        facet_by = "cohort_group",
+        bins = 10  
+      ),
+      plot_4 = list(
+        title = "Sample Storage Age", 
+        type = "violin",
+        y_var = "Sample_Age_Years",
+        x_var = "cohort_group",
+        y_transform = NULL,           
+        y_label = "Sample Storage Time (Years)", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      )
+    )
+  ),
+  
+  figure_2 = list(
+    figure_title = "Baseline Laboratory Values", 
+    plots = list(
+      plot_2 = list(
+        title = "Baseline CRP", 
+        type = "violin",
+        y_var = "CRP",
+        x_var = "cohort_group",
+        y_transform = "log10",        
+        y_label = "CRP (mg/dl) [Log10 Scale]",  
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_3 = list(
+        title = "Baseline Creatinine", 
+        type = "violin",
+        y_var = "Creatinine",
+        x_var = "cohort_group",
+        y_transform = "log10", 
+        y_label = "Serum Creatinine (µmol/L) [Log10 Scale]", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      )
+    )
+  )
+)
+
+cat("Cohort Feature Engineering and Configurations Loaded.\n")
+```
+
+# Table Engine
+```{r table_engine}
+cat("### Generating Tables & Statistical Summaries\n\n")
+
+generated_tables <- list()
+
+for (tbl_name in names(table_configs)) {
+  
+  conf <- table_configs[[tbl_name]]
+  cat(sprintf("#### Building: %s\n", conf$title))
+  
+  tbl_data <- clean_spine %>% select(all_of(c(conf$variables, conf$group_by)))
+  
+  gtsum_stats <- list()
+  gtsum_global_tests <- list()
+  gtsum_pairwise_tests <- list() # Dedicated list for binary paired tests
+  
+  for (var in conf$variables) {
+    if (is.numeric(tbl_data[[var]])) {
+      
+      is_parametric <- check_parametric(tbl_data, var, conf$group_by, stat_config, transform = NULL) 
+      
+      if (is_parametric) {
+        gtsum_stats[[var]] <- "{mean} ({sd})"
+        gtsum_global_tests[[var]] <- "aov"
+        gtsum_pairwise_tests[[var]] <- "t.test" # Assign standard t.test for pairs
+      } else {
+        gtsum_stats[[var]] <- "{median} ({p25}, {p75})"
+        gtsum_global_tests[[var]] <- "kruskal.test"
+        gtsum_pairwise_tests[[var]] <- "wilcox.test" # Assign Wilcoxon for pairs
+      }
+    }
+  }
+  
+  # Step 1. Generate the Master Global Table
+  tbl_global <- tbl_data %>%
+    tbl_summary(
+      by = all_of(conf$group_by), 
+      statistic = gtsum_stats, 
+      missing = "ifany",            
+      missing_text = "Missing (NA)" 
+    ) %>%
+    add_p(test = gtsum_global_tests) %>%
+    modify_header(p.value = "**Global p-value**")
+  
+  # Step 2. If pairwise requested, dynamically loop and merge paired p-values
+  if (isTRUE(conf$pairwise)) {
+    
+    valid_groups <- tbl_data %>%
+      group_by(!!sym(conf$group_by)) %>%
+      summarise(n = n(), .groups = "drop") %>%
+      filter(n >= 2) %>%
+      pull(!!sym(conf$group_by)) %>%
+      as.character()
+    
+    all_comparisons <- combn(valid_groups, 2, simplify = FALSE)
+    pairwise_tbls <- list()
+    
+    for (comp in all_comparisons) {
+      
+      # Filter exactly to the two groups and drop unused factor levels
+      comp_data <- tbl_data %>%
+        filter(!!sym(conf$group_by) %in% comp) %>%
+        mutate(!!sym(conf$group_by) := droplevels(factor(!!sym(conf$group_by))))
+      
+      ptbl <- comp_data %>%
+        tbl_summary(
+          by = all_of(conf$group_by), 
+          statistic = gtsum_stats, 
+          missing = "no" # Hide NAs in the sub-tables to prevent column clutter
+        ) %>%
+        add_p(test = gtsum_pairwise_tests) %>%
+        modify_header(p.value = sprintf("**%s vs<br>%s**", comp[1], comp[2])) %>%
+        modify_column_hide(all_stat_cols()) # Delete the summary cols, keeping only the p-value
+      
+      pairwise_tbls <- append(pairwise_tbls, list(ptbl))
+    }
+    
+    # Merge the global table and all pairwise tables seamlessly
+    gtsum_obj <- tbl_merge(
+      tbls = append(list(tbl_global), pairwise_tbls),
+      tab_spanner = FALSE # Prevents gtsummary from adding "Table 1, Table 2" headers
+    )
+    
+  } else {
+    gtsum_obj <- tbl_global
+  }
+  
+  # Step 3. Apply final universal formatting
+  gtsum_obj <- gtsum_obj %>%
+    bold_labels() %>%               
+    modify_header(label = "**Variable**") %>%
+    modify_caption(sprintf("**%s**", conf$title))
+  
+  # Step 4. Export CSV
+  export_df <- as_tibble(gtsum_obj)
+  write_csv(export_df, file.path(output_dir_data, paste0(tbl_name, ".csv")))
+  
+  # Step 5. Format to GT for beautiful HTML rendering
+  final_tbl <- gtsum_obj %>%
+    as_gt() %>%                     
+    gt::tab_style(
+      style = gt::cell_borders(sides = "top", color = "black", weight = gt::px(2)),
+      locations = gt::cells_body(rows = row_type == "label") 
+    ) %>%
+    gt::cols_align(align = "center", columns = contains("p.value")) # Cleanly align all the new p-value columns
+  
+  generated_tables[[tbl_name]] <- final_tbl
+  print(final_tbl)
+  cat("\n---\n\n")
+}
+```
+
+# Figure Engine
+```{r figure_engine, fig.width=10, fig.height=10}
+cat("### Generating Clinical Visualizations\n")
+
+group_levels <- levels(clean_spine$cohort_group) 
+plot_colors <- get_project_colors(group_levels) # Uses the unified dictionary
+
+individual_plots <- list()
+stitched_figures <- list()
+
+generate_base_plot <- function(conf) {
+  
+  if (conf$type == "stacked_histogram") {
+    
+    hist_bins <- if (!is.null(conf$bins)) conf$bins else 30
+    
+    p <- ggplot(clean_spine, aes(x = .data[[conf$x_var]], fill = .data[[conf$fill_var]])) + 
+      geom_histogram(bins = hist_bins, color = "white", alpha = 0.8) +
+      scale_fill_manual(values = c("Female" = "#E69F00", "Male" = "#56B4E9")) + 
+      labs(title = conf$title, x = conf$x_var, y = "Count", fill = conf$fill_var)
+    
+    if (!is.null(conf$facet_by)) {
+      p <- p + facet_wrap(vars(!!sym(conf$facet_by)))
+    }
+    
+  } else if (conf$type == "violin") {
+    
+    plot_data <- clean_spine %>% filter(!is.na(.data[[conf$y_var]]))
+    actual_y_label <- if (!is.null(conf$y_label)) conf$y_label else conf$y_var
+    
+    p <- ggplot(plot_data, aes(x = .data[[conf$x_var]], y = .data[[conf$y_var]])) + 
+      geom_violin(aes(fill = .data[[conf$x_var]]), alpha = 0.4, color = "transparent") +
+      geom_boxplot(width = 0.2, fill = "white", color = "grey30", outlier.shape = NA) +
+      geom_jitter(aes(color = .data[[conf$x_var]]), width = 0.15, alpha = 0.6) +
+      scale_fill_manual(values = plot_colors) +
+      scale_color_manual(values = plot_colors) +
+      labs(title = conf$title, x = "Cohort Group", y = actual_y_label) +
+      theme(legend.position = "none")
+    
+    if (!is.null(conf$y_transform) && conf$y_transform == "log10") {
+      p <- p + scale_y_log10(expand = expansion(mult = c(0.05, 0.40)))
+    } else {
+      p <- p + scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
+    }
+    
+    if (isTRUE(conf$add_stat_test)) {
+      
+      is_parametric <- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config, transform = conf$y_transform) 
+      dyn_pairwise_method <- if (is_parametric) "t.test" else "wilcox.test"
+      dyn_global_method <- if (is_parametric) "anova" else "kruskal.test"
+      
+      if (isTRUE(conf$pairwise)) {
+        
+        valid_groups <- plot_data %>%
+          group_by(!!sym(conf$x_var)) %>%
+          summarise(n = n(), .groups = "drop") %>%
+          filter(n >= 2) %>%
+          pull(!!sym(conf$x_var)) %>%
+          as.character()
+        
+        if (length(valid_groups) >= 2) {
+          all_comparisons <- combn(valid_groups, 2, simplify = FALSE)
+          
+          sig_comparisons <- list()
+          for (comp in all_comparisons) {
+            g1 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[1]]
+            g2 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[2]]
+            
+            if (length(g1) >= 2 && length(g2) >= 2) {
+              if (!is.null(conf$y_transform) && conf$y_transform == "log10") {
+                g1 <- log10(g1[g1 > 0])
+                g2 <- log10(g2[g2 > 0])
+              }
+              
+              p_val <- tryCatch({
+                if (dyn_pairwise_method == "t.test") {
+                  t.test(g1, g2)$p.value
+                } else {
+                  wilcox.test(g1, g2, exact = FALSE)$p.value 
+                }
+              }, error = function(e) 1) 
+              
+              if (isTRUE(p_val < stat_config$p_cutoff)) { 
+                sig_comparisons <- append(sig_comparisons, list(comp))
+              }
+            }
+          }
+          
+          if (length(sig_comparisons) > 0) {
+            p <- p + stat_compare_means(
+              comparisons = sig_comparisons,
+              method = dyn_pairwise_method, 
+              label = "p.signif", 
+              hide.ns = TRUE,
+              step.increase = 0.1 
+            )
+          }
+        }
+      } else {
+        p <- p + stat_compare_means(method = dyn_global_method, label.y.npc = "top")
+      }
+    }
+  }
+  
+  p <- p + theme_project_base()
+  return(p)
+}
+
+
+for (fig_name in names(figure_configs)) {
+  
+  fig_conf <- figure_configs[[fig_name]]
+  patchwork_ready_plots <- list()
+  
+  plot_names <- names(fig_conf$plots)
+  for (i in seq_along(plot_names)) {
+    
+    p_name <- plot_names[i]
+    p_conf <- fig_conf$plots[[p_name]]
+    
+    pure_plot <- generate_base_plot(p_conf)
+    
+    individual_plots[[p_name]] <- pure_plot
+    
+    abc_title <- sprintf("%s. %s", LETTERS[i], p_conf$title)
+    patchwork_ready_plots[[i]] <- pure_plot + labs(title = abc_title)
+  }
+  
+  stitched_figures[[fig_name]] <- wrap_plots(patchwork_ready_plots, ncol = 2) + 
+    plot_annotation(title = fig_conf$figure_title, theme = theme(plot.title = element_text(size = 16, face = "bold")))
+}
+
+
+# Print Outputs & Export -------------------------------------------------------
+
+cat("#### Multi-Panel Stitched Figures\n\n")
+for (fig_name in names(stitched_figures)) {
+  print(stitched_figures[[fig_name]])
+  cat("\n\n")
+  
+  # Save the master stitched patchwork layout to PNG (Large size)
+  ggsave(
+    filename = file.path(output_dir_data, paste0(fig_name, ".png")),
+    plot = stitched_figures[[fig_name]],
+    width = 12, height = 10, dpi = 300, bg = "white"
+  )
+}
+
+cat("#### Individual Standalone Plots (No ABC Ennumeration)\n\n")
+for (p_name in names(individual_plots)) {
+  print(individual_plots[[p_name]])
+  cat("\n\n")
+  
+  # Save the individual pure plots to PNG (Standard size)
+  ggsave(
+    filename = file.path(output_dir_data, paste0(p_name, ".png")),
+    plot = individual_plots[[p_name]],
+    width = 7, height = 6, dpi = 300, bg = "white"
+  )
+}
+```
+
