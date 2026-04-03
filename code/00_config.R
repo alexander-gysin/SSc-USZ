@@ -8,39 +8,38 @@ cat("Loading Global Configuration...\n")
 library(ggplot2)
 
 # 2. GLOBAL SEED
-# Guarantees identical permutations and plot jittering forever
 set.seed(2026)
 
 # 3. GLOBAL GROUP DEFINITIONS
-# Using these constants prevents typos in downstream scripts
 GRP_ACTIVE     <- "Active"
 GRP_NON_ACTIVE <- "Non-Active"
 GRP_CONTROL    <- "Control"
+SEX_MALE       <- "Male"
+SEX_FEMALE     <- "Female"
 
-# 4. GLOBAL COLOR PALETTE (Colorblind Safe)
-COLOR_ACTIVE     <- "#D55E00" # Vermilion (Red/Orange)
-COLOR_NON_ACTIVE <- "#0072B2" # Blue
-COLOR_CONTROL    <- "#999999" # Grey
+# 4. GLOBAL COLOR PALETTE
+COLOR_ACTIVE     <- "#D55E00"
+COLOR_NON_ACTIVE <- "#0072B2"
+COLOR_CONTROL    <- "#999999"
+COLOR_MALE       <- "#56B4E9"
+COLOR_FEMALE     <- "#E69F00"
 
 # ------------------------------------------------------------------------------
-# DYNAMIC COLOR PALETTE MAPPER
+# NEW: MASTER COLOR DICTIONARY
 # ------------------------------------------------------------------------------
-# Safely maps your specific groups to their global colors, regardless of
-# which specific comparisons are running (e.g., if a plot only has 2 groups)
-get_group_colors <- function(group_levels) {
+# A single, unified function that can map colors for any variable in the project
+get_project_colors <- function(requested_levels) {
 
-  # Master dictionary
   color_map <- setNames(
-    c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL),
-    c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL)
+    c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE),
+    c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE)
   )
 
-  # Extract requested colors
-  out_colors <- color_map[group_levels]
+  out_colors <- color_map[requested_levels]
 
-  # Fallback for any unexpected group names to prevent ggplot crashes
+  # Fallback for unexpected names
   out_colors[is.na(out_colors)] <- "#333333"
-  names(out_colors) <- group_levels
+  names(out_colors) <- requested_levels
 
   return(out_colors)
 }
