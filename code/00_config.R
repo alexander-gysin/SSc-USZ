@@ -23,6 +23,7 @@ COLOR_NON_ACTIVE <- "#0072B2"
 COLOR_CONTROL    <- "#999999"
 COLOR_MALE       <- "#56B4E9"
 COLOR_FEMALE     <- "#E69F00"
+COLOR_HIGHLIGHT <- "#E6007E" # Magenta/Pink for shared trajectory drivers
 
 # ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY

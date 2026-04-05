@@ -10,19 +10,14 @@ editor_options:
 # Introduction
 
 # Setup {.tabset}
-
-## Packages
-```{r packages}
+```{r setup}
 # Utility Packages
 library(tidyverse)   # Data manipulation
 library(readxl)      # Reading messy Excel files
 library(data.table)  # High-performance data wrangling
 library(here)        # Safe file paths
 library(matrixStats) # Fast matrix math for QC and Imputation
-```
 
-## Directories
-```{r Directories_and_source}
 # Get current file name to make folder
 current_file <- "01_data_import_and_qc"
 #Output paths
@@ -33,10 +28,7 @@ if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "fi
 
 # Source global formatting (colors, themes, seed)
 source(here::here("code", "00_config.R"))
-```
 
-## knitr configuration
-```{r knitr config, cache=FALSE}
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
@@ -44,17 +36,20 @@ knitr::opts_chunk$set(
 
 ```
 
-
 # Configuration
 ```{r config}
 # Define thresholds and critical column names
 qc_config <- list(
   max_missing_pct_prot = 0.05,
-  max_missing_pct_pat = 0.05,
-  selected_col    = "SELECTED", # Column flagging study inclusion
+  max_missing_pct_pat  = 0.05,
+  selected_col         = "SELECTED", # Column flagging study inclusion
   
   # Replace these with the EXACT column names from your Excel file that need date conversion
-  date_cols       = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum") 
+  date_cols            = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum"),
+  
+  # REFERENCE DATES (Required for feature engineering)
+  olink_date           = as.Date("2026-03-30"), 
+  default_control_date = as.Date("2024-01-01") 
 )
   
 ```
@@ -62,7 +57,6 @@ qc_config <- list(
 # Data Ingestion and Cleanup
 ## Clinical Data Cleanup
 ```{r clin_cleanup}
-
 cat("Importing Clinical Data and ID Maps...\n")
 
 # ------------------------------------------------------------------------------
@@ -78,15 +72,14 @@ raw_clin <- raw_clin[, inCentraxx := as.character(inCentraxx)]
 raw_clin <- raw_clin[get(qc_config$selected_col) == 1 | get(qc_config$selected_col) == "1"]
 
 # ------------------------------------------------------------------------------
-# 1.5 Fix Excel Numeric Dates
+# 1.5 Fix Excel Numeric Dates (DIRECT PARSING)
 # ------------------------------------------------------------------------------
 # Safely target only the date columns that actually exist in the file
 valid_date_cols <- intersect(qc_config$date_cols, names(raw_clin))
 
 if(length(valid_date_cols) > 0) {
-  # Silenced assignment
   raw_clin <- raw_clin[, (valid_date_cols) := lapply(.SD, function(x) {
-    # Suppress warnings in case there is text like "N/A" which will safely become NA
+    # The data is exactly "45601" (character). Convert to numeric, then safely to Date.
     suppressWarnings(as.Date(as.numeric(x), origin = "1899-12-30"))
   }), .SDcols = valid_date_cols]
 }
@@ -127,11 +120,10 @@ master_spine <- merge(
 )
 
 # ------------------------------------------------------------------------------
-# 4. Group Assignment
+# 4. Group Assignment & NEW Feature Engineering
 # ------------------------------------------------------------------------------
 master_spine <- setnames(master_spine, old = "Subject ID", new = "Subject_ID", skip_absent = TRUE)
 
-# Assign Cohort Group based on the Subject_ID prefix (Silenced)
 master_spine <- master_spine[, cohort_group := fcase(
   str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
   str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
@@ -139,11 +131,32 @@ master_spine <- master_spine[, cohort_group := fcase(
   default = NA_character_
 )]
 
-# Drop any rows that couldn't be classified (failsafe)
 master_spine <- master_spine[!is.na(cohort_group)]
 
+master_spine <- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
+
+# ------------------------------------------------------------------------------
+# THE DATE FIX: Bypassing fcase() entirely using data.table conditional subsetting
+# ------------------------------------------------------------------------------
+# 1. First, assign all dates exactly as they were parsed in Step 1.5
+master_spine <- master_spine[, Entnahmedatum_Clean := as.Date(Entnahmedatum)]
+
+# 2. Then, target ONLY the controls that are missing a date, and inject the default
+master_spine <- master_spine[is.na(Entnahmedatum_Clean) & cohort_group == GRP_CONTROL, 
+                             Entnahmedatum_Clean := as.Date("2024-01-01")]
+
+# Calculate numerical ages
+master_spine <- master_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
+master_spine <- master_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = "days")) / 365.25]
+
+master_spine <- master_spine[, Sex := fcase(
+  Geschlecht == "weiblich", SEX_FEMALE,
+  Geschlecht == "männlich", SEX_MALE,
+  default = NA_character_
+)]
+
 # Reorder columns to make Subject_ID the true Primary Key at the front
-master_spine <- setcolorder(master_spine, c("Subject_ID", "cohort_group", "inCentraxx"))
+master_spine <- setcolorder(master_spine, c("Subject_ID", "cohort_group", "Age", "Sex", "Sample_Age", "inCentraxx"))
 
 cat(sprintf("Clinical Spine generated for %d unique cross-sectional samples.\n", nrow(master_spine)))
 print(table(master_spine$cohort_group))
