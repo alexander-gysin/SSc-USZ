@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>03a_proteomics_differential</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">03a_proteomics_differential</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">05 April, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-04-05
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc_USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_differential/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/03a_proteomics_differential.Rmd</code>) and HTML
+(<code>docs/03a_proteomics_differential.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/65441ac9218fca52468b51711d83ac572619cdde/analysis/03a_proteomics_differential.Rmd" target="_blank">65441ac</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-05
+</td>
+<td>
+somewhat finished
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="setup-and-import" class="section level1">
+<h1>Setup and import</h1>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.2     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(FactoMineR)
+library(factoextra)</code></pre>
+<pre><code>Welcome to factoextra!
+Want to learn more? See two factoextra-related books at https://www.datanovia.com/en/product/practical-guide-to-principal-component-methods-in-r/</code></pre>
+<pre class="r"><code>library(limma)</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 4.5.2</code></pre>
+<pre class="r"><code>library(clusterProfiler)</code></pre>
+<pre><code>Warning: package &#39;clusterProfiler&#39; was built under R version 4.5.3</code></pre>
+<pre><code>
+clusterProfiler v4.18.4 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+
+Please cite:
+
+T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
+X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
+enrichment tool for interpreting omics data. The Innovation. 2021,
+2(3):100141
+
+Attaching package: &#39;clusterProfiler&#39;
+
+The following object is masked from &#39;package:purrr&#39;:
+
+    simplify
+
+The following object is masked from &#39;package:stats&#39;:
+
+    filter</code></pre>
+<pre class="r"><code>library(msigdbr)
+library(patchwork)
+library(here)</code></pre>
+<pre><code>here() starts at /Users/alexandergysin/Library/CloudStorage/OneDrive-Personal/01_Dokumente/01_Studium/07_Master/03_Dry_Lab/01_SSc_USZ/SSc_USZ</code></pre>
+<pre class="r"><code># Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file &lt;- &quot;03a_proteomics_differential&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Configuration &amp; Engines
+source(here::here(&quot;code&quot;, &quot;00_config.R&quot;))</code></pre>
+<pre><code>Loading Global Configuration...
+Configuration Successfully Loaded!</code></pre>
+<pre class="r"><code>source(here::here(&quot;code&quot;, &quot;00_omics_engines.R&quot;))</code></pre>
+<pre><code>Warning: package &#39;enrichplot&#39; was built under R version 4.5.2</code></pre>
+<pre><code>enrichplot v1.30.5 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+
+Please cite:
+
+T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
+X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
+enrichment tool for interpreting omics data. The Innovation. 2021,
+2(3):100141</code></pre>
+<pre class="r"><code># Load Pre-Cleaned Data from Script 01
+master_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01_data_import_and_qc&quot;, &quot;clinical_spine.rds&quot;))
+omics_mat &lt;- readRDS(here::here(&quot;output&quot;, &quot;01_data_import_and_qc&quot;, &quot;clean_olink_matrix.rds&quot;))
+
+# Fetch GO Biological Processes Database for GSEA
+go_genesets &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C5&quot;, subcategory = &quot;BP&quot;) %&gt;% select(gs_name, gene_symbol)</code></pre>
+<pre><code>Warning: The `category` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
+ℹ Please use the `collection` argument instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre><code>Warning: The `subcategory` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
+ℹ Please use the `subcollection` argument instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+</div>
+<div id="analysis-configurator" class="section level1">
+<h1>Analysis Configurator</h1>
+<pre class="r"><code># 1. Global Mathematical Thresholds
+omics_config &lt;- list(
+  dea_p_cutoff   = 0.05, 
+  dea_fc_cutoff  = 0.5,  
+  gsea_p_cutoff  = 0.20, 
+  gsea_min_size  = 3     
+)
+
+# 2. PCA Master Layouts (Independent grids)
+pca_configs &lt;- list(
+  pca_global = list(
+    title = &quot;PCA: Global Cohort Structure&quot;,
+    subset_to_contrast = NULL, 
+    color_vars = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;Sample_Age&quot;) 
+  ),
+  pca_active = list(
+    title = &quot;PCA: Active vs Controls&quot;,
+    subset_to_contrast = list(group_col = &quot;cohort_group&quot;, target_groups = c(GRP_ACTIVE, GRP_CONTROL)),
+    color_vars = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;Sample_Age&quot;)
+  ),
+  pca_nonactive = list(
+    title = &quot;PCA: Nonactive vs Controls&quot;,
+    subset_to_contrast = list(group_col = &quot;cohort_group&quot;, target_groups = c(GRP_NON_ACTIVE, GRP_CONTROL)),
+    color_vars = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;Sample_Age&quot;)
+  )
+)
+
+# 3. Differential Expression Contrasts (Target vs Reference)
+contrast_configs &lt;- list(
+  active_vs_control = list(
+    title = &quot;Active vs Control&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;)
+  ),
+  nonactive_vs_control = list(
+    title = &quot;Nonactive vs Control&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_NON_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;)
+  ),
+  active_vs_nonactive = list(
+    title = &quot;Active vs Nonactive&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;)
+  )
+)
+
+# 4. Cross-Contrast Trajectory Plots
+cross_contrasts &lt;- list(
+  disease_flare_trajectory = list(
+    title = &quot;Trajectory: Active vs Nonactive&quot;,
+    x_axis_contrast = &quot;active_vs_control&quot;,      
+    y_axis_contrast = &quot;nonactive_vs_control&quot;,   
+    top_n_specific  = 5,  # Limit for X-only and Y-only drivers
+    top_n_shared    = 5  # Global limit for Shared drivers based on combined Pi-Score
+  )
+)
+
+cat(&quot;Pipelines and Mathematical Engines fully configured.\n&quot;)</code></pre>
+<pre><code>Pipelines and Mathematical Engines fully configured.</code></pre>
+</div>
+<div id="execution-engines" class="section level1">
+<h1>Execution Engines</h1>
+<div id="pca" class="section level2">
+<h2>PCA</h2>
+<pre class="r"><code>cat(&quot;### Executing Principal Component Analysis...\n\n&quot;)</code></pre>
+<pre><code>### Executing Principal Component Analysis...</code></pre>
+<pre class="r"><code>pca_base_dir &lt;- file.path(output_dir_data, &quot;PCA&quot;)
+if (!dir.exists(pca_base_dir)) dir.create(pca_base_dir, recursive = TRUE)
+
+for (pca_name in names(pca_configs)) {
+  conf &lt;- pca_configs[[pca_name]]
+  cat(sprintf(&quot;#### Building: %s\n&quot;, conf$title))
+  
+  pca_sub_dir &lt;- file.path(pca_base_dir, pca_name)
+  if (!dir.exists(pca_sub_dir)) dir.create(pca_sub_dir, recursive = TRUE)
+  
+  # Run the abstracted engine
+  pca_plots &lt;- run_pca_engine(omics_mat, master_spine, conf, get_project_colors)
+  
+  # Save individual pure plots (These maintain their FULL comprehensive titles)
+  for (p_name in names(pca_plots)) {
+    if (!is.null(pca_plots[[p_name]])) {
+      ggsave(
+        filename = file.path(pca_sub_dir, paste0(pca_name, &quot;_&quot;, p_name, &quot;.png&quot;)), 
+        plot = pca_plots[[p_name]], 
+        width = 7, height = 6, dpi = 300, bg = &quot;white&quot;
+      )
+    }
+  }
+  
+  # 1. Print Unmerged Scree Plot
+  if (!is.null(pca_plots[[&quot;scree&quot;]])) {
+    print(pca_plots[[&quot;scree&quot;]])
+    cat(&quot;\n\n&quot;)
+  }
+  
+  # 2. Print Unmerged Loadings Plot
+  if (!is.null(pca_plots[[&quot;loadings&quot;]])) {
+    print(pca_plots[[&quot;loadings&quot;]])
+    cat(&quot;\n\n&quot;)
+  }
+  
+  # 3. Stitch and Print PC1 &amp; PC2 Drivers together SAFELY
+  driver_list &lt;- purrr::compact(list(pca_plots[[&quot;pc1_drivers&quot;]], pca_plots[[&quot;pc2_drivers&quot;]]))
+  
+  if (length(driver_list) &gt; 0) {
+    # NEW: Strip redundant prefixes for the merged driver grid
+    if(length(driver_list) &gt;= 1) driver_list[[1]] &lt;- driver_list[[1]] + labs(title = &quot;Top PC1 Drivers&quot;)
+    if(length(driver_list) &gt;= 2) driver_list[[2]] &lt;- driver_list[[2]] + labs(title = &quot;Top PC2 Drivers&quot;)
+    
+    master_driver_grid &lt;- wrap_plots(plotlist = driver_list, ncol = 2) + 
+      plot_annotation(
+        title = sprintf(&quot;%s: PCA Variance Drivers&quot;, conf$title), 
+        tag_levels = &#39;A&#39;, 
+        theme = theme(plot.title = element_text(size = 16, face = &quot;bold&quot;))
+      )
+    print(master_driver_grid)
+    cat(&quot;\n\n&quot;)
+    ggsave(file.path(pca_sub_dir, paste0(pca_name, &quot;_Merged_Drivers.png&quot;)), master_driver_grid, width = 12, height = 6, dpi = 300, bg=&quot;white&quot;)
+  }
+  
+  # 4. Stitch and Print Scatter Overlays SAFELY
+  overlay_plot_names &lt;- grep(&quot;^overlay_&quot;, names(pca_plots), value = TRUE)
+  overlay_plots &lt;- purrr::compact(pca_plots[overlay_plot_names])
+  
+  if (length(overlay_plots) &gt; 0) {
+    
+    # NEW: Strip redundant prefixes for the merged scatter grid
+    for (i in seq_along(overlay_plots)) {
+      # Extract the variable name from the list name (e.g., &quot;overlay_Sex&quot; -&gt; &quot;Sex&quot;)
+      c_var &lt;- sub(&quot;^overlay_&quot;, &quot;&quot;, names(overlay_plots)[i])
+      
+      # Overwrite the plot title in memory
+      overlay_plots[[i]] &lt;- overlay_plots[[i]] + labs(title = sprintf(&quot;Colored by %s&quot;, c_var))
+    }
+    
+    master_scatter_grid &lt;- wrap_plots(plotlist = overlay_plots, ncol = 2) + 
+      plot_annotation(
+        title = conf$title, 
+        subtitle = &quot;Colored Scatter Overlays&quot;,
+        tag_levels = &#39;A&#39;, 
+        theme = theme(plot.title = element_text(size = 18, face = &quot;bold&quot;))
+      )
+    print(master_scatter_grid)
+    cat(&quot;\n\n&quot;)
+    ggsave(file.path(pca_sub_dir, paste0(pca_name, &quot;_Merged_Scatter_Overlays.png&quot;)), master_scatter_grid, width = 14, height = 12, dpi = 300, bg=&quot;white&quot;)
+  }
+}</code></pre>
+<pre><code>#### Building: PCA: Global Cohort Structure</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Building: PCA: Active vs Controls</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-4.png" alt="" width="768" style="display: block; margin: auto;" /><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Building: PCA: Nonactive vs Controls</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-8.png" alt="" width="768" style="display: block; margin: auto;" /><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-10.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-11.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_PCA-12.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="differential-expression-analysis-gsea" class="section level2">
+<h2>Differential Expression Analysis &amp; GSEA</h2>
+<pre class="r"><code>cat(&quot;### Executing Differential Expression &amp; Functional Profiling...\n\n&quot;)</code></pre>
+<pre><code>### Executing Differential Expression &amp; Functional Profiling...</code></pre>
+<pre class="r"><code># NEW: Define and create the master DEA base directory
+dea_base_dir &lt;- file.path(output_dir_data, &quot;DEA&quot;)
+if (!dir.exists(dea_base_dir)) dir.create(dea_base_dir, recursive = TRUE)
+
+# Store DEA results globally so the cross-contrast engine can access them later
+master_dea_results &lt;- list()
+
+for (c_name in names(contrast_configs)) {
+  conf &lt;- contrast_configs[[c_name]]
+  cat(sprintf(&quot;#### Contrast: %s\n&quot;, conf$title))
+  
+  # NEW: Create the specific subfolder for this contrast configuration
+  dea_sub_dir &lt;- file.path(dea_base_dir, c_name)
+  if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
+  
+  # 1. Run Limma Math
+  limma_res &lt;- run_limma_engine(omics_mat, master_spine, conf, omics_config, get_project_colors)
+  
+  if (!is.null(limma_res)) {
+    master_dea_results[[c_name]] &lt;- limma_res$data # Store for trajectory mapping
+    
+    # Export CSV with unambiguous naming
+    write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, &quot;_DEA_Results.csv&quot;)))
+    
+    # Print and Export Volcano
+    print(limma_res$volcano)
+    cat(&quot;\n\n&quot;)
+    ggsave(file.path(dea_sub_dir, paste0(c_name, &quot;_Volcano.png&quot;)), limma_res$volcano, width = 8, height = 6, dpi=300, bg=&quot;white&quot;)
+    
+    # 2. Run GSEA Math automatically on the DEA results
+    gsea_res &lt;- run_gsea_engine(limma_res$data, go_genesets, omics_config, conf$title)
+    
+    if (!is.null(gsea_res)) {
+      # Export GSEA CSV
+      write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(c_name, &quot;_GSEA_Results.csv&quot;)))
+      
+      # Print and Export Dotplot (UNMERGED)
+      print(gsea_res$dotplot)
+      cat(&quot;\n\n&quot;)
+      ggsave(file.path(dea_sub_dir, paste0(c_name, &quot;_GSEA_Dotplot.png&quot;)), gsea_res$dotplot, width = 8, height = 6, dpi=300, bg=&quot;white&quot;)
+      
+      # Print and Export Ridgeplot (UNMERGED)
+      print(gsea_res$ridgeplot)
+      cat(&quot;\n\n&quot;)
+      ggsave(file.path(dea_sub_dir, paste0(c_name, &quot;_GSEA_Ridgeplot.png&quot;)), gsea_res$ridgeplot, width = 8, height = 6, dpi=300, bg=&quot;white&quot;)
+      
+    } else {
+      cat(&quot;*No significant functional pathways survived FDR correction.*\n\n&quot;)
+    }
+  } else {
+    cat(&quot;*Insufficient data to run Limma for this contrast.*\n\n&quot;)
+  }
+}</code></pre>
+<pre><code>#### Contrast: Active vs Control</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Contrast: Nonactive vs Control</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-4.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Contrast: Active vs Nonactive</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-8.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_DEA_GSEA-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="trajectory-mapping" class="section level2">
+<h2>Trajectory Mapping</h2>
+<pre class="r"><code>cat(&quot;### Executing Proteomic Magnitude Shifts...\n\n&quot;)</code></pre>
+<pre><code>### Executing Proteomic Magnitude Shifts...</code></pre>
+<pre class="r"><code>traj_base_dir &lt;- file.path(output_dir_data, &quot;Trajectories&quot;)
+if (!dir.exists(traj_base_dir)) dir.create(traj_base_dir, recursive = TRUE)
+
+for (cross_name in names(cross_contrasts)) {
+  conf &lt;- cross_contrasts[[cross_name]]
+  cat(sprintf(&quot;#### Trajectory: %s\n&quot;, conf$title))
+  
+  traj_sub_dir &lt;- file.path(traj_base_dir, cross_name)
+  if (!dir.exists(traj_sub_dir)) dir.create(traj_sub_dir, recursive = TRUE)
+  
+  # Fetch data AND prerequisite configs for dynamic labeling/coloring
+  dea_x &lt;- master_dea_results[[conf$x_axis_contrast]]
+  dea_y &lt;- master_dea_results[[conf$y_axis_contrast]]
+  
+  conf_x &lt;- contrast_configs[[conf$x_axis_contrast]]
+  conf_y &lt;- contrast_configs[[conf$y_axis_contrast]]
+  
+  if (!is.null(dea_x) &amp;&amp; !is.null(dea_y)) {
+    
+    # Dynamically extract the exact colors assigned to the target groups in script 00
+    color_x &lt;- get_project_colors(conf_x$target_groups[1])
+    color_y &lt;- get_project_colors(conf_y$target_groups[1])
+    
+    # Fallback to magenta if COLOR_HIGHLIGHT is missing from 00_config.R
+    color_shared &lt;- if(exists(&quot;COLOR_HIGHLIGHT&quot;)) COLOR_HIGHLIGHT else &quot;#E6007E&quot;
+    
+    # Pass everything to the engine
+    p_shift &lt;- run_cross_contrast_engine(
+      dea_x, dea_y, conf, omics_config,
+      x_label = conf_x$title,       # Automatically reads &quot;Active vs Control&quot;
+      y_label = conf_y$title,       # Automatically reads &quot;Nonactive vs Control&quot;
+      color_x = color_x,
+      color_y = color_y,
+      color_shared = color_shared
+    )
+    
+    if (!is.null(p_shift)) {
+      print(p_shift)
+      cat(&quot;\n\n&quot;)
+      ggsave(
+        filename = file.path(traj_sub_dir, paste0(cross_name, &quot;_Trajectory_Map.png&quot;)), 
+        plot = p_shift, width = 8, height = 8, dpi = 300, bg = &quot;white&quot;
+      )
+    }
+  } else {
+    cat(&quot;*Skipping: One or both prerequisite DEA contrasts failed to provide data.*\n\n&quot;)
+  }
+}</code></pre>
+<pre><code>#### Trajectory: Trajectory: Active vs Nonactive</code></pre>
+<p><img src="figure/03a_proteomics_differential.Rmd/execution_engine_trajectory-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<pre class="r"><code># ==============================================================================
+# OMICS ENGINES: High-Dimensional Analysis Functions
+# Project: Systemic Sclerosis Disease Activity Multi-Omics
+# ==============================================================================
+
+library(limma)
+library(FactoMineR)
+library(factoextra)
+library(clusterProfiler)
+library(enrichplot)
+library(pheatmap)
+library(ggrepel)
+library(patchwork)
+library(ggridges)
+
+# ------------------------------------------------------------------------------
+# 1. PCA ENGINE
+# ------------------------------------------------------------------------------
+run_pca_engine &lt;- function(omics_mat, clin_df, pca_conf, project_colors) {
+
+  # Step 1: Subset Data if requested
+  if (!is.null(pca_conf$subset_to_contrast)) {
+    target_col &lt;- pca_conf$subset_to_contrast$group_col
+    target_lvls &lt;- pca_conf$subset_to_contrast$target_groups
+    clin_df &lt;- clin_df %&gt;% filter(!!sym(target_col) %in% target_lvls)
+  }
+
+  valid_barcodes &lt;- intersect(colnames(omics_mat), clin_df$Subject_ID)
+  clin_df &lt;- clin_df %&gt;% filter(Subject_ID %in% valid_barcodes)
+  mat_sub &lt;- omics_mat[, clin_df$Subject_ID, drop = FALSE]
+
+  # Step 2: Run PCA Math
+  pca_res &lt;- FactoMineR::PCA(t(mat_sub), scale.unit = TRUE, graph = FALSE)
+
+  generated_plots &lt;- list()
+
+  # Step 3: Base Diagnostic Plots (NEW: Comprehensive Titles)
+  generated_plots[[&quot;scree&quot;]] &lt;- fviz_eig(pca_res, addlabels = TRUE) +
+    theme_minimal() + labs(title = sprintf(&quot;%s: Variance Explained (Scree)&quot;, pca_conf$title))
+
+  generated_plots[[&quot;loadings&quot;]] &lt;- fviz_pca_var(pca_res, select.var = list(contrib = 30),
+                                                col.var = &quot;contrib&quot;, gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;), repel = TRUE) +
+    theme_minimal() + labs(title = sprintf(&quot;%s: PCA Loadings (Top 30)&quot;, pca_conf$title))
+
+  generated_plots[[&quot;pc1_drivers&quot;]] &lt;- fviz_contrib(pca_res, choice = &quot;var&quot;, axes = 1, top = 10, fill = &quot;grey30&quot;, color = &quot;grey30&quot;) +
+    theme_minimal() + coord_flip() + labs(title = sprintf(&quot;%s: Top PC1 Drivers&quot;, pca_conf$title))
+
+  generated_plots[[&quot;pc2_drivers&quot;]] &lt;- fviz_contrib(pca_res, choice = &quot;var&quot;, axes = 2, top = 10, fill = &quot;grey30&quot;, color = &quot;grey30&quot;) +
+    theme_minimal() + coord_flip() + labs(title = sprintf(&quot;%s: Top PC2 Drivers&quot;, pca_conf$title))
+
+  # Step 4: Dynamic Overlays based on Configuration
+  for (i in seq_along(pca_conf$color_vars)) {
+    c_var &lt;- pca_conf$color_vars[i]
+
+    if (!(c_var %in% colnames(clin_df))) {
+      warning(sprintf(&quot;PCA Engine Warning: Column &#39;%s&#39; not found in clinical data. Skipping this overlay.&quot;, c_var))
+      next
+    }
+
+    plot_idx &lt;- paste0(&quot;overlay_&quot;, c_var)
+    dynamic_title &lt;- sprintf(&quot;%s (Colored by %s)&quot;, pca_conf$title, c_var) # NEW: Comprehensive title
+
+    if (is.numeric(clin_df[[c_var]])) {
+      p &lt;- fviz_pca_ind(pca_res, label = &quot;none&quot;, col.ind = clin_df[[c_var]], legend.title = c_var) +
+        scale_color_viridis_c(option = &quot;viridis&quot;) +
+        theme_minimal() + theme(legend.position = &quot;bottom&quot;) + labs(title = dynamic_title)
+    } else {
+      clin_df[[c_var]] &lt;- as.character(clin_df[[c_var]])
+      clin_df[[c_var]][is.na(clin_df[[c_var]])] &lt;- &quot;Missing&quot;
+      clin_df[[c_var]] &lt;- as.factor(clin_df[[c_var]])
+
+      dynamic_palette &lt;- project_colors(levels(clin_df[[c_var]]))
+
+      p &lt;- fviz_pca_ind(pca_res, label = &quot;none&quot;, habillage = clin_df[[c_var]], palette = dynamic_palette, addEllipses = TRUE) +
+        theme_minimal() + theme(legend.position = &quot;bottom&quot;) + labs(title = dynamic_title)
+    }
+    generated_plots[[plot_idx]] &lt;- p
+  }
+
+  return(generated_plots)
+}
+
+
+# ------------------------------------------------------------------------------
+# 2. DIFFERENTIAL EXPRESSION ENGINE (Limma)
+# ------------------------------------------------------------------------------
+run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, omics_config, project_colors) {
+
+  clin_sub &lt;- clin_df %&gt;% drop_na(all_of(c(dea_conf$group_col, dea_conf$covariates)))
+
+  if (isTRUE(dea_conf$is_continuous)) {
+    split_val &lt;- if (dea_conf$split_method == &quot;median&quot;) median(clin_sub[[dea_conf$group_col]], na.rm=TRUE) else mean(clin_sub[[dea_conf$group_col]], na.rm=TRUE)
+    clin_sub &lt;- clin_sub %&gt;% mutate(limma_group = case_when(
+      .data[[dea_conf$group_col]] &gt; split_val ~ &quot;Target&quot;,
+      .data[[dea_conf$group_col]] &lt;= split_val ~ &quot;Reference&quot;,
+      TRUE ~ NA_character_
+    ))
+  } else {
+    clin_sub &lt;- clin_sub %&gt;% mutate(limma_group = case_when(
+      .data[[dea_conf$group_col]] %in% dea_conf$target_groups ~ &quot;Target&quot;,
+      .data[[dea_conf$group_col]] %in% dea_conf$ref_groups ~ &quot;Reference&quot;,
+      TRUE ~ NA_character_
+    ))
+  }
+
+  clin_sub &lt;- clin_sub %&gt;% filter(!is.na(limma_group)) %&gt;% mutate(limma_group = factor(limma_group, levels = c(&quot;Reference&quot;, &quot;Target&quot;)))
+  if(length(unique(clin_sub$limma_group)) &lt; 2) return(NULL)
+
+  mat_sub &lt;- omics_mat[, clin_sub$Subject_ID, drop = FALSE]
+
+  formula_str &lt;- if(length(dea_conf$covariates) &gt; 0) paste(&quot;~ 0 + limma_group +&quot;, paste(dea_conf$covariates, collapse = &quot; + &quot;)) else &quot;~ 0 + limma_group&quot;
+
+  design &lt;- model.matrix(as.formula(formula_str), data = clin_sub)
+  colnames(design)[1:2] &lt;- c(&quot;Reference&quot;, &quot;Target&quot;)
+
+  fit &lt;- lmFit(mat_sub, design)
+  fit2 &lt;- eBayes(contrasts.fit(fit, makeContrasts(Target - Reference, levels = design)))
+
+  dea_res &lt;- topTable(fit2, coef = 1, number = Inf, sort.by = &quot;P&quot;) %&gt;%
+    rownames_to_column(&quot;Feature&quot;) %&gt;%
+    mutate(
+      Significance = case_when(
+        adj.P.Val &lt; omics_config$dea_p_cutoff &amp; logFC &gt; omics_config$dea_fc_cutoff  ~ &quot;Up-regulated&quot;,
+        adj.P.Val &lt; omics_config$dea_p_cutoff &amp; logFC &lt; -omics_config$dea_fc_cutoff ~ &quot;Down-regulated&quot;,
+        TRUE ~ &quot;Not Significant&quot;
+      ),
+      label_score = abs(logFC) * -log10(adj.P.Val) # NEW: Use adjusted P-value for labeling priority
+    )
+
+  top_labels &lt;- bind_rows(
+    dea_res %&gt;% filter(Significance == &quot;Up-regulated&quot;) %&gt;% slice_max(order_by = label_score, n = 10),
+    dea_res %&gt;% filter(Significance == &quot;Down-regulated&quot;) %&gt;% slice_max(order_by = label_score, n = 10)
+  )
+
+  target_color &lt;- if (!is.null(dea_conf$target_groups)) project_colors(dea_conf$target_groups[1]) else &quot;#D55E00&quot;
+  ref_color &lt;- if (!is.null(dea_conf$ref_groups)) project_colors(dea_conf$ref_groups[1]) else &quot;#0072B2&quot;
+
+  # NEW: Plot using adj.P.Val and inject the FDR cutoff line
+  p_volc &lt;- ggplot(dea_res, aes(x = logFC, y = -log10(adj.P.Val), color = Significance)) +
+    geom_point(alpha = 0.6, size = 1.5) +
+    scale_color_manual(values = c(&quot;Down-regulated&quot; = ref_color, &quot;Not Significant&quot; = &quot;grey85&quot;, &quot;Up-regulated&quot; = target_color)) +
+    geom_text_repel(data = top_labels, aes(label = Feature), size = 3, color = &quot;black&quot;, box.padding = 0.5, max.overlaps = Inf, show.legend = FALSE) +
+    geom_vline(xintercept = c(-omics_config$dea_fc_cutoff, omics_config$dea_fc_cutoff), linetype = &quot;dotted&quot;, color = &quot;grey40&quot;) +
+    geom_hline(yintercept = -log10(omics_config$dea_p_cutoff), linetype = &quot;dashed&quot;, color = &quot;darkred&quot;) + # &lt;--- FDR CUTOFF LINE
+    theme_minimal() + theme(legend.position = &quot;bottom&quot;, plot.title = element_text(size = 14, face = &quot;bold&quot;)) +
+    labs(title = paste(&quot;Volcano:&quot;, dea_conf$title), x = &quot;Log2 Fold Change&quot;, y = &quot;-log10(FDR Adjusted P-value)&quot;)
+
+  return(list(data = dea_res, volcano = p_volc, clin_used = clin_sub))
+}
+
+# ------------------------------------------------------------------------------
+# 3. GSEA ENGINE
+# ------------------------------------------------------------------------------
+run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title) {
+
+  gsea_input &lt;- dea_res %&gt;% filter(!is.na(Feature), !is.na(t)) %&gt;%
+    group_by(Feature) %&gt;% slice_max(order_by = abs(t), n = 1, with_ties = FALSE) %&gt;% ungroup() %&gt;% arrange(desc(t))
+
+  ranked_vec &lt;- setNames(gsea_input$t, gsea_input$Feature)[is.finite(gsea_input$t)]
+  set.seed(42)
+
+  gsea_res &lt;- GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1,
+                   minGSSize = omics_config$gsea_min_size, maxGSSize = 500, eps = 1e-10, nPermSimple = 10000, verbose = FALSE)
+
+  if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
+
+  gsea_res@result$Description &lt;- gsub(&quot;GOBP_&quot;, &quot;&quot;, gsea_res@result$Description) %&gt;% gsub(&quot;_&quot;, &quot; &quot;, .)
+
+  # NEW: Safe Filtering and Exploratory Fallback
+  gsea_filtered &lt;- as.data.frame(gsea_res) %&gt;% filter(p.adjust &lt; omics_config$gsea_p_cutoff) %&gt;%
+    mutate(Status = ifelse(NES &gt; 0, &quot;Up-regulated&quot;, &quot;Down-regulated&quot;)) %&gt;% arrange(desc(abs(NES)))
+
+  warning_tag &lt;- &quot;&quot;
+
+  if(nrow(gsea_filtered) == 0) {
+    warning_tag &lt;- &quot;\n(Exploratory: No paths passed strict FDR cutoff)&quot;
+    # Fallback to top 5 up and down by raw Enrichment Score
+    gsea_filtered &lt;- as.data.frame(gsea_res) %&gt;%
+      mutate(Status = ifelse(NES &gt; 0, &quot;Up-regulated&quot;, &quot;Down-regulated&quot;)) %&gt;%
+      arrange(desc(abs(NES))) %&gt;%
+      group_by(Status) %&gt;% slice_head(n = 5) %&gt;% ungroup()
+  }
+
+  plot_df &lt;- gsea_filtered %&gt;% group_by(Status) %&gt;% slice_max(order_by = abs(NES), n = 10) %&gt;% ungroup() %&gt;% mutate(Desc = str_wrap(Description, width = 40))
+
+  p_dot &lt;- ggplot(plot_df, aes(x = NES, y = reorder(Desc, NES))) +
+    geom_point(aes(size = setSize, color = p.adjust)) +
+    scale_color_gradient(low = &quot;firebrick3&quot;, high = &quot;navy&quot;) +
+    geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey50&quot;) +
+    theme_minimal() + labs(title = paste0(&quot;GSEA: &quot;, title, warning_tag), x = &quot;Normalized Enrichment Score&quot;, y = NULL)
+
+  sim_obj &lt;- pairwise_termsim(gsea_res)
+
+  # Prevent Ridgeplot from crashing if only a few exploratory pathways exist
+  num_paths &lt;- min(15, nrow(gsea_filtered))
+  if(num_paths &lt; 2) return(list(data = gsea_filtered, dotplot = p_dot, ridgeplot = NULL))
+
+  p_ridge &lt;- ridgeplot(sim_obj, showCategory = num_paths, core_enrichment = TRUE) +
+    theme_minimal() + geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, color = &quot;black&quot;) +
+    labs(title = paste0(&quot;Pathway Distribution: &quot;, title, warning_tag), x = &quot;t-statistic&quot;, y = NULL)
+
+  return(list(data = gsea_filtered, dotplot = p_dot, ridgeplot = p_ridge))
+}
+
+# ------------------------------------------------------------------------------
+# 4. CROSS-CONTRAST ENGINE (Trajectory Shifts)
+# ------------------------------------------------------------------------------
+run_cross_contrast_engine &lt;- function(dea_x, dea_y, conf, omics_config, x_label, y_label, color_x, color_y, color_shared) {
+
+  temporal_shifts &lt;- full_join(
+    dea_x %&gt;% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val),
+    dea_y %&gt;% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val),
+    by = &quot;Feature&quot;
+  ) %&gt;%
+    mutate(
+      Sig_X = FDR_X &lt; omics_config$dea_p_cutoff &amp; abs(logFC_X) &gt; omics_config$dea_fc_cutoff,
+      Sig_Y = FDR_Y &lt; omics_config$dea_p_cutoff &amp; abs(logFC_Y) &gt; omics_config$dea_fc_cutoff,
+      Signature = case_when(
+        Sig_X &amp; Sig_Y  ~ &quot;Shared Drivers&quot;,
+        Sig_X &amp; !Sig_Y ~ &quot;X-Axis Specific&quot;,
+        !Sig_X &amp; Sig_Y ~ &quot;Y-Axis Specific&quot;,
+        TRUE ~ &quot;Not Significant&quot;
+      ),
+
+      # 1. Pi-Score for ranking Shared Drivers globally
+      label_score = case_when(
+        Signature == &quot;Shared Drivers&quot;  ~ (abs(logFC_X) * -log10(FDR_X)) + (abs(logFC_Y) * -log10(FDR_Y)),
+        TRUE ~ 0
+      ),
+
+      # 2. Discordance Score for ranking Specific Drivers (Distance from y=x)
+      discordance_score = abs(logFC_X - logFC_Y)
+    )
+
+  # ONLY keep significant points. Background points are dropped completely.
+  sig_points &lt;- temporal_shifts %&gt;% filter(Signature != &quot;Not Significant&quot;)
+
+  if(nrow(sig_points) == 0) return(NULL)
+
+  # LABELING LOGIC
+  top_n_spec &lt;- if(!is.null(conf$top_n_specific)) conf$top_n_specific else 5
+  top_n_shar &lt;- if(!is.null(conf$top_n_shared)) conf$top_n_shared else 10
+
+  # Grab Top Shared Drivers (Ranked globally by Combined Pi-Score)
+  labels_shared &lt;- sig_points %&gt;%
+    filter(Signature == &quot;Shared Drivers&quot;) %&gt;%
+    slice_max(order_by = label_score, n = top_n_shar, with_ties = FALSE)
+
+  # Grab Top Specific Drivers (Ranked by distance from the 45-degree line)
+  labels_specific &lt;- sig_points %&gt;%
+    filter(Signature %in% c(&quot;X-Axis Specific&quot;, &quot;Y-Axis Specific&quot;)) %&gt;%
+    group_by(Signature) %&gt;%
+    slice_max(order_by = discordance_score, n = top_n_spec, with_ties = FALSE) %&gt;%
+    ungroup()
+
+  top_labels &lt;- bind_rows(labels_shared, labels_specific)
+
+  # NEW: Obstacle-Aware Labeling.
+  # Inject the labels back into the main dataset so ggrepel sees ALL points as obstacles
+  sig_points &lt;- sig_points %&gt;%
+    mutate(repel_label = ifelse(Feature %in% top_labels$Feature, Feature, &quot;&quot;))
+
+  method_caption &lt;- sprintf(
+    &quot;Labeling: Top %d Shared Drivers (Combined Pi-Score) + Top %d Specific Drivers furthest from 45° line.&quot;,
+    top_n_shar, top_n_spec
+  )
+
+  p_shift &lt;- ggplot() +
+    # Layer 1: Gridlines
+    geom_abline(slope = 1, intercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey60&quot;) +
+    geom_hline(yintercept = 0, color = &quot;grey40&quot;) + geom_vline(xintercept = 0, color = &quot;grey40&quot;) +
+
+    # Layer 2: Bold Foreground Significant points ONLY
+    geom_point(data = sig_points, aes(x = logFC_X, y = logFC_Y, color = Signature), alpha = 0.8, size = 2.5) +
+
+    # Layer 3: Obstacle-Aware Text Labels
+    geom_text_repel(
+      data = sig_points,
+      aes(x = logFC_X, y = logFC_Y, label = repel_label),
+      color = &quot;black&quot;,
+      size = 3.5,
+      box.padding = 0.8,       # Increased bumper around the text
+      point.padding = 0.5,     # Increased bumper around the data point
+      min.segment.length = 0,  # Always draw the connecting line
+      max.overlaps = Inf,
+      show.legend = FALSE
+    ) +
+
+    scale_color_manual(values = setNames(
+      c(color_shared, color_x, color_y),
+      c(&quot;Shared Drivers&quot;, &quot;X-Axis Specific&quot;, &quot;Y-Axis Specific&quot;)
+    )) +
+    theme_bw(base_size = 14) +
+    theme(
+      legend.position = &quot;bottom&quot;,
+      plot.title = element_text(face=&quot;bold&quot;),
+      plot.caption = element_text(hjust = 0, face = &quot;italic&quot;, color = &quot;grey40&quot;, size = 9, margin = margin(t = 15))
+    ) +
+    labs(
+      title = conf$title,
+      x = paste(x_label, &quot;(Log2 Fold Change)&quot;),
+      y = paste(y_label, &quot;(Log2 Fold Change)&quot;),
+      caption = method_caption
+    ) + coord_fixed(ratio = 1)
+
+  return(p_shift)
+}</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS 26.3
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Zurich
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] ggridges_0.5.7         ggrepel_0.9.8          pheatmap_1.0.13       
+ [4] enrichplot_1.30.5      here_1.0.2             patchwork_1.3.2       
+ [7] msigdbr_26.1.0         clusterProfiler_4.18.4 limma_3.66.0          
+[10] factoextra_2.0.0       FactoMineR_2.13        lubridate_1.9.5       
+[13] forcats_1.0.1          stringr_1.6.0          dplyr_1.2.1           
+[16] purrr_1.2.1            readr_2.2.0            tidyr_1.3.2           
+[19] tibble_3.3.1           ggplot2_4.0.2          tidyverse_2.0.0       
+[22] workflowr_1.7.2       
+
+loaded via a namespace (and not attached):
+  [1] splines_4.5.0           later_1.4.8             ggplotify_0.1.3        
+  [4] R.oo_1.27.1             polyclip_1.10-7         lifecycle_1.0.5        
+  [7] rstatix_0.7.3           rprojroot_2.1.1         vroom_1.7.1            
+ [10] processx_3.8.7          lattice_0.22-9          MASS_7.3-65            
+ [13] flashClust_1.1-4        backports_1.5.1         magrittr_2.0.4         
+ [16] sass_0.4.10             rmarkdown_2.31          jquerylib_0.1.4        
+ [19] yaml_2.3.12             httpuv_1.6.16           otel_0.2.0             
+ [22] ggtangle_0.1.1          cowplot_1.2.0           DBI_1.3.0              
+ [25] RColorBrewer_1.1-3      abind_1.4-8             R.utils_2.13.0         
+ [28] BiocGenerics_0.56.0     yulab.utils_0.2.4       tweenr_2.0.3           
+ [31] rappdirs_0.3.4          git2r_0.36.2            gdtools_0.5.0          
+ [34] IRanges_2.44.0          S4Vectors_0.48.0        tidytree_0.4.7         
+ [37] codetools_0.2-20        DOSE_4.4.0              DT_0.34.0              
+ [40] ggforce_0.5.0           tidyselect_1.2.1        aplot_0.2.9            
+ [43] farver_2.1.2            stats4_4.5.0            Seqinfo_1.0.0          
+ [46] jsonlite_2.0.0          Formula_1.2-5           emmeans_2.0.2          
+ [49] systemfonts_1.3.2       tools_4.5.0             ggnewscale_0.5.2       
+ [52] ragg_1.5.2              treeio_1.34.0           Rcpp_1.1.1             
+ [55] glue_1.8.0              xfun_0.57               qvalue_2.42.0          
+ [58] withr_3.0.2             BiocManager_1.30.27     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.39           timechange_0.4.0       
+ [64] R6_2.6.1                gridGraphics_0.5-1      estimability_1.5.1     
+ [67] textshaping_1.0.5       GO.db_3.22.0            RSQLite_2.4.6          
+ [70] R.methodsS3_1.8.2       generics_0.1.4          fontLiberation_0.1.0   
+ [73] renv_1.2.0              data.table_1.18.2.1     httr_1.4.8             
+ [76] htmlwidgets_1.6.4       scatterpie_0.2.6        scatterplot3d_0.3-45   
+ [79] whisker_0.4.1           pkgconfig_2.0.3         gtable_0.3.6           
+ [82] blob_1.3.0              S7_0.2.1                XVector_0.50.0         
+ [85] htmltools_0.5.9         carData_3.0-6           fontBitstreamVera_0.1.1
+ [88] fgsea_1.36.2            multcompView_0.1-11     scales_1.4.0           
+ [91] Biobase_2.70.0          leaps_3.2               png_0.1-9              
+ [94] ggfun_0.2.0             knitr_1.51              rstudioapi_0.18.0      
+ [97] tzdb_0.5.0              reshape2_1.4.5          nlme_3.1-169           
+[100] curl_7.0.0              cachem_1.1.0            parallel_4.5.0         
+[103] AnnotationDbi_1.72.0    pillar_1.11.1           grid_4.5.0             
+[106] vctrs_0.7.2             promises_1.5.0          ggpubr_0.6.3           
+[109] car_3.1-5               tidydr_0.0.6            cluster_2.1.8.2        
+[112] evaluate_1.0.5          mvtnorm_1.3-6           cli_3.6.5              
+[115] compiler_4.5.0          rlang_1.1.7             crayon_1.5.3           
+[118] ggsignif_0.6.4          labeling_0.4.3          getPass_0.2-4          
+[121] plyr_1.8.9              fs_2.0.1                ggiraph_0.9.6          
+[124] stringi_1.8.7           viridisLite_0.4.3       BiocParallel_1.44.0    
+[127] assertthat_0.2.1        babelgene_22.9          Biostrings_2.78.0      
+[130] lazyeval_0.2.2          GOSemSim_2.36.0         fontquiver_0.2.1       
+[133] Matrix_1.7-5            hms_1.1.4               bit64_4.6.0-1          
+[136] KEGGREST_1.50.0         statmod_1.5.1           broom_1.0.12           
+[139] igraph_2.2.2            memoise_2.0.1           bslib_0.10.0           
+[142] ggtree_4.0.5            fastmatch_1.1-8         bit_4.6.0              
+[145] ape_5.8-1               gson_0.1.0             </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
