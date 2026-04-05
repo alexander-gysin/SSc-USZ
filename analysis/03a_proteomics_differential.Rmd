@@ -1,0 +1,322 @@
+---
+title: "03a_proteomics_differential"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Setup and import
+
+```{r setup_import}
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(limma)
+library(clusterProfiler)
+library(msigdbr)
+library(patchwork)
+library(here)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "03a_proteomics_differential"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Configuration & Engines
+source(here::here("code", "00_config.R"))
+source(here::here("code", "00_omics_engines.R"))
+
+# Load Pre-Cleaned Data from Script 01
+master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
+omics_mat <- readRDS(here::here("output", "01_data_import_and_qc", "clean_olink_matrix.rds"))
+
+# Fetch GO Biological Processes Database for GSEA
+go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
+```
+
+# Analysis Configurator
+```{r analysis_config}
+# 1. Global Mathematical Thresholds
+omics_config <- list(
+  dea_p_cutoff   = 0.05, 
+  dea_fc_cutoff  = 0.5,  
+  gsea_p_cutoff  = 0.20, 
+  gsea_min_size  = 3     
+)
+
+# 2. PCA Master Layouts (Independent grids)
+pca_configs <- list(
+  pca_global = list(
+    title = "PCA: Global Cohort Structure",
+    subset_to_contrast = NULL, 
+    color_vars = c("cohort_group", "Sex", "Age", "Sample_Age") 
+  ),
+  pca_active = list(
+    title = "PCA: Active vs Controls",
+    subset_to_contrast = list(group_col = "cohort_group", target_groups = c(GRP_ACTIVE, GRP_CONTROL)),
+    color_vars = c("cohort_group", "Sex", "Age", "Sample_Age")
+  ),
+  pca_nonactive = list(
+    title = "PCA: Nonactive vs Controls",
+    subset_to_contrast = list(group_col = "cohort_group", target_groups = c(GRP_NON_ACTIVE, GRP_CONTROL)),
+    color_vars = c("cohort_group", "Sex", "Age", "Sample_Age")
+  )
+)
+
+# 3. Differential Expression Contrasts (Target vs Reference)
+contrast_configs <- list(
+  active_vs_control = list(
+    title = "Active vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex")
+  ),
+  nonactive_vs_control = list(
+    title = "Nonactive vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_NON_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex")
+  ),
+  active_vs_nonactive = list(
+    title = "Active vs Nonactive",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex")
+  )
+)
+
+# 4. Cross-Contrast Trajectory Plots
+cross_contrasts <- list(
+  disease_flare_trajectory = list(
+    title = "Trajectory: Active vs Nonactive",
+    x_axis_contrast = "active_vs_control",      
+    y_axis_contrast = "nonactive_vs_control",   
+    top_n_specific  = 5,  # Limit for X-only and Y-only drivers
+    top_n_shared    = 5  # Global limit for Shared drivers based on combined Pi-Score
+  )
+)
+
+cat("Pipelines and Mathematical Engines fully configured.\n")
+```
+
+# Execution Engines
+## PCA
+```{r execution_engine_PCA, fig.width=8, fig.height=8}
+cat("### Executing Principal Component Analysis...\n\n")
+
+pca_base_dir <- file.path(output_dir_data, "PCA")
+if (!dir.exists(pca_base_dir)) dir.create(pca_base_dir, recursive = TRUE)
+
+for (pca_name in names(pca_configs)) {
+  conf <- pca_configs[[pca_name]]
+  cat(sprintf("#### Building: %s\n", conf$title))
+  
+  pca_sub_dir <- file.path(pca_base_dir, pca_name)
+  if (!dir.exists(pca_sub_dir)) dir.create(pca_sub_dir, recursive = TRUE)
+  
+  # Run the abstracted engine
+  pca_plots <- run_pca_engine(omics_mat, master_spine, conf, get_project_colors)
+  
+  # Save individual pure plots (These maintain their FULL comprehensive titles)
+  for (p_name in names(pca_plots)) {
+    if (!is.null(pca_plots[[p_name]])) {
+      ggsave(
+        filename = file.path(pca_sub_dir, paste0(pca_name, "_", p_name, ".png")), 
+        plot = pca_plots[[p_name]], 
+        width = 7, height = 6, dpi = 300, bg = "white"
+      )
+    }
+  }
+  
+  # 1. Print Unmerged Scree Plot
+  if (!is.null(pca_plots[["scree"]])) {
+    print(pca_plots[["scree"]])
+    cat("\n\n")
+  }
+  
+  # 2. Print Unmerged Loadings Plot
+  if (!is.null(pca_plots[["loadings"]])) {
+    print(pca_plots[["loadings"]])
+    cat("\n\n")
+  }
+  
+  # 3. Stitch and Print PC1 & PC2 Drivers together SAFELY
+  driver_list <- purrr::compact(list(pca_plots[["pc1_drivers"]], pca_plots[["pc2_drivers"]]))
+  
+  if (length(driver_list) > 0) {
+    # NEW: Strip redundant prefixes for the merged driver grid
+    if(length(driver_list) >= 1) driver_list[[1]] <- driver_list[[1]] + labs(title = "Top PC1 Drivers")
+    if(length(driver_list) >= 2) driver_list[[2]] <- driver_list[[2]] + labs(title = "Top PC2 Drivers")
+    
+    master_driver_grid <- wrap_plots(plotlist = driver_list, ncol = 2) + 
+      plot_annotation(
+        title = sprintf("%s: PCA Variance Drivers", conf$title), 
+        tag_levels = 'A', 
+        theme = theme(plot.title = element_text(size = 16, face = "bold"))
+      )
+    print(master_driver_grid)
+    cat("\n\n")
+    ggsave(file.path(pca_sub_dir, paste0(pca_name, "_Merged_Drivers.png")), master_driver_grid, width = 12, height = 6, dpi = 300, bg="white")
+  }
+  
+  # 4. Stitch and Print Scatter Overlays SAFELY
+  overlay_plot_names <- grep("^overlay_", names(pca_plots), value = TRUE)
+  overlay_plots <- purrr::compact(pca_plots[overlay_plot_names])
+  
+  if (length(overlay_plots) > 0) {
+    
+    # NEW: Strip redundant prefixes for the merged scatter grid
+    for (i in seq_along(overlay_plots)) {
+      # Extract the variable name from the list name (e.g., "overlay_Sex" -> "Sex")
+      c_var <- sub("^overlay_", "", names(overlay_plots)[i])
+      
+      # Overwrite the plot title in memory
+      overlay_plots[[i]] <- overlay_plots[[i]] + labs(title = sprintf("Colored by %s", c_var))
+    }
+    
+    master_scatter_grid <- wrap_plots(plotlist = overlay_plots, ncol = 2) + 
+      plot_annotation(
+        title = conf$title, 
+        subtitle = "Colored Scatter Overlays",
+        tag_levels = 'A', 
+        theme = theme(plot.title = element_text(size = 18, face = "bold"))
+      )
+    print(master_scatter_grid)
+    cat("\n\n")
+    ggsave(file.path(pca_sub_dir, paste0(pca_name, "_Merged_Scatter_Overlays.png")), master_scatter_grid, width = 14, height = 12, dpi = 300, bg="white")
+  }
+}
+```
+
+## Differential Expression Analysis & GSEA
+```{r execution_engine_DEA_GSEA, fig.width=8,fig.height=8}
+cat("### Executing Differential Expression & Functional Profiling...\n\n")
+
+# NEW: Define and create the master DEA base directory
+dea_base_dir <- file.path(output_dir_data, "DEA")
+if (!dir.exists(dea_base_dir)) dir.create(dea_base_dir, recursive = TRUE)
+
+# Store DEA results globally so the cross-contrast engine can access them later
+master_dea_results <- list()
+
+for (c_name in names(contrast_configs)) {
+  conf <- contrast_configs[[c_name]]
+  cat(sprintf("#### Contrast: %s\n", conf$title))
+  
+  # NEW: Create the specific subfolder for this contrast configuration
+  dea_sub_dir <- file.path(dea_base_dir, c_name)
+  if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
+  
+  # 1. Run Limma Math
+  limma_res <- run_limma_engine(omics_mat, master_spine, conf, omics_config, get_project_colors)
+  
+  if (!is.null(limma_res)) {
+    master_dea_results[[c_name]] <- limma_res$data # Store for trajectory mapping
+    
+    # Export CSV with unambiguous naming
+    write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, "_DEA_Results.csv")))
+    
+    # Print and Export Volcano
+    print(limma_res$volcano)
+    cat("\n\n")
+    ggsave(file.path(dea_sub_dir, paste0(c_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 6, dpi=300, bg="white")
+    
+    # 2. Run GSEA Math automatically on the DEA results
+    gsea_res <- run_gsea_engine(limma_res$data, go_genesets, omics_config, conf$title)
+    
+    if (!is.null(gsea_res)) {
+      # Export GSEA CSV
+      write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(c_name, "_GSEA_Results.csv")))
+      
+      # Print and Export Dotplot (UNMERGED)
+      print(gsea_res$dotplot)
+      cat("\n\n")
+      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 8, height = 6, dpi=300, bg="white")
+      
+      # Print and Export Ridgeplot (UNMERGED)
+      print(gsea_res$ridgeplot)
+      cat("\n\n")
+      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 8, height = 6, dpi=300, bg="white")
+      
+    } else {
+      cat("*No significant functional pathways survived FDR correction.*\n\n")
+    }
+  } else {
+    cat("*Insufficient data to run Limma for this contrast.*\n\n")
+  }
+}
+```
+
+## Trajectory Mapping
+```{r execution_engine_trajectory, fig.width=8, fig.height=8}
+cat("### Executing Proteomic Magnitude Shifts...\n\n")
+
+traj_base_dir <- file.path(output_dir_data, "Trajectories")
+if (!dir.exists(traj_base_dir)) dir.create(traj_base_dir, recursive = TRUE)
+
+for (cross_name in names(cross_contrasts)) {
+  conf <- cross_contrasts[[cross_name]]
+  cat(sprintf("#### Trajectory: %s\n", conf$title))
+  
+  traj_sub_dir <- file.path(traj_base_dir, cross_name)
+  if (!dir.exists(traj_sub_dir)) dir.create(traj_sub_dir, recursive = TRUE)
+  
+  # Fetch data AND prerequisite configs for dynamic labeling/coloring
+  dea_x <- master_dea_results[[conf$x_axis_contrast]]
+  dea_y <- master_dea_results[[conf$y_axis_contrast]]
+  
+  conf_x <- contrast_configs[[conf$x_axis_contrast]]
+  conf_y <- contrast_configs[[conf$y_axis_contrast]]
+  
+  if (!is.null(dea_x) && !is.null(dea_y)) {
+    
+    # Dynamically extract the exact colors assigned to the target groups in script 00
+    color_x <- get_project_colors(conf_x$target_groups[1])
+    color_y <- get_project_colors(conf_y$target_groups[1])
+    
+    # Fallback to magenta if COLOR_HIGHLIGHT is missing from 00_config.R
+    color_shared <- if(exists("COLOR_HIGHLIGHT")) COLOR_HIGHLIGHT else "#E6007E"
+    
+    # Pass everything to the engine
+    p_shift <- run_cross_contrast_engine(
+      dea_x, dea_y, conf, omics_config,
+      x_label = conf_x$title,       # Automatically reads "Active vs Control"
+      y_label = conf_y$title,       # Automatically reads "Nonactive vs Control"
+      color_x = color_x,
+      color_y = color_y,
+      color_shared = color_shared
+    )
+    
+    if (!is.null(p_shift)) {
+      print(p_shift)
+      cat("\n\n")
+      ggsave(
+        filename = file.path(traj_sub_dir, paste0(cross_name, "_Trajectory_Map.png")), 
+        plot = p_shift, width = 8, height = 8, dpi = 300, bg = "white"
+      )
+    }
+  } else {
+    cat("*Skipping: One or both prerequisite DEA contrasts failed to provide data.*\n\n")
+  }
+}
+```
+
+# Appendix
+```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+
+```
+
