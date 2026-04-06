@@ -96,17 +96,47 @@ contrast_configs <- list(
     ref_groups = c(GRP_NON_ACTIVE),
     is_continuous = FALSE,
     covariates = c("Age", "Sex")
+  ),
+  active_vs_nonactive_uncorrected = list(
+    title = "Active vs Nonactive (Uncorrected)",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c()
   )
 )
 
 # 4. Cross-Contrast Trajectory Plots
 cross_contrasts <- list(
-  disease_flare_trajectory = list(
+  active_vs_nonactive_trajectory = list(
     title = "Trajectory: Active vs Nonactive",
     x_axis_contrast = "active_vs_control",      
     y_axis_contrast = "nonactive_vs_control",   
     top_n_specific  = 5,  # Limit for X-only and Y-only drivers
     top_n_shared    = 5  # Global limit for Shared drivers based on combined Pi-Score
+  )
+)
+
+# 5. Heatmap Configuration
+heatmap_config <- list(
+  top_n = 50,
+  split_by_group = FALSE, # Set to TRUE if you want to force Active/Control/Nonactive groups
+  row_font_size = 8
+)
+
+# 6. Comparative Settings (UpSet & Pathway Trajectories)
+# Note: We use the same 'cross_contrasts' list, but these parameters guide the new plots
+cross_contrasts$disease_flare_trajectory$top_n_upset <- 10      # Proteins to label in intersection
+cross_contrasts$disease_flare_trajectory$top_n_pathways <- 20   # Pathways to plot in trajectory
+
+# 7. LASSO Feature Selection
+# We only run LASSO on binary classifications of interest
+lasso_configs <- list(
+  active_vs_nonactive = list(
+    title = "Predictors: Active vs Nonactive",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE)
   )
 )
 
@@ -204,113 +234,138 @@ for (pca_name in names(pca_configs)) {
 
 ## Differential Expression Analysis & GSEA
 ```{r execution_engine_DEA_GSEA, fig.width=8,fig.height=8}
-cat("### Executing Differential Expression & Functional Profiling...\n\n")
+cat("### Executing Differential Expression & Contrast-Specific Discovery...\n\n")
 
-# NEW: Define and create the master DEA base directory
 dea_base_dir <- file.path(output_dir_data, "DEA")
 if (!dir.exists(dea_base_dir)) dir.create(dea_base_dir, recursive = TRUE)
 
-# Store DEA results globally so the cross-contrast engine can access them later
 master_dea_results <- list()
+master_gsea_results <- list() 
 
 for (c_name in names(contrast_configs)) {
   conf <- contrast_configs[[c_name]]
   cat(sprintf("#### Contrast: %s\n", conf$title))
   
-  # NEW: Create the specific subfolder for this contrast configuration
   dea_sub_dir <- file.path(dea_base_dir, c_name)
   if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
   
-  # 1. Run Limma Math
+  # 1. Limma DEA
   limma_res <- run_limma_engine(omics_mat, master_spine, conf, omics_config, get_project_colors)
+  if (is.null(limma_res)) next
   
-  if (!is.null(limma_res)) {
-    master_dea_results[[c_name]] <- limma_res$data # Store for trajectory mapping
-    
-    # Export CSV with unambiguous naming
-    write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, "_DEA_Results.csv")))
-    
-    # Print and Export Volcano
-    print(limma_res$volcano)
-    cat("\n\n")
-    ggsave(file.path(dea_sub_dir, paste0(c_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 6, dpi=300, bg="white")
-    
-    # 2. Run GSEA Math automatically on the DEA results
-    gsea_res <- run_gsea_engine(limma_res$data, go_genesets, omics_config, conf$title)
-    
-    if (!is.null(gsea_res)) {
-      # Export GSEA CSV
-      write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(c_name, "_GSEA_Results.csv")))
-      
-      # Print and Export Dotplot (UNMERGED)
-      print(gsea_res$dotplot)
-      cat("\n\n")
-      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 8, height = 6, dpi=300, bg="white")
-      
-      # Print and Export Ridgeplot (UNMERGED)
-      print(gsea_res$ridgeplot)
-      cat("\n\n")
-      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 8, height = 6, dpi=300, bg="white")
-      
-    } else {
-      cat("*No significant functional pathways survived FDR correction.*\n\n")
+  master_dea_results[[c_name]] <- limma_res$data 
+  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, "_DEA_Results.csv")))
+  print(limma_res$volcano); cat("\n\n")
+  ggsave(file.path(dea_sub_dir, paste0(c_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300)
+
+  # 2. Heatmap (Top 50)
+  h50 <- run_heatmap_engine(omics_mat, master_spine, limma_res$data, title = conf$title, 
+                            n_top = heatmap_config$top_n, split_by_group = heatmap_config$split_by_group)
+  draw(h50); cat("\n\n")
+  png(file.path(dea_sub_dir, paste0(c_name, "_Heatmap_Top50.png")), width=10, height=12, units="in", res=300)
+  draw(h50); dev.off()
+
+  # 3. GSEA
+  gsea_res <- run_gsea_engine(limma_res$data, go_genesets, omics_config, conf$title)
+  if (!is.null(gsea_res)) {
+    master_gsea_results[[c_name]] <- gsea_res$data 
+    write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(c_name, "_GSEA_Full_Results.csv")))
+    print(gsea_res$dotplot); cat("\n\n")
+    ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300)
+    if(!is.null(gsea_res$ridgeplot)) {
+      print(gsea_res$ridgeplot); cat("\n\n")
+      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300)
     }
-  } else {
-    cat("*Insufficient data to run Limma for this contrast.*\n\n")
+  }
+    
+  # 4. LASSO (Automated for every contrast)
+  lasso_res <- run_lasso_engine(omics_mat, master_spine, conf$group_col, 
+                                c(conf$target_groups, conf$ref_groups), title = conf$title)
+  if (!is.null(lasso_res)) {
+    write_csv(lasso_res$data, file.path(dea_sub_dir, paste0(c_name, "_LASSO_Coefficients.csv")))
+    
+    # Tuning Plot (Base R)
+    plot(lasso_res$cv_plot); title(main = sprintf("%s: LASSO Model Tuning", conf$title), line = 2.5)
+    cat("\n\n")
+    
+    # Weight Plot (ggplot)
+    print(lasso_res$coeff_plot); cat("\n\n")
+    ggsave(file.path(dea_sub_dir, paste0(c_name, "_LASSO_Weights.png")), lasso_res$coeff_plot, width=7, height=6, dpi=300)
   }
 }
 ```
 
 ## Trajectory Mapping
 ```{r execution_engine_trajectory, fig.width=8, fig.height=8}
-cat("### Executing Proteomic Magnitude Shifts...\n\n")
+cat("### Executing Comparative Analysis...\n\n")
 
 traj_base_dir <- file.path(output_dir_data, "Trajectories")
 if (!dir.exists(traj_base_dir)) dir.create(traj_base_dir, recursive = TRUE)
 
 for (cross_name in names(cross_contrasts)) {
   conf <- cross_contrasts[[cross_name]]
-  cat(sprintf("#### Trajectory: %s\n", conf$title))
   
+  if (is.null(conf$x_axis_contrast) || is.null(conf$y_axis_contrast)) next
+  
+  cat(sprintf("#### Comparison: %s\n", conf$title))
   traj_sub_dir <- file.path(traj_base_dir, cross_name)
   if (!dir.exists(traj_sub_dir)) dir.create(traj_sub_dir, recursive = TRUE)
   
-  # Fetch data AND prerequisite configs for dynamic labeling/coloring
   dea_x <- master_dea_results[[conf$x_axis_contrast]]
   dea_y <- master_dea_results[[conf$y_axis_contrast]]
-  
-  conf_x <- contrast_configs[[conf$x_axis_contrast]]
-  conf_y <- contrast_configs[[conf$y_axis_contrast]]
-  
+  gsea_x <- master_gsea_results[[conf$x_axis_contrast]]
+  gsea_y <- master_gsea_results[[conf$y_axis_contrast]]
+
+  # 1. Protein Trajectory
   if (!is.null(dea_x) && !is.null(dea_y)) {
+    p_traj <- run_cross_contrast_engine(dea_x, dea_y, conf, omics_config, 
+                                        contrast_configs[[conf$x_axis_contrast]]$title, 
+                                        contrast_configs[[conf$y_axis_contrast]]$title,
+                                        get_project_colors(contrast_configs[[conf$x_axis_contrast]]$target_groups[1]),
+                                        get_project_colors(contrast_configs[[conf$y_axis_contrast]]$target_groups[1]),
+                                        COLOR_HIGHLIGHT)
+    if (!is.null(p_traj)) {
+      print(p_traj); cat("\n\n")
+      ggsave(file.path(traj_sub_dir, paste0(cross_name, "_Protein_Trajectory.png")), p_traj, width=9, height=9, dpi=300, bg="white")
+    }
+
+    # --- 2. Venn Diagram (Signature Overlap) ---
+    cat("##### Feature Intersection (Venn Diagram)\n")
     
-    # Dynamically extract the exact colors assigned to the target groups in script 00
-    color_x <- get_project_colors(conf_x$target_groups[1])
-    color_y <- get_project_colors(conf_y$target_groups[1])
+    clean_title <- sub("^Trajectory:\\s*", "", conf$title)
+    color_x <- get_project_colors(contrast_configs[[conf$x_axis_contrast]]$target_groups[1])
+    color_y <- get_project_colors(contrast_configs[[conf$y_axis_contrast]]$target_groups[1])
     
-    # Fallback to magenta if COLOR_HIGHLIGHT is missing from 00_config.R
-    color_shared <- if(exists("COLOR_HIGHLIGHT")) COLOR_HIGHLIGHT else "#E6007E"
-    
-    # Pass everything to the engine
-    p_shift <- run_cross_contrast_engine(
-      dea_x, dea_y, conf, omics_config,
-      x_label = conf_x$title,       # Automatically reads "Active vs Control"
-      y_label = conf_y$title,       # Automatically reads "Nonactive vs Control"
+    # PASS IN THE 00_CONFIG COLORS
+    p_venn <- run_venn_engine(
+      dea_x = dea_x, 
+      dea_y = dea_y, 
+      name_x = contrast_configs[[conf$x_axis_contrast]]$title, 
+      name_y = contrast_configs[[conf$y_axis_contrast]]$title,
+      omics_config = omics_config,
+      title = clean_title,
       color_x = color_x,
       color_y = color_y,
-      color_shared = color_shared
+      color_shared = "black"
     )
-    
-    if (!is.null(p_shift)) {
-      print(p_shift)
-      cat("\n\n")
-      ggsave(
-        filename = file.path(traj_sub_dir, paste0(cross_name, "_Trajectory_Map.png")), 
-        plot = p_shift, width = 8, height = 8, dpi = 300, bg = "white"
-      )
+
+    if (!is.null(p_venn)) {
+      print(p_venn); cat("\n\n")
+      ggsave(file.path(traj_sub_dir, paste0(cross_name, "_Venn_Intersection.png")), p_venn, width=8, height=6, dpi=300, bg="white")
+    } else {
+      cat("*No significant features available to compute intersection.*\n\n")
     }
-  } else {
-    cat("*Skipping: One or both prerequisite DEA contrasts failed to provide data.*\n\n")
+  }
+
+  # 3. Pathway Trajectory
+  if (!is.null(gsea_x) && !is.null(gsea_y)) {
+    p_path_traj <- run_pathway_trajectory_engine(gsea_x, gsea_y, conf, 
+                                                 contrast_configs[[conf$x_axis_contrast]]$title, 
+                                                 contrast_configs[[conf$y_axis_contrast]]$title)
+    if (!is.null(p_path_traj)) {
+      print(p_path_traj); cat("\n\n")
+      ggsave(file.path(traj_sub_dir, paste0(cross_name, "_Pathway_Trajectory.png")), p_path_traj, width=11, height=9, dpi=300, bg="white")
+    }
   }
 }
 ```
