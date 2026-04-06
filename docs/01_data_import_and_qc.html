@@ -17,7 +17,7 @@
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -294,6 +294,12 @@ div.tocify {
   border-radius: 0px;
 }
 
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
 
 </style>
 
@@ -327,12 +333,33 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+      <a class="navbar-brand" href="index.html">SSc-USZ Proteomics</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="01_data_import_and_qc.html">Data</a>
+</li>
+<li>
+  <a href="02_cohort _characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_linear_models.html">Linear Models</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -362,7 +389,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">05 April, 2026</h4>
+<h4 class="date">06 April, 2026</h4>
 
 </div>
 
@@ -391,7 +418,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-05
+<strong>Last updated:</strong> 2026-04-06
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -522,15 +549,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3targetblank29d6fe2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3" target="_blank">29d6fe2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3targetblank29d6fe2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +567,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3" target="_blank">29d6fe2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -563,6 +590,10 @@ Ignored files:
     Ignored:    output/03a_proteomics_differential/
     Ignored:    renv/library/
     Ignored:    renv/staging/
+
+Unstaged changes:
+    Modified:   analysis/03a_proteomics_differential.Rmd
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -607,6 +638,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3/analysis/01_data_import_and_qc.Rmd" target="_blank">29d6fe2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-06
+</td>
+<td>
+wflow_publish("analysis/01_data_import_and_qc.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/ec8f4ac1ad9980879e246aeda833b04d8b2fc368/docs/01_data_import_and_qc.html" target="_blank">ec8f4ac</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -668,47 +733,16 @@ wflow_publish("analysis/01_data_import_and_qc.Rmd")
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 </div>
-<div id="setup" class="section level1 tabset">
-<h1 class="tabset">Setup</h1>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
 <pre class="r"><code># Utility Packages
-library(tidyverse)   # Data manipulation</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.2     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.1     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(readxl)      # Reading messy Excel files
-library(data.table)  # High-performance data wrangling</code></pre>
-<pre><code>
-Attaching package: &#39;data.table&#39;
+library(tidyverse)   # Data manipulation
+library(readxl)      # Reading messy Excel files
+library(data.table)  # High-performance data wrangling
+library(here)        # Safe file paths
+library(matrixStats) # Fast matrix math for QC and Imputation
 
-The following objects are masked from &#39;package:lubridate&#39;:
-
-    hour, isoweek, isoyear, mday, minute, month, quarter, second, wday,
-    week, yday, year
-
-The following objects are masked from &#39;package:dplyr&#39;:
-
-    between, first, last
-
-The following object is masked from &#39;package:purrr&#39;:
-
-    transpose</code></pre>
-<pre class="r"><code>library(here)        # Safe file paths</code></pre>
-<pre><code>here() starts at /Users/alexandergysin/Library/CloudStorage/OneDrive-Personal/01_Dokumente/01_Studium/07_Master/03_Dry_Lab/01_SSc_USZ/SSc_USZ</code></pre>
-<pre class="r"><code>library(matrixStats) # Fast matrix math for QC and Imputation</code></pre>
-<pre><code>
-Attaching package: &#39;matrixStats&#39;
-
-The following object is masked from &#39;package:dplyr&#39;:
-
-    count</code></pre>
-<pre class="r"><code># Get current file name to make folder
+# Get current file name to make folder
 current_file &lt;- &quot;01_data_import_and_qc&quot;
 #Output paths
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
@@ -853,10 +887,7 @@ cat(sprintf(&quot;Clinical Spine generated for %d unique cross-sectional samples
     Active    Control Non-Active 
         48         35         48 </code></pre>
 <pre class="r"><code>rm(raw_clin, id_map)
-gc()</code></pre>
-<pre><code>          used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
-Ncells 1744049 93.2    3285298 175.5         NA  3285298 175.5
-Vcells 3230260 24.7    8388608  64.0      16384  4986405  38.1</code></pre>
+invisible(gc())</code></pre>
 </div>
 <div id="olink-import" class="section level2">
 <h2>OLINK import</h2>
@@ -882,10 +913,7 @@ cat(sprintf(&quot;- Initial Matrix: %d Proteins | %d Samples\n&quot;, nrow(olink
 <pre><code>- Initial Matrix: 1034 Proteins | 131 Samples</code></pre>
 <pre class="r"><code># Clean up RAM
 rm(raw_olink, wide_olink)
-gc()</code></pre>
-<pre><code>          used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
-Ncells 1755593 93.8    3285298 175.5         NA  3285298 175.5
-Vcells 3394926 26.0   16729239 127.7      16384 13839658 105.6</code></pre>
+invisible(gc())</code></pre>
 </div>
 <div id="proteomics-qc-imputation-and-sync" class="section level2">
 <h2>Proteomics QC, Imputation and Sync</h2>
@@ -1078,7 +1106,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = true;
+    options.showAndHide = false;
     options.smoothScroll = true;
 
     // tocify
