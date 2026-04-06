@@ -9,8 +9,8 @@ editor_options:
 
 # Introduction
 
-# Setup {.tabset}
-```{r setup}
+# Setup
+```{r setup, message=FALSE, warning=FALSE}
 # Utility Packages
 library(tidyverse)   # Data manipulation
 library(readxl)      # Reading messy Excel files
@@ -162,7 +162,7 @@ cat(sprintf("Clinical Spine generated for %d unique cross-sectional samples.\n",
 print(table(master_spine$cohort_group))
 
 rm(raw_clin, id_map)
-gc()
+invisible(gc())
 ```
 ## OLINK import
 ```{r olink_import}
@@ -188,7 +188,7 @@ cat(sprintf("- Initial Matrix: %d Proteins | %d Samples\n", nrow(olink_mat), nco
 
 # Clean up RAM
 rm(raw_olink, wide_olink)
-gc()
+invisible(gc())
 ```
 
 ## Proteomics QC, Imputation and Sync
