@@ -1,15 +1,17 @@
 ---
-title: "02_cohort_characterization"
+title: "Cohort Characterization"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: workflowr::wflow_html
+output: 
+  workflowr::wflow_html:
+    code_folding: hide
 editor_options:
   chunk_output_type: inline
 ---
 
 # Setup and import
 
-```{r setup_import}
+```{r setup_import, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(data.table)
 library(lubridate)   # Crucial for the date math you requested
@@ -19,7 +21,7 @@ library(patchwork)
 library(ggpubr)
 library(gt)
 
-# Knmitr Config
+# Knitr Config
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
@@ -177,7 +179,7 @@ cat("Cohort Feature Engineering and Configurations Loaded.\n")
 ```
 
 # Table Engine
-```{r table_engine}
+```{r table_engine, results='asis'}
 cat("### Generating Tables & Statistical Summaries\n\n")
 
 generated_tables <- list()
@@ -191,7 +193,7 @@ for (tbl_name in names(table_configs)) {
   
   gtsum_stats <- list()
   gtsum_global_tests <- list()
-  gtsum_pairwise_tests <- list() # Dedicated list for binary paired tests
+  gtsum_pairwise_tests <- list() 
   
   for (var in conf$variables) {
     if (is.numeric(tbl_data[[var]])) {
@@ -201,11 +203,11 @@ for (tbl_name in names(table_configs)) {
       if (is_parametric) {
         gtsum_stats[[var]] <- "{mean} ({sd})"
         gtsum_global_tests[[var]] <- "aov"
-        gtsum_pairwise_tests[[var]] <- "t.test" # Assign standard t.test for pairs
+        gtsum_pairwise_tests[[var]] <- "t.test" 
       } else {
         gtsum_stats[[var]] <- "{median} ({p25}, {p75})"
         gtsum_global_tests[[var]] <- "kruskal.test"
-        gtsum_pairwise_tests[[var]] <- "wilcox.test" # Assign Wilcoxon for pairs
+        gtsum_pairwise_tests[[var]] <- "wilcox.test" 
       }
     }
   }
@@ -215,7 +217,7 @@ for (tbl_name in names(table_configs)) {
     tbl_summary(
       by = all_of(conf$group_by), 
       statistic = gtsum_stats, 
-      missing = "ifany",            
+      missing = "ifany",             
       missing_text = "Missing (NA)" 
     ) %>%
     add_p(test = gtsum_global_tests) %>%
@@ -236,7 +238,6 @@ for (tbl_name in names(table_configs)) {
     
     for (comp in all_comparisons) {
       
-      # Filter exactly to the two groups and drop unused factor levels
       comp_data <- tbl_data %>%
         filter(!!sym(conf$group_by) %in% comp) %>%
         mutate(!!sym(conf$group_by) := droplevels(factor(!!sym(conf$group_by))))
@@ -245,19 +246,18 @@ for (tbl_name in names(table_configs)) {
         tbl_summary(
           by = all_of(conf$group_by), 
           statistic = gtsum_stats, 
-          missing = "no" # Hide NAs in the sub-tables to prevent column clutter
+          missing = "no" 
         ) %>%
         add_p(test = gtsum_pairwise_tests) %>%
         modify_header(p.value = sprintf("**%s vs<br>%s**", comp[1], comp[2])) %>%
-        modify_column_hide(all_stat_cols()) # Delete the summary cols, keeping only the p-value
+        modify_column_hide(all_stat_cols()) 
       
       pairwise_tbls <- append(pairwise_tbls, list(ptbl))
     }
     
-    # Merge the global table and all pairwise tables seamlessly
     gtsum_obj <- tbl_merge(
       tbls = append(list(tbl_global), pairwise_tbls),
-      tab_spanner = FALSE # Prevents gtsummary from adding "Table 1, Table 2" headers
+      tab_spanner = FALSE 
     )
     
   } else {
@@ -270,27 +270,22 @@ for (tbl_name in names(table_configs)) {
     modify_header(label = "**Variable**") %>%
     modify_caption(sprintf("**%s**", conf$title))
   
-  # Step 4. Export CSV
+  # Step 4. Export CSV (Converting the object to a dataframe for saving)
   export_df <- as_tibble(gtsum_obj)
   write_csv(export_df, file.path(output_dir_data, paste0(tbl_name, ".csv")))
   
-  # Step 5. Format to GT for beautiful HTML rendering
-  final_tbl <- gtsum_obj %>%
-    as_gt() %>%                     
-    gt::tab_style(
-      style = gt::cell_borders(sides = "top", color = "black", weight = gt::px(2)),
-      locations = gt::cells_body(rows = row_type == "label") 
-    ) %>%
-    gt::cols_align(align = "center", columns = contains("p.value")) # Cleanly align all the new p-value columns
-  
-  generated_tables[[tbl_name]] <- final_tbl
-  print(final_tbl)
+  # Step 5. Rendering for HTML
+  # We use as_kable() to ensure it renders cleanly within the workflowr/Bootstrap layout
+  print(as_kable(gtsum_obj))
   cat("\n---\n\n")
+  
+  # Save the full object to our list for potential downstream use
+  generated_tables[[tbl_name]] <- gtsum_obj
 }
 ```
 
 # Figure Engine
-```{r figure_engine, fig.width=10, fig.height=10}
+```{r figure_engine}
 cat("### Generating Clinical Visualizations\n")
 
 group_levels <- levels(clean_spine$cohort_group) 
@@ -421,32 +416,43 @@ for (fig_name in names(figure_configs)) {
     plot_annotation(title = fig_conf$figure_title, theme = theme(plot.title = element_text(size = 16, face = "bold")))
 }
 
+```
 
-# Print Outputs & Export -------------------------------------------------------
-
-cat("#### Multi-Panel Stitched Figures\n\n")
+## Merged Figures
+```{r print_figures, fig.width=12, fig.height=8}
+# This chunk handles the large patchwork layouts
 for (fig_name in names(stitched_figures)) {
   print(stitched_figures[[fig_name]])
-  cat("\n\n")
   
-  # Save the master stitched patchwork layout to PNG (Large size)
   ggsave(
     filename = file.path(output_dir_data, paste0(fig_name, ".png")),
     plot = stitched_figures[[fig_name]],
-    width = 12, height = 10, dpi = 300, bg = "white"
+    width = 12, height = 8, dpi = 300, bg = "white"
   )
 }
+```
 
-cat("#### Individual Standalone Plots (No ABC Ennumeration)\n\n")
+## Individual Plots {.tabset}
+```{r print_individual_plots, results='asis', fig.width=7, fig.height=5.5}
+# This chunk handles the individual plots inside the tabset
+
 for (p_name in names(individual_plots)) {
+  
+  # Extract the plot title to use as the tab name
+  tab_title <- individual_plots[[p_name]]$labels$title
+  if (is.null(tab_title)) tab_title <- p_name
+  
+  # Dynamically generate the ### Tab Header
+  cat(sprintf("\n\n### %s\n\n", tab_title))
+  
+  # Print the smaller standalone plot
   print(individual_plots[[p_name]])
   cat("\n\n")
   
-  # Save the individual pure plots to PNG (Standard size)
   ggsave(
     filename = file.path(output_dir_data, paste0(p_name, ".png")),
     plot = individual_plots[[p_name]],
-    width = 7, height = 6, dpi = 300, bg = "white"
+    width = 7, height = 5.5, dpi = 300, bg = "white"
   )
 }
 ```

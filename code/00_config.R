@@ -25,6 +25,15 @@ COLOR_MALE       <- "#56B4E9"
 COLOR_FEMALE     <- "#E69F00"
 COLOR_HIGHLIGHT <- "#E6007E" # Magenta/Pink for shared trajectory drivers
 
+# Age Gradient (Purple)
+COLOR_AGE_LOW <- "white"
+COLOR_AGE_HIGH <- "purple4"
+
+# Heatmap Aesthetics
+HM_Z_LOW  <- "dodgerblue4"
+HM_Z_MID  <- "white"
+HM_Z_HIGH <- "firebrick4"
+
 # ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY
 # ------------------------------------------------------------------------------

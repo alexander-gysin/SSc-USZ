@@ -17,7 +17,7 @@
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -397,7 +397,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -408,8 +408,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -422,9 +422,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SSc_USZ/</code> <span
@@ -447,18 +447,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -549,15 +552,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3targetblank29d6fe2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3" target="_blank">29d6fe2</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3targetblank29d6fe2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -567,7 +570,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/29d6fe2f8b1ab7d17e2dadc9d03d2ad523ab5da3" target="_blank">29d6fe2</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -592,6 +595,7 @@ Ignored files:
     Ignored:    renv/staging/
 
 Unstaged changes:
+    Modified:   analysis/01_data_import_and_qc.Rmd
     Modified:   analysis/03a_proteomics_differential.Rmd
     Modified:   analysis/_site.yml
 
@@ -638,6 +642,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/8eccdb620f109bf53c0956e0aee3172607e96606/docs/01_data_import_and_qc.html" target="_blank">8eccdb6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -915,8 +936,8 @@ cat(sprintf(&quot;- Initial Matrix: %d Proteins | %d Samples\n&quot;, nrow(olink
 rm(raw_olink, wide_olink)
 invisible(gc())</code></pre>
 </div>
-<div id="proteomics-qc-imputation-and-sync" class="section level2">
-<h2>Proteomics QC, Imputation and Sync</h2>
+<div id="proteomics-qc-imputation-sync" class="section level2">
+<h2>Proteomics QC, Imputation, Sync</h2>
 <pre class="r"><code>cat(&quot;Running Missingness QC and Imputation...\n&quot;)</code></pre>
 <pre><code>Running Missingness QC and Imputation...</code></pre>
 <pre class="r"><code># 1. Quality Control (Missingness Rules from qc_config)

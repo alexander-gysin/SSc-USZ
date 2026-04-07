@@ -1,5 +1,5 @@
 ---
-title: "01_data_import_and_qc"
+title: "Data Import and Quality Control"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -20,6 +20,7 @@ library(matrixStats) # Fast matrix math for QC and Imputation
 
 # Get current file name to make folder
 current_file <- "01_data_import_and_qc"
+
 #Output paths
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
@@ -191,7 +192,7 @@ rm(raw_olink, wide_olink)
 invisible(gc())
 ```
 
-## Proteomics QC, Imputation and Sync
+## Proteomics QC, Imputation, Sync
 ```{r qc_imputation_sync}
 cat("Running Missingness QC and Imputation...\n")
 

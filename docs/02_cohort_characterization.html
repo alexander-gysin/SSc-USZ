@@ -12,7 +12,7 @@
 <meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
 
 
-<title>02_cohort_characterization</title>
+<title>Cohort Characterization</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -34,6 +34,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
@@ -232,6 +233,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -294,6 +298,12 @@ div.tocify {
   border-radius: 0px;
 }
 
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
 
 </style>
 
@@ -327,12 +337,33 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+      <a class="navbar-brand" href="index.html">SSc-USZ Proteomics</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="01_data_import_and_qc.html">Data</a>
+</li>
+<li>
+  <a href="02_cohort _characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_linear_models.html">Linear Models</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -356,13 +387,21 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">02_cohort_characterization</h1>
+
+<h1 class="title toc-ignore">Cohort Characterization</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">05 April, 2026</h4>
+<h4 class="date">06 April, 2026</h4>
 
 </div>
 
@@ -370,7 +409,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -381,8 +420,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -391,13 +430,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-05
+<strong>Last updated:</strong> 2026-04-06
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SSc_USZ/</code> <span
@@ -420,18 +459,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -522,15 +564,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree65441ac9218fca52468b51711d83ac572619cddetargetblank65441aca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -540,7 +582,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/65441ac9218fca52468b51711d83ac572619cdde" target="_blank">65441ac</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -563,6 +605,12 @@ Ignored files:
     Ignored:    output/03a_proteomics_differential/
     Ignored:    renv/library/
     Ignored:    renv/staging/
+
+Unstaged changes:
+    Modified:   analysis/01_data_import_and_qc.Rmd
+    Modified:   analysis/02_cohort_characterization.Rmd
+    Modified:   analysis/03a_proteomics_differential.Rmd
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -613,6 +661,23 @@ Message
 html
 </td>
 <td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/ec8f4ac1ad9980879e246aeda833b04d8b2fc368/docs/02_cohort_characterization.html" target="_blank">ec8f4ac</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
 <a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/02_cohort_characterization.html" target="_blank">c18fa49</a>
 </td>
 <td>
@@ -651,42 +716,16 @@ finished characterization
 </div>
 <div id="setup-and-import" class="section level1">
 <h1>Setup and import</h1>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.2     ✔ tibble    3.3.1
-✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-✔ purrr     1.2.1     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(data.table)</code></pre>
-<pre><code>
-Attaching package: &#39;data.table&#39;
-
-The following objects are masked from &#39;package:lubridate&#39;:
-
-    hour, isoweek, isoyear, mday, minute, month, quarter, second, wday,
-    week, yday, year
-
-The following objects are masked from &#39;package:dplyr&#39;:
-
-    between, first, last
-
-The following object is masked from &#39;package:purrr&#39;:
-
-    transpose</code></pre>
-<pre class="r"><code>library(lubridate)   # Crucial for the date math you requested
+<pre class="r"><code>library(tidyverse)
+library(data.table)
+library(lubridate)   # Crucial for the date math you requested
 library(gtsummary)   # The Table 1 engine
-library(here)</code></pre>
-<pre><code>here() starts at /Users/alexandergysin/Library/CloudStorage/OneDrive-Personal/01_Dokumente/01_Studium/07_Master/03_Dry_Lab/01_SSc_USZ/SSc_USZ</code></pre>
-<pre class="r"><code>library(patchwork)
+library(here)
+library(patchwork)
 library(ggpubr)
 library(gt)
 
-# Knmitr Config
+# Knitr Config
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
@@ -846,7 +885,9 @@ cat(&quot;Cohort Feature Engineering and Configurations Loaded.\n&quot;)</code><
 <div id="table-engine" class="section level1">
 <h1>Table Engine</h1>
 <pre class="r"><code>cat(&quot;### Generating Tables &amp; Statistical Summaries\n\n&quot;)</code></pre>
-<pre><code>### Generating Tables &amp; Statistical Summaries</code></pre>
+<div id="generating-tables-statistical-summaries"
+class="section level3">
+<h3>Generating Tables &amp; Statistical Summaries</h3>
 <pre class="r"><code>generated_tables &lt;- list()
 
 for (tbl_name in names(table_configs)) {
@@ -858,7 +899,7 @@ for (tbl_name in names(table_configs)) {
   
   gtsum_stats &lt;- list()
   gtsum_global_tests &lt;- list()
-  gtsum_pairwise_tests &lt;- list() # Dedicated list for binary paired tests
+  gtsum_pairwise_tests &lt;- list() 
   
   for (var in conf$variables) {
     if (is.numeric(tbl_data[[var]])) {
@@ -868,11 +909,11 @@ for (tbl_name in names(table_configs)) {
       if (is_parametric) {
         gtsum_stats[[var]] &lt;- &quot;{mean} ({sd})&quot;
         gtsum_global_tests[[var]] &lt;- &quot;aov&quot;
-        gtsum_pairwise_tests[[var]] &lt;- &quot;t.test&quot; # Assign standard t.test for pairs
+        gtsum_pairwise_tests[[var]] &lt;- &quot;t.test&quot; 
       } else {
         gtsum_stats[[var]] &lt;- &quot;{median} ({p25}, {p75})&quot;
         gtsum_global_tests[[var]] &lt;- &quot;kruskal.test&quot;
-        gtsum_pairwise_tests[[var]] &lt;- &quot;wilcox.test&quot; # Assign Wilcoxon for pairs
+        gtsum_pairwise_tests[[var]] &lt;- &quot;wilcox.test&quot; 
       }
     }
   }
@@ -882,7 +923,7 @@ for (tbl_name in names(table_configs)) {
     tbl_summary(
       by = all_of(conf$group_by), 
       statistic = gtsum_stats, 
-      missing = &quot;ifany&quot;,            
+      missing = &quot;ifany&quot;,             
       missing_text = &quot;Missing (NA)&quot; 
     ) %&gt;%
     add_p(test = gtsum_global_tests) %&gt;%
@@ -903,7 +944,6 @@ for (tbl_name in names(table_configs)) {
     
     for (comp in all_comparisons) {
       
-      # Filter exactly to the two groups and drop unused factor levels
       comp_data &lt;- tbl_data %&gt;%
         filter(!!sym(conf$group_by) %in% comp) %&gt;%
         mutate(!!sym(conf$group_by) := droplevels(factor(!!sym(conf$group_by))))
@@ -912,19 +952,18 @@ for (tbl_name in names(table_configs)) {
         tbl_summary(
           by = all_of(conf$group_by), 
           statistic = gtsum_stats, 
-          missing = &quot;no&quot; # Hide NAs in the sub-tables to prevent column clutter
+          missing = &quot;no&quot; 
         ) %&gt;%
         add_p(test = gtsum_pairwise_tests) %&gt;%
         modify_header(p.value = sprintf(&quot;**%s vs&lt;br&gt;%s**&quot;, comp[1], comp[2])) %&gt;%
-        modify_column_hide(all_stat_cols()) # Delete the summary cols, keeping only the p-value
+        modify_column_hide(all_stat_cols()) 
       
       pairwise_tbls &lt;- append(pairwise_tbls, list(ptbl))
     }
     
-    # Merge the global table and all pairwise tables seamlessly
     gtsum_obj &lt;- tbl_merge(
       tbls = append(list(tbl_global), pairwise_tbls),
-      tab_spanner = FALSE # Prevents gtsummary from adding &quot;Table 1, Table 2&quot; headers
+      tab_spanner = FALSE 
     )
     
   } else {
@@ -937,582 +976,142 @@ for (tbl_name in names(table_configs)) {
     modify_header(label = &quot;**Variable**&quot;) %&gt;%
     modify_caption(sprintf(&quot;**%s**&quot;, conf$title))
   
-  # Step 4. Export CSV
+  # Step 4. Export CSV (Converting the object to a dataframe for saving)
   export_df &lt;- as_tibble(gtsum_obj)
   write_csv(export_df, file.path(output_dir_data, paste0(tbl_name, &quot;.csv&quot;)))
   
-  # Step 5. Format to GT for beautiful HTML rendering
-  final_tbl &lt;- gtsum_obj %&gt;%
-    as_gt() %&gt;%                     
-    gt::tab_style(
-      style = gt::cell_borders(sides = &quot;top&quot;, color = &quot;black&quot;, weight = gt::px(2)),
-      locations = gt::cells_body(rows = row_type == &quot;label&quot;) 
-    ) %&gt;%
-    gt::cols_align(align = &quot;center&quot;, columns = contains(&quot;p.value&quot;)) # Cleanly align all the new p-value columns
-  
-  generated_tables[[tbl_name]] &lt;- final_tbl
-  print(final_tbl)
+  # Step 5. Rendering for HTML
+  # We use as_kable() to ensure it renders cleanly within the workflowr/Bootstrap layout
+  print(as_kable(gtsum_obj))
   cat(&quot;\n---\n\n&quot;)
+  
+  # Save the full object to our list for potential downstream use
+  generated_tables[[tbl_name]] &lt;- gtsum_obj
 }</code></pre>
-<pre><code>#### Building: Baseline Demographics and Clinical Characteristics</code></pre>
-<pre><code>&lt;div id=&quot;yafmoldpel&quot; style=&quot;padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;&quot;&gt;
-  &lt;style&gt;#yafmoldpel table {
-  font-family: system-ui, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif, &#39;Apple Color Emoji&#39;, &#39;Segoe UI Emoji&#39;, &#39;Segoe UI Symbol&#39;, &#39;Noto Color Emoji&#39;;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#yafmoldpel thead, #yafmoldpel tbody, #yafmoldpel tfoot, #yafmoldpel tr, #yafmoldpel td, #yafmoldpel th {
-  border-style: none;
-}
-
-#yafmoldpel p {
-  margin: 0;
-  padding: 0;
-}
-
-#yafmoldpel .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#yafmoldpel .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#yafmoldpel .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#yafmoldpel .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#yafmoldpel .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#yafmoldpel .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#yafmoldpel .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#yafmoldpel .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#yafmoldpel .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#yafmoldpel .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#yafmoldpel .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#yafmoldpel .gt_from_md &gt; :first-child {
-  margin-top: 0;
-}
-
-#yafmoldpel .gt_from_md &gt; :last-child {
-  margin-bottom: 0;
-}
-
-#yafmoldpel .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#yafmoldpel .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#yafmoldpel .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#yafmoldpel .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#yafmoldpel .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#yafmoldpel .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#yafmoldpel .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#yafmoldpel .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#yafmoldpel .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#yafmoldpel .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#yafmoldpel .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#yafmoldpel .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#yafmoldpel .gt_left {
-  text-align: left;
-}
-
-#yafmoldpel .gt_center {
-  text-align: center;
-}
-
-#yafmoldpel .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#yafmoldpel .gt_font_normal {
-  font-weight: normal;
-}
-
-#yafmoldpel .gt_font_bold {
-  font-weight: bold;
-}
-
-#yafmoldpel .gt_font_italic {
-  font-style: italic;
-}
-
-#yafmoldpel .gt_super {
-  font-size: 65%;
-}
-
-#yafmoldpel .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#yafmoldpel .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#yafmoldpel .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#yafmoldpel .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#yafmoldpel .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#yafmoldpel .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#yafmoldpel .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#yafmoldpel .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#yafmoldpel div.Reactable &gt; div.rt-table &gt; div.rt-thead &gt; div.rt-tr.rt-tr-group-header &gt; div.rt-th-group:after {
-  height: 0px !important;
-}
-&lt;/style&gt;
-  &lt;table class=&quot;gt_table&quot; data-quarto-disable-processing=&quot;false&quot; data-quarto-bootstrap=&quot;false&quot;&gt;
-  &lt;caption&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Baseline Demographics and Clinical Characteristics&lt;/strong&gt;&lt;/span&gt;&lt;/caption&gt;
-  &lt;thead&gt;
-    &lt;tr class=&quot;gt_col_headings&quot;&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_left&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;label&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Variable&lt;/strong&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_1_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Active&lt;/strong&gt;&lt;br /&gt;
-N = 48&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_2_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Non-Active&lt;/strong&gt;&lt;br /&gt;
-N = 48&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_3_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Control&lt;/strong&gt;&lt;br /&gt;
-N = 35&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Global p-value&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value_2&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Active vs&lt;br&gt;Non-Active&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value_3&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Active vs&lt;br&gt;Control&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value_4&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Non-Active vs&lt;br&gt;Control&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody class=&quot;gt_table_body&quot;&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold; border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;Age&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;62 (48, 74)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;62 (48, 70)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;56 (48, 64)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.3&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.9&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.2&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.2&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold; border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;Sex&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&gt;0.9&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&gt;0.9&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&gt;0.9&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Female&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot;&gt;38 (79%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot;&gt;38 (79%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot;&gt;28 (80%)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Male&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot;&gt;10 (21%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot;&gt;10 (21%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (20%)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold; border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;CRP&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.21 (0.06, 0.79)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.13 (0.06, 0.26)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;NA (NA, NA)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.009&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.010&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Missing (NA)&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot;&gt;0&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot;&gt;2&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot;&gt;35&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold; border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;Creatinine&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;70 (62, 87)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;68 (61, 81)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;NA (NA, NA)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.7&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.7&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Missing (NA)&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot;&gt;2&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot;&gt;2&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot;&gt;35&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold; border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;Sample_Age_Years&lt;/td&gt;
-&lt;td headers=&quot;stat_1_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;1.14 (0.80, 1.47)&lt;/td&gt;
-&lt;td headers=&quot;stat_2_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;1.36 (1.04, 1.61)&lt;/td&gt;
-&lt;td headers=&quot;stat_3_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;2.24 (2.24, 2.24)&lt;/td&gt;
-&lt;td headers=&quot;p.value_1&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;0.001&lt;/td&gt;
-&lt;td headers=&quot;p.value_2&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;0.12&lt;/td&gt;
-&lt;td headers=&quot;p.value_3&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;0.001&lt;/td&gt;
-&lt;td headers=&quot;p.value_4&quot; class=&quot;gt_row gt_center&quot; style=&quot;border-top-width: 2px; border-top-style: solid; border-top-color: black;&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-  &lt;/tbody&gt;
-  &lt;tfoot&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;8&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Median (Q1, Q3); n (%)&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;8&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Kruskal-Wallis rank sum test; Pearson’s Chi-squared test&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;8&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Wilcoxon rank sum test; Pearson’s Chi-squared test&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;8&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Wilcoxon rank sum test; Pearson’s Chi-squared test; NA&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tfoot&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
----</code></pre>
+<div id="building-baseline-demographics-and-clinical-characteristics"
+class="section level4">
+<h4>Building: Baseline Demographics and Clinical Characteristics</h4>
+<table>
+<caption><strong>Baseline Demographics and Clinical
+Characteristics</strong></caption>
+<colgroup>
+<col width="10%" />
+<col width="10%" />
+<col width="12%" />
+<col width="10%" />
+<col width="10%" />
+<col width="15%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"><strong>Variable</strong></th>
+<th align="center"><strong>Active</strong> N = 48</th>
+<th align="center"><strong>Non-Active</strong> N = 48</th>
+<th align="center"><strong>Control</strong> N = 35</th>
+<th align="center"><strong>Global p-value</strong></th>
+<th align="center"><strong>Active vs<br>Non-Active</strong></th>
+<th align="center"><strong>Active vs<br>Control</strong></th>
+<th align="center"><strong>Non-Active vs<br>Control</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>Age</strong></td>
+<td align="center">62 (48, 74)</td>
+<td align="center">62 (48, 70)</td>
+<td align="center">56 (48, 64)</td>
+<td align="center">0.3</td>
+<td align="center">0.9</td>
+<td align="center">0.2</td>
+<td align="center">0.2</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Sex</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">&gt;0.9</td>
+<td align="center">&gt;0.9</td>
+<td align="center">&gt;0.9</td>
+<td align="center">&gt;0.9</td>
+</tr>
+<tr class="odd">
+<td align="left">Female</td>
+<td align="center">38 (79%)</td>
+<td align="center">38 (79%)</td>
+<td align="center">28 (80%)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="left">Male</td>
+<td align="center">10 (21%)</td>
+<td align="center">10 (21%)</td>
+<td align="center">7 (20%)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>CRP</strong></td>
+<td align="center">0.21 (0.06, 0.79)</td>
+<td align="center">0.13 (0.06, 0.26)</td>
+<td align="center">NA (NA, NA)</td>
+<td align="center">0.009</td>
+<td align="center">0.010</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="left">Missing (NA)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">35</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Creatinine</strong></td>
+<td align="center">70 (62, 87)</td>
+<td align="center">68 (61, 81)</td>
+<td align="center">NA (NA, NA)</td>
+<td align="center">0.7</td>
+<td align="center">0.7</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="left">Missing (NA)</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">35</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Sample_Age_Years</strong></td>
+<td align="center">1.14 (0.80, 1.47)</td>
+<td align="center">1.36 (1.04, 1.61)</td>
+<td align="center">2.24 (2.24, 2.24)</td>
+<td align="center">&lt;0.001</td>
+<td align="center">0.12</td>
+<td align="center">&lt;0.001</td>
+<td align="center">&lt;0.001</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
 </div>
 <div id="figure-engine" class="section level1">
 <h1>Figure Engine</h1>
@@ -1644,265 +1243,59 @@ for (fig_name in names(figure_configs)) {
   
   stitched_figures[[fig_name]] &lt;- wrap_plots(patchwork_ready_plots, ncol = 2) + 
     plot_annotation(title = fig_conf$figure_title, theme = theme(plot.title = element_text(size = 16, face = &quot;bold&quot;)))
-}
-
-
-# Print Outputs &amp; Export -------------------------------------------------------
-
-cat(&quot;#### Multi-Panel Stitched Figures\n\n&quot;)</code></pre>
-<pre><code>#### Multi-Panel Stitched Figures</code></pre>
-<pre class="r"><code>for (fig_name in names(stitched_figures)) {
+}</code></pre>
+<div id="merged-figures" class="section level2">
+<h2>Merged Figures</h2>
+<pre class="r"><code># This chunk handles the large patchwork layouts
+for (fig_name in names(stitched_figures)) {
   print(stitched_figures[[fig_name]])
-  cat(&quot;\n\n&quot;)
   
-  # Save the master stitched patchwork layout to PNG (Large size)
   ggsave(
     filename = file.path(output_dir_data, paste0(fig_name, &quot;.png&quot;)),
     plot = stitched_figures[[fig_name]],
-    width = 12, height = 10, dpi = 300, bg = &quot;white&quot;
+    width = 12, height = 8, dpi = 300, bg = &quot;white&quot;
   )
 }</code></pre>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-1">
-Past versions of figure_engine-1.png
-</button>
-</p>
-<div id="fig-figure_engine-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-1.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/02_cohort_characterization.Rmd/print_figures-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/02_cohort_characterization.Rmd/print_figures-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-2">
-Past versions of figure_engine-2.png
-</button>
-</p>
-<div id="fig-figure_engine-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-2.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>cat(&quot;#### Individual Standalone Plots (No ABC Ennumeration)\n\n&quot;)</code></pre>
-<pre><code>#### Individual Standalone Plots (No ABC Ennumeration)</code></pre>
-<pre class="r"><code>for (p_name in names(individual_plots)) {
+<div id="individual-plots" class="section level2 tabset">
+<h2 class="tabset">Individual Plots</h2>
+<pre class="r"><code># This chunk handles the individual plots inside the tabset
+
+for (p_name in names(individual_plots)) {
+  
+  # Extract the plot title to use as the tab name
+  tab_title &lt;- individual_plots[[p_name]]$labels$title
+  if (is.null(tab_title)) tab_title &lt;- p_name
+  
+  # Dynamically generate the ### Tab Header
+  cat(sprintf(&quot;\n\n### %s\n\n&quot;, tab_title))
+  
+  # Print the smaller standalone plot
   print(individual_plots[[p_name]])
   cat(&quot;\n\n&quot;)
   
-  # Save the individual pure plots to PNG (Standard size)
   ggsave(
     filename = file.path(output_dir_data, paste0(p_name, &quot;.png&quot;)),
     plot = individual_plots[[p_name]],
-    width = 7, height = 6, dpi = 300, bg = &quot;white&quot;
+    width = 7, height = 5.5, dpi = 300, bg = &quot;white&quot;
   )
 }</code></pre>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-3">
-Past versions of figure_engine-3.png
-</button>
-</p>
-<div id="fig-figure_engine-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-3.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
+<div id="age-and-sex-distribution" class="section level3">
+<h3>Age and Sex Distribution</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="sample-storage-age" class="section level3">
+<h3>Sample Storage Age</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-4">
-Past versions of figure_engine-4.png
-</button>
-</p>
-<div id="fig-figure_engine-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-4.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
+<div id="baseline-crp" class="section level3">
+<h3>Baseline CRP</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-5.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-5">
-Past versions of figure_engine-5.png
-</button>
-</p>
-<div id="fig-figure_engine-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-5.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/02_cohort_characterization.Rmd/figure_engine-6.png" alt="" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-figure_engine-6">
-Past versions of figure_engine-6.png
-</button>
-</p>
-<div id="fig-figure_engine-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c18fa496db3fc516d99a800dd8ccbfa9d50ba59d/docs/figure/02_cohort_characterization.Rmd/figure_engine-6.png" target="_blank">c18fa49</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<div id="baseline-creatinine" class="section level3">
+<h3>Baseline Creatinine</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1945,25 +1338,26 @@ loaded via a namespace (and not attached):
 [13] RColorBrewer_1.1-3  S7_0.2.1            lifecycle_1.0.5    
 [16] compiler_4.5.0      farver_2.1.2        git2r_0.36.2       
 [19] textshaping_1.0.5   getPass_0.2-4       carData_3.0-6      
-[22] litedown_0.9        httpuv_1.6.16       htmltools_0.5.9    
-[25] sass_0.4.10         yaml_2.3.12         Formula_1.2-5      
-[28] crayon_1.5.3        later_1.4.8         pillar_1.11.1      
-[31] car_3.1-5           jquerylib_0.1.4     whisker_0.4.1      
-[34] cachem_1.1.0        abind_1.4-8         commonmark_2.0.0   
-[37] tidyselect_1.2.1    digest_0.6.39       stringi_1.8.7      
-[40] labeling_0.4.3      rprojroot_2.1.1     fastmap_1.2.0      
-[43] grid_4.5.0          cli_3.6.5           magrittr_2.0.4     
-[46] cards_0.7.1         broom_1.0.12        withr_3.0.2        
-[49] scales_1.4.0        promises_1.5.0      backports_1.5.1    
-[52] bit64_4.6.0-1       cardx_0.3.2         timechange_0.4.0   
-[55] rmarkdown_2.31      httr_1.4.8          bit_4.6.0          
-[58] otel_0.2.0          ggsignif_0.6.4      ragg_1.5.2         
-[61] hms_1.1.4           evaluate_1.0.5      knitr_1.51         
-[64] markdown_2.0        rlang_1.1.7         Rcpp_1.1.1         
-[67] glue_1.8.0          xml2_1.5.2          BiocManager_1.30.27
-[70] renv_1.2.0          vroom_1.7.1         rstudioapi_0.18.0  
-[73] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2  
-[76] fs_2.0.1           </code></pre>
+[22] httpuv_1.6.16       htmltools_0.5.9     sass_0.4.10        
+[25] yaml_2.3.12         Formula_1.2-5       crayon_1.5.3       
+[28] later_1.4.8         pillar_1.11.1       car_3.1-5          
+[31] jquerylib_0.1.4     whisker_0.4.1       cachem_1.1.0       
+[34] abind_1.4-8         tidyselect_1.2.1    digest_0.6.39      
+[37] stringi_1.8.7       labeling_0.4.3      rprojroot_2.1.1    
+[40] fastmap_1.2.0       grid_4.5.0          cli_3.6.5          
+[43] magrittr_2.0.4      cards_0.7.1         broom_1.0.12       
+[46] withr_3.0.2         scales_1.4.0        promises_1.5.0     
+[49] backports_1.5.1     bit64_4.6.0-1       cardx_0.3.2        
+[52] timechange_0.4.0    rmarkdown_2.31      httr_1.4.8         
+[55] bit_4.6.0           otel_0.2.0          ggsignif_0.6.4     
+[58] ragg_1.5.2          hms_1.1.4           evaluate_1.0.5     
+[61] knitr_1.51          rlang_1.1.7         Rcpp_1.1.1         
+[64] glue_1.8.0          xml2_1.5.2          BiocManager_1.30.27
+[67] renv_1.2.0          vroom_1.7.1         rstudioapi_0.18.0  
+[70] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2  
+[73] fs_2.0.1           </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2021,6 +1415,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
@@ -2044,7 +1443,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = true;
+    options.showAndHide = false;
     options.smoothScroll = true;
 
     // tocify

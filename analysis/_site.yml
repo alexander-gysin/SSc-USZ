@@ -1,10 +1,20 @@
-name: SSc-USZ
+name: "SSc-USZ Proteomics" # <-- Change the overall site name here
 output_dir: ../docs
 navbar:
-  title: SSc-USZ
+  title: "SSc-USZ Proteomics" # <-- Change the display title on the navbar here
   left:
   - text: Home
     href: index.html
+  - text: Data
+    href: 01_data_import_and_qc.html
+  - text: Cohort
+    href: 02_cohort _characterization.html
+  - text: Proteomics
+    menu:
+    - text: Differential
+      href: 03a_proteomics_differential.html # Create this file when ready
+    - text: Linear Models
+      href: 03b_proteomics_linear_models.html # Create this file when ready
   - text: About
     href: about.html
   - text: License
@@ -16,6 +26,7 @@ navbar:
 output:
   workflowr::wflow_html:
     toc: yes
-    toc_float: yes
+    toc_float:
+      collapsed: no
     theme: cosmo
     highlight: textmate
