@@ -53,15 +53,13 @@ run_pca_engine <- function(omics_mat, clin_df, pca_conf, project_colors) {
 }
 
 # ------------------------------------------------------------------------------
-# 2. LIMMA & VOLCANO ENGINE (Adjusted Labeling)
+# 2. LIMMA & VOLCANO ENGINE (Individual Cutoffs)
 # ------------------------------------------------------------------------------
-run_limma_engine <- function(omics_mat, clin_df, dea_conf, omics_config, project_colors) {
+run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
 
-  # Filter for required columns
   required_cols <- c(dea_conf$group_col, dea_conf$covariates)
   clin_sub <- clin_df %>% drop_na(all_of(required_cols))
 
-  # Define Target vs Reference
   clin_sub <- clin_sub %>% mutate(limma_group = case_when(
     .data[[dea_conf$group_col]] %in% dea_conf$target_groups ~ "Target",
     .data[[dea_conf$group_col]] %in% dea_conf$ref_groups ~ "Reference",
@@ -72,10 +70,8 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, omics_config, project
 
   if(length(unique(clin_sub$limma_group)) < 2) return(NULL)
 
-  # Subset matrix
   mat_sub <- omics_mat[, clin_sub$Subject_ID, drop = FALSE]
 
-  # Formula-Safe Logic (Handles empty covariates)
   if (length(dea_conf$covariates) > 0) {
     formula_str <- paste("~ 0 + limma_group +", paste(dea_conf$covariates, collapse = " + "))
   } else {
@@ -85,28 +81,26 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, omics_config, project
   design <- model.matrix(as.formula(formula_str), data = clin_sub)
   colnames(design)[1:2] <- c("Reference", "Target")
 
-  # Fit Model
   fit <- lmFit(mat_sub, design)
   contrast_mat <- makeContrasts(Target - Reference, levels = design)
   fit2 <- eBayes(contrasts.fit(fit, contrast_mat))
 
+  # INDIVIDUAL CUTOFFS APPLIED HERE
   dea_res <- topTable(fit2, coef = 1, number = Inf, sort.by = "P") %>%
     rownames_to_column("Feature") %>%
     mutate(
       Significance = case_when(
-        adj.P.Val < omics_config$dea_p_cutoff & logFC > omics_config$dea_fc_cutoff  ~ "Up-regulated",
-        adj.P.Val < omics_config$dea_p_cutoff & logFC < -omics_config$dea_fc_cutoff ~ "Down-regulated",
+        adj.P.Val < dea_conf$dea_p_cutoff & logFC > dea_conf$dea_fc_cutoff  ~ "Up-regulated",
+        adj.P.Val < dea_conf$dea_p_cutoff & logFC < -dea_conf$dea_fc_cutoff ~ "Down-regulated",
         TRUE ~ "Not Significant"
       ),
       label_score = abs(logFC) * -log10(adj.P.Val)
     )
 
-  # FIXED LABELING: Only label significant points
   top_labels <- dea_res %>%
     filter(Significance != "Not Significant") %>%
     slice_max(label_score, n = 20, with_ties = FALSE)
 
-  # Plotting
   target_color <- project_colors(dea_conf$target_groups[1])
   ref_color <- project_colors(dea_conf$ref_groups[1])
 
@@ -114,8 +108,8 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, omics_config, project
     geom_point(alpha = 0.6, size = 1.5) +
     scale_color_manual(values = c("Down-regulated" = ref_color, "Not Significant" = "grey85", "Up-regulated" = target_color)) +
     geom_text_repel(data = top_labels, aes(label = Feature), size = 3, color = "black", box.padding = 0.5, max.overlaps = Inf) +
-    geom_vline(xintercept = c(-omics_config$dea_fc_cutoff, omics_config$dea_fc_cutoff), linetype = "dotted") +
-    geom_hline(yintercept = -log10(omics_config$dea_p_cutoff), linetype = "dashed", color = "darkred") +
+    geom_vline(xintercept = c(-dea_conf$dea_fc_cutoff, dea_conf$dea_fc_cutoff), linetype = "dotted") +
+    geom_hline(yintercept = -log10(dea_conf$dea_p_cutoff), linetype = "dashed", color = "darkred") +
     theme_project_base() +
     labs(title = sprintf("Volcano: %s", dea_conf$title), x = "Log2 Fold Change", y = "-log10(FDR)")
 
@@ -160,22 +154,23 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
 }
 
 # ------------------------------------------------------------------------------
-# 4. CROSS-CONTRAST ENGINE (Trajectory Shifts)
+# 4. CROSS-CONTRAST ENGINE (Inherits Significance)
 # ------------------------------------------------------------------------------
-run_cross_contrast_engine <- function(dea_x, dea_y, conf, omics_config, x_label, y_label, color_x, color_y, color_shared) {
+run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, color_x, color_y, color_shared) {
 
-  # 1. Dynamic Legend Naming
   x_sig_name <- sprintf("%s Specific", x_label)
   y_sig_name <- sprintf("%s Specific", y_label)
 
   temporal_shifts <- full_join(
-    dea_x %>% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val),
-    dea_y %>% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val),
+    dea_x %>% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val, Sig_Status_X = Significance),
+    dea_y %>% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val, Sig_Status_Y = Significance),
     by = "Feature"
   ) %>%
     mutate(
-      Sig_X = FDR_X < omics_config$dea_p_cutoff & abs(logFC_X) > omics_config$dea_fc_cutoff,
-      Sig_Y = FDR_Y < omics_config$dea_p_cutoff & abs(logFC_Y) > omics_config$dea_fc_cutoff,
+      # Safely inherit the pre-calculated significance from the Limma results
+      Sig_X = !is.na(Sig_Status_X) & Sig_Status_X != "Not Significant",
+      Sig_Y = !is.na(Sig_Status_Y) & Sig_Status_Y != "Not Significant",
+
       Signature = case_when(
         Sig_X & Sig_Y  ~ "Shared Drivers",
         Sig_X & !Sig_Y ~ x_sig_name,
@@ -183,7 +178,6 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, omics_config, x_label,
         TRUE ~ "Not Significant"
       ),
 
-      # Calculate the accurate Pi-Score based on the dynamic group names
       label_score = case_when(
         Signature == "Shared Drivers" ~ (abs(logFC_X) * -log10(FDR_X)) + (abs(logFC_Y) * -log10(FDR_Y)),
         Signature == x_sig_name ~ abs(logFC_X) * -log10(FDR_X),
@@ -200,23 +194,18 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, omics_config, x_label,
       )
     )
 
-  # ONLY keep significant points. Background points are dropped completely.
   sig_points <- temporal_shifts %>% filter(Signature != "Not Significant")
-
   if(nrow(sig_points) == 0) return(NULL)
 
-  # LABELING LOGIC
   top_n_spec <- if(!is.null(conf$top_n_specific)) conf$top_n_specific else 5
   top_n_shar <- if(!is.null(conf$top_n_shared)) conf$top_n_shared else 5
 
-  # Grab Top Shared Drivers (Ranked by Pi-Score PER QUADRANT)
   labels_shared <- sig_points %>%
     filter(Signature == "Shared Drivers") %>%
     group_by(Quadrant) %>%
     slice_max(order_by = label_score, n = top_n_shar, with_ties = FALSE) %>%
     ungroup()
 
-  # Grab Top Specific Drivers (Ranked by Pi-Score per Axis using dynamic names)
   labels_specific <- sig_points %>%
     filter(Signature %in% c(x_sig_name, y_sig_name)) %>%
     group_by(Signature) %>%
@@ -225,21 +214,10 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, omics_config, x_label,
 
   top_labels <- bind_rows(labels_shared, labels_specific)
 
-  sig_points <- sig_points %>%
-    mutate(repel_label = ifelse(Feature %in% top_labels$Feature, Feature, ""))
+  sig_points <- sig_points %>% mutate(repel_label = ifelse(Feature %in% top_labels$Feature, Feature, ""))
 
-  method_caption <- sprintf(
-    "Labeling: Top %d Shared Drivers (per quadrant) + Top %d Specific Drivers (Ranked by Pi-Score)",
-    top_n_shar, top_n_spec
-  )
-
-  # 2. Dynamic Color Mapping
-  color_mapping <- setNames(
-    c(color_shared, color_x, color_y),
-    c("Shared Drivers", x_sig_name, y_sig_name)
-  )
-
-  # FIX: Prevent duplicate "Trajectory" in the title
+  method_caption <- sprintf("Labeling: Top %d Shared Drivers (per quadrant) + Top %d Specific Drivers (Ranked by Pi-Score)", top_n_shar, top_n_spec)
+  color_mapping <- setNames(c(color_shared, color_x, color_y), c("Shared Drivers", x_sig_name, y_sig_name))
   clean_title <- if(grepl("^Trajectory", conf$title)) paste("DEA", conf$title) else sprintf("DEA Trajectory: %s", conf$title)
 
   p_shift <- ggplot() +
@@ -247,27 +225,14 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, omics_config, x_label,
     geom_hline(yintercept = 0, color = "grey40") + geom_vline(xintercept = 0, color = "grey40") +
     geom_point(data = sig_points, aes(x = logFC_X, y = logFC_Y, color = Signature), alpha = 0.8, size = 2.5) +
     geom_text_repel(
-      data = sig_points,
-      aes(x = logFC_X, y = logFC_Y, label = repel_label),
-      color = "black",
-      size = 3.5,
-      box.padding = 0.8,
-      point.padding = 0,       # FIX: 0 ensures the segment draws all the way to the center of the point
-      min.segment.length = 0,
-      max.overlaps = Inf,
-      show.legend = FALSE
+      data = sig_points, aes(x = logFC_X, y = logFC_Y, label = repel_label),
+      color = "black", size = 3.5, box.padding = 0.8, point.padding = 0, min.segment.length = 0, max.overlaps = Inf, show.legend = FALSE
     ) +
     scale_color_manual(values = color_mapping) +
     theme_project_base() +
-    theme(
-      plot.caption = element_text(hjust = 0, face = "italic", color = "grey40", size = 9, margin = margin(t = 15))
-    ) +
-    labs(
-      title = clean_title,
-      x = paste(x_label, "(Log2 Fold Change)"),
-      y = paste(y_label, "(Log2 Fold Change)"),
-      caption = method_caption
-    ) + coord_fixed(ratio = 1)
+    theme(plot.caption = element_text(hjust = 0, face = "italic", color = "grey40", size = 9, margin = margin(t = 15))) +
+    labs(title = clean_title, x = paste(x_label, "(Log2 Fold Change)"), y = paste(y_label, "(Log2 Fold Change)"), caption = method_caption) +
+    coord_fixed(ratio = 1)
 
   return(p_shift)
 }
@@ -350,41 +315,32 @@ run_pathway_trajectory_engine <- function(gsea_x, gsea_y, conf, x_lab, y_lab) {
 }
 
 # ------------------------------------------------------------------------------
-# 9. VENN DIAGRAM ENGINE (Native Custom Geometry)
+# 9. VENN DIAGRAM ENGINE (Inherits Significance)
 # ------------------------------------------------------------------------------
-run_venn_engine <- function(dea_x, dea_y, name_x, name_y, omics_config, title, color_x, color_y, color_shared) {
+run_venn_engine <- function(dea_x, dea_y, name_x, name_y, title, color_x, color_y, color_shared) {
 
-  # Extract significant features passing BOTH FDR and FC thresholds
-  sig_x <- dea_x %>% filter(adj.P.Val < omics_config$dea_p_cutoff, abs(logFC) > omics_config$dea_fc_cutoff) %>% pull(Feature)
-  sig_y <- dea_y %>% filter(adj.P.Val < omics_config$dea_p_cutoff, abs(logFC) > omics_config$dea_fc_cutoff) %>% pull(Feature)
+  # Directly pull features that were already flagged as significant
+  sig_x <- dea_x %>% filter(Significance != "Not Significant") %>% pull(Feature)
+  sig_y <- dea_y %>% filter(Significance != "Not Significant") %>% pull(Feature)
 
-  # Calculate exact intersections
   only_x <- length(setdiff(sig_x, sig_y))
   only_y <- length(setdiff(sig_y, sig_x))
   shared <- length(intersect(sig_x, sig_y))
 
   if((only_x + only_y + shared) == 0) return(NULL)
 
-  # Generate Mathematical Circle Polygons (Radius = 1)
   theta <- seq(0, 2 * pi, length.out = 100)
   circle_x <- data.frame(x = -0.5 + cos(theta), y = sin(theta))
   circle_y <- data.frame(x = 0.5 + cos(theta), y = sin(theta))
 
   p_venn <- ggplot() +
-    # 1. Plot the Circles (Colored with config vars, alpha = 0.3 for overlap blending)
     geom_polygon(data = circle_x, aes(x, y), fill = color_x, alpha = 0.3, color = color_x, linewidth = 1.2) +
     geom_polygon(data = circle_y, aes(x, y), fill = color_y, alpha = 0.3, color = color_y, linewidth = 1.2) +
-
-    # 2. Labels (Placed mathematically above and below the plot)
     annotate("text", x = -0.5, y = 1.3, label = name_x, size = 5, fontface = "bold", color = color_x) +
     annotate("text", x = 0.5, y = -1.3, label = name_y, size = 5, fontface = "bold", color = color_y) +
-
-    # 3. Intersection Numbers (Shared number uses the highlighted magenta color)
     annotate("text", x = -0.9, y = 0, label = only_x, size = 6, fontface = "bold") +
     annotate("text", x = 0.9, y = 0, label = only_y, size = 6, fontface = "bold") +
     annotate("text", x = 0, y = 0, label = shared, size = 7, fontface = "bold", color = color_shared) +
-
-    # 4. Clean Formatting
     theme_void() +
     coord_fixed(clip = "off", xlim = c(-1.8, 1.8), ylim = c(-1.5, 1.5)) +
     labs(title = sprintf("DEA Venn: %s", title)) +

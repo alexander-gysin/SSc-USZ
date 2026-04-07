@@ -9,7 +9,7 @@ editor_options:
 
 # Setup and import
 
-```{r setup_import}
+```{r setup_import, echo=FALSE}
 library(tidyverse)
 library(FactoMineR)
 library(factoextra)
@@ -18,6 +18,7 @@ library(clusterProfiler)
 library(msigdbr)
 library(patchwork)
 library(here)
+library(kableExtra)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -46,8 +47,6 @@ go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = 
 ```{r analysis_config}
 # 1. Global Mathematical Thresholds
 omics_config <- list(
-  dea_p_cutoff   = 0.05, 
-  dea_fc_cutoff  = 0.5,  
   gsea_p_cutoff  = 0.20, 
   gsea_min_size  = 3     
 )
@@ -79,7 +78,9 @@ contrast_configs <- list(
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_CONTROL),
     is_continuous = FALSE,
-    covariates = c("Age", "Sex")
+    covariates = c("Age", "Sex"),
+    dea_p_cutoff = 0.05,  # <-- INDIVIDUAL CUTOFFS
+    dea_fc_cutoff = 0.5
   ),
   nonactive_vs_control = list(
     title = "Nonactive vs Control",
@@ -87,7 +88,9 @@ contrast_configs <- list(
     target_groups = c(GRP_NON_ACTIVE),
     ref_groups = c(GRP_CONTROL),
     is_continuous = FALSE,
-    covariates = c("Age", "Sex")
+    covariates = c("Age", "Sex"),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
   ),
   active_vs_nonactive = list(
     title = "Active vs Nonactive",
@@ -95,7 +98,9 @@ contrast_configs <- list(
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_NON_ACTIVE),
     is_continuous = FALSE,
-    covariates = c("Age", "Sex")
+    covariates = c("Age", "Sex"),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.2
   ),
   active_vs_nonactive_uncorrected = list(
     title = "Active vs Nonactive (Uncorrected)",
@@ -103,35 +108,45 @@ contrast_configs <- list(
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_NON_ACTIVE),
     is_continuous = FALSE,
-    covariates = c()
+    covariates = c(),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.2
+  ),
+  active_vs_nonactive_sample_age_corr = list(
+    title = "Active vs Nonactive (Sample Age Corrected)",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex", "Sample_Age"), 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
   )
 )
 
-# 4. Cross-Contrast Trajectory Plots
+## 4. Cross-Contrast Trajectory Plots
 cross_contrasts <- list(
   active_vs_nonactive_trajectory = list(
     title = "Trajectory: Active vs Nonactive",
     x_axis_contrast = "active_vs_control",      
     y_axis_contrast = "nonactive_vs_control",   
-    top_n_specific  = 5,  # Limit for X-only and Y-only drivers
-    top_n_shared    = 5  # Global limit for Shared drivers based on combined Pi-Score
+    top_n_specific  = 5,  
+    top_n_shared    = 5  
   )
 )
 
 # 5. Heatmap Configuration
 heatmap_config <- list(
-  top_n = 50,
-  split_by_group = FALSE, # Set to TRUE if you want to force Active/Control/Nonactive groups
+  top_n = 30,
+  split_by_group = FALSE, 
   row_font_size = 8
 )
 
-# 6. Comparative Settings (UpSet & Pathway Trajectories)
-# Note: We use the same 'cross_contrasts' list, but these parameters guide the new plots
-cross_contrasts$disease_flare_trajectory$top_n_upset <- 10      # Proteins to label in intersection
-cross_contrasts$disease_flare_trajectory$top_n_pathways <- 20   # Pathways to plot in trajectory
+# 6. Comparative Settings
+cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10      
+cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20   
 
 # 7. LASSO Feature Selection
-# We only run LASSO on binary classifications of interest
 lasso_configs <- list(
   active_vs_nonactive = list(
     title = "Predictors: Active vs Nonactive",
@@ -239,56 +254,85 @@ cat("### Executing Differential Expression & Contrast-Specific Discovery...\n\n"
 dea_base_dir <- file.path(output_dir_data, "DEA")
 if (!dir.exists(dea_base_dir)) dir.create(dea_base_dir, recursive = TRUE)
 
+# PRE-FLIGHT CHECK: Ensure Sample_Age is numeric so the math doesn't break
+if("Sample_Age" %in% colnames(master_spine)) {
+  master_spine$Sample_Age <- as.numeric(master_spine$Sample_Age)
+}
+
 master_dea_results <- list()
 master_gsea_results <- list() 
 
 for (c_name in names(contrast_configs)) {
   conf <- contrast_configs[[c_name]]
-  cat(sprintf("#### Contrast: %s\n", conf$title))
   
+  # DIAGNOSTIC: Check sample counts before running the engine
+  req_cols <- c(conf$group_col, conf$covariates)
+  available_cols <- intersect(req_cols, colnames(master_spine))
+  
+  check_df <- master_spine %>% 
+    filter(!!sym(conf$group_col) %in% c(conf$target_groups, conf$ref_groups)) %>%
+    drop_na(all_of(available_cols))
+  
+  n_target <- sum(check_df[[conf$group_col]] %in% conf$target_groups)
+  n_ref <- sum(check_df[[conf$group_col]] %in% conf$ref_groups)
+  
+  cat(sprintf("#### Contrast: %s\n", conf$title))
+  cat(sprintf("*Diagnostic: Samples remaining after NA filter: %d Target, %d Reference*\n\n", n_target, n_ref))
+
+  if(n_target < 2 || n_ref < 2) {
+    cat(paste0("<span style='color:red;'>**SKIPPING:** Too few samples after dropping NAs in covariates (", 
+               paste(conf$covariates, collapse=", "), ").</span>\n\n"))
+    next
+  }
+
   dea_sub_dir <- file.path(dea_base_dir, c_name)
   if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
   
-  # 1. Limma DEA
-  limma_res <- run_limma_engine(omics_mat, master_spine, conf, omics_config, get_project_colors)
-  if (is.null(limma_res)) next
+  # 1. Limma DEA 
+  limma_res <- run_limma_engine(omics_mat, master_spine, conf, get_project_colors)
+  if (is.null(limma_res)) {
+    cat("**SKIPPING:** Engine returned NULL (Model fit failed).\n\n")
+    next
+  }
   
   master_dea_results[[c_name]] <- limma_res$data 
-  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, "_DEA_Results.csv")))
+  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(c_name, "_DEA_Full_Results.csv")))
   print(limma_res$volcano); cat("\n\n")
   ggsave(file.path(dea_sub_dir, paste0(c_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300)
+  
+  # 1.5 Table of Significant Proteins
+  sig_table <- limma_res$data %>%
+    filter(Significance != "Not Significant") %>%
+    select(Feature, logFC, adj.P.Val, Significance) %>%
+    arrange(adj.P.Val)
+    
+  if(nrow(sig_table) > 0) {
+    cat(sprintf("##### Significant Proteins (%d passed threshold)\n\n", nrow(sig_table)))
+    print(kbl(sig_table, format = "html", digits = 4, align = "c", caption = sprintf("DEA Table: %s", conf$title)) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
+    cat("\n\n")
+  }
 
-  # 2. Heatmap (Top 50)
+  # 2. Heatmap
   h50 <- run_heatmap_engine(omics_mat, master_spine, limma_res$data, title = conf$title, 
                             n_top = heatmap_config$top_n, split_by_group = heatmap_config$split_by_group)
   draw(h50); cat("\n\n")
-  png(file.path(dea_sub_dir, paste0(c_name, "_Heatmap_Top50.png")), width=10, height=12, units="in", res=300)
+  png(file.path(dea_sub_dir, paste0(c_name, "_Heatmap_Top", heatmap_config$top_n, ".png")), width=10, height=12, units="in", res=300)
   draw(h50); dev.off()
 
   # 3. GSEA
   gsea_res <- run_gsea_engine(limma_res$data, go_genesets, omics_config, conf$title)
   if (!is.null(gsea_res)) {
     master_gsea_results[[c_name]] <- gsea_res$data 
-    write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(c_name, "_GSEA_Full_Results.csv")))
     print(gsea_res$dotplot); cat("\n\n")
     ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300)
-    if(!is.null(gsea_res$ridgeplot)) {
-      print(gsea_res$ridgeplot); cat("\n\n")
-      ggsave(file.path(dea_sub_dir, paste0(c_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300)
-    }
   }
     
-  # 4. LASSO (Automated for every contrast)
+  # 4. LASSO
   lasso_res <- run_lasso_engine(omics_mat, master_spine, conf$group_col, 
                                 c(conf$target_groups, conf$ref_groups), title = conf$title)
   if (!is.null(lasso_res)) {
-    write_csv(lasso_res$data, file.path(dea_sub_dir, paste0(c_name, "_LASSO_Coefficients.csv")))
-    
-    # Tuning Plot (Base R)
-    plot(lasso_res$cv_plot); title(main = sprintf("%s: LASSO Model Tuning", conf$title), line = 2.5)
-    cat("\n\n")
-    
-    # Weight Plot (ggplot)
+    plot(lasso_res$cv_plot); title(main = sprintf("%s: LASSO Model Tuning", conf$title), line = 2.5); cat("\n\n")
     print(lasso_res$coeff_plot); cat("\n\n")
     ggsave(file.path(dea_sub_dir, paste0(c_name, "_LASSO_Weights.png")), lasso_res$coeff_plot, width=7, height=6, dpi=300)
   }
@@ -316,9 +360,9 @@ for (cross_name in names(cross_contrasts)) {
   gsea_x <- master_gsea_results[[conf$x_axis_contrast]]
   gsea_y <- master_gsea_results[[conf$y_axis_contrast]]
 
-  # 1. Protein Trajectory
+  # 1. Protein Trajectory (Parameters updated to not require omics_config cutoffs)
   if (!is.null(dea_x) && !is.null(dea_y)) {
-    p_traj <- run_cross_contrast_engine(dea_x, dea_y, conf, omics_config, 
+    p_traj <- run_cross_contrast_engine(dea_x, dea_y, conf, 
                                         contrast_configs[[conf$x_axis_contrast]]$title, 
                                         contrast_configs[[conf$y_axis_contrast]]$title,
                                         get_project_colors(contrast_configs[[conf$x_axis_contrast]]$target_groups[1]),
@@ -329,20 +373,19 @@ for (cross_name in names(cross_contrasts)) {
       ggsave(file.path(traj_sub_dir, paste0(cross_name, "_Protein_Trajectory.png")), p_traj, width=9, height=9, dpi=300, bg="white")
     }
 
-    # --- 2. Venn Diagram (Signature Overlap) ---
+    # --- 2. Venn Diagram ---
     cat("##### Feature Intersection (Venn Diagram)\n")
     
     clean_title <- sub("^Trajectory:\\s*", "", conf$title)
     color_x <- get_project_colors(contrast_configs[[conf$x_axis_contrast]]$target_groups[1])
     color_y <- get_project_colors(contrast_configs[[conf$y_axis_contrast]]$target_groups[1])
     
-    # PASS IN THE 00_CONFIG COLORS
+    # Engine updated to inherit Significance natively
     p_venn <- run_venn_engine(
       dea_x = dea_x, 
       dea_y = dea_y, 
       name_x = contrast_configs[[conf$x_axis_contrast]]$title, 
       name_y = contrast_configs[[conf$y_axis_contrast]]$title,
-      omics_config = omics_config,
       title = clean_title,
       color_x = color_x,
       color_y = color_y,

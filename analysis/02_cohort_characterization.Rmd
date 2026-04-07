@@ -457,3 +457,7 @@ for (p_name in names(individual_plots)) {
 }
 ```
 
+```{r finish_message}
+cat("Script 02 Complete!")
+```
+
