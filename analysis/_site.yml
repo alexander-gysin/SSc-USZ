@@ -8,13 +8,11 @@ navbar:
   - text: Data
     href: 01_data_import_and_qc.html
   - text: Cohort
-    href: 02_cohort _characterization.html
+    href: 02_cohort_characterization.html
   - text: Proteomics
     menu:
     - text: Differential
-      href: 03a_proteomics_differential.html # Create this file when ready
-    - text: Linear Models
-      href: 03b_proteomics_linear_models.html # Create this file when ready
+      href: 03a_proteomics_differential.html
   - text: About
     href: about.html
   - text: License
