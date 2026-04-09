@@ -45,8 +45,18 @@ qc_config <- list(
   max_missing_pct_pat  = 0.05,
   selected_col         = "SELECTED", # Column flagging study inclusion
   
+  # Completeness Threshold (Variables must be at least this complete to survive)
+  min_completeness_clin_var = 0.80, 
+  
+  # Protection list (IDs and Dates that should never be dropped or mutated automatically)
+  exclude_from_clean = c("Subject_ID", "inCentraxx", "Entnahmedatum", 
+                         "Einlagerungsdatum", "Entnahmedatum_Clean", "Visit Date"),
+  
   # Replace these with the EXACT column names from your Excel file that need date conversion
-  date_cols            = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum"),
+  date_cols            = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum", 
+                           "If yes, Date of HRCT", "onset_nonRP", "Date of PFT", 
+                           "If yes, Date of assessment for ECG", "If yes, Date of assessment for ECHO",
+                           "If, yes Date of assessment for Walk test"),
   
   # REFERENCE DATES (Required for feature engineering)
   olink_date           = as.Date("2026-03-30"), 
@@ -120,11 +130,16 @@ master_spine <- merge(
   all = FALSE
 )
 
+# Sanitize special characters in column names to prevent encoding mismatches
+setnames(master_spine, "Right atrium area (cm²)", "Right atrium area (cm2)", skip_absent = TRUE)
+setnames(master_spine, "Right ventricular area (cm²)", "Right ventricular area (cm2)", skip_absent = TRUE)
+
 # ------------------------------------------------------------------------------
-# 4. Group Assignment & NEW Feature Engineering
+# 4. Feature Engineering (Groups, Dates, Age, Sex)
 # ------------------------------------------------------------------------------
 master_spine <- setnames(master_spine, old = "Subject ID", new = "Subject_ID", skip_absent = TRUE)
 
+# Assign Groups
 master_spine <- master_spine[, cohort_group := fcase(
   str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
   str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
@@ -132,34 +147,90 @@ master_spine <- master_spine[, cohort_group := fcase(
   default = NA_character_
 )]
 
-master_spine <- master_spine[!is.na(cohort_group)]
-
-master_spine <- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
-
-# ------------------------------------------------------------------------------
-# THE DATE FIX: Bypassing fcase() entirely using data.table conditional subsetting
-# ------------------------------------------------------------------------------
-# 1. First, assign all dates exactly as they were parsed in Step 1.5
+# The Date Fix & Age Calculation
 master_spine <- master_spine[, Entnahmedatum_Clean := as.Date(Entnahmedatum)]
-
-# 2. Then, target ONLY the controls that are missing a date, and inject the default
 master_spine <- master_spine[is.na(Entnahmedatum_Clean) & cohort_group == GRP_CONTROL, 
                              Entnahmedatum_Clean := as.Date("2024-01-01")]
 
-# Calculate numerical ages
+master_spine <- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
 master_spine <- master_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
 master_spine <- master_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = "days")) / 365.25]
 
+# Assign Sex
 master_spine <- master_spine[, Sex := fcase(
   Geschlecht == "weiblich", SEX_FEMALE,
   Geschlecht == "männlich", SEX_MALE,
   default = NA_character_
 )]
 
-# Reorder columns to make Subject_ID the true Primary Key at the front
-master_spine <- setcolorder(master_spine, c("Subject_ID", "cohort_group", "Age", "Sex", "Sample_Age", "inCentraxx"))
+# ------------------------------------------------------------------------------
+# 5. Completeness Pruning & Dictionary Enforcement
+# ------------------------------------------------------------------------------
+cat("\nFiltering by completeness and applying TSV Data Dictionary...\n")
 
-cat(sprintf("Clinical Spine generated for %d unique cross-sectional samples.\n", nrow(master_spine)))
+# A. COMPLETENESS PRUNING
+# Protect core variables and dates from being dropped due to missingness
+protected_vars <- c("Subject_ID", "inCentraxx", "cohort_group", "Age", "Sex", "Sample_Age", qc_config$date_cols)
+
+# Calculate completeness ONLY on Patients (ignore Controls for this threshold)
+completeness <- master_spine[cohort_group %in% c(GRP_ACTIVE, GRP_NON_ACTIVE), 
+                             lapply(.SD, function(x) sum(!is.na(x)) / .N)]
+
+cols_to_keep <- names(completeness)[completeness >= qc_config$min_completeness_clin_var | names(completeness) %in% protected_vars]
+
+n_dropped <- ncol(master_spine) - length(cols_to_keep)
+master_spine <- master_spine[, ..cols_to_keep]
+cat(sprintf("- Pruning: Dropped %d columns for having < %s%% completeness in patients.\n", 
+            n_dropped, qc_config$min_completeness_clin_var * 100))
+
+# B. DICTIONARY ENFORCEMENT
+dict_path <- here::here("data", "clinical_dictionary.txt")
+if (file.exists(dict_path)) {
+  data_dict <- readr::read_tsv(dict_path, show_col_types = FALSE)
+  
+  # Extract classification lists
+  vars_n <- data_dict %>% filter(Type == "n") %>% pull(Variable_Name)
+  vars_c <- data_dict %>% filter(Type == "c") %>% pull(Variable_Name)
+  vars_x <- data_dict %>% filter(Type == "x") %>% pull(Variable_Name)
+  
+  # Only attempt to mutate columns that survived the completeness prune
+  vars_n <- intersect(vars_n, names(master_spine))
+  vars_c <- intersect(vars_c, names(master_spine))
+  vars_x <- intersect(vars_x, names(master_spine))
+  
+  # 1. Drop explicitly excluded columns
+  if (length(vars_x) > 0) {
+    master_spine[, (vars_x) := NULL]
+  }
+  
+  # 2. Force Numerics (Handles Swiss decimal commas, converts text to NA safely)
+  safe_numeric <- function(x) {
+    if (is.numeric(x)) return(x)
+    clean_x <- gsub(",", ".", trimws(as.character(x)))
+    suppressWarnings(as.numeric(clean_x))
+  }
+  if (length(vars_n) > 0) {
+    master_spine[, (vars_n) := lapply(.SD, safe_numeric), .SDcols = vars_n]
+  }
+  
+  # 3. Force Categoricals
+  if (length(vars_c) > 0) {
+    master_spine[, (vars_c) := lapply(.SD, function(x) as.factor(as.character(x))), .SDcols = vars_c]
+  }
+  
+  cat(sprintf("- Enforcement: Cleaned %d Numeric and %d Categorical variables based on dictionary.\n", 
+              length(vars_n), length(vars_c)))
+  cat(sprintf("- Exclusion: Dropped %d manually blacklisted variables.\n", length(vars_x)))
+  
+} else {
+  cat("! WARNING: 'clinical_dictionary.tsv' not found in data/. Skipping explicit type enforcement.\n")
+}
+
+# Reorder core columns to the front of the dataframe for easy viewing
+core_cols <- intersect(c("Subject_ID", "cohort_group", "Age", "Sex", "Sample_Age"), names(master_spine))
+setcolorder(master_spine, core_cols)
+
+cat(sprintf("\n✓ Clinical Spine Ready: %d rows x %d columns.\n", nrow(master_spine), ncol(master_spine)))
 print(table(master_spine$cohort_group))
 
 rm(raw_clin, id_map)

@@ -20,6 +20,7 @@ library(here)
 library(patchwork)
 library(ggpubr)
 library(gt)
+library(kableExtra)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -249,7 +250,7 @@ for (tbl_name in names(table_configs)) {
           missing = "no" 
         ) %>%
         add_p(test = gtsum_pairwise_tests) %>%
-        modify_header(p.value = sprintf("**%s vs<br>%s**", comp[1], comp[2])) %>%
+        modify_header(p.value = sprintf("**%s vs %s**", comp[1], comp[2])) %>%
         modify_column_hide(all_stat_cols()) 
       
       pairwise_tbls <- append(pairwise_tbls, list(ptbl))
@@ -268,15 +269,22 @@ for (tbl_name in names(table_configs)) {
   gtsum_obj <- gtsum_obj %>%
     bold_labels() %>%               
     modify_header(label = "**Variable**") %>%
-    modify_caption(sprintf("**%s**", conf$title))
+    modify_caption(conf$title) 
   
-  # Step 4. Export CSV (Converting the object to a dataframe for saving)
+  # Step 4. Export CSV 
   export_df <- as_tibble(gtsum_obj)
   write_csv(export_df, file.path(output_dir_data, paste0(tbl_name, ".csv")))
   
-  # Step 5. Rendering for HTML
-  # We use as_kable() to ensure it renders cleanly within the workflowr/Bootstrap layout
-  print(as_kable(gtsum_obj))
+  # Step 5. Rendering for HTML (Using kableExtra to bypass the black-on-black bug)
+  tbl_html <- as_kable_extra(gtsum_obj, format = "html") %>%
+    kable_styling(
+      bootstrap_options = c("hover", "condensed"), 
+      full_width = FALSE, 
+      position = "left"
+    ) %>%
+    row_spec(0, extra_css = "white-space: nowrap;") 
+  
+  print(tbl_html)
   cat("\n---\n\n")
   
   # Save the full object to our list for potential downstream use
@@ -302,7 +310,7 @@ generate_base_plot <- function(conf) {
     
     p <- ggplot(clean_spine, aes(x = .data[[conf$x_var]], fill = .data[[conf$fill_var]])) + 
       geom_histogram(bins = hist_bins, color = "white", alpha = 0.8) +
-      scale_fill_manual(values = c("Female" = "#E69F00", "Male" = "#56B4E9")) + 
+      scale_fill_manual(values = fill_palette) + 
       labs(title = conf$title, x = conf$x_var, y = "Count", fill = conf$fill_var)
     
     if (!is.null(conf$facet_by)) {

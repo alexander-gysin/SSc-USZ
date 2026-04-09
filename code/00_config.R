@@ -34,6 +34,64 @@ HM_Z_LOW  <- "dodgerblue4"
 HM_Z_MID  <- "white"
 HM_Z_HIGH <- "firebrick4"
 
+# 5. CLINICAL VARIABLES SUBSETS
+# Clinical description of SSC:
+ssc_clinical_parameters <- c("2013 EULAR/ACR classification criteria fulfilled",
+                             "Abnormal nailfold capillaroscopy",
+                             "Raynaud phenomenon",
+                             "Modified rodnan skin score",
+                             "Subset_diffuse",
+                             "Puffy fingers",
+                             "Digital ulcer",
+                             "Telangiectasia (any)",
+                             "Joint involvement",
+                             "Tendon friction rubs",
+                             "Proximal muscle weakness",
+                             "Anti-centromere (ACA)",
+                             "Anti-Scl70",
+                             "Anti-RNA polymerase III",
+                             "CRP (mg/dl)",
+                             "CK value in serum (U/L)",
+                             "ILD diagnosed via HRCT",
+                             "DLCO (SB) (% predicted)",
+                             "Forced Vital Capacity (FVC- % predicted)",
+                             "Diastolic fction abnormal(on echo, E/a less than 10cm/sec)",
+                             "Left ventricular ejection fraction %",
+                             "Esophageal symptom at the time of visit",
+                             "Stomach symptoms (early satiety, vomiting)",
+                             "Intestinal symptoms (diarrhea, bloating, constipation)",
+                             "eustarAI"
+                             )
+
+ssc_clinical_parameters_categorical <- c("2013 EULAR/ACR classification criteria fulfilled",
+                             "Abnormal nailfold capillaroscopy",
+                             "Raynaud phenomenon",
+                             "Subset_diffuse",
+                             "Puffy fingers",
+                             "Digital ulcer",
+                             "Telangiectasia (any)",
+                             "Joint involvement",
+                             "Tendon friction rubs",
+                             "Proximal muscle weakness",
+                             "Anti-centromere (ACA)",
+                             "Anti-Scl70",
+                             "Anti-RNA polymerase III",
+                             "ILD diagnosed via HRCT",
+                             "Diastolic fction abnormal(on echo, E/a less than 10cm/sec)",
+                             "Esophageal symptom at the time of visit",
+                             "Stomach symptoms (early satiety, vomiting)",
+                             "Intestinal symptoms (diarrhea, bloating, constipation)"
+                             )
+
+ssc_clinical_parameters_continuous <- c("Modified rodnan skin score",
+                                        "CRP (mg/dl)",
+                                        "CK value in serum (U/L)",
+                                        "DLCO (SB) (% predicted)",
+                                        "Forced Vital Capacity (FVC- % predicted)",
+                                        "Left ventricular ejection fraction %",
+                                        "eustarAI"
+                                        )
+
 # ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY
 # ------------------------------------------------------------------------------
