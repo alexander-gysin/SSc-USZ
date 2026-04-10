@@ -9,8 +9,12 @@ editor_options:
   chunk_output_type: inline
 ---
 
-# Setup and import
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
 
+# Setup and import
+`r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the clinical spine generated in Script 01.")`
 ```{r setup_import, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(data.table)
@@ -21,6 +25,8 @@ library(patchwork)
 library(ggpubr)
 library(gt)
 library(kableExtra)
+library(corrplot)
+library(heatmaply)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -41,6 +47,7 @@ master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_
 ```
 
 # Configuration
+`r what_this_does("Defined statistical thresholds for normality (Shapiro-Wilk) and variance (Bartlett) testing.", "Configured correlation matrix parameters including sparsity filters, p-value limits, and correlation strength cutoffs.", "Engineered core clinical features including calculated Age, Sample Storage Time, and standardized numeric lab values (CRP, Creatinine).", "Constructed dynamic configuration lists to dictate Table 1 and Figure layouts.")`
 ```{r configuration}
 # 1. Global Variables & Feature Engineering ------------------------------------
 
@@ -51,6 +58,13 @@ stat_config <- list(
   shapiro_alpha = 0.05, 
   variance_alpha = 0.05, 
   p_cutoff = 0.05
+)
+
+# Matrix Correlation Configuration
+corr_config <- list(
+  min_required_obs = 10,   # Sparsity filter: drop columns with < 10 valid observations
+  p_cutoff         = 0.05, # Global significance threshold
+  rho_cutoff       = 0.4   # Focused Heatmap threshold (only keep variables with at least one |rho| >= 0.4)
 )
 
 # Helper function to determine parametric status (DRY principle)
@@ -100,7 +114,6 @@ clean_spine <- master_spine %>%
     
     cohort_group = factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))
   )
-
 
 # 2. Table Configurations ------------------------------------------------------
 
@@ -180,6 +193,7 @@ cat("Cohort Feature Engineering and Configurations Loaded.\n")
 ```
 
 # Table Engine
+`r what_this_does("Dynamically evaluated each clinical variable to select appropriate parametric (ANOVA/t-test) or non-parametric (Kruskal-Wallis/Wilcoxon) statistical tests.", "Generated comprehensive baseline demographic tables using the gtsummary package.", "Calculated and appended both global and pairwise group comparison p-values.", "Exported standard tables as CSV files and rendered interactive HTML equivalents.")`
 ```{r table_engine, results='asis'}
 cat("### Generating Tables & Statistical Summaries\n\n")
 
@@ -293,6 +307,7 @@ for (tbl_name in names(table_configs)) {
 ```
 
 # Figure Engine
+`r what_this_does("Generated dynamic clinical visualizations (stacked histograms, violin plots) based on the configuration dictionary.", "Automatically applied appropriate parametric or non-parametric pairwise statistical comparisons to the plots.", "Assembled individual plots into comprehensive multi-panel figure layouts using patchwork.")`
 ```{r figure_engine}
 cat("### Generating Clinical Visualizations\n")
 
@@ -310,7 +325,7 @@ generate_base_plot <- function(conf) {
     
     p <- ggplot(clean_spine, aes(x = .data[[conf$x_var]], fill = .data[[conf$fill_var]])) + 
       geom_histogram(bins = hist_bins, color = "white", alpha = 0.8) +
-      scale_fill_manual(values = fill_palette) + 
+      scale_fill_manual(values = conf$fill_palette) + 
       labs(title = conf$title, x = conf$x_var, y = "Count", fill = conf$fill_var)
     
     if (!is.null(conf$facet_by)) {
@@ -427,6 +442,7 @@ for (fig_name in names(figure_configs)) {
 ```
 
 ## Merged Figures
+`r what_this_does("Rendered the assembled multi-panel figures for the HTML report.", "Exported high-resolution PNG copies of the merged figures to the output directory.")`
 ```{r print_figures, fig.width=12, fig.height=8}
 # This chunk handles the large patchwork layouts
 for (fig_name in names(stitched_figures)) {
@@ -441,6 +457,7 @@ for (fig_name in names(stitched_figures)) {
 ```
 
 ## Individual Plots {.tabset}
+`r what_this_does("Generated tabbed sections in the HTML report for easy navigation of individual plots.", "Exported standalone high-resolution PNGs for each individual plot.")`
 ```{r print_individual_plots, results='asis', fig.width=7, fig.height=5.5}
 # This chunk handles the individual plots inside the tabset
 
@@ -464,6 +481,347 @@ for (p_name in names(individual_plots)) {
   )
 }
 ```
+
+# Matrix Correlation
+## Factor Exploration
+`r what_this_does("Scanned all factor variables to identify their category distributions and assess variance.", "Filtered out cleanly binarized variables to reduce noise.", "Generated an audit table grouping remaining factors by level counts (>2 levels, exactly 2 non-standard levels, or 0 variance) to guide manual binarization.")`
+```{r factor_exploration}
+cat("\n### Factor Exploration Report\n\n")
+
+# Helper function to calculate level percentages safely
+get_level_pct <- function(vec) {
+  vec <- vec[!is.na(vec)]
+  if(length(vec) == 0) return("All NA")
+  
+  # Calculate percentages
+  tbl <- prop.table(table(vec)) * 100
+  
+  # Format as "Level: 45.2%"
+  level_strings <- paste0(names(tbl), ": ", sprintf("%.1f%%", tbl))
+  return(paste(level_strings, collapse = " <br> ")) # Use HTML break for table formatting
+}
+
+# Initialize empty dataframe for the table
+exploration_df <- data.frame(
+  Variable = character(),
+  Category = character(),
+  Distribution = character(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through every column in the dataframe
+for (col in names(master_spine)) {
+  vec <- master_spine[[col]]
+  
+  # Check if it's a factor
+  if (is.factor(vec)) {
+    
+    clean_vec <- vec[!is.na(vec)]
+    unique_levels <- unique(as.character(clean_vec))
+    n_levels <- length(unique_levels)
+    
+    dist_str <- get_level_pct(vec)
+    cat_name <- NA
+    
+    # CATEGORY 3: 1 or 0 levels (Zero Variance)
+    if (n_levels <= 1) {
+      cat_name <- "3: Zero Variance (<= 1 Level)"
+      
+    # CATEGORY 1: More than 2 levels
+    } else if (n_levels > 2) {
+      cat_name <- "1: > 2 Levels (Needs Bucketing/Exclusion)"
+      
+    # CATEGORY 2: Exactly 2 Levels (Check if they are NOT 1/0 or Yes/No)
+    } else if (n_levels == 2) {
+      lower_levels <- tolower(unique_levels)
+      
+      # We ignore factors that are already cleanly binarized into 1/0 or yes/no
+      is_strict_binary <- all(lower_levels %in% c("yes", "no", "1", "0"))
+      
+      if (!is_strict_binary) {
+        cat_name <- "2: Exactly 2 Levels (Needs Manual 1/0 Mapping)"
+      }
+    }
+    
+    # Append to dataframe if it falls into one of our target categories
+    if (!is.na(cat_name)) {
+      exploration_df <- rbind(exploration_df, data.frame(
+        Variable = col,
+        Category = cat_name,
+        Distribution = dist_str,
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+}
+
+# --- PRINT THE HTML TABLE ---
+
+if(nrow(exploration_df) > 0) {
+  
+  exploration_df %>%
+    arrange(Category, Variable) %>%
+    kableExtra::kbl(format = "html", escape = FALSE, caption = "Variables Requiring Binarization Attention") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+    kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::collapse_rows(columns = 2, valign = "top") # Groups the categories visually
+    
+} else {
+  cat("**Result:** All factor variables are cleanly binary (1/0) and ready for the correlation matrix!\n\n")
+}
+```
+
+
+## Data Prep for Matrix Correlation
+`r what_this_does("Conducted a pre-scan of factor variables to log any unrecognized text levels, preventing silent data loss.", "One-hot encoded nominal disease subset categories into distinct binary columns.", "Applied a Universal Dictionary to translate ordinal factors (e.g., severity, smoking status) and binary text into continuous numerical ranks.", "Safely excluded unmapped levels and non-numeric columns (e.g., Dates, IDs) to produce a mathematically pure numeric matrix.")`
+```{r data_prep_mat_corr}
+# ----------------------------------------------------------------------------
+# STEP 0: PRE-SCAN & UNMAPPED LEVEL REPORT
+# ----------------------------------------------------------------------------
+# Define the exact text strings our dictionary knows how to translate
+known_levels <- c(
+  "1", "0", 
+  "weiblich", "female", "männlich", "male", 
+  "manual", "6", 
+  "never", "previously", "current", 
+  "none", "rare", "moderate", "extensive", 
+  "0", "1", "i", "ii", "iii", 
+  "visit 0", "follow up visit (1)", "follow up visit (2)"
+)
+
+unmapped_log <- list()
+
+# Scan the dataset to see what will fall into the Safety Net
+for (col in names(master_spine)) {
+  if (is.factor(master_spine[[col]]) && col != "Subsets of SSc according to LeRoy (1988):") {
+    
+    # Extract unique actual values (ignoring NAs) and lowercase them
+    actual_vals <- tolower(unique(as.character(master_spine[[col]])))
+    actual_vals <- actual_vals[!is.na(actual_vals)]
+    
+    # Find which ones are NOT in our known dictionary
+    unmapped_vals <- setdiff(actual_vals, known_levels)
+    
+    if (length(unmapped_vals) > 0) {
+      unmapped_log[[col]] <- unmapped_vals
+    }
+  }
+}
+
+# Print the Audit Report
+cat("### Safety Net Audit: Unmapped Levels -> NA ###\n\n")
+if (length(unmapped_log) > 0) {
+  cat("The following levels were not found in the dictionary and will be converted to NA:\n\n")
+  for (col in names(unmapped_log)) {
+    cat(sprintf(" * **%s**: ['%s']\n", col, paste(unmapped_log[[col]], collapse = "', '")))
+  }
+} else {
+  cat(" * Perfect match! No unexpected levels were found in the dataset.\n")
+}
+cat("\n---\n\n")
+
+
+# ----------------------------------------------------------------------------
+# STEP 1 & 2: TRANSLATION & FILTERING
+# ----------------------------------------------------------------------------
+cor_data <- master_spine %>%
+  
+  # We manually split the un-ordered disease subset into 3 binary columns.
+  mutate(
+    Subset_Diffuse = if_else(`Subsets of SSc according to LeRoy (1988):` == "diffuse cutaneous", 1, 0),
+    Subset_Limited = if_else(`Subsets of SSc according to LeRoy (1988):` == "limited cutaneous", 1, 0),
+    Subset_Sine    = if_else(`Subsets of SSc according to LeRoy (1988):` == "sine scleroderma", 1, 0)
+  ) %>%
+  # Drop the original text column so it doesn't break the matrix math
+  select(-`Subsets of SSc according to LeRoy (1988):`) %>%
+  
+  # This targets EVERY remaining factor in the dataset.
+  mutate(across(where(is.factor), ~ {
+    
+    val <- tolower(as.character(.x))
+    
+    num_val <- case_when(
+      val == "1" ~ 1,
+      val == "0" ~ 0,
+      val %in% c("weiblich", "female") ~ 1,
+      val %in% c("männlich", "male") ~ 0,
+      val == "manual" ~ 1,
+      val == "6" ~ 0,
+      val == "never" ~ 0,
+      val == "previously" ~ 1,
+      val == "current" ~ 2,
+      val == "none" ~ 0,
+      val == "rare" ~ 1,
+      val == "moderate" ~ 2,
+      val == "extensive" ~ 3,
+      val == "0" ~ 0,
+      val %in% c("1", "i") ~ 1, 
+      val == "ii" ~ 2,
+      val == "iii" ~ 3,
+      val == "visit 0" ~ 0,
+      val == "follow up visit (1)" ~ 1,
+      val == "follow up visit (2)" ~ 2,
+      
+      # THE SAFETY NET
+      TRUE ~ NA_real_ 
+    )
+    return(num_val)
+  }))
+
+# ----------------------------------------------------------------------------
+# STEP 3: NON-NUMERIC EXCLUSION REPORT
+# ----------------------------------------------------------------------------
+# Find all columns that are NOT numeric (e.g., Dates, Subject IDs, raw text notes)
+non_numeric_cols <- names(cor_data)[!sapply(cor_data, is.numeric)]
+
+cat("### Safety Net Audit: Excluded Non-Numeric Columns ###\n\n")
+if (length(non_numeric_cols) > 0) {
+  cat("The following columns remain non-numeric and will be excluded from the correlation matrix:\n\n")
+  for (col in non_numeric_cols) {
+    cat(sprintf(" * %s\n", col))
+  }
+} else {
+  cat(" * All columns are numeric! Nothing was dropped.\n")
+}
+cat("\n---\n\n")
+
+# Final check: Keep only numeric columns for the correlation matrix
+cor_data <- cor_data %>% select(where(is.numeric))
+
+cat("**Success:** Data successfully binarized and converted to continuous ordinal ranks!\n")
+```
+
+## Matrix Correlation
+`r what_this_does("Applied a sparsity filter to exclude clinical variables with fewer than 10 valid observations.", "Calculated a robust pairwise Spearman correlation matrix, gracefully handling 'zero standard deviation' errors and ties.", "Generated an interactive, full-dataset heatmap using heatmaply for deep exploratory data analysis.", "Extracted a highly focused static heatmap (corrplot) showing only significant correlations exceeding the defined strength threshold, automatically exported for presentations.")`
+```{r mat_corr}
+cat("### Clinical Spearman Correlation Matrix\n\n")
+
+# Apply Parameterized Sparsity Rule
+min_obs <- corr_config$min_required_obs
+
+valid_counts <- colSums(!is.na(cor_data))
+valid_col_names <- names(valid_counts)[valid_counts >= min_obs]
+dropped_sparse <- names(valid_counts)[valid_counts < min_obs]
+
+if (length(dropped_sparse) > 0) {
+  cat("\n#### Dropped due to extreme sparsity (<", min_obs, " observations) ####\n")
+  for(col in dropped_sparse) cat(sprintf(" * %s\n", col))
+}
+
+cor_data <- cor_data %>% select(all_of(valid_col_names))
+cat("\n---\n\n")
+
+# ----------------------------------------------------------------------------
+# Run Matrix Math
+# ----------------------------------------------------------------------------
+cat("\nCalculating robust pairwise correlations...\n")
+
+cor_matrix <- cor(cor_data, use = "pairwise.complete.obs", method = "spearman")
+
+robust_cor_mtest <- function(mat) {
+  n <- ncol(mat)
+  p_mat <- matrix(1, n, n)
+  colnames(p_mat) <- rownames(p_mat) <- colnames(mat)
+  
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      p_val <- suppressWarnings(
+        tryCatch({
+          cor.test(mat[[i]], mat[[j]], method = "spearman", exact = FALSE)$p.value
+        }, error = function(e) 1) 
+      )
+      p_mat[i, j] <- p_mat[j, i] <- p_val
+    }
+  }
+  return(p_mat)
+}
+
+p_matrix <- robust_cor_mtest(cor_data)
+
+# Parameterized Masking and Safety Nets
+p_matrix[is.na(p_matrix)] <- 1
+cor_matrix[is.na(cor_matrix)] <- 0
+
+col_palette <- colorRampPalette(c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))(200)
+
+# ----------------------------------------------------------------------------
+# 1. Interactive HTML Heatmap (FULL DATASET)
+# ----------------------------------------------------------------------------
+cat("\n#### 1. Interactive Full Heatmap\n")
+cat("Hover over squares to explore specific correlation values and parameters. Non-significant relationships are masked.\n\n")
+
+# Mask insignificant values with NA for interactive display
+masked_cor <- cor_matrix
+masked_cor[p_matrix >= corr_config$p_cutoff] <- NA
+
+tryCatch({
+  p_interactive <- heatmaply_cor(
+    masked_cor,
+    colors = col_palette,
+    showticklabels = c(FALSE, FALSE), # Hides the crushed axis text
+    k_row = 4, k_col = 4,             # Draws boxes to highlight main clusters
+    main = sprintf("Interactive Full Matrix (p < %s)", corr_config$p_cutoff),
+    margins = c(10, 10, 30, 10)
+  )
+  print(p_interactive)
+}, error = function(e) cat("Interactive heatmap could not be generated in this environment.\n"))
+
+cat("\n---\n\n")
+
+# ----------------------------------------------------------------------------
+# 2. Static PNG Heatmap (FOCUSED DATASET)
+# ----------------------------------------------------------------------------
+cat("\n#### 2. Focused Heatmap (Highlight Reel)\n")
+cat(sprintf("Showing only variables with at least one off-diagonal correlation > %s (p < %s).\n\n", 
+            corr_config$rho_cutoff, corr_config$p_cutoff))
+
+# Logical filter: Is abs(correlation) >= threshold AND is it significant?
+sig_strong_logic <- (abs(cor_matrix) >= corr_config$rho_cutoff) & (p_matrix < corr_config$p_cutoff)
+diag(sig_strong_logic) <- FALSE # We don't care about self-correlation (which is always 1.0)
+
+# Keep variables that have at least one TRUE in their row/column
+keep_vars <- rowSums(sig_strong_logic) > 0
+
+if (sum(keep_vars) >= 2) {
+  cor_matrix_filt <- cor_matrix[keep_vars, keep_vars]
+  p_matrix_filt <- p_matrix[keep_vars, keep_vars]
+  
+  # Print the focused plot to the HTML document
+  corrplot(
+    cor_matrix_filt,
+    method = "color",          
+    type = "upper",            
+    order = "hclust",          
+    hclust.method = "ward.D2", 
+    col = col_palette,         
+    tl.col = "black",          
+    tl.cex = 0.8,              
+    tl.srt = 45,               
+    p.mat = p_matrix_filt,          
+    sig.level = corr_config$p_cutoff,          
+    insig = "blank",           
+    diag = FALSE,              
+    mar = c(0, 0, 2, 0),       
+    title = sprintf("Focused Clinical Correlations (Spearman > %s, p < %s)", corr_config$rho_cutoff, corr_config$p_cutoff)
+  )
+
+  # Save the High-Res Image for PowerPoint
+  png(file.path(output_dir_data, "Focused_Clinical_Correlation_Matrix.png"), width = 12, height = 12, units = "in", res = 300)
+  corrplot(
+    cor_matrix_filt, method = "color", type = "upper", order = "hclust", hclust.method = "ward.D2",
+    col = col_palette, tl.col = "black", tl.cex = 0.9, tl.srt = 45, p.mat = p_matrix_filt,
+    sig.level = corr_config$p_cutoff, insig = "blank", diag = FALSE, mar = c(0, 0, 2, 0),
+    title = sprintf("Focused Clinical Correlations (Spearman > %s, p < %s)", corr_config$rho_cutoff, corr_config$p_cutoff)
+  )
+  dev.off()
+  
+  cat("**Success:** Focused PNG saved to output folder.\n")
+} else {
+  cat("**Result:** No variables met the focused correlation threshold. Static plot not generated.\n")
+}
+```
+
+
 
 ```{r finish_message}
 cat("Script 02 Complete!")

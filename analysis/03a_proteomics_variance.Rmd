@@ -1,0 +1,227 @@
+---
+title: "03a_proteomics_variance"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Introduction
+## Goal
+- To explore which variables have an influence on the omics data (by PCA, VPA and exploratory VPA)
+- To determine which variables correlate with each other
+- To determine which variables should be included in the downstream DEA
+
+# Setup and import
+`r what_this_does("Loaded analytical packages (FactoMineR, factoextra) and parallel processing tools (future, progressr).", "Sourced custom omics engines to handle repetitive matrix operations.", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Initialized parallel processing to accelerate computationally intensive variance partition calculations.")`
+```{r setup_import, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(FactoMineR)
+library(factoextra)
+library(patchwork)
+library(here)
+library(future)
+library(future.apply)
+library(progressr)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "03a_proteomics_variance"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Configuration & Engines
+source(here::here("code", "00_config.R"))
+source(here::here("code", "00_omics_engines.R"))
+
+# Load Pre-Cleaned Data from Script 01
+master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
+olink_mat <- readRDS(here::here("output", "01_data_import_and_qc", "clean_olink_matrix.rds"))
+
+plan(multisession, workers = 4)
+if (interactive()) {
+  handlers(handler_txtprogressbar(char = "=", style = 3))
+} else {
+  handlers("void") # Silences the bar during wflow_publish
+}
+```
+
+# Configuration
+`r what_this_does("Defined mapping parameters for Principal Component Analysis (PCA) to overlay specific clinical metadata on global cohorts.", "Configured Exploratory VPA rules, setting exclusion patterns to prevent IDs and raw dates from skewing the variance scan.", "Established Targeted VPA models to evaluate the combined explanatory power of standard covariates versus newly discovered clinical hits.")`
+```{r config}
+# 1. PCA Master Layouts (Independent grids) ------------------------------------
+pca_configs <- list(
+  pca_global = list(
+    title = "PCA: Global Cohort Structure",
+    subset_to_contrast = NULL, 
+    color_vars = c("cohort_group", "Sex", "Age", "Sample_Age") 
+  )
+)
+
+
+  
+# 2. Exploratory  VPA ----------------------------------------------------------
+exploratory_vpa_configs <- list(
+  
+  discovery_scan_patients = list(
+    title              = "Clinical Discovery: Patients Only",
+    subset_to_groups   = c(GRP_ACTIVE, GRP_NON_ACTIVE),
+    
+    # Filtering Rules
+    exclude_vars       = c("inCentraxx", "SELECTED", "Subject-ID (EUSTAR)", "Geburtsdatum", "Raynaud VAS Unknown", "Birth_Year"),
+    exclude_patterns   = c("Date", "?", "Datum"), 
+    include_vars       = c(), 
+    missingness_cutoff = 0.10,
+    
+    # Execution & Visualization Rules
+    top_n_plot         = 50 
+  )
+)
+
+# 3. Targeted VPA --------------------------------------------------------------
+targeted_vpa_configs <- list(
+  
+  standard = list(
+    title     = "Standard Variance Partition Analysis",
+    variables = c("cohort_group", "Sex", "Age", "Sample_Age") 
+  ),
+  
+  exploration_hits = list(
+    title     = "Exploration Hits Variance Partition Analysis",
+    variables = c("cohort_group", "OR serum creatinine (micromoles/L)", "Proteinuria (>300mg/d)", "NT-proBNP (pg/ml)", "Raynaud's present")  
+  )
+)
+
+cat("Global  Pipelines configured.\n")
+```
+
+# Execution Engines
+## PCA
+`r what_this_does("Executed the PCA pipeline to assess global cohort structure and identify potential outliers or batch effects.", "Generated scree plots to evaluate dimensional variance capture.", "Rendered and exported feature loadings and metadata-colored PCA overlays (e.g., by Cohort, Age, Sex).")`
+```{r execution_engine_PCA, fig.width=8, fig.height=8, results='asis'}
+cat("### Executing Principal Component Analysis...\n\n")
+
+# Process each PCA configuration through the Master Pipeline
+for (pca_name in names(pca_configs)) {
+  
+  cat(sprintf("#### Processing: %s\n", pca_configs[[pca_name]]$title))
+  
+  # CALL THE MASTER PIPELINE
+  # This handles filtering, directory creation, plotting, and saving automatically
+  pca_results <- wrap_pca_pipeline(
+    omics_mat           = olink_mat, 
+    clin_df             = master_spine, 
+    pca_conf            = pca_configs[[pca_name]], 
+    pca_id              = pca_name, 
+    base_output_dir     = output_dir_data, 
+    project_colors_func = get_project_colors
+  )
+  
+  # PRINT TO HTML REPORT
+  # We print the core plots and the merged grids
+  print(pca_results[["scree"]])
+  cat("\n\n")
+  print(pca_results[["loadings"]])
+  cat("\n\n")
+  print(pca_results[["merged_drivers"]])
+  cat("\n\n")
+  
+  if (!is.null(pca_results[["merged_overlays"]])) {
+    print(pca_results[["merged_overlays"]])
+    cat("\n\n")
+  }
+  cat("--- \n\n")
+}
+```
+
+## Exploratory Variance Partition Analysis
+`r what_this_does("Ran univariate Variance Partition Analysis across all eligible clinical variables to independently rank their impact on the proteomics matrix.", "Automatically filtered out sparse variables based on the missingness cutoff and generated an exclusion log.", "Rendered summary tables and bar charts highlighting the top clinical drivers of proteomic variance.")`
+```{r exploratory_vpa_execution, results='asis'}
+cat("### Executing Exploratory Variance Partition Analysis...\n\n")
+
+# Silence the progress bar during rendering to prevent \r carriage returns from breaking Pandoc
+progressr::handlers("void") 
+
+for (vpa_id in names(exploratory_vpa_configs)) {
+  conf <- exploratory_vpa_configs[[vpa_id]]
+  cat(sprintf("#### Scan: %s\n\n", conf$title))
+  
+  res <- wrap_vpa_univariate_pipeline(
+    omics_mat       = olink_mat, 
+    clin_df         = master_spine, 
+    vpa_conf        = conf, 
+    vpa_id          = vpa_id, 
+    base_output_dir = output_dir_data
+  )
+  
+  if(!is.null(res)) {
+    
+    # INTELLIGENT RENDER ENGINE (Interactive vs Knitting)
+    if (interactive()) {
+      print(res$tables$exclusion)
+      print(res$univariate_bar)
+      print(res$tables$summary)
+    } else {
+      cat(as.character(res$tables$exclusion))
+      cat("\n\n<br>\n\n") 
+      print(res$univariate_bar)
+      cat("\n\n<br>\n\n")
+      cat(as.character(res$tables$summary))
+      cat("\n\n<br>\n\n")
+    }
+  }
+  cat("\n\n---\n\n")
+}
+```
+
+## Targeted Variance Partition Analysis
+`r what_this_does("Executed multivariate Variance Partition Analysis to model the combined influence of specific clinical variable sets.", "Calculated the unique percentage of proteomics variance explained by each variable while adjusting for the others.", "Outputted bar and violin plots to visualize the distribution of explained variance across all measured proteins.")`
+```{r targeted_vpa_engine, results='asis'}
+cat("### Executing Targeted Variance Partition Analysis...\n\n")
+
+for (vpa_id in names(targeted_vpa_configs)) {
+  conf <- targeted_vpa_configs[[vpa_id]]
+  
+  cat(sprintf("#### Analysis: %s\n", conf$title))
+  
+  # Changed olink_mat to omics_mat to match your RDS import
+  res <- wrap_vpa_pipeline(
+    omics_mat       = olink_mat,  
+    clin_df         = master_spine, 
+    vpa_conf        = conf, 
+    vpa_id          = vpa_id, 
+    base_output_dir = output_dir_data
+  )
+  
+  if(!is.null(res)) {
+    # Check the console for the "Diagnostic: Model fit on..." message 
+    # to ensure your N (sample size) is what you expect.
+    print(res$plots$bar)
+    cat("\n\n")
+    print(res$plots$violin)
+  }
+  
+  cat("\n\n---\n\n")
+}
+```
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script 03a Complete! \n")
+```
+

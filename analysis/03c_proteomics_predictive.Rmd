@@ -1,0 +1,104 @@
+---
+title: "03c_proteomics_predictive"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Setup and import
+`r what_this_does("Loaded required machine learning and visualization packages (glmnet, patchwork).", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Sourced custom omics engines tailored for predictive modeling and biomarker discovery.")`
+```{r setup_import, echo=FALSE}
+library(tidyverse)
+library(glmnet)
+library(patchwork)
+library(here)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "03c_proteomics_predictive"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Configuration & Engines
+source(here::here("code", "00_config.R"))
+source(here::here("code", "00_omics_engines.R"))
+
+# Load Pre-Cleaned Data
+master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
+omics_mat <- readRDS(here::here("output", "01_data_import_and_qc", "clean_olink_matrix.rds"))
+```
+
+# Configurations
+`r what_this_does("Defined configuration parameters for LASSO (Least Absolute Shrinkage and Selection Operator) feature selection.", "Established specific clinical group contrasts (e.g., Active vs. Nonactive, Active vs. Control) to train the predictive models on.")`
+```{r config}
+# 1. LASSO Feature Selection Configs
+lasso_configs <- list(
+  active_vs_nonactive = list(
+    title = "Predictors: Active vs Nonactive",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE)
+  ),
+  active_vs_control = list(
+    title = "Predictors: Active vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE, GRP_CONTROL)
+  )
+)
+
+cat("Predictive Pipelines configured.\n")
+```
+
+# Execution
+## LASSO Execution
+`r what_this_does("Executed L1-regularized logistic regression (LASSO) to distill the high-dimensional proteomics matrix into sparse, highly predictive biomarker signatures.", "Performed k-fold cross-validation to automatically tune the penalty parameter (lambda), optimizing the balance between model simplicity and predictive accuracy.", "Rendered cross-validation tuning curves and generated bar plots displaying the relative weights (coefficients) of the surviving predictive proteins.")`
+```{r lasso_execution}
+cat("### Executing Sparse Biomarker Discovery (LASSO)...\n\n")
+
+for (model_name in names(lasso_configs)) {
+  conf <- lasso_configs[[model_name]]
+  
+  cat(sprintf("#### Model: %s\n", conf$title))
+  
+  # Call Predictive Wrapper
+  res <- wrap_predictive_pipeline(
+    omics_mat       = omics_mat, 
+    clin_df         = master_spine, 
+    lasso_conf      = conf, 
+    model_id        = model_name, 
+    base_output_dir = output_dir_data
+  )
+  
+  if(res$status == "failed") {
+    cat(sprintf("<span style='color:red;'>**SKIPPED:** %s</span>\n\n", res$error_msg))
+    next
+  }
+  
+  # Inline HTML Rendering
+  plot(res$plots$lasso_cv); title(main = sprintf("%s: LASSO Tuning", conf$title), line = 2.5)
+  cat("\n\n")
+  
+  print(res$plots$lasso_weights)
+  cat("\n\n---\n\n")
+}
+```
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the custom predictive engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script 03c Complete! \n")
+```

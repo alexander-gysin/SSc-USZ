@@ -7,9 +7,18 @@ editor_options:
   chunk_output_type: inline
 ---
 
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
 # Introduction
+This script imports, cleans and formats raw data. 
+The output is saved for downstream scripts to use.
+
 
 # Setup
+`r what_this_does("Loaded required utility packages (tidyverse, data.table, readxl, matrixStats).", "Established dynamic output directory paths to safely save data and figures.", "Sourced global project configurations, color palettes, and standard themes.", "Configured default knitr chunk options to suppress unnecessary warnings.")`
+
 ```{r setup, message=FALSE, warning=FALSE}
 # Utility Packages
 library(tidyverse)   # Data manipulation
@@ -38,6 +47,9 @@ knitr::opts_chunk$set(
 ```
 
 # Configuration
+
+`r what_this_does("Defined strict quality control missingness thresholds for proteomics filtering (5% max missingness).", "Set the clinical variable completeness threshold (variables must be 80% complete in patients to survive).", "Established core reference dates for accurate feature engineering (Olink run date, default fallback control date).", "Listed protected variables and explicit date columns to prevent accidental deletion during automated pruning.")`
+
 ```{r config}
 # Define thresholds and critical column names
 qc_config <- list(
@@ -65,8 +77,11 @@ qc_config <- list(
   
 ```
 
-# Data Ingestion and Cleanup
 ## Clinical Data Cleanup
+# Data Ingestion and Cleanup
+
+`r what_this_does("Imported raw clinical and sample mapping Excel files and resolved ID discrepancies.", "Engineered core analytical features including Age, Sample_Age, cohort_group, and Sex.", "Pruned clinical variables according to the defined 80% completeness filter.", "Enforced strict data typing and dropped manually excluded variables using the clinical_dictionary.", "Standardized factor levels: converted 'UN' and 'Unknown' to NA.", "Converted 'Yes' to 1 and 'No' to 0 (retained explicitly as factors to ensure mathematical compatibility with downstream models).")`
+
 ```{r clin_cleanup}
 cat("Importing Clinical Data and ID Maps...\n")
 
@@ -164,6 +179,24 @@ master_spine <- master_spine[, Sex := fcase(
 )]
 
 # ------------------------------------------------------------------------------
+# 4.5 Feature Engineering (Clinical Date Deltas)
+# ------------------------------------------------------------------------------
+# Isolate the specific assessment dates (ignoring the core visit/blood draw dates)
+assessment_dates <- setdiff(qc_config$date_cols, c("Visit Date", "Entnahmedatum", "Einlagerungsdatum"))
+
+for (d_col in assessment_dates) {
+  if (d_col %in% names(master_spine)) {
+    # Generate a clean name: Strips out the messy "If yes, Date of assessment for..." prefixes
+    clean_prefix <- gsub(".*Date of assessment for |.*Date of ", "", d_col)
+    clean_name <- paste0("Delta_", gsub("[^A-Za-z0-9]", "_", clean_prefix), "_Years")
+    
+    # Calculate Time Delta (Test Date - Blood Draw Date)
+    # Negative means test happened BEFORE the blood draw. Positive means AFTER.
+    master_spine[, (clean_name) := as.numeric(difftime(get(d_col), Entnahmedatum_Clean, units = "days")) / 365.25]
+  }
+}
+
+# ------------------------------------------------------------------------------
 # 5. Completeness Pruning & Dictionary Enforcement
 # ------------------------------------------------------------------------------
 cat("\nFiltering by completeness and applying TSV Data Dictionary...\n")
@@ -223,7 +256,7 @@ if (file.exists(dict_path)) {
   cat(sprintf("- Exclusion: Dropped %d manually blacklisted variables.\n", length(vars_x)))
   
 } else {
-  cat("! WARNING: 'clinical_dictionary.tsv' not found in data/. Skipping explicit type enforcement.\n")
+  cat("! WARNING: 'clinical_dictionary.txt' not found in data/. Skipping explicit type enforcement.\n")
 }
 
 # Reorder core columns to the front of the dataframe for easy viewing
@@ -233,10 +266,34 @@ setcolorder(master_spine, core_cols)
 cat(sprintf("\n✓ Clinical Spine Ready: %d rows x %d columns.\n", nrow(master_spine), ncol(master_spine)))
 print(table(master_spine$cohort_group))
 
+
+# ------------------------------------------------------------------------------
+# 6. Factor Standardization (Binarization & Cleaning)
+# ------------------------------------------------------------------------------
+cat("\nStandardizing factor variables (Yes/No -> 1/0, UN/Unknown -> NA)...\n")
+
+master_spine <- master_spine %>%
+  mutate(across(where(is.factor), ~ {
+    char_vec <- as.character(.x)
+    lower_vec <- tolower(char_vec)
+    
+    # Apply standardizations (case insensitive)
+    char_vec[lower_vec %in% c("un", "unknown", "not done")] <- NA
+    char_vec[lower_vec == "yes"] <- "1"
+    char_vec[lower_vec == "no"] <- "0"
+    
+    # BEST PRACTICE: Keep everything as a factor for the VPA engine.
+    # We will temporarily cast to numeric later inside the correlation engine.
+    as.factor(char_vec)
+  }))
 rm(raw_clin, id_map)
 invisible(gc())
 ```
+
 ## OLINK import
+
+`r what_this_does("Pre-quantified Olink data was pivoted from long to wide format (Samples as columns, Assays as rows).", "The Olink matrix was strictly subset to include only samples definitively present in the clinical master_spine.")`
+
 ```{r olink_import}
 cat("Importing and Pivoting Olink Data...\n")
 
@@ -263,7 +320,11 @@ rm(raw_olink, wide_olink)
 invisible(gc())
 ```
 
+
 ## Proteomics QC, Imputation, Sync
+
+`r what_this_does("Proteins and Samples exceeding the previously defined missingness threshold were entirely dropped.", "Remaining NA values were imputed using a row-wise (protein-wise) median approach.", "The master_spine clinical dataset and the Olink matrix were cross-synchronized to guarantee identical sample inclusion and ordering.")`
+
 ```{r qc_imputation_sync}
 cat("Running Missingness QC and Imputation...\n")
 
@@ -311,6 +372,9 @@ master_spine <- master_spine[Subject_ID %in% colnames(qc_mat)]
 qc_mat <- qc_mat[, master_spine$Subject_ID, drop = FALSE]
 ```
 ## Export final Data
+
+`r what_this_does("The finalized arrays (clinical_spine.rds and clean_olink_matrix.rds) were exported as serialized R objects for quick, standardized ingestion by downstream scripts.")`
+
 ```{r export}
 # 4. Export Final Data
 cat("Saving finalized datasets to output folder...\n")
