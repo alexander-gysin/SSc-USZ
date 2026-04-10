@@ -1,0 +1,3053 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>03b_proteomics_differential</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="01_data_import_and_qc.html">Data</a>
+</li>
+<li>
+  <a href="02_cohort_characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Global</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_predictive.html">Predictive</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">03b_proteomics_differential</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">10 April, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-04-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_global/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_predictive/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/style.css
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/03b_proteomics_differential.Rmd</code>) and HTML
+(<code>docs/03b_proteomics_differential.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e7fad4ec08b0b32324214a1242726c9318dc9ff0/analysis/03b_proteomics_differential.Rmd" target="_blank">e7fad4e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+<td>
+wflow_publish("analysis/*.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="setup-and-import" class="section level1">
+<h1>Setup and import</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required bioinformatics packages (limma, clusterProfiler,
+msigdbr).
+</li>
+<li>
+Imported the pre-cleaned clinical spine and Olink proteomics matrix.
+</li>
+<li>
+Fetched the Human Gene Ontology (GO) Biological Processes database for
+downstream pathway enrichment analysis.
+</li>
+</ul>
+</div>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ lubridate 1.9.5     ✔ tibble    3.3.1
+✔ purrr     1.2.1     ✔ tidyr     1.3.2
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+Welcome to factoextra!
+
+Want to learn more? See two factoextra-related books at https://www.datanovia.com/en/product/practical-guide-to-principal-component-methods-in-r/
+
+
+
+clusterProfiler v4.18.4 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+
+Please cite:
+
+S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang,
+W Xie, T Wu, L Xie, G Yu. Using clusterProfiler to characterize
+multiomics data. Nature Protocols. 2024, 19(11):3292-3320
+
+
+Attaching package: &#39;clusterProfiler&#39;
+
+
+The following object is masked from &#39;package:purrr&#39;:
+
+    simplify
+
+
+The following object is masked from &#39;package:stats&#39;:
+
+    filter
+
+
+here() starts at /home/alexgy/SSc-USZ
+
+
+Attaching package: &#39;kableExtra&#39;
+
+
+The following object is masked from &#39;package:dplyr&#39;:
+
+    group_rows</code></pre>
+<pre><code>Loading Global Configuration...
+Configuration Successfully Loaded!</code></pre>
+<pre><code>enrichplot v1.30.5 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+
+Please cite:
+
+T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
+X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
+enrichment tool for interpreting omics data. The Innovation. 2021,
+2(3):100141
+Loading required package: grid
+========================================
+ComplexHeatmap version 2.26.1
+Bioconductor page: http://bioconductor.org/packages/ComplexHeatmap/
+Github page: https://github.com/jokergoo/ComplexHeatmap
+Documentation: http://jokergoo.github.io/ComplexHeatmap-reference
+
+If you use it in published research, please cite either one:
+- Gu, Z. Complex Heatmap Visualization. iMeta 2022.
+- Gu, Z. Complex heatmaps reveal patterns and correlations in multidimensional 
+    genomic data. Bioinformatics 2016.
+
+
+The new InteractiveComplexHeatmap package can directly export static 
+complex heatmaps into an interactive Shiny app with zero effort. Have a try!
+
+This message can be suppressed by:
+  suppressPackageStartupMessages(library(ComplexHeatmap))
+========================================
+! pheatmap() has been masked by ComplexHeatmap::pheatmap(). Most of the arguments
+   in the original pheatmap() are identically supported in the new function. You 
+   can still use the original function by explicitly calling pheatmap::pheatmap().
+
+
+Attaching package: &#39;ComplexHeatmap&#39;
+
+The following object is masked from &#39;package:pheatmap&#39;:
+
+    pheatmap
+
+Loading required package: Matrix
+
+Attaching package: &#39;Matrix&#39;
+
+The following objects are masked from &#39;package:tidyr&#39;:
+
+    expand, pack, unpack
+
+Loaded glmnet 4.1-10
+========================================
+circlize version 0.4.18
+CRAN page: https://cran.r-project.org/package=circlize
+Github page: https://github.com/jokergoo/circlize
+Documentation: https://jokergoo.github.io/circlize_book/book/
+
+If you use it in published research, please cite:
+Gu, Z. circlize implements and enhances circular visualization
+  in R. Bioinformatics 2014.
+
+This message can be suppressed by:
+  suppressPackageStartupMessages(library(circlize))
+========================================
+
+
+Attaching package: &#39;ggVennDiagram&#39;
+
+The following object is masked from &#39;package:tidyr&#39;:
+
+    unite
+
+Loading required package: BiocParallel
+
+Attaching package: &#39;variancePartition&#39;
+
+The following objects are masked from &#39;package:limma&#39;:
+
+    eBayes, topTable</code></pre>
+<pre><code>Warning: The `category` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
+ℹ Please use the `collection` argument instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre><code>Warning: The `subcategory` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
+ℹ Please use the `subcollection` argument instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+</div>
+<div id="analysis-configurator" class="section level1">
+<h1>Analysis Configurator</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined global mathematical thresholds for Gene Set Enrichment Analysis
+(GSEA).
+</li>
+<li>
+Configured targeted Differential Expression Analysis (DEA) contrasts,
+specifying reference groups, target groups, and required covariates
+(e.g., Age, Sex, Sample_Age).
+</li>
+<li>
+Established Trajectory mapping rules to compare protein and pathway
+shifts across multiple distinct contrasts.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Global Mathematical Thresholds
+omics_config &lt;- list(
+  gsea_p_cutoff  = 0.20, 
+  gsea_min_size  = 3     
+)
+
+
+# 3. Differential Expression Contrasts (Target vs Reference)
+contrast_configs &lt;- list(
+  active_vs_control = list(
+    title = &quot;Active vs Control&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
+    dea_p_cutoff = 0.05,  # &lt;-- INDIVIDUAL CUTOFFS
+    dea_fc_cutoff = 0.5
+  ),
+  nonactive_vs_control = list(
+    title = &quot;Nonactive vs Control&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_NON_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
+  active_vs_nonactive = list(
+    title = &quot;Active vs Nonactive&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.2
+  ),
+  active_vs_nonactive_sample_age_corr = list(
+    title = &quot;Active vs Nonactive (Sample Age Corrected)&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    is_continuous = FALSE,
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;), 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  )
+)
+
+## 4. Cross-Contrast Trajectory Plots
+cross_contrasts &lt;- list(
+  active_vs_nonactive_trajectory = list(
+    title = &quot;Trajectory: Active vs Nonactive&quot;,
+    x_axis_contrast = &quot;active_vs_control&quot;,      
+    y_axis_contrast = &quot;nonactive_vs_control&quot;,   
+    top_n_specific  = 5,  
+    top_n_shared    = 5,
+    top_n_pathways  = 10,       # Per Quadrant
+    pathway_rank_var = &quot;rank_score&quot; # Internal rank score uses lowest FDR sum
+  )
+)
+
+# 5. Heatmap Configuration
+heatmap_config &lt;- list(
+  top_n = 30,
+  split_by_group = FALSE, 
+  row_font_size = 8
+)
+
+# 6. Comparative Settings
+cross_contrasts$active_vs_nonactive_trajectory$top_n_upset &lt;- 10      
+cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways &lt;- 20   
+
+
+cat(&quot;Pipelines and Mathematical Engines fully configured.\n&quot;)</code></pre>
+<pre><code>Pipelines and Mathematical Engines fully configured.</code></pre>
+</div>
+<div id="execution-engines" class="section level1">
+<h1>Execution Engines</h1>
+<div id="differential-expression-analysis-gsea" class="section level2">
+<h2>Differential Expression Analysis &amp; GSEA</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Executed linear modeling (limma) for each defined contrast to identify
+differentially expressed proteins while adjusting for covariates.
+</li>
+<li>
+Generated Volcano plots and static Heatmaps to visualize significant
+fold changes and expression clusters.
+</li>
+<li>
+Performed Gene Set Enrichment Analysis (GSEA) on full fold-change ranked
+lists and rendered Dot and Ridge plots for biological interpretation.
+</li>
+</ul>
+</div>
+<pre class="r"><code>cat(&quot;### Executing Differential Expression &amp; Contrast-Specific Discovery...\n\n&quot;)</code></pre>
+<pre><code>### Executing Differential Expression &amp; Contrast-Specific Discovery...</code></pre>
+<pre class="r"><code>master_dea_results &lt;- list()
+master_gsea_results &lt;- list() 
+
+for (c_name in names(contrast_configs)) {
+  
+  # Run Master Pipeline
+  res &lt;- wrap_dea_pipeline(
+    omics_mat           = omics_mat, 
+    clin_df             = master_spine, 
+    dea_conf            = contrast_configs[[c_name]], 
+    dea_id              = c_name, 
+    base_output_dir     = output_dir_data, 
+    go_db               = go_genesets, 
+    omics_config        = omics_config, 
+    heatmap_config      = heatmap_config, 
+    project_colors_func = get_project_colors
+  )
+  
+  # Report Status
+  cat(sprintf(&quot;#### Contrast: %s\n&quot;, contrast_configs[[c_name]]$title))
+  cat(sprintf(&quot;*Diagnostic: Samples used: %d Target, %d Reference*\n\n&quot;, 
+              res$diagnostics$n_target, res$diagnostics$n_ref))
+  
+  if(res$status == &quot;failed&quot;) {
+    cat(sprintf(&quot;&lt;span style=&#39;color:red;&#39;&gt;**SKIPPED:** %s&lt;/span&gt;\n\n&quot;, res$error_msg))
+    next
+  }
+  
+  master_dea_results[[c_name]] &lt;- res$data$dea
+  master_gsea_results[[c_name]] &lt;- res$data$gsea
+
+  # Rendering
+  print(res$plots$volcano); cat(&quot;\n\n&quot;)
+  
+  if(nrow(res$tables$significant_proteins) &gt; 0) {
+    cat(sprintf(&quot;##### Significant Proteins (%d total)\n\n&quot;, nrow(res$tables$significant_proteins)))
+    print(kbl(res$tables$significant_proteins, format = &quot;html&quot;, digits = 4, align = &quot;c&quot;, 
+              caption = sprintf(&quot;Significant Results: %s&quot;, contrast_configs[[c_name]]$title)) %&gt;%
+          kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;))
+    cat(&quot;\n\n&quot;)
+  }
+
+  draw(res$plots$heatmap); cat(&quot;\n\n&quot;)
+
+  if(!is.null(res$plots$gsea_dotplot)) print(res$plots$gsea_dotplot); cat(&quot;\n\n&quot;)
+  if(!is.null(res$plots$gsea_ridge)) print(res$plots$gsea_ridge); cat(&quot;\n\n&quot;)
+  
+  
+  cat(&quot;--- \n\n&quot;)
+}</code></pre>
+<pre><code>#### Contrast: Active vs Control
+*Diagnostic: Samples used: 48 Target, 35 Reference*</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+##### Significant Proteins (86 total)
+
+&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;width: auto !important; &quot;&gt;
+&lt;caption&gt;Significant Results: Active vs Control&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Feature &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; logFC &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; adj.P.Val &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Significance &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LMNB2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9153 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IFI30 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8649 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; AFAP1L1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.0332 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TNFRSF10B &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8928 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; RBFOX3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8295 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; EDA2R &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9538 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; PGF &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5556 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; S100A12 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.6283 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; S100A11 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5099 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CAPG &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7938 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LAMP3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9808 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CD300E &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8042 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; NT5C1A &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6542 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; AKAP2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6104 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL6 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 2.1660 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; FKBP15 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7361 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; EPHA2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5560 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MAD1L1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8768 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; NOS3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6573 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; SFTPA2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.0951 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TNFRSF6B &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.0089 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CLEC5A &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5515 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CKAP4 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5020 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; PALM2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6338 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; DPY30 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6968 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LAYN &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6481 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; ZBTB17 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6170 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; ADM &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5278 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; KRT19 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7024 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; PON2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5152 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; NEFL &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5754 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CLEC7A &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6479 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LMNB1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9299 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; RAMP2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5247 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; SLAMF8 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7458 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; PTPRN2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5251 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LILRB4 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5605 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; ANXA2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6673 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0002 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL12RB1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5075 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0002 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MSLN &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6309 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0002 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CEBPA &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6238 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0002 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TK1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5270 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0002 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7204 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0003 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL19 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9214 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; RAB44 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6929 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MMP10 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6861 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TPR &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7935 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; SERPINB8 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6812 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0007 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CDCP1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6305 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0007 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CXCL10 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8684 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0008 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; APEX1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6366 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0008 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; FGR &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5796 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0009 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; C1QTNF6 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5359 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0009 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CXCL9 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8545 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0010 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL17C &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8581 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0010 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; OCLN &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5265 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0014 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TNFRSF9 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5537 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0017 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TYMS &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8464 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0026 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5300 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0026 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; HNRNPUL1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5638 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0038 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MKI67 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5971 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0039 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MUC16 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8031 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0045 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CA9 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5348 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0045 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL17A &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8281 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0054 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL7 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.9889 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0056 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL20 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8126 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0056 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MMP12 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6125 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0061 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; NBN &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5971 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0064 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; DAPK2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5510 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0068 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL4 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5231 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0126 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; SCARB1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6451 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0142 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CXCL11 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8232 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0143 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; HNRNPA0 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8707 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0159 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CEACAM5 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6373 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0162 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; ANXA10 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5283 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0179 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL36G &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5682 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0193 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; OSM &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6188 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0205 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CSRP3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8803 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0205 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MYL3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6964 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0237 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; GRPEL1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5780 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0276 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TRIM21 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; -0.8106 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0304 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Down-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; BAIAP2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6303 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0307 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; BAX &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5765 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0343 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; GPA33 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; -0.7874 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0380 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Down-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; POMC &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; -0.5045 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0415 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Down-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LAIR2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.8594 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0444 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+--- </code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-4.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Contrast: Nonactive vs Control
+*Diagnostic: Samples used: 48 Target, 35 Reference*</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+##### Significant Proteins (32 total)
+
+&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;width: auto !important; &quot;&gt;
+&lt;caption&gt;Significant Results: Nonactive vs Control&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Feature &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; logFC &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; adj.P.Val &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Significance &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LMNB2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5366 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TNFRSF10B &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5180 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; AFAP1L1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7405 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0001 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL19 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.1374 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LAIR2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.3007 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0006 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IFI30 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5153 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0007 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MAD1L1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5159 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0013 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL6 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.2615 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0017 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; DAPK2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5003 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0026 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CXCL9 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7173 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0026 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TK1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6000 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0026 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IDO1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6409 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0032 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CXCL10 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7286 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0036 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LAMP3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5372 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0045 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; BAX &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7204 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0045 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; LMNB1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5618 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0048 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; POMC &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; -0.6817 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0048 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Down-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; PDCD1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5421 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0053 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IFIT1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5268 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0087 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TYMS &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6777 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0114 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MMP12 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5656 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0125 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; TNFRSF6B &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6168 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0126 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; S100A12 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7933 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0130 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; RIGI &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5292 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0130 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; ACAA1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6084 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0200 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; HAO1 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 1.0127 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0207 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL7 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6994 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0207 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IFIT3 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6981 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0222 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; IL10RA &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.7523 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0295 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; RANBP2 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5316 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0332 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; MYO1E &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6417 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0355 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CCL20 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.6769 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0467 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+--- </code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-8.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Contrast: Active vs Nonactive
+*Diagnostic: Samples used: 48 Target, 48 Reference*</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+##### Significant Proteins (2 total)
+
+&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;width: auto !important; &quot;&gt;
+&lt;caption&gt;Significant Results: Active vs Nonactive&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Feature &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; logFC &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; adj.P.Val &lt;/th&gt;
+   &lt;th style=&quot;text-align:center;&quot;&gt; Significance &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; CLEC5A &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.4034 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0297 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; C1QTNF6 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.5053 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; 0.0337 &lt;/td&gt;
+   &lt;td style=&quot;text-align:center;&quot;&gt; Up-regulated &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-10.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-11.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+--- </code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-12.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>#### Contrast: Active vs Nonactive (Sample Age Corrected)
+*Diagnostic: Samples used: 48 Target, 48 Reference*</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-13.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-14.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-15.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-16.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+--- </code></pre>
+</div>
+<div id="trajectory-mapping" class="section level2">
+<h2>Trajectory Mapping</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Mapped the fold changes of proteins across two distinct clinical
+contrasts to identify shared and diverging biological trajectories
+(Quadrant Plots).
+</li>
+<li>
+Generated Venn diagrams to visualize the intersection of significant
+features between contrasts.
+</li>
+<li>
+Calculated and plotted cross-contrast pathway trajectories to reveal
+higher-order biological mechanisms driving cohort differences.
+</li>
+</ul>
+</div>
+<pre class="r"><code>cat(&quot;### Executing Comparative Analysis (Trajectories)...\n\n&quot;)</code></pre>
+<pre><code>### Executing Comparative Analysis (Trajectories)...</code></pre>
+<pre class="r"><code>for (cross_name in names(cross_contrasts)) {
+  conf &lt;- cross_contrasts[[cross_name]]
+  
+  # CALL THE MASTER PIPELINE
+  # FIX: Added &#39;omics_config&#39; to the arguments below
+  traj_res &lt;- wrap_trajectory_pipeline(
+    cross_conf          = conf, 
+    cross_id            = cross_name, 
+    master_dea          = master_dea_results, 
+    master_gsea         = master_gsea_results, 
+    contrast_configs    = contrast_configs,
+    base_output_dir     = output_dir_data, 
+    project_colors_func = get_project_colors, 
+    highlight_color     = COLOR_HIGHLIGHT,
+    omics_config        = omics_config      # &lt;--- ADD THIS LINE
+  )
+  
+  cat(sprintf(&quot;#### Comparison: %s\n&quot;, conf$title))
+  
+  if(traj_res$status == &quot;failed&quot;) {
+    cat(sprintf(&quot;&lt;span style=&#39;color:red;&#39;&gt;**SKIPPED:** %s&lt;/span&gt;\n\n&quot;, traj_res$error_msg))
+    next
+  }
+
+  # Inline HTML Rendering
+  if(!is.null(traj_res$plots$protein_trajectory)) {
+    print(traj_res$plots$protein_trajectory); cat(&quot;\n\n&quot;)
+  }
+  
+  if(!is.null(traj_res$plots$venn)) {
+    cat(&quot;##### Feature Intersection (Venn Diagram)\n&quot;)
+    print(traj_res$plots$venn); cat(&quot;\n\n&quot;)
+  }
+
+  if(!is.null(traj_res$plots$pathway_trajectory)) {
+    cat(&quot;##### Pathway Trajectory\n&quot;)
+    print(traj_res$plots$pathway_trajectory); cat(&quot;\n\n&quot;)
+  }
+  
+  cat(&quot;--- \n\n&quot;)
+}</code></pre>
+<pre><code>#### Comparison: Trajectory: Active vs Nonactive</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_trajectory-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+##### Feature Intersection (Venn Diagram)</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_trajectory-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+##### Pathway Trajectory</code></pre>
+<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_trajectory-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+
+--- </code></pre>
+</div>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Appended the raw underlying R code from the custom omics engines to the
+HTML report’s appendix to ensure complete analytical transparency and
+reproducibility.
+</li>
+</ul>
+</div>
+<pre class="r"><code># OMICS ENGINES: High-Dimensional Analysis Functions ---------------------------
+
+library(limma)
+library(FactoMineR)
+library(factoextra)
+library(clusterProfiler)
+library(enrichplot)
+library(pheatmap)
+library(ggrepel)
+library(patchwork)
+library(ggridges)
+library(ComplexHeatmap)
+library(UpSetR)
+library(glmnet)
+library(circlize)
+library(ggVennDiagram)
+library(variancePartition)
+library(BiocParallel)
+library(future)
+library(future.apply)
+library(progressr)
+
+# PART 1: THE MASTER PIPELINE WRAPPERS (The &quot;Managers&quot;) ------------------------
+
+# 1. PCA Pipeline Wrapper ------------------------------------------------------
+# Description:
+#   Executes a complete Principal Component Analysis pipeline. It filters the data
+#   to the requested subgroups, calculates the PCA, and generates a suite of standard
+#   visualizations including scree plots, loadings, top drivers, and color-coded
+#   scatter plots overlaid with clinical metadata.
+# Args:
+#   omics_mat: Numeric matrix of omics data (features in rows, subjects in columns).
+#   clin_df: Clinical metadata dataframe.
+#   pca_conf: List containing settings (title, subset_to_contrast, color_vars).
+#   pca_id: String identifier for saving outputs.
+#   base_output_dir: Root directory for saving results.
+#   project_colors_func: Function that returns specific hex codes for cohorts.
+# Returns:
+#   A list of ggplot objects (individual plots and merged grids).
+wrap_pca_pipeline &lt;- function(omics_mat, clin_df, pca_conf, pca_id, base_output_dir, project_colors_func) {
+
+  # Setup Directories
+  pca_base_dir &lt;- file.path(base_output_dir, &quot;PCA&quot;)
+  pca_sub_dir &lt;- file.path(pca_base_dir, pca_id)
+  if (!dir.exists(pca_sub_dir)) dir.create(pca_sub_dir, recursive = TRUE)
+
+  # Data Filtering &amp; Subset
+  if (!is.null(pca_conf$subset_to_contrast)) {
+    target_col &lt;- pca_conf$subset_to_contrast$group_col
+    target_lvls &lt;- pca_conf$subset_to_contrast$target_groups
+    clin_df &lt;- clin_df %&gt;% filter(!!sym(target_col) %in% target_lvls)
+  }
+
+  valid_barcodes &lt;- intersect(colnames(omics_mat), clin_df$Subject_ID)
+  clin_df &lt;- clin_df %&gt;% filter(Subject_ID %in% valid_barcodes)
+  mat_sub &lt;- omics_mat[, clin_df$Subject_ID, drop = FALSE]
+
+  # PCA Calculation
+  pca_res &lt;- FactoMineR::PCA(t(mat_sub), scale.unit = TRUE, graph = FALSE)
+  plots &lt;- list()
+
+  # Generate Individual Plots
+  plots[[&quot;scree&quot;]] &lt;- fviz_eig(pca_res, addlabels = TRUE) +
+    theme_project_base() +
+    labs(title = sprintf(&quot;%s: Variance Explained (Scree)&quot;, pca_conf$title))
+
+  plots[[&quot;loadings&quot;]] &lt;- fviz_pca_var(pca_res, select.var = list(contrib = 30),
+                                      col.var = &quot;contrib&quot;,
+                                      gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;),
+                                      repel = TRUE) +
+    theme_project_base() +
+    guides(colour = guide_colorbar(barwidth = unit(8, &quot;cm&quot;), barheight = unit(0.3, &quot;cm&quot;))) +
+    labs(title = sprintf(&quot;%s: PCA Loadings (Top 30)&quot;, pca_conf$title))
+
+  plots[[&quot;pc1_drivers&quot;]] &lt;- fviz_contrib(pca_res, choice = &quot;var&quot;, axes = 1, top = 10, fill = &quot;grey30&quot;, color = &quot;grey30&quot;) +
+    theme_project_base() + coord_flip() + labs(title = &quot;Top PC1 Drivers&quot;)
+
+  plots[[&quot;pc2_drivers&quot;]] &lt;- fviz_contrib(pca_res, choice = &quot;var&quot;, axes = 2, top = 10, fill = &quot;grey30&quot;, color = &quot;grey30&quot;) +
+    theme_project_base() + coord_flip() + labs(title = &quot;Top PC2 Drivers&quot;)
+
+  # Variable Overlays (Individual and Merged)
+  overlay_plots_for_grid &lt;- list()
+  for (c_var in pca_conf$color_vars) {
+    if (!(c_var %in% colnames(clin_df))) next
+
+    dynamic_title &lt;- sprintf(&quot;%s (Colored by %s)&quot;, pca_conf$title, c_var)
+
+    if (is.numeric(clin_df[[c_var]])) {
+      p &lt;- fviz_pca_ind(pca_res, label = &quot;none&quot;, col.ind = clin_df[[c_var]], legend.title = c_var) +
+        scale_color_viridis_c(option = &quot;viridis&quot;) + theme_project_base() + labs(title = dynamic_title)
+    } else {
+      clin_df[[c_var]] &lt;- as.factor(clin_df[[c_var]])
+      p &lt;- fviz_pca_ind(pca_res, label = &quot;none&quot;, habillage = clin_df[[c_var]],
+                        palette = project_colors_func(levels(clin_df[[c_var]])),
+                        addEllipses = TRUE) + theme_project_base() + labs(title = dynamic_title)
+    }
+
+    plots[[paste0(&quot;PCA_Plot_&quot;, c_var)]] &lt;- p
+    overlay_plots_for_grid[[c_var]] &lt;- p + labs(title = sprintf(&quot;Colored by %s&quot;, c_var))
+  }
+
+  # Automated Saving (Individual Plots)
+  for (p_name in names(plots)) {
+    ggsave(filename = file.path(pca_sub_dir, paste0(pca_id, &quot;_&quot;, p_name, &quot;.png&quot;)),
+           plot = plots[[p_name]], width = 7, height = 6, dpi = 300, bg = &quot;white&quot;)
+  }
+
+  # Stitch &amp; Save Merged Drivers
+  driver_grid &lt;- (plots[[&quot;pc1_drivers&quot;]] | plots[[&quot;pc2_drivers&quot;]]) +
+    plot_annotation(title = sprintf(&quot;%s: PCA Variance Drivers&quot;, pca_conf$title),
+                    tag_levels = &#39;A&#39;, theme = theme(plot.title = element_text(size = 16, face = &quot;bold&quot;)))
+
+  ggsave(file.path(pca_sub_dir, paste0(pca_id, &quot;_Merged_Drivers.png&quot;)), driver_grid, width = 12, height = 6, dpi = 300, bg=&quot;white&quot;)
+  plots[[&quot;merged_drivers&quot;]] &lt;- driver_grid
+
+  # Stitch &amp; Save Merged Overlays
+  if (length(overlay_plots_for_grid) &gt; 0) {
+    ncol_val &lt;- if(length(overlay_plots_for_grid) &gt; 2) 2 else 1
+    master_scatter_grid &lt;- wrap_plots(overlay_plots_for_grid, ncol = ncol_val) +
+      plot_annotation(title = pca_conf$title, subtitle = &quot;Colored Scatter Overlays&quot;,
+                      tag_levels = &#39;A&#39;, theme = theme(plot.title = element_text(size = 18, face = &quot;bold&quot;)))
+
+    ggsave(file.path(pca_sub_dir, paste0(pca_id, &quot;_Merged_Scatter_Overlays.png&quot;)), master_scatter_grid,
+           width = 14, height = (6 * ceiling(length(overlay_plots_for_grid)/2)), dpi = 300, bg=&quot;white&quot;)
+
+    plots[[&quot;merged_overlays&quot;]] &lt;- master_scatter_grid
+  }
+
+  return(plots)
+}
+
+# 2. DEA &amp; Discovery Pipeline Wrapper ------------------------------------------
+# Description:
+#   Orchestrates the entire Differential Expression Analysis (DEA) workflow.
+#   It cleans the data, runs the Limma engine for significance, generates Volcano
+#   plots, extracts top features for a Heatmap, and performs GSEA pathway analysis.
+# Args:
+#   omics_mat: Cleaned omics matrix.
+#   clin_df: Clinical metadata dataframe.
+#   dea_conf: List with contrast details (groups, covariates, cutoffs).
+#   dea_id: String identifier for this run.
+#   base_output_dir: Path for saving outputs.
+#   go_db: Gene Ontology/Pathway database object for GSEA.
+#   omics_config: Global config settings (p-value cutoffs, min set size).
+#   heatmap_config: Settings for heatmap rendering.
+#   project_colors_func: Function for cohort color mapping.
+# Returns:
+#   A nested list containing &#39;status&#39;, &#39;plots&#39;, &#39;tables&#39;, and &#39;data&#39;.
+wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_output_dir,
+                              go_db, omics_config, heatmap_config, project_colors_func) {
+
+  results &lt;- list(status = &quot;success&quot;, plots = list(), tables = list(), data = list())
+
+  # Setup Directories
+  dea_base_dir &lt;- file.path(base_output_dir, &quot;DEA&quot;)
+  dea_sub_dir &lt;- file.path(dea_base_dir, dea_id)
+  if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
+
+  # Pre-flight: Diagnostic Filtering
+  if(&quot;Sample_Age&quot; %in% colnames(clin_df)) clin_df$Sample_Age &lt;- as.numeric(clin_df$Sample_Age)
+
+  req_cols &lt;- c(dea_conf$group_col, dea_conf$covariates)
+  available_cols &lt;- intersect(req_cols, colnames(clin_df))
+
+  clin_sub &lt;- clin_df %&gt;%
+    filter(!!sym(dea_conf$group_col) %in% c(dea_conf$target_groups, dea_conf$ref_groups)) %&gt;%
+    drop_na(all_of(available_cols))
+
+  n_target &lt;- sum(clin_sub[[dea_conf$group_col]] %in% dea_conf$target_groups)
+  n_ref &lt;- sum(clin_sub[[dea_conf$group_col]] %in% dea_conf$ref_groups)
+  results$diagnostics &lt;- list(n_target = n_target, n_ref = n_ref)
+
+  if(n_target &lt; 2 || n_ref &lt; 2) {
+    results$status &lt;- &quot;failed&quot;
+    results$error_msg &lt;- sprintf(&quot;Too few samples after NA filter (%d T vs %d R)&quot;, n_target, n_ref)
+    return(results)
+  }
+
+  # Execution Phase
+  # A. Limma DEA
+  limma_res &lt;- run_limma_engine(omics_mat, clin_df, dea_conf, project_colors_func)
+  if (is.null(limma_res)) {
+    results$status &lt;- &quot;failed&quot;; results$error_msg &lt;- &quot;Limma engine failed&quot;; return(results)
+  }
+  results$data$dea &lt;- limma_res$data
+  results$plots$volcano &lt;- limma_res$volcano
+
+  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(dea_id, &quot;_DEA_Full_Results.csv&quot;)))
+  ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_Volcano.png&quot;)), limma_res$volcano, width = 8, height = 7, dpi=300)
+
+  # B. Significant Table extraction
+  sig_table &lt;- limma_res$data %&gt;%
+    filter(Significance != &quot;Not Significant&quot;) %&gt;%
+    select(Feature, logFC, adj.P.Val, Significance) %&gt;%
+    arrange(adj.P.Val)
+
+  results$tables$significant_proteins &lt;- sig_table
+  write_csv(sig_table, file.path(dea_sub_dir, paste0(dea_id, &quot;_Significant_Proteins.csv&quot;)))
+
+  # C. Heatmap
+  results$plots$heatmap &lt;- run_heatmap_engine(omics_mat, clin_sub, limma_res$data,
+                                              title = dea_conf$title,
+                                              n_top = heatmap_config$top_n,
+                                              split_by_group = heatmap_config$split_by_group)
+
+  png(file.path(dea_sub_dir, paste0(dea_id, &quot;_Heatmap_Top&quot;, heatmap_config$top_n, &quot;.png&quot;)),
+      width=10, height=12, units=&quot;in&quot;, res=300)
+  draw(results$plots$heatmap); dev.off()
+
+  # D. GSEA
+  gsea_res &lt;- run_gsea_engine(limma_res$data, go_db, omics_config, dea_conf$title)
+  if (!is.null(gsea_res)) {
+    results$data$gsea &lt;- gsea_res$data
+    results$plots$gsea_dotplot &lt;- gsea_res$dotplot
+    results$plots$gsea_ridge &lt;- gsea_res$ridgeplot
+
+    write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, &quot;_GSEA_Results.csv&quot;)))
+    ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_GSEA_Dotplot.png&quot;)), gsea_res$dotplot, width = 9, height = 7, dpi=300)
+    if(!is.null(gsea_res$ridgeplot)) {
+      ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_GSEA_Ridgeplot.png&quot;)), gsea_res$ridgeplot, width = 9, height = 8, dpi=300)
+    }
+  }
+
+  return(results)
+}
+
+# 3. Trajectory Mapping Pipeline Wrapper ---------------------------------------
+# Description:
+#   Takes the outputs of two different DEA contrasts (e.g., A vs C and B vs C)
+#   and intersects them to find shared and specific biological drivers. Generates
+#   4-quadrant scatter plots for proteins and pathways, plus a Venn diagram.
+# Args:
+#   cross_conf: Config specifying which two contrasts to compare.
+#   cross_id: String identifier for this trajectory analysis.
+#   master_dea: Named list of previously generated DEA results.
+#   master_gsea: Named list of previously generated GSEA results.
+#   contrast_configs: Metadata definitions of the original contrasts.
+#   base_output_dir: Root directory for saving results.
+#   project_colors_func: Color mapping function.
+#   highlight_color: Color to use for &quot;Shared&quot; significant features.
+#   omics_config: Global config settings.
+# Returns:
+#   A list of combined multi-contrast plots (trajectory, venn, pathways).
+wrap_trajectory_pipeline &lt;- function(cross_conf, cross_id, master_dea, master_gsea,
+                                     contrast_configs, base_output_dir,
+                                     project_colors_func, highlight_color, omics_config) {
+
+  results &lt;- list(plots = list(), status = &quot;success&quot;)
+
+  # Fetch Source Data &amp; Setup Labels
+  dea_x &lt;- master_dea[[cross_conf$x_axis_contrast]]
+  dea_y &lt;- master_dea[[cross_conf$y_axis_contrast]]
+  gsea_x &lt;- master_gsea[[cross_conf$x_axis_contrast]]
+  gsea_y &lt;- master_gsea[[cross_conf$y_axis_contrast]]
+
+  if (is.null(dea_x) || is.null(dea_y)) {
+    results$status &lt;- &quot;failed&quot;; results$error_msg &lt;- &quot;Source DEA results missing&quot;; return(results)
+  }
+
+  name_x &lt;- contrast_configs[[cross_conf$x_axis_contrast]]$title
+  name_y &lt;- contrast_configs[[cross_conf$y_axis_contrast]]$title
+  vs_label &lt;- sprintf(&quot;%s VS %s&quot;, name_x, name_y)
+
+  color_x &lt;- project_colors_func(contrast_configs[[cross_conf$x_axis_contrast]]$target_groups[1])
+  color_y &lt;- project_colors_func(contrast_configs[[cross_conf$y_axis_contrast]]$target_groups[1])
+
+  traj_sub_dir &lt;- file.path(base_output_dir, &quot;Trajectories&quot;, cross_id)
+  if (!dir.exists(traj_sub_dir)) dir.create(traj_sub_dir, recursive = TRUE)
+
+  # A. PROTEIN TRAJECTORY
+  results$plots$protein_trajectory &lt;- run_cross_contrast_engine(
+    dea_x, dea_y, cross_conf, name_x, name_y, color_x, color_y, highlight_color,
+    title = paste(&quot;Protein Trajectory:&quot;, vs_label)
+  )
+  if(!is.null(results$plots$protein_trajectory)) {
+    ggsave(file.path(traj_sub_dir, paste0(cross_id, &quot;_Protein_Trajectory.png&quot;)),
+           results$plots$protein_trajectory, width=9, height=9, dpi=300, bg=&quot;white&quot;)
+  }
+
+  # B. VENN DIAGRAM
+  sig_x &lt;- dea_x %&gt;% filter(Significance != &quot;Not Significant&quot;) %&gt;% pull(Feature)
+  sig_y &lt;- dea_y %&gt;% filter(Significance != &quot;Not Significant&quot;) %&gt;% pull(Feature)
+
+  venn_data &lt;- list(only_x = length(setdiff(sig_x, sig_y)),
+                    only_y = length(setdiff(sig_y, sig_x)),
+                    shared = length(intersect(sig_x, sig_y)))
+
+  if(sum(unlist(venn_data)) &gt; 0) {
+    theta &lt;- seq(0, 2 * pi, length.out = 100)
+    p_venn &lt;- ggplot() +
+      geom_polygon(data = data.frame(x = -0.5 + cos(theta), y = sin(theta)), aes(x, y), fill = color_x, alpha = 0.3, color = color_x, linewidth = 1.2) +
+      geom_polygon(data = data.frame(x = 0.5 + cos(theta), y = sin(theta)), aes(x, y), fill = color_y, alpha = 0.3, color = color_y, linewidth = 1.2) +
+      annotate(&quot;text&quot;, x = -0.6, y = 1.3, label = name_x, size = 4.5, fontface = &quot;bold&quot;, color = color_x) +
+      annotate(&quot;text&quot;, x = 0.6, y = 1.3, label = name_y, size = 4.5, fontface = &quot;bold&quot;, color = color_y) +
+      annotate(&quot;text&quot;, x = -0.9, y = 0, label = venn_data$only_x, size = 6, fontface = &quot;bold&quot;) +
+      annotate(&quot;text&quot;, x = 0.9, y = 0, label = venn_data$only_y, size = 6, fontface = &quot;bold&quot;) +
+      annotate(&quot;text&quot;, x = 0, y = 0, label = venn_data$shared, size = 7, fontface = &quot;bold&quot;) +
+      theme_void() + coord_fixed(clip = &quot;off&quot;, xlim = c(-1.8, 1.8), ylim = c(-1.5, 1.5)) +
+      labs(title = paste(&quot;DEA Venn:&quot;, vs_label)) +
+      theme(plot.title = element_text(hjust = 0.5, face = &quot;bold&quot;, size = rel(1.4)))
+
+    results$plots$venn &lt;- p_venn
+    ggsave(file.path(traj_sub_dir, paste0(cross_id, &quot;_Venn_Intersection.png&quot;)), p_venn, width=8, height=6, dpi=300, bg=&quot;white&quot;)
+  }
+
+  # C. PATHWAY TRAJECTORY
+  if (!is.null(gsea_x) &amp;&amp; !is.null(gsea_y)) {
+
+    p_cutoff &lt;- omics_config$gsea_p_cutoff
+    rank_var &lt;- if(!is.null(cross_conf$pathway_rank_var)) cross_conf$pathway_rank_var else &quot;p.adjust&quot;
+    n_per_quad &lt;- if(!is.null(cross_conf$top_n_pathways)) cross_conf$top_n_pathways else 10
+
+    merged_gsea &lt;- inner_join(
+      gsea_x %&gt;% select(Description, NES_X = NES, p_X = p.adjust),
+      gsea_y %&gt;% select(Description, NES_Y = NES, p_Y = p.adjust),
+      by = &quot;Description&quot;
+    ) %&gt;% mutate(
+      Sig_X = p_X &lt; p_cutoff, Sig_Y = p_Y &lt; p_cutoff,
+      Signature = case_when(Sig_X &amp; Sig_Y ~ &quot;Shared Drivers&quot;, Sig_X &amp; !Sig_Y ~ sprintf(&quot;%s Specific&quot;, name_x), !Sig_X &amp; Sig_Y ~ sprintf(&quot;%s Specific&quot;, name_y), TRUE ~ &quot;Not Significant&quot;),
+      Quadrant = case_when(NES_X &gt; 0 &amp; NES_Y &gt; 0 ~ &quot;Up-Up&quot;, NES_X &lt; 0 &amp; NES_Y &lt; 0 ~ &quot;Down-Down&quot;, NES_X &gt; 0 &amp; NES_Y &lt; 0 ~ &quot;Up-Down&quot;, NES_X &lt; 0 &amp; NES_Y &gt; 0 ~ &quot;Down-Up&quot;, TRUE ~ &quot;None&quot;),
+      rank_score = (p_X + p_Y)
+    )
+
+    top_paths &lt;- merged_gsea %&gt;%
+      filter(Signature != &quot;Not Significant&quot;) %&gt;%
+      group_by(Quadrant) %&gt;%
+      slice_min(order_by = !!sym(rank_var), n = n_per_quad, with_ties = FALSE) %&gt;%
+      ungroup()
+
+    method_caption &lt;- sprintf(&quot;Top %d pathways per quadrant selected by lowest %s (Significant in at least one contrast).&quot;, n_per_quad, rank_var)
+    color_map &lt;- setNames(c(&quot;black&quot;, color_x, color_y), c(&quot;Shared Drivers&quot;, sprintf(&quot;%s Specific&quot;, name_x), sprintf(&quot;%s Specific&quot;, name_y)))
+
+    p_path &lt;- ggplot(merged_gsea, aes(x = NES_X, y = NES_Y)) +
+      geom_abline(slope = 1, intercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey60&quot;) +
+      geom_vline(xintercept = 0, color = &quot;grey40&quot;) + geom_hline(yintercept = 0, color = &quot;grey40&quot;) +
+      geom_point(aes(color = Signature), alpha = 0.5, size = 2) +
+      geom_text_repel(data = top_paths, aes(label = Description), size = 3, color = &quot;black&quot;, box.padding = 0.5, max.overlaps = Inf) +
+      scale_color_manual(values = color_map) +
+      theme_project_base() +
+      labs(title = str_wrap(paste(&quot;Pathway Trajectory:&quot;, vs_label), 60),
+           x = paste(name_x, &quot;(NES)&quot;), y = paste(name_y, &quot;(NES)&quot;),
+           caption = method_caption)
+
+    results$plots$pathway_trajectory &lt;- p_path
+    ggsave(file.path(traj_sub_dir, paste0(cross_id, &quot;_Pathway_Trajectory.png&quot;)), p_path, width=11, height=9, dpi=300, bg=&quot;white&quot;)
+  }
+
+  return(results)
+}
+
+# 4. Predictive Modeling Pipeline Wrapper --------------------------------------
+# Description:
+#   Sets up a penalized logistic regression (LASSO) using glmnet. This wrapper
+#   filters the cohorts to a binary classification task, runs cross-validation
+#   to find the optimal lambda, and extracts the features with non-zero weights.
+# Args:
+#   omics_mat: Cleaned omics matrix.
+#   clin_df: Clinical metadata dataframe.
+#   lasso_conf: Target column and the two groups to classify.
+#   model_id: String identifier for saving outputs.
+#   base_output_dir: Path for saving results.
+# Returns:
+#   List containing the CV curve plot, the coefficients bar chart, and weight data.
+wrap_predictive_pipeline &lt;- function(omics_mat, clin_df, lasso_conf, model_id, base_output_dir) {
+
+  results &lt;- list(status = &quot;success&quot;, plots = list(), data = list())
+
+  # Setup Directories
+  pred_base_dir &lt;- file.path(base_output_dir, &quot;LASSO_Models&quot;)
+  pred_sub_dir &lt;- file.path(pred_base_dir, model_id)
+  if (!dir.exists(pred_sub_dir)) dir.create(pred_sub_dir, recursive = TRUE)
+
+  # Run LASSO Engine
+  lasso_res &lt;- run_lasso_engine(omics_mat, clin_df, lasso_conf$group_col,
+                                lasso_conf$target_groups, title = lasso_conf$title)
+
+  if (is.null(lasso_res)) {
+    results$status &lt;- &quot;failed&quot;; results$error_msg &lt;- &quot;Model failed to converge or insufficient groups.&quot;; return(results)
+  }
+
+  # Package Results
+  results$data$lasso &lt;- lasso_res$data
+  results$plots$lasso_cv &lt;- lasso_res$cv_plot
+  results$plots$lasso_weights &lt;- lasso_res$coeff_plot
+
+  # Automated Saving
+  write_csv(lasso_res$data, file.path(pred_sub_dir, paste0(model_id, &quot;_LASSO_Coefficients.csv&quot;)))
+
+  png(file.path(pred_sub_dir, paste0(model_id, &quot;_LASSO_CV.png&quot;)), width=7, height=6, units=&quot;in&quot;, res=300)
+  plot(lasso_res$cv_plot); title(main = sprintf(&quot;%s: LASSO Tuning&quot;, lasso_conf$title), line = 2.5); dev.off()
+
+  ggsave(file.path(pred_sub_dir, paste0(model_id, &quot;_LASSO_Weights.png&quot;)), lasso_res$coeff_plot, width=7, height=6, dpi=300, bg=&quot;white&quot;)
+
+  return(results)
+}
+
+# 5a. Joint VPA Wrapper --------------------------------------------------------
+wrap_vpa_pipeline &lt;- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
+
+  vpa_sub_dir &lt;- file.path(base_output_dir, &quot;VPA_Joint&quot;, vpa_id)
+  if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
+
+  # 1. EXPLICIT CHARACTER EXCLUSION
+  # Find all variables that are characters and remove them from the list
+  all_vars &lt;- vpa_conf$variables
+  char_vars &lt;- sapply(all_vars, function(v) is.character(clin_df[[v]]))
+  valid_vars &lt;- all_vars[!char_vars]
+
+  if(length(valid_vars) == 0) return(list(error_msg = &quot;All variables were characters and excluded.&quot;))
+
+  # 2. Align Data &amp; Purge NAs
+  clin_sub &lt;- clin_df %&gt;% select(Subject_ID, any_of(valid_vars)) %&gt;% drop_na() %&gt;% droplevels()
+  valid_ids &lt;- intersect(colnames(omics_mat), clin_sub$Subject_ID)
+  clin_sub &lt;- clin_sub %&gt;% filter(Subject_ID %in% valid_ids)
+
+  if (nrow(clin_sub) &lt; 5) return(list(error_msg = &quot;Less than 5 patients remained after NA filtering.&quot;))
+
+  # 3. Dynamic Formula Builder
+  formula_terms &lt;- sapply(valid_vars, function(v) {
+    if (is.factor(clin_sub[[v]]) || is.logical(clin_sub[[v]])) {
+      paste0(&quot;(1|`&quot;, v, &quot;`)&quot;)
+    } else {
+      paste0(&quot;`&quot;, v, &quot;`&quot;)
+    }
+  })
+  vpa_formula &lt;- as.formula(paste(&quot;~&quot;, paste(formula_terms, collapse = &quot; + &quot;)))
+
+  # 4. Execution (WITH ERROR CAPTURE)
+  # Instead of returning NULL on failure, we capture the exact lme4 error message
+  res_varPart &lt;- tryCatch({
+    fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_sub, BPPARAM = SerialParam())
+  }, error = function(e) return(e$message))
+
+  # If res_varPart is a string, it means the model crashed and caught the error text
+  if (is.character(res_varPart)) {
+    return(list(error_msg = res_varPart))
+  }
+
+  # Process successful results
+  varPart_df &lt;- as.data.frame(res_varPart) %&gt;% rownames_to_column(&quot;Feature&quot;)
+  summary_df &lt;- data.frame(
+    Covariate = colnames(res_varPart),
+    Mean_Var = colMeans(res_varPart, na.rm = TRUE),
+    SEM = apply(res_varPart, 2, sd, na.rm = TRUE) / sqrt(nrow(res_varPart))
+  ) %&gt;%
+    mutate(CI_upper = pmin(1, Mean_Var + (1.96 * SEM))) %&gt;%
+    arrange(desc(Mean_Var))
+
+  plot_summary &lt;- head(summary_df, 10)
+
+  p_bar &lt;- ggplot(plot_summary, aes(x = reorder(Covariate, Mean_Var), y = Mean_Var, fill = Covariate)) +
+    geom_bar(stat = &quot;identity&quot;, color = &quot;black&quot;, alpha = 0.8) +
+    geom_errorbar(aes(ymin = pmax(0, Mean_Var - (1.96 * SEM)), ymax = CI_upper), width = 0.2) +
+    geom_text(aes(y = CI_upper, label = sprintf(&quot;%.1f%%&quot;, Mean_Var * 100)), hjust = -0.2, fontface = &quot;bold&quot;) +
+    coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+    theme_project_base() + theme(legend.position = &quot;none&quot;) +
+    labs(title = vpa_conf$title, subtitle = &quot;Average Variance Explained&quot;, y = &quot;% Variance Explained&quot;, x = NULL)
+
+  long_var &lt;- varPart_df %&gt;%
+    select(Feature, all_of(plot_summary$Covariate)) %&gt;%
+    pivot_longer(-Feature, names_to = &quot;Covariate&quot;, values_to = &quot;Val&quot;) %&gt;%
+    mutate(Covariate = factor(Covariate, levels = rev(plot_summary$Covariate)))
+
+  p_violin &lt;- ggplot(long_var, aes(x = Covariate, y = Val, fill = Covariate)) +
+    geom_violin(alpha = 0.6, color = &quot;grey40&quot;, scale = &quot;width&quot;) +
+    geom_boxplot(width = 0.08, fill = &quot;white&quot;, color = &quot;black&quot;, outlier.shape = 19, outlier.size = 1, outlier.alpha = 0.4) +
+    coord_flip() + scale_y_continuous(labels = scales::percent) +
+    theme_project_base() + theme(legend.position = &quot;none&quot;) +
+    labs(title = vpa_conf$title, x = NULL, y = &quot;% Variance Explained&quot;)
+
+  # Save outputs
+  write_csv(varPart_df, file.path(vpa_sub_dir, paste0(vpa_id, &quot;_Joint_VPA.csv&quot;)))
+  ggsave(file.path(vpa_sub_dir, paste0(vpa_id, &quot;_Bar.png&quot;)), p_bar, width = 8, height = 6, bg=&quot;white&quot;)
+
+  return(list(plots = list(bar = p_bar, violin = p_violin), data = varPart_df))
+}
+
+
+# 5b. Univariate VPA Scan Wrapper ----------------------------------------------
+wrap_vpa_univariate_pipeline &lt;- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
+
+  # Setup Directories
+  vpa_sub_dir &lt;- file.path(base_output_dir, &quot;VPA_Univariate&quot;, vpa_id)
+  if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
+
+  # Drop ghost levels immediately after subsetting cohorts
+  if (!is.null(vpa_conf$subset_to_groups)) {
+    clin_df &lt;- clin_df %&gt;% filter(cohort_group %in% vpa_conf$subset_to_groups) %&gt;% droplevels()
+  }
+
+  # --- EXCLUSION LOGGER &amp; FILTERING -------------------------------------------
+  all_cols &lt;- setdiff(colnames(clin_df), &quot;Subject_ID&quot;)
+  vip_vars &lt;- if(!is.null(vpa_conf$include_vars)) intersect(all_cols, vpa_conf$include_vars) else c()
+  excl_log &lt;- list()
+
+  # 1. Exact Match Exclusions
+  exact_excl &lt;- setdiff(intersect(all_cols, vpa_conf$exclude_vars), vip_vars)
+  if(length(exact_excl) &gt; 0) {
+    excl_log[[&quot;Exact Match (Blacklist)&quot;]] &lt;- exact_excl
+    all_cols &lt;- setdiff(all_cols, exact_excl)
+  }
+
+  # 2. Missingness &amp; Variance Exclusions
+  miss_excl &lt;- c(); var_excl &lt;- c(); surviving_cols &lt;- c()
+
+  for(v in all_cols) {
+    if (v %in% vip_vars) {
+      surviving_cols &lt;- c(surviving_cols, v)
+      next
+    }
+    vec &lt;- clin_df[[v]]
+    if ((sum(is.na(vec))/length(vec)) &gt; vpa_conf$missingness_cutoff) {
+      miss_excl &lt;- c(miss_excl, v)
+    } else if (length(unique(vec[!is.na(vec)])) &lt; 2) {
+      var_excl &lt;- c(var_excl, v)
+    } else {
+      surviving_cols &lt;- c(surviving_cols, v)
+    }
+  }
+
+  if(length(miss_excl) &gt; 0) excl_log[[sprintf(&quot;Missing &gt; %s%%&quot;, vpa_conf$missingness_cutoff*100)]] &lt;- miss_excl
+  if(length(var_excl) &gt; 0) excl_log[[&quot;Zero/Low Variance (&lt;2 unique)&quot;]] &lt;- var_excl
+  all_cols &lt;- surviving_cols
+
+  # 3. Partial Match Exclusions
+  if(!is.null(vpa_conf$exclude_patterns)) {
+    pat_excl &lt;- c()
+    for(pat in vpa_conf$exclude_patterns) {
+      pat_excl &lt;- c(pat_excl, grep(pat, all_cols, fixed = TRUE, value = TRUE))
+    }
+    pat_excl &lt;- setdiff(unique(pat_excl), vip_vars)
+    if(length(pat_excl) &gt; 0) {
+      excl_log[[&quot;Pattern Match (Substring)&quot;]] &lt;- pat_excl
+      all_cols &lt;- setdiff(all_cols, pat_excl)
+    }
+  }
+
+  cols_to_scan &lt;- all_cols
+  if(length(cols_to_scan) == 0) return(NULL)
+
+  # Create Kable Exclusion Log
+  excl_df &lt;- data.frame(Reason = character(), Variables = character(), stringsAsFactors = FALSE)
+  for(reason in names(excl_log)) {
+    excl_df &lt;- rbind(excl_df, data.frame(Reason = reason, Variables = paste(excl_log[[reason]], collapse = &quot;, &quot;)))
+  }
+
+  html_excl_log &lt;- kableExtra::kbl(excl_df, format = &quot;html&quot;, caption = &quot;Variable Exclusion Log&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
+    kableExtra::column_spec(1, bold = TRUE, width = &quot;25%&quot;)
+
+  # --- UNIVARIATE SCAN (PARALLEL) ---------------------------------------------
+  p &lt;- progressor(steps = length(cols_to_scan))
+
+  results_list &lt;- future_lapply(cols_to_scan, function(v) {
+    p()
+    vec &lt;- clin_df[[v]]
+
+    if (is.character(vec)) return(NULL) # Safely ignore characters
+
+    term &lt;- if(is.factor(vec) || is.logical(vec)) {
+      paste0(&quot;(1|`&quot;, v, &quot;`)&quot;)
+    } else {
+      paste0(&quot;`&quot;, v, &quot;`&quot;)
+    }
+    vpa_formula &lt;- as.formula(paste(&quot;~&quot;, term))
+
+    clin_tmp &lt;- clin_df %&gt;% select(Subject_ID, all_of(v)) %&gt;% drop_na() %&gt;% droplevels()
+    valid_ids &lt;- intersect(colnames(omics_mat), clin_tmp$Subject_ID)
+    if(length(valid_ids) &lt; 5) return(NULL)
+
+    # Final variance check post-NA drop
+    if (is.factor(clin_tmp[[v]]) &amp;&amp; length(unique(clin_tmp[[v]])) &lt; 2) return(NULL)
+    if (is.numeric(clin_tmp[[v]]) &amp;&amp; var(clin_tmp[[v]], na.rm = TRUE) == 0) return(NULL)
+
+    res_var &lt;- tryCatch({
+      fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_tmp %&gt;% filter(Subject_ID %in% valid_ids), BPPARAM = SerialParam())
+    }, error = function(e) return(NULL))
+
+    if(!is.null(res_var)) return(data.frame(Variable = v, Mean_Variance = mean(res_var[,1]), N_Samples = length(valid_ids)))
+    return(NULL)
+  }, future.seed = TRUE)
+
+  full_results &lt;- bind_rows(results_list) %&gt;% arrange(desc(Mean_Variance))
+  if (nrow(full_results) == 0) return(NULL)
+  write_csv(full_results, file.path(vpa_sub_dir, paste0(vpa_id, &quot;_Univariate_Results.csv&quot;)))
+
+  # --- UNIVARIATE PLOT &amp; SUMMARY TABLE ----------------------------------------
+  plot_df &lt;- head(full_results, vpa_conf$top_n_plot)
+
+  p_scan &lt;- ggplot(plot_df, aes(x = reorder(Variable, Mean_Variance), y = Mean_Variance)) +
+    geom_bar(stat = &quot;identity&quot;, fill = &quot;#2c3e50&quot;, alpha = 0.8, color = &quot;black&quot;) +
+    geom_text(aes(label = sprintf(&quot;%.2f%%&quot;, Mean_Variance * 100)), hjust = -0.1, fontface = &quot;bold&quot;) +
+    coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+    theme_project_base() + labs(title = vpa_conf$title, subtitle = &quot;Univariate Leaderboard&quot;, y = &quot;Mean Variance Explained&quot;, x = NULL)
+
+  # Build Summary Statistics Table (Removed forced vars, only uses the plot winners)
+  vars_to_summarize &lt;- unique(plot_df$Variable)
+  summary_rows &lt;- lapply(vars_to_summarize, function(v) {
+    if (!v %in% colnames(clin_df)) return(NULL)
+    vec &lt;- clin_df[[v]][!is.na(clin_df[[v]])]
+
+    if (is.numeric(vec)) {
+      details &lt;- sprintf(&quot;Mean: %.2f | Median: %.2f | IQR: [%.2f - %.2f]&quot;, mean(vec), median(vec), quantile(vec, 0.25), quantile(vec, 0.75))
+      type &lt;- &quot;Continuous&quot;
+    } else {
+      tbl &lt;- prop.table(table(vec)) * 100
+      lvl_strs &lt;- paste0(names(tbl), &quot;: &quot;, sprintf(&quot;%.1f%%&quot;, tbl))
+      if(length(lvl_strs) &gt; 4) lvl_strs &lt;- c(lvl_strs[1:4], &quot;...(more)&quot;)
+      details &lt;- sprintf(&quot;Levels: %d | %s&quot;, length(table(vec)), paste(lvl_strs, collapse = &quot;, &quot;))
+      type &lt;- &quot;Categorical&quot;
+    }
+    return(data.frame(Variable = v, Type = type, N_Valid = length(vec), Summary = details))
+  })
+
+  html_summary_table &lt;- bind_rows(summary_rows) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Summary Statistics: Top Univariate Drivers&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)
+
+  # --- RETURN PAYLOAD ---------------------------------------------------------
+  return_payload &lt;- list(
+    univariate_bar = p_scan,
+    tables = list(exclusion = html_excl_log, summary = html_summary_table)
+  )
+
+  return(return_payload)
+}
+
+# PART 2: INTERNAL HELPER ENGINES (The &quot;Workers&quot;) ------------------------------
+
+# 6. Limma &amp; Volcano Engine ----------------------------------------------------
+# Description:
+#   The mathematical core for differential expression. Creates a design matrix
+#   (including any specified covariates), fits linear models using eBayes, and
+#   constructs a Volcano plot annotated with the top changed features.
+# Args:
+#   omics_mat: Feature matrix.
+#   clin_df: Metadata (already filtered by wrapper).
+#   dea_conf: DEA configuration lists.
+#   project_colors: Global color function for plotting.
+# Returns:
+#   List containing the topTable dataframe and the ggplot Volcano object.
+run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, project_colors) {
+
+  required_cols &lt;- c(dea_conf$group_col, dea_conf$covariates)
+  clin_sub &lt;- clin_df %&gt;% drop_na(all_of(required_cols))
+
+  clin_sub &lt;- clin_sub %&gt;% mutate(limma_group = case_when(
+    .data[[dea_conf$group_col]] %in% dea_conf$target_groups ~ &quot;Target&quot;,
+    .data[[dea_conf$group_col]] %in% dea_conf$ref_groups ~ &quot;Reference&quot;,
+    TRUE ~ NA_character_
+  )) %&gt;%
+    filter(!is.na(limma_group)) %&gt;%
+    mutate(limma_group = factor(limma_group, levels = c(&quot;Reference&quot;, &quot;Target&quot;)))
+
+  if(length(unique(clin_sub$limma_group)) &lt; 2) return(NULL)
+
+  mat_sub &lt;- omics_mat[, clin_sub$Subject_ID, drop = FALSE]
+
+  if (length(dea_conf$covariates) &gt; 0) {
+    formula_str &lt;- paste(&quot;~ 0 + limma_group +&quot;, paste(dea_conf$covariates, collapse = &quot; + &quot;))
+  } else {
+    formula_str &lt;- &quot;~ 0 + limma_group&quot;
+  }
+
+  design &lt;- model.matrix(as.formula(formula_str), data = clin_sub)
+  colnames(design)[1:2] &lt;- c(&quot;Reference&quot;, &quot;Target&quot;)
+
+  fit &lt;- lmFit(mat_sub, design)
+  contrast_mat &lt;- makeContrasts(Target - Reference, levels = design)
+  fit2 &lt;- eBayes(contrasts.fit(fit, contrast_mat))
+
+  dea_res &lt;- topTable(fit2, coef = 1, number = Inf, sort.by = &quot;P&quot;) %&gt;%
+    rownames_to_column(&quot;Feature&quot;) %&gt;%
+    mutate(
+      Significance = case_when(
+        adj.P.Val &lt; dea_conf$dea_p_cutoff &amp; logFC &gt; dea_conf$dea_fc_cutoff  ~ &quot;Up-regulated&quot;,
+        adj.P.Val &lt; dea_conf$dea_p_cutoff &amp; logFC &lt; -dea_conf$dea_fc_cutoff ~ &quot;Down-regulated&quot;,
+        TRUE ~ &quot;Not Significant&quot;
+      ),
+      label_score = abs(logFC) * -log10(adj.P.Val)
+    )
+
+  top_labels &lt;- dea_res %&gt;%
+    filter(Significance != &quot;Not Significant&quot;) %&gt;%
+    slice_max(label_score, n = 20, with_ties = FALSE)
+
+  target_color &lt;- project_colors(dea_conf$target_groups[1])
+  ref_color &lt;- project_colors(dea_conf$ref_groups[1])
+
+  p_volc &lt;- ggplot(dea_res, aes(x = logFC, y = -log10(adj.P.Val), color = Significance)) +
+    geom_point(alpha = 0.6, size = 1.5) +
+    scale_color_manual(values = c(&quot;Down-regulated&quot; = ref_color, &quot;Not Significant&quot; = &quot;grey85&quot;, &quot;Up-regulated&quot; = target_color)) +
+    geom_text_repel(data = top_labels, aes(label = Feature), size = 3, color = &quot;black&quot;, box.padding = 0.5, max.overlaps = Inf) +
+    geom_vline(xintercept = c(-dea_conf$dea_fc_cutoff, dea_conf$dea_fc_cutoff), linetype = &quot;dotted&quot;) +
+    geom_hline(yintercept = -log10(dea_conf$dea_p_cutoff), linetype = &quot;dashed&quot;, color = &quot;darkred&quot;) +
+    theme_project_base() +
+    labs(title = sprintf(&quot;Volcano: %s&quot;, dea_conf$title), x = &quot;Log2 Fold Change&quot;, y = &quot;-log10(FDR)&quot;)
+
+  return(list(data = dea_res, volcano = p_volc))
+}
+
+# 7. GSEA Engine ---------------------------------------------------------------
+# Description:
+#   Ranks the Limma features by t-statistic and performs Gene Set Enrichment
+#   Analysis. Automatically cleans pathway names and generates DotPlots and RidgePlots.
+# Args:
+#   dea_res: topTable dataframe from run_limma_engine.
+#   go_db: Loaded database (e.g., MSigDB or generic TERM2GENE table).
+#   omics_config: Settings (p-value, min sizes).
+#   title: Contrast name for plot headers.
+# Returns:
+#   Dataframe of pathways, a dotplot ggplot, and a ridgeplot ggplot.
+run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title) {
+  ranked_vec &lt;- setNames(dea_res$t, dea_res$Feature) %&gt;% sort(decreasing = TRUE)
+  set.seed(42)
+  gsea_res &lt;- GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
+  if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
+
+  gsea_res@result$Description &lt;- gsub(&quot;GOBP_&quot;, &quot;&quot;, gsea_res@result$Description) %&gt;% gsub(&quot;_&quot;, &quot; &quot;, .)
+  res_df &lt;- as.data.frame(gsea_res) %&gt;% mutate(Status = ifelse(NES &gt; 0, &quot;Up-regulated&quot;, &quot;Down-regulated&quot;))
+
+  warning_tag &lt;- if(sum(res_df$p.adjust &lt; omics_config$gsea_p_cutoff) == 0) &quot;\n(Exploratory: No paths passed FDR)&quot; else &quot;&quot;
+  plot_df &lt;- res_df %&gt;% group_by(Status) %&gt;% slice_max(abs(NES), n = 10) %&gt;% ungroup()
+
+  main_title &lt;- str_wrap(sprintf(&quot;GSEA: %s&quot;, title), width = 60)
+  full_title &lt;- paste0(main_title, warning_tag)
+
+  p_dot &lt;- ggplot(plot_df, aes(x = NES, y = reorder(Description, NES), color = p.adjust, size = setSize)) +
+    geom_point() +
+    scale_color_gradient(low = &quot;firebrick3&quot;, high = &quot;navy&quot;) +
+    scale_x_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+    theme_project_base() +
+    theme(plot.title.position = &quot;plot&quot;, plot.title = element_text(hjust = 0)) +
+    labs(title = full_title, y = NULL)
+
+  ridge_title &lt;- str_wrap(sprintf(&quot;Pathways: %s&quot;, title), width = 60)
+  p_ridge &lt;- if(nrow(res_df) &gt;= 2) ridgeplot(pairwise_termsim(gsea_res), showCategory = 15) + theme_project_base() + labs(title = ridge_title) else NULL
+
+  return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge))
+}
+
+# 8. Heatmap Engine ------------------------------------------------------------
+# Description:
+#   Selects the top N most significant features from a DEA result, converts them
+#   to Z-scores across the requested subjects, and renders an annotated heatmap
+#   using the ComplexHeatmap library.
+# Args:
+#   mat: Raw omics matrix.
+#   clin: Metadata for annotations.
+#   dea_res: Dataframe of Limma results used to select features.
+#   title: Plot title.
+#   n_top: Number of rows to include in the heatmap.
+#   split_by_group: Boolean dictating if the columns should be visually clustered by cohort.
+# Returns:
+#   A ComplexHeatmap object (must be drawn with draw()).
+run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_by_group = FALSE) {
+  valid_ids &lt;- intersect(clin$Subject_ID, colnames(mat))
+  clin_sub &lt;- clin %&gt;% filter(Subject_ID %in% valid_ids)
+
+  top_feats &lt;- dea_res %&gt;% mutate(pi = abs(logFC) * -log10(adj.P.Val)) %&gt;% slice_max(pi, n = n_top) %&gt;% pull(Feature)
+  plot_mat &lt;- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
+
+  grp_cols &lt;- get_project_colors(as.character(unique(clin_sub$cohort_group)))
+  sex_cols &lt;- setNames(c(COLOR_FEMALE, COLOR_MALE), c(&quot;Female&quot;, &quot;Male&quot;))
+  age_fun  &lt;- colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+
+  ha &lt;- HeatmapAnnotation(Group = clin_sub$cohort_group, Sex = clin_sub$Sex, Age = clin_sub$Age,
+                          col = list(Group = grp_cols, Sex = sex_cols, Age = age_fun))
+
+  Heatmap(plot_mat, name = &quot;Z-Score&quot;, column_title = sprintf(&quot;%s: Top %d Proteins&quot;, title, n_top),
+          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub$cohort_group else NULL,
+          col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
+}
+
+# 9. LASSO Engine --------------------------------------------------------------
+# Description:
+#   Runs a generalized linear model with L1 penalty (LASSO) using cross-validation.
+#   Extracts the coefficients at the optimal lambda (&quot;lambda.min&quot;) to identify
+#   which features best discriminate between the two target classes.
+# Args:
+#   mat: Omics matrix.
+#   clin: Clinical dataframe.
+#   target_col: Name of the column containing class labels.
+#   target_groups: The two labels to classify (e.g., c(&quot;Active&quot;, &quot;Control&quot;)).
+#   title: Plot title prefix.
+# Returns:
+#   List containing the glmnet cross-validation object, a bar chart of non-zero
+#   coefficients, and the coefficient dataframe.
+run_lasso_engine &lt;- function(mat, clin, target_col, target_groups, title) {
+  clin_sub &lt;- clin %&gt;% filter(!!sym(target_col) %in% target_groups)
+  x &lt;- t(mat[, clin_sub$Subject_ID])
+  y &lt;- factor(clin_sub[[target_col]])
+
+  set.seed(42)
+  cv_fit &lt;- cv.glmnet(x, y, family = &quot;binomial&quot;, type.measure = &quot;auc&quot;)
+
+  tmp_coeffs &lt;- coef(cv_fit, s = &quot;lambda.min&quot;)
+  df_coeffs &lt;- data.frame(Feature = rownames(tmp_coeffs), Beta = as.numeric(tmp_coeffs)) %&gt;%
+    filter(Beta != 0, Feature != &quot;(Intercept)&quot;) %&gt;% arrange(desc(abs(Beta)))
+
+  p_lasso &lt;- ggplot(df_coeffs, aes(x = reorder(Feature, Beta), y = Beta, fill = Beta &gt; 0)) +
+    geom_bar(stat = &quot;identity&quot;, color = &quot;white&quot;) +
+    coord_flip() +
+    scale_fill_manual(values = c(&quot;TRUE&quot; = HM_Z_HIGH, &quot;FALSE&quot; = HM_Z_LOW),
+                      labels = c(&quot;Predicts Reference&quot;, &quot;Predicts Target&quot;)) +
+    theme_project_base() +
+    labs(title = sprintf(&quot;%s: Predictive Weights (LASSO)&quot;, title),
+         subtitle = &quot;Features selected by penalized regression&quot;,
+         x = NULL, y = &quot;Beta Coefficient (Model Weight)&quot;,
+         fill = &quot;Direction&quot;)
+
+  return(list(cv_plot = cv_fit, coeff_plot = p_lasso, data = df_coeffs))
+}
+
+# 10. Cross-Contrast Engine ----------------------------------------------------
+# Description:
+#   Joins two different Limma topTable dataframes on &#39;Feature&#39;. Determines if
+#   features are significant in one, the other, or both. Maps them to a quadrant
+#   scatter plot to reveal biological divergence or shared mechanisms.
+# Args:
+#   dea_x, dea_y: Limma result dataframes.
+#   conf: Configuration lists with &#39;top_n&#39; parameters for labeling.
+#   x_label, y_label: Axis and legend names.
+#   color_x, color_y: Highlight colors for specific signatures.
+#   highlight_color: Color for shared signatures.
+#   title: Plot title.
+# Returns:
+#   A fully formatted 4-quadrant ggplot scatter.
+run_cross_contrast_engine &lt;- function(dea_x, dea_y, conf, x_label, y_label, color_x, color_y, highlight_color, title) {
+  x_sig_name &lt;- sprintf(&quot;%s Specific&quot;, x_label)
+  y_sig_name &lt;- sprintf(&quot;%s Specific&quot;, y_label)
+
+  temporal_shifts &lt;- full_join(
+    dea_x %&gt;% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val, Sig_Status_X = Significance),
+    dea_y %&gt;% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val, Sig_Status_Y = Significance),
+    by = &quot;Feature&quot;
+  ) %&gt;%
+    mutate(
+      Sig_X = !is.na(Sig_Status_X) &amp; Sig_Status_X != &quot;Not Significant&quot;,
+      Sig_Y = !is.na(Sig_Status_Y) &amp; Sig_Status_Y != &quot;Not Significant&quot;,
+      Signature = case_when(
+        Sig_X &amp; Sig_Y  ~ &quot;Shared Drivers&quot;,
+        Sig_X &amp; !Sig_Y ~ x_sig_name,
+        !Sig_X &amp; Sig_Y ~ y_sig_name,
+        TRUE ~ &quot;Not Significant&quot;
+      ),
+      label_score = case_when(
+        Signature == &quot;Shared Drivers&quot; ~ (abs(logFC_X) * -log10(FDR_X)) + (abs(logFC_Y) * -log10(FDR_Y)),
+        Signature == x_sig_name ~ abs(logFC_X) * -log10(FDR_X),
+        Signature == y_sig_name ~ abs(logFC_Y) * -log10(FDR_Y),
+        TRUE ~ 0
+      ),
+      Quadrant = case_when(
+        logFC_X &gt; 0 &amp; logFC_Y &gt; 0 ~ &quot;Up-Up&quot;,
+        logFC_X &lt; 0 &amp; logFC_Y &lt; 0 ~ &quot;Down-Down&quot;,
+        logFC_X &gt; 0 &amp; logFC_Y &lt; 0 ~ &quot;Up-Down&quot;,
+        logFC_X &lt; 0 &amp; logFC_Y &gt; 0 ~ &quot;Down-Up&quot;,
+        TRUE ~ &quot;None&quot;
+      )
+    )
+
+  sig_points &lt;- temporal_shifts %&gt;% filter(Signature != &quot;Not Significant&quot;)
+  if(nrow(sig_points) == 0) return(NULL)
+
+  top_n_spec &lt;- if(!is.null(conf$top_n_specific)) conf$top_n_specific else 5
+  top_n_shar &lt;- if(!is.null(conf$top_n_shared)) conf$top_n_shared else 5
+
+  labels_shared &lt;- sig_points %&gt;% filter(Signature == &quot;Shared Drivers&quot;) %&gt;% group_by(Quadrant) %&gt;% slice_max(order_by = label_score, n = top_n_shar, with_ties = FALSE) %&gt;% ungroup()
+  labels_specific &lt;- sig_points %&gt;% filter(Signature %in% c(x_sig_name, y_sig_name)) %&gt;% group_by(Signature) %&gt;% slice_max(order_by = label_score, n = top_n_spec, with_ties = FALSE) %&gt;% ungroup()
+  top_labels &lt;- bind_rows(labels_shared, labels_specific)
+
+  sig_points &lt;- sig_points %&gt;% mutate(repel_label = ifelse(Feature %in% top_labels$Feature, Feature, &quot;&quot;))
+
+  color_mapping &lt;- setNames(c(highlight_color, color_x, color_y), c(&quot;Shared Drivers&quot;, x_sig_name, y_sig_name))
+
+  ggplot() +
+    geom_abline(slope = 1, intercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey60&quot;) +
+    geom_hline(yintercept = 0, color = &quot;grey40&quot;) + geom_vline(xintercept = 0, color = &quot;grey40&quot;) +
+    geom_point(data = sig_points, aes(x = logFC_X, y = logFC_Y, color = Signature), alpha = 0.8, size = 2.5) +
+    geom_text_repel(data = sig_points, aes(x = logFC_X, y = logFC_Y, label = repel_label), color = &quot;black&quot;, size = 3.5, box.padding = 0.8, max.overlaps = Inf, show.legend = FALSE) +
+    scale_color_manual(values = color_mapping) +
+    theme_project_base() +
+    labs(title = title, x = paste(x_label, &quot;(Log2 Fold Change)&quot;), y = paste(y_label, &quot;(Log2 Fold Change)&quot;)) +
+    coord_fixed(ratio = 1)
+}
+
+# 11. Shared VPA Worker Engine -------------------------------------------------
+# Description:
+#   The math core for Variance Partitioning. Uses linear mixed models via the
+#   variancePartition package. Calculates the mean variance and 95% CI explained
+#   by factors defined in the formula.
+# Args:
+#   mat: Matrix of subset omics data.
+#   clin: Dataframe of aligned metadata.
+#   vpa_formula: Fully constructed R formula string (e.g., ~ Age + (1|Sex)).
+#   title: Plot title.
+#   top_n: Number of variables to display in the plot limit.
+# Returns:
+#   Raw variance dataframe, a barplot (with CI bounds), and a violin distribution plot.
+run_vpa_engine &lt;- function(mat, clin, vpa_formula, title, top_n = 10) {
+
+  # Fit the Model
+  varPart &lt;- tryCatch({
+    fitExtractVarPartModel(mat, vpa_formula, clin, BPPARAM = SerialParam())
+  }, error = function(e) return(NULL))
+
+  if(is.null(varPart)) return(NULL)
+  varPart_df &lt;- as.data.frame(varPart) %&gt;% rownames_to_column(&quot;Feature&quot;)
+
+  # Calculate Statistics
+  summary_df &lt;- data.frame(
+    Covariate = colnames(varPart),
+    Mean_Var = colMeans(varPart, na.rm = TRUE),
+    SEM = apply(varPart, 2, sd, na.rm = TRUE) / sqrt(nrow(varPart))
+  ) %&gt;%
+    mutate(CI_upper = pmin(1, Mean_Var + (1.96 * SEM))) %&gt;%
+    arrange(desc(Mean_Var))
+
+  # Limit to Top N for visualization
+  plot_summary &lt;- head(summary_df, top_n)
+
+  # Barplot
+  p_bar &lt;- ggplot(plot_summary, aes(x = reorder(Covariate, Mean_Var), y = Mean_Var, fill = Covariate)) +
+    geom_bar(stat = &quot;identity&quot;, color = &quot;black&quot;, alpha = 0.8) +
+    geom_errorbar(aes(ymin = pmax(0, Mean_Var - (1.96 * SEM)), ymax = CI_upper), width = 0.2) +
+    geom_text(aes(y = CI_upper, label = sprintf(&quot;%.1f%%&quot;, Mean_Var * 100)), hjust = -0.2, fontface = &quot;bold&quot;) +
+    coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+    theme_project_base() + theme(legend.position = &quot;none&quot;) +
+    labs(title = title, subtitle = &quot;Average Variance Explained&quot;, y = &quot;% Variance Explained (± 95% CI)&quot;, x = NULL)
+
+  # Violin Plot
+  long_var &lt;- varPart_df %&gt;%
+    select(Feature, all_of(plot_summary$Covariate)) %&gt;%
+    pivot_longer(-Feature, names_to = &quot;Covariate&quot;, values_to = &quot;Val&quot;) %&gt;%
+    mutate(Covariate = factor(Covariate, levels = rev(plot_summary$Covariate)))
+
+  p_violin &lt;- ggplot(long_var, aes(x = Covariate, y = Val, fill = Covariate)) +
+    geom_violin(alpha = 0.6, color = &quot;grey40&quot;, scale = &quot;width&quot;) +
+    geom_boxplot(width = 0.08, fill = &quot;white&quot;, color = &quot;black&quot;, outlier.shape = 19, outlier.size = 1, outlier.alpha = 0.4) +
+    coord_flip() + scale_y_continuous(labels = scales::percent) +
+    theme_project_base() + theme(legend.position = &quot;none&quot;) +
+    labs(title = title, x = NULL, y = &quot;% Variance Explained&quot;)
+
+  return(list(data = varPart_df, plots = list(bar = p_bar, violin = p_violin)))
+}</code></pre>
+<pre class="r"><code>cat(&quot;Script 03b Complete! \n&quot;)</code></pre>
+<pre><code>Script 03b Complete! </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] grid      stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] progressr_0.19.0         future.apply_1.20.2      future_1.70.0           
+ [4] variancePartition_1.40.2 BiocParallel_1.44.0      ggVennDiagram_1.5.7     
+ [7] circlize_0.4.18          glmnet_4.1-10            Matrix_1.7-5            
+[10] UpSetR_1.4.0             ComplexHeatmap_2.26.1    ggridges_0.5.7          
+[13] ggrepel_0.9.8            pheatmap_1.0.13          enrichplot_1.30.5       
+[16] kableExtra_1.4.0         here_1.0.2               patchwork_1.3.2         
+[19] msigdbr_26.1.0           clusterProfiler_4.18.4   limma_3.66.0            
+[22] factoextra_2.0.0         FactoMineR_2.13          lubridate_1.9.5         
+[25] forcats_1.0.1            stringr_1.6.0            dplyr_1.2.1             
+[28] purrr_1.2.1              readr_2.2.0              tidyr_1.3.2             
+[31] tibble_3.3.1             tidyverse_2.0.0          ggplot2_4.0.2           
+[34] workflowr_1.7.2         
+
+loaded via a namespace (and not attached):
+  [1] fs_2.0.1                matrixStats_1.5.0       bitops_1.0-9           
+  [4] httr_1.4.8              RColorBrewer_1.1-3      doParallel_1.0.17      
+  [7] numDeriv_2016.8-1.1     backports_1.5.1         tools_4.5.2            
+ [10] R6_2.6.1                DT_0.34.0               lazyeval_0.2.2         
+ [13] GetoptLong_1.1.0        withr_3.0.2             gridExtra_2.3          
+ [16] cli_3.6.5               Biobase_2.70.0          textshaping_1.0.5      
+ [19] flashClust_1.1-4        scatterpie_0.2.6        labeling_0.4.3         
+ [22] sass_0.4.10             mvtnorm_1.3-6           S7_0.2.1               
+ [25] systemfonts_1.3.2       yulab.utils_0.2.4       gson_0.1.0             
+ [28] DOSE_4.4.0              svglite_2.2.2           R.utils_2.13.0         
+ [31] parallelly_1.46.1       rstudioapi_0.18.0       RSQLite_2.4.6          
+ [34] generics_0.1.4          gridGraphics_0.5-1      shape_1.4.6.1          
+ [37] vroom_1.7.1             gtools_3.9.5            GO.db_3.22.0           
+ [40] leaps_3.2               S4Vectors_0.48.1        R.methodsS3_1.8.2      
+ [43] lifecycle_1.0.5         whisker_0.4.1           scatterplot3d_0.3-45   
+ [46] yaml_2.3.12             gplots_3.3.0            qvalue_2.42.0          
+ [49] blob_1.3.0              promises_1.5.0          crayon_1.5.3           
+ [52] ggtangle_0.1.1          lattice_0.22-9          cowplot_1.2.0          
+ [55] KEGGREST_1.50.0         pillar_1.11.1           knitr_1.51             
+ [58] fgsea_1.36.2            rjson_0.2.23            boot_1.3-32            
+ [61] estimability_1.5.1      corpcor_1.6.10          codetools_0.2-20       
+ [64] fastmatch_1.1-8         glue_1.8.0              ggiraph_0.9.6          
+ [67] getPass_0.2-4           ggfun_0.2.0             fontLiberation_0.1.0   
+ [70] data.table_1.18.2.1     vctrs_0.7.2             png_0.1-9              
+ [73] treeio_1.34.0           Rdpack_2.6.6            gtable_0.3.6           
+ [76] assertthat_0.2.1        cachem_1.1.0            xfun_0.57              
+ [79] rbibutils_2.4.1         Seqinfo_1.0.0           reformulas_0.4.4       
+ [82] survival_3.8-6          iterators_1.0.14        statmod_1.5.1          
+ [85] nlme_3.1-169            pbkrtest_0.5.5          ggtree_4.0.5           
+ [88] bit64_4.6.0-1           fontquiver_0.2.1        EnvStats_3.1.0         
+ [91] rprojroot_2.1.1         bslib_0.10.0            KernSmooth_2.23-26     
+ [94] otel_0.2.0              colorspace_2.1-2        BiocGenerics_0.56.0    
+ [97] DBI_1.3.0               tidyselect_1.2.1        processx_3.8.7         
+[100] emmeans_2.0.2           bit_4.6.0               compiler_4.5.2         
+[103] curl_7.0.0              git2r_0.36.2            xml2_1.5.2             
+[106] fontBitstreamVera_0.1.1 scales_1.4.0            caTools_1.18.3         
+[109] remaCor_0.0.20          callr_3.7.6             multcompView_0.1-11    
+[112] rappdirs_0.3.4          digest_0.6.39           minqa_1.2.8            
+[115] rmarkdown_2.31          aod_1.3.3               XVector_0.50.0         
+[118] RhpcBLASctl_0.23-42     htmltools_0.5.9         pkgconfig_2.0.3        
+[121] lme4_2.0-1              fastmap_1.2.0           rlang_1.2.0            
+[124] GlobalOptions_0.1.3     htmlwidgets_1.6.4       farver_2.1.2           
+[127] jquerylib_0.1.4         jsonlite_2.0.0          GOSemSim_2.36.0        
+[130] R.oo_1.27.1             magrittr_2.0.5          ggplotify_0.1.3        
+[133] Rcpp_1.1.1              ape_5.8-1               babelgene_22.9         
+[136] ggnewscale_0.5.2        gdtools_0.5.0           stringi_1.8.7          
+[139] MASS_7.3-65             plyr_1.8.9              listenv_0.10.1         
+[142] parallel_4.5.2          Biostrings_2.78.0       splines_4.5.2          
+[145] hms_1.1.4               ps_1.9.2                igraph_2.2.2           
+[148] reshape2_1.4.5          stats4_4.5.2            evaluate_1.0.5         
+[151] renv_1.1.5              BiocManager_1.30.27     nloptr_2.2.1           
+[154] tzdb_0.5.0              foreach_1.5.2           tweenr_2.0.3           
+[157] httpuv_1.6.16           polyclip_1.10-7         clue_0.3-68            
+[160] ggforce_0.5.0           broom_1.0.12            fANCOVA_0.6-1          
+[163] tidytree_0.4.7          tidydr_0.0.6            later_1.4.8            
+[166] ragg_1.5.2              viridisLite_0.4.3       lmerTest_3.2-1         
+[169] aplot_0.2.9             memoise_2.0.1           AnnotationDbi_1.72.0   
+[172] IRanges_2.44.0          cluster_2.1.8.2         globals_0.19.1         
+[175] timechange_0.4.0       </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

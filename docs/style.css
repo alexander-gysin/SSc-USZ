@@ -1,0 +1,33 @@
+/* Custom Callout Boxes */
+.info-box, .decision-box {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-size: 1.15em;
+  color: #2c3e50;
+  border-left: 6px solid;
+}
+
+/* Info Box (Blue) */
+.info-box {
+  background-color: #eaf4ff;
+  border-left-color: #3a86ff;
+}
+.info-box strong {
+  color: #0056b3;
+}
+
+/* Decision Box (Red) */
+.decision-box {
+  background-color: #fff0f0;
+  border-left-color: #e63946;
+}
+.decision-box strong {
+  color: #941b24;
+}
+
+/* Ensure lists inside boxes don't have huge margins */
+.info-box ul, .decision-box ul {
+  margin-top: 10px;
+  margin-bottom: 0;
+}

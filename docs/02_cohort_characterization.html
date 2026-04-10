@@ -37,6 +37,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -75,6 +77,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="style.css" type="text/css" />
 
 
 
@@ -337,7 +340,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SSc-USZ Proteomics</a>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -348,7 +351,7 @@ div.tocify {
   <a href="01_data_import_and_qc.html">Data</a>
 </li>
 <li>
-  <a href="02_cohort _characterization.html">Cohort</a>
+  <a href="02_cohort_characterization.html">Cohort</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -358,10 +361,16 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="03a_proteomics_differential.html">Differential</a>
+      <a href="03a_proteomics_variance.html">Global</a>
     </li>
     <li>
-      <a href="03b_proteomics_linear_models.html">Linear Models</a>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_predictive.html">Predictive</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
     </li>
   </ul>
 </li>
@@ -401,7 +410,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">06 April, 2026</h4>
+<h4 class="date">10 April, 2026</h4>
 
 </div>
 
@@ -409,7 +418,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -420,8 +429,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -430,16 +439,16 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-06
+<strong>Last updated:</strong> 2026-04-10
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>SSc_USZ/</code> <span
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -459,21 +468,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -564,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -582,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -597,20 +603,23 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
-    Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
-    Ignored:    output/03a_proteomics_differential/
+    Ignored:    output/03a_proteomics_global/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_predictive/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
+Untracked files:
+    Untracked:  analysis/style.css
+
 Unstaged changes:
-    Modified:   analysis/01_data_import_and_qc.Rmd
-    Modified:   analysis/02_cohort_characterization.Rmd
-    Modified:   analysis/03a_proteomics_differential.Rmd
     Modified:   analysis/_site.yml
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -656,6 +665,91 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e7fad4ec08b0b32324214a1242726c9318dc9ff0/analysis/02_cohort_characterization.Rmd" target="_blank">e7fad4e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+<td>
+wflow_publish("analysis/*.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/083bc851a530b716d35871ef1663c64a5e9a35d4/analysis/02_cohort_characterization.Rmd" target="_blank">083bc85</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-09
+</td>
+<td>
+meta data type, VPA, split the scripts to abcd
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6324786a4deb5c628e1f8117a17824c9bee89aa2/analysis/02_cohort_characterization.Rmd" target="_blank">6324786</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-07
+</td>
+<td>
+migrated back to SC
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/76c931bb4e26b4ba79a4b60c009e3992e1526408/analysis/02_cohort_characterization.Rmd" target="_blank">76c931b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-07
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/76c931bb4e26b4ba79a4b60c009e3992e1526408/docs/02_cohort_characterization.html" target="_blank">76c931b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-07
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -716,6 +810,23 @@ finished characterization
 </div>
 <div id="setup-and-import" class="section level1">
 <h1>Setup and import</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required utility packages (tidyverse, gtsummary, corrplot,
+heatmaply, etc.).
+</li>
+<li>
+Created dynamic output directories to safely store Script 02 results and
+figures.
+</li>
+<li>
+Sourced global configurations and loaded the clinical spine generated in
+Script 01.
+</li>
+</ul>
+</div>
 <pre class="r"><code>library(tidyverse)
 library(data.table)
 library(lubridate)   # Crucial for the date math you requested
@@ -724,6 +835,9 @@ library(here)
 library(patchwork)
 library(ggpubr)
 library(gt)
+library(kableExtra)
+library(corrplot)
+library(heatmaply)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -745,6 +859,27 @@ master_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01_data_import_a
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined statistical thresholds for normality (Shapiro-Wilk) and variance
+(Bartlett) testing.
+</li>
+<li>
+Configured correlation matrix parameters including sparsity filters,
+p-value limits, and correlation strength cutoffs.
+</li>
+<li>
+Engineered core clinical features including calculated Age, Sample
+Storage Time, and standardized numeric lab values (CRP, Creatinine).
+</li>
+<li>
+Constructed dynamic configuration lists to dictate Table 1 and Figure
+layouts.
+</li>
+</ul>
+</div>
 <pre class="r"><code># 1. Global Variables &amp; Feature Engineering ------------------------------------
 
 olink_date &lt;- as.Date(&quot;2026-03-30&quot;)
@@ -754,6 +889,13 @@ stat_config &lt;- list(
   shapiro_alpha = 0.05, 
   variance_alpha = 0.05, 
   p_cutoff = 0.05
+)
+
+# Matrix Correlation Configuration
+corr_config &lt;- list(
+  min_required_obs = 10,   # Sparsity filter: drop columns with &lt; 10 valid observations
+  p_cutoff         = 0.05, # Global significance threshold
+  rho_cutoff       = 0.4   # Focused Heatmap threshold (only keep variables with at least one |rho| &gt;= 0.4)
 )
 
 # Helper function to determine parametric status (DRY principle)
@@ -803,7 +945,6 @@ clean_spine &lt;- master_spine %&gt;%
     
     cohort_group = factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))
   )
-
 
 # 2. Table Configurations ------------------------------------------------------
 
@@ -884,6 +1025,28 @@ cat(&quot;Cohort Feature Engineering and Configurations Loaded.\n&quot;)</code><
 </div>
 <div id="table-engine" class="section level1">
 <h1>Table Engine</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Dynamically evaluated each clinical variable to select appropriate
+parametric (ANOVA/t-test) or non-parametric (Kruskal-Wallis/Wilcoxon)
+statistical tests.
+</li>
+<li>
+Generated comprehensive baseline demographic tables using the gtsummary
+package.
+</li>
+<li>
+Calculated and appended both global and pairwise group comparison
+p-values.
+</li>
+<li>
+Exported standard tables as CSV files and rendered interactive HTML
+equivalents.
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;### Generating Tables &amp; Statistical Summaries\n\n&quot;)</code></pre>
 <div id="generating-tables-statistical-summaries"
 class="section level3">
@@ -955,7 +1118,7 @@ for (tbl_name in names(table_configs)) {
           missing = &quot;no&quot; 
         ) %&gt;%
         add_p(test = gtsum_pairwise_tests) %&gt;%
-        modify_header(p.value = sprintf(&quot;**%s vs&lt;br&gt;%s**&quot;, comp[1], comp[2])) %&gt;%
+        modify_header(p.value = sprintf(&quot;**%s vs %s**&quot;, comp[1], comp[2])) %&gt;%
         modify_column_hide(all_stat_cols()) 
       
       pairwise_tbls &lt;- append(pairwise_tbls, list(ptbl))
@@ -974,15 +1137,22 @@ for (tbl_name in names(table_configs)) {
   gtsum_obj &lt;- gtsum_obj %&gt;%
     bold_labels() %&gt;%               
     modify_header(label = &quot;**Variable**&quot;) %&gt;%
-    modify_caption(sprintf(&quot;**%s**&quot;, conf$title))
+    modify_caption(conf$title) 
   
-  # Step 4. Export CSV (Converting the object to a dataframe for saving)
+  # Step 4. Export CSV 
   export_df &lt;- as_tibble(gtsum_obj)
   write_csv(export_df, file.path(output_dir_data, paste0(tbl_name, &quot;.csv&quot;)))
   
-  # Step 5. Rendering for HTML
-  # We use as_kable() to ensure it renders cleanly within the workflowr/Bootstrap layout
-  print(as_kable(gtsum_obj))
+  # Step 5. Rendering for HTML (Using kableExtra to bypass the black-on-black bug)
+  tbl_html &lt;- as_kable_extra(gtsum_obj, format = &quot;html&quot;) %&gt;%
+    kable_styling(
+      bootstrap_options = c(&quot;hover&quot;, &quot;condensed&quot;), 
+      full_width = FALSE, 
+      position = &quot;left&quot;
+    ) %&gt;%
+    row_spec(0, extra_css = &quot;white-space: nowrap;&quot;) 
+  
+  print(tbl_html)
   cat(&quot;\n---\n\n&quot;)
   
   # Save the full object to our list for potential downstream use
@@ -991,123 +1161,273 @@ for (tbl_name in names(table_configs)) {
 <div id="building-baseline-demographics-and-clinical-characteristics"
 class="section level4">
 <h4>Building: Baseline Demographics and Clinical Characteristics</h4>
-<table>
-<caption><strong>Baseline Demographics and Clinical
-Characteristics</strong></caption>
-<colgroup>
-<col width="10%" />
-<col width="10%" />
-<col width="12%" />
-<col width="10%" />
-<col width="10%" />
-<col width="15%" />
-<col width="13%" />
-<col width="15%" />
-</colgroup>
+<table style="NAborder-bottom: 0; width: auto !important; " class="table table-hover table-condensed">
+<caption>
+Baseline Demographics and Clinical Characteristics
+</caption>
 <thead>
-<tr class="header">
-<th align="left"><strong>Variable</strong></th>
-<th align="center"><strong>Active</strong> N = 48</th>
-<th align="center"><strong>Non-Active</strong> N = 48</th>
-<th align="center"><strong>Control</strong> N = 35</th>
-<th align="center"><strong>Global p-value</strong></th>
-<th align="center"><strong>Active vs<br>Non-Active</strong></th>
-<th align="center"><strong>Active vs<br>Control</strong></th>
-<th align="center"><strong>Non-Active vs<br>Control</strong></th>
+<tr>
+<th style="text-align:left;white-space: nowrap;">
+Variable
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Active <br>N = 48
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Non-Active <br>N = 48
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Control <br>N = 35
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Global p-value
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Active vs Non-Active
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Active vs Control
+</th>
+<th style="text-align:center;white-space: nowrap;">
+Non-Active vs Control
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left"><strong>Age</strong></td>
-<td align="center">62 (48, 74)</td>
-<td align="center">62 (48, 70)</td>
-<td align="center">56 (48, 64)</td>
-<td align="center">0.3</td>
-<td align="center">0.9</td>
-<td align="center">0.2</td>
-<td align="center">0.2</td>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Age</span>
+</td>
+<td style="text-align:center;">
+62 (48, 74)
+</td>
+<td style="text-align:center;">
+62 (48, 70)
+</td>
+<td style="text-align:center;">
+57 (49, 65)
+</td>
+<td style="text-align:center;">
+0.5
+</td>
+<td style="text-align:center;">
+0.9
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+<td style="text-align:center;">
+0.3
+</td>
 </tr>
-<tr class="even">
-<td align="left"><strong>Sex</strong></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center">&gt;0.9</td>
-<td align="center">&gt;0.9</td>
-<td align="center">&gt;0.9</td>
-<td align="center">&gt;0.9</td>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sex</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Female</td>
-<td align="center">38 (79%)</td>
-<td align="center">38 (79%)</td>
-<td align="center">28 (80%)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Female
+</td>
+<td style="text-align:center;">
+38 (79%)
+</td>
+<td style="text-align:center;">
+38 (79%)
+</td>
+<td style="text-align:center;">
+28 (80%)
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="even">
-<td align="left">Male</td>
-<td align="center">10 (21%)</td>
-<td align="center">10 (21%)</td>
-<td align="center">7 (20%)</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Male
+</td>
+<td style="text-align:center;">
+10 (21%)
+</td>
+<td style="text-align:center;">
+10 (21%)
+</td>
+<td style="text-align:center;">
+7 (20%)
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="odd">
-<td align="left"><strong>CRP</strong></td>
-<td align="center">0.21 (0.06, 0.79)</td>
-<td align="center">0.13 (0.06, 0.26)</td>
-<td align="center">NA (NA, NA)</td>
-<td align="center">0.009</td>
-<td align="center">0.010</td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CRP</span>
+</td>
+<td style="text-align:center;">
+0.21 (0.06, 0.79)
+</td>
+<td style="text-align:center;">
+0.13 (0.06, 0.26)
+</td>
+<td style="text-align:center;">
+NA (NA, NA)
+</td>
+<td style="text-align:center;">
+0.009
+</td>
+<td style="text-align:center;">
+0.010
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="even">
-<td align="left">Missing (NA)</td>
-<td align="center">0</td>
-<td align="center">2</td>
-<td align="center">35</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Missing (NA)
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="odd">
-<td align="left"><strong>Creatinine</strong></td>
-<td align="center">70 (62, 87)</td>
-<td align="center">68 (61, 81)</td>
-<td align="center">NA (NA, NA)</td>
-<td align="center">0.7</td>
-<td align="center">0.7</td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Creatinine</span>
+</td>
+<td style="text-align:center;">
+70 (62, 87)
+</td>
+<td style="text-align:center;">
+68 (61, 81)
+</td>
+<td style="text-align:center;">
+NA (NA, NA)
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="even">
-<td align="left">Missing (NA)</td>
-<td align="center">2</td>
-<td align="center">2</td>
-<td align="center">35</td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
-<td align="center"></td>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Missing (NA)
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
 </tr>
-<tr class="odd">
-<td align="left"><strong>Sample_Age_Years</strong></td>
-<td align="center">1.14 (0.80, 1.47)</td>
-<td align="center">1.36 (1.04, 1.61)</td>
-<td align="center">2.24 (2.24, 2.24)</td>
-<td align="center">&lt;0.001</td>
-<td align="center">0.12</td>
-<td align="center">&lt;0.001</td>
-<td align="center">&lt;0.001</td>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sample_Age_Years</span>
+</td>
+<td style="text-align:center;">
+1.14 (0.80, 1.47)
+</td>
+<td style="text-align:center;">
+1.36 (1.04, 1.61)
+</td>
+<td style="text-align:center;">
+1.17 (0.99, 1.20)
+</td>
+<td style="text-align:center;">
+0.026
+</td>
+<td style="text-align:center;">
+0.12
+</td>
+<td style="text-align:center;">
+0.5
+</td>
+<td style="text-align:center;">
+0.004
+</td>
 </tr>
 </tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>1</sup> Median (Q1, Q3); n (%)
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>2</sup> Kruskal-Wallis rank sum test; Pearson’s Chi-squared test
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>3</sup> Wilcoxon rank sum test; Pearson’s Chi-squared test
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>4</sup> Wilcoxon rank sum test; Pearson’s Chi-squared test; NA
+</td>
+</tr>
+</tfoot>
 </table>
 <hr />
 </div>
@@ -1115,6 +1435,23 @@ Characteristics</strong></caption>
 </div>
 <div id="figure-engine" class="section level1">
 <h1>Figure Engine</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generated dynamic clinical visualizations (stacked histograms, violin
+plots) based on the configuration dictionary.
+</li>
+<li>
+Automatically applied appropriate parametric or non-parametric pairwise
+statistical comparisons to the plots.
+</li>
+<li>
+Assembled individual plots into comprehensive multi-panel figure layouts
+using patchwork.
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;### Generating Clinical Visualizations\n&quot;)</code></pre>
 <pre><code>### Generating Clinical Visualizations</code></pre>
 <pre class="r"><code>group_levels &lt;- levels(clean_spine$cohort_group) 
@@ -1131,7 +1468,7 @@ generate_base_plot &lt;- function(conf) {
     
     p &lt;- ggplot(clean_spine, aes(x = .data[[conf$x_var]], fill = .data[[conf$fill_var]])) + 
       geom_histogram(bins = hist_bins, color = &quot;white&quot;, alpha = 0.8) +
-      scale_fill_manual(values = c(&quot;Female&quot; = &quot;#E69F00&quot;, &quot;Male&quot; = &quot;#56B4E9&quot;)) + 
+      scale_fill_manual(values = conf$fill_palette) + 
       labs(title = conf$title, x = conf$x_var, y = &quot;Count&quot;, fill = conf$fill_var)
     
     if (!is.null(conf$facet_by)) {
@@ -1246,6 +1583,18 @@ for (fig_name in names(figure_configs)) {
 }</code></pre>
 <div id="merged-figures" class="section level2">
 <h2>Merged Figures</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Rendered the assembled multi-panel figures for the HTML report.
+</li>
+<li>
+Exported high-resolution PNG copies of the merged figures to the output
+directory.
+</li>
+</ul>
+</div>
 <pre class="r"><code># This chunk handles the large patchwork layouts
 for (fig_name in names(stitched_figures)) {
   print(stitched_figures[[fig_name]])
@@ -1260,6 +1609,18 @@ for (fig_name in names(stitched_figures)) {
 </div>
 <div id="individual-plots" class="section level2 tabset">
 <h2 class="tabset">Individual Plots</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generated tabbed sections in the HTML report for easy navigation of
+individual plots.
+</li>
+<li>
+Exported standalone high-resolution PNGs for each individual plot.
+</li>
+</ul>
+</div>
 <pre class="r"><code># This chunk handles the individual plots inside the tabset
 
 for (p_name in names(individual_plots)) {
@@ -1296,6 +1657,696 @@ for (p_name in names(individual_plots)) {
 <div id="baseline-creatinine" class="section level3">
 <h3>Baseline Creatinine</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="matrix-correlation" class="section level1">
+<h1>Matrix Correlation</h1>
+<div id="factor-exploration" class="section level2">
+<h2>Factor Exploration</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Scanned all factor variables to identify their category distributions
+and assess variance.
+</li>
+<li>
+Filtered out cleanly binarized variables to reduce noise.
+</li>
+<li>
+Generated an audit table grouping remaining factors by level counts
+(&gt;2 levels, exactly 2 non-standard levels, or 0 variance) to guide
+manual binarization.
+</li>
+</ul>
+</div>
+<pre class="r"><code>cat(&quot;\n### Factor Exploration Report\n\n&quot;)</code></pre>
+<pre><code>
+### Factor Exploration Report</code></pre>
+<pre class="r"><code># Helper function to calculate level percentages safely
+get_level_pct &lt;- function(vec) {
+  vec &lt;- vec[!is.na(vec)]
+  if(length(vec) == 0) return(&quot;All NA&quot;)
+  
+  # Calculate percentages
+  tbl &lt;- prop.table(table(vec)) * 100
+  
+  # Format as &quot;Level: 45.2%&quot;
+  level_strings &lt;- paste0(names(tbl), &quot;: &quot;, sprintf(&quot;%.1f%%&quot;, tbl))
+  return(paste(level_strings, collapse = &quot; &lt;br&gt; &quot;)) # Use HTML break for table formatting
+}
+
+# Initialize empty dataframe for the table
+exploration_df &lt;- data.frame(
+  Variable = character(),
+  Category = character(),
+  Distribution = character(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through every column in the dataframe
+for (col in names(master_spine)) {
+  vec &lt;- master_spine[[col]]
+  
+  # Check if it&#39;s a factor
+  if (is.factor(vec)) {
+    
+    clean_vec &lt;- vec[!is.na(vec)]
+    unique_levels &lt;- unique(as.character(clean_vec))
+    n_levels &lt;- length(unique_levels)
+    
+    dist_str &lt;- get_level_pct(vec)
+    cat_name &lt;- NA
+    
+    # CATEGORY 3: 1 or 0 levels (Zero Variance)
+    if (n_levels &lt;= 1) {
+      cat_name &lt;- &quot;3: Zero Variance (&lt;= 1 Level)&quot;
+      
+    # CATEGORY 1: More than 2 levels
+    } else if (n_levels &gt; 2) {
+      cat_name &lt;- &quot;1: &gt; 2 Levels (Needs Bucketing/Exclusion)&quot;
+      
+    # CATEGORY 2: Exactly 2 Levels (Check if they are NOT 1/0 or Yes/No)
+    } else if (n_levels == 2) {
+      lower_levels &lt;- tolower(unique_levels)
+      
+      # We ignore factors that are already cleanly binarized into 1/0 or yes/no
+      is_strict_binary &lt;- all(lower_levels %in% c(&quot;yes&quot;, &quot;no&quot;, &quot;1&quot;, &quot;0&quot;))
+      
+      if (!is_strict_binary) {
+        cat_name &lt;- &quot;2: Exactly 2 Levels (Needs Manual 1/0 Mapping)&quot;
+      }
+    }
+    
+    # Append to dataframe if it falls into one of our target categories
+    if (!is.na(cat_name)) {
+      exploration_df &lt;- rbind(exploration_df, data.frame(
+        Variable = col,
+        Category = cat_name,
+        Distribution = dist_str,
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+}
+
+# --- PRINT THE HTML TABLE ---
+
+if(nrow(exploration_df) &gt; 0) {
+  
+  exploration_df %&gt;%
+    arrange(Category, Variable) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, caption = &quot;Variables Requiring Binarization Attention&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;) %&gt;%
+    kableExtra::column_spec(1, bold = TRUE) %&gt;%
+    kableExtra::collapse_rows(columns = 2, valign = &quot;top&quot;) # Groups the categories visually
+    
+} else {
+  cat(&quot;**Result:** All factor variables are cleanly binary (1/0) and ready for the correlation matrix!\n\n&quot;)
+}</code></pre>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
+<caption>
+Variables Requiring Binarization Attention
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:left;">
+Category
+</th>
+<th style="text-align:left;">
+Distribution
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+ACTIVE_AI
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="11">
+1: &gt; 2 Levels (Needs Bucketing/Exclusion)
+</td>
+<td style="text-align:left;">
+-1: 26.7% <br> 0: 48.1% <br> 1: 25.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Capillary loss
+</td>
+<td style="text-align:left;">
+Extensive: 6.6% <br> Moderate: 25.3% <br> None: 29.7% <br> Rare: 38.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Digital ulcer
+</td>
+<td style="text-align:left;">
+Current: 18.8% <br> Never: 56.2% <br> Previously: 25.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Dyspnea NYHA Stage
+</td>
+<td style="text-align:left;">
+0: 19.8% <br> 1: 14.0% <br> I: 41.9% <br> II: 20.9% <br> III: 3.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Giant capillaries
+</td>
+<td style="text-align:left;">
+Extensive: 2.2% <br> Moderate: 6.7% <br> None: 41.1% <br> Rare: 50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Hemorrhages
+</td>
+<td style="text-align:left;">
+Moderate: 5.6% <br> None: 40.4% <br> Rare: 53.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Pitting scars on finger tips
+</td>
+<td style="text-align:left;">
+Current: 46.2% <br> Never: 48.4% <br> Previously: 5.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Ramified bushy capillaries
+</td>
+<td style="text-align:left;">
+Moderate: 14.3% <br> None: 22.0% <br> Rare: 63.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Skin thickening of the fingers of both hands extending proximal to the
+MCP joints
+</td>
+<td style="text-align:left;">
+Current: 23.7% <br> Never: 66.7% <br> Previously: 9.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Subsets of SSc according to LeRoy (1988):
+</td>
+<td style="text-align:left;">
+Diffuse cutaneous SSc: 21.6% <br> Limited cutaneous SSc: 43.2% <br> Sine
+scleroderma: 35.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+VisitNumber
+</td>
+<td style="text-align:left;">
+Follow Up Visit (1): 73.4% <br> Follow Up Visit (2): 25.5% <br> Visit 0:
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Gangrene
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+2: Exactly 2 Levels (Needs Manual 1/0 Mapping)
+</td>
+<td style="text-align:left;">
+Never: 96.7% <br> Previously: 3.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Geschlecht
+</td>
+<td style="text-align:left;">
+männlich: 20.6% <br> weiblich: 79.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Sex
+</td>
+<td style="text-align:left;">
+Female: 79.4% <br> Male: 20.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+SiteNumber
+</td>
+<td style="text-align:left;">
+6: 97.9% <br> manual: 2.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+ANA positivity
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="12">
+3: Zero Variance (&lt;= 1 Level)
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Buffy-coat
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+DLCO (SB) (% predicted) performed?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+DLCO/VA (% predicted) performed?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Forced Vital Capacity (FVC- % predicted) performed ?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Left ventricular ejection fraction %?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Myositis antibodies positivity
+</td>
+<td style="text-align:left;">
+0: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Patients eligible
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Right atrium area?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Right ventricular area?
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+SELECTED
+</td>
+<td style="text-align:left;">
+1: 100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Tricuspid regurgitation velocity?
+</td>
+<td style="text-align:left;">
+0: 100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="data-prep-for-matrix-correlation" class="section level2">
+<h2>Data Prep for Matrix Correlation</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Conducted a pre-scan of factor variables to log any unrecognized text
+levels, preventing silent data loss.
+</li>
+<li>
+One-hot encoded nominal disease subset categories into distinct binary
+columns.
+</li>
+<li>
+Applied a Universal Dictionary to translate ordinal factors (e.g.,
+severity, smoking status) and binary text into continuous numerical
+ranks.
+</li>
+<li>
+Safely excluded unmapped levels and non-numeric columns (e.g., Dates,
+IDs) to produce a mathematically pure numeric matrix.
+</li>
+</ul>
+</div>
+<pre class="r"><code># ----------------------------------------------------------------------------
+# STEP 0: PRE-SCAN &amp; UNMAPPED LEVEL REPORT
+# ----------------------------------------------------------------------------
+# Define the exact text strings our dictionary knows how to translate
+known_levels &lt;- c(
+  &quot;1&quot;, &quot;0&quot;, 
+  &quot;weiblich&quot;, &quot;female&quot;, &quot;männlich&quot;, &quot;male&quot;, 
+  &quot;manual&quot;, &quot;6&quot;, 
+  &quot;never&quot;, &quot;previously&quot;, &quot;current&quot;, 
+  &quot;none&quot;, &quot;rare&quot;, &quot;moderate&quot;, &quot;extensive&quot;, 
+  &quot;0&quot;, &quot;1&quot;, &quot;i&quot;, &quot;ii&quot;, &quot;iii&quot;, 
+  &quot;visit 0&quot;, &quot;follow up visit (1)&quot;, &quot;follow up visit (2)&quot;
+)
+
+unmapped_log &lt;- list()
+
+# Scan the dataset to see what will fall into the Safety Net
+for (col in names(master_spine)) {
+  if (is.factor(master_spine[[col]]) &amp;&amp; col != &quot;Subsets of SSc according to LeRoy (1988):&quot;) {
+    
+    # Extract unique actual values (ignoring NAs) and lowercase them
+    actual_vals &lt;- tolower(unique(as.character(master_spine[[col]])))
+    actual_vals &lt;- actual_vals[!is.na(actual_vals)]
+    
+    # Find which ones are NOT in our known dictionary
+    unmapped_vals &lt;- setdiff(actual_vals, known_levels)
+    
+    if (length(unmapped_vals) &gt; 0) {
+      unmapped_log[[col]] &lt;- unmapped_vals
+    }
+  }
+}
+
+# Print the Audit Report
+cat(&quot;### Safety Net Audit: Unmapped Levels -&gt; NA ###\n\n&quot;)</code></pre>
+<pre><code>### Safety Net Audit: Unmapped Levels -&gt; NA ###</code></pre>
+<pre class="r"><code>if (length(unmapped_log) &gt; 0) {
+  cat(&quot;The following levels were not found in the dictionary and will be converted to NA:\n\n&quot;)
+  for (col in names(unmapped_log)) {
+    cat(sprintf(&quot; * **%s**: [&#39;%s&#39;]\n&quot;, col, paste(unmapped_log[[col]], collapse = &quot;&#39;, &#39;&quot;)))
+  }
+} else {
+  cat(&quot; * Perfect match! No unexpected levels were found in the dataset.\n&quot;)
+}</code></pre>
+<pre><code>The following levels were not found in the dictionary and will be converted to NA:
+
+ * **ACTIVE_AI**: [&#39;-1&#39;]</code></pre>
+<pre class="r"><code>cat(&quot;\n---\n\n&quot;)</code></pre>
+<pre><code>
+---</code></pre>
+<pre class="r"><code># ----------------------------------------------------------------------------
+# STEP 1 &amp; 2: TRANSLATION &amp; FILTERING
+# ----------------------------------------------------------------------------
+cor_data &lt;- master_spine %&gt;%
+  
+  # We manually split the un-ordered disease subset into 3 binary columns.
+  mutate(
+    Subset_Diffuse = if_else(`Subsets of SSc according to LeRoy (1988):` == &quot;diffuse cutaneous&quot;, 1, 0),
+    Subset_Limited = if_else(`Subsets of SSc according to LeRoy (1988):` == &quot;limited cutaneous&quot;, 1, 0),
+    Subset_Sine    = if_else(`Subsets of SSc according to LeRoy (1988):` == &quot;sine scleroderma&quot;, 1, 0)
+  ) %&gt;%
+  # Drop the original text column so it doesn&#39;t break the matrix math
+  select(-`Subsets of SSc according to LeRoy (1988):`) %&gt;%
+  
+  # This targets EVERY remaining factor in the dataset.
+  mutate(across(where(is.factor), ~ {
+    
+    val &lt;- tolower(as.character(.x))
+    
+    num_val &lt;- case_when(
+      val == &quot;1&quot; ~ 1,
+      val == &quot;0&quot; ~ 0,
+      val %in% c(&quot;weiblich&quot;, &quot;female&quot;) ~ 1,
+      val %in% c(&quot;männlich&quot;, &quot;male&quot;) ~ 0,
+      val == &quot;manual&quot; ~ 1,
+      val == &quot;6&quot; ~ 0,
+      val == &quot;never&quot; ~ 0,
+      val == &quot;previously&quot; ~ 1,
+      val == &quot;current&quot; ~ 2,
+      val == &quot;none&quot; ~ 0,
+      val == &quot;rare&quot; ~ 1,
+      val == &quot;moderate&quot; ~ 2,
+      val == &quot;extensive&quot; ~ 3,
+      val == &quot;0&quot; ~ 0,
+      val %in% c(&quot;1&quot;, &quot;i&quot;) ~ 1, 
+      val == &quot;ii&quot; ~ 2,
+      val == &quot;iii&quot; ~ 3,
+      val == &quot;visit 0&quot; ~ 0,
+      val == &quot;follow up visit (1)&quot; ~ 1,
+      val == &quot;follow up visit (2)&quot; ~ 2,
+      
+      # THE SAFETY NET
+      TRUE ~ NA_real_ 
+    )
+    return(num_val)
+  }))
+
+# ----------------------------------------------------------------------------
+# STEP 3: NON-NUMERIC EXCLUSION REPORT
+# ----------------------------------------------------------------------------
+# Find all columns that are NOT numeric (e.g., Dates, Subject IDs, raw text notes)
+non_numeric_cols &lt;- names(cor_data)[!sapply(cor_data, is.numeric)]
+
+cat(&quot;### Safety Net Audit: Excluded Non-Numeric Columns ###\n\n&quot;)</code></pre>
+<pre><code>### Safety Net Audit: Excluded Non-Numeric Columns ###</code></pre>
+<pre class="r"><code>if (length(non_numeric_cols) &gt; 0) {
+  cat(&quot;The following columns remain non-numeric and will be excluded from the correlation matrix:\n\n&quot;)
+  for (col in non_numeric_cols) {
+    cat(sprintf(&quot; * %s\n&quot;, col))
+  }
+} else {
+  cat(&quot; * All columns are numeric! Nothing was dropped.\n&quot;)
+}</code></pre>
+<pre><code>The following columns remain non-numeric and will be excluded from the correlation matrix:
+
+ * Subject_ID
+ * cohort_group
+ * inCentraxx
+ * ...1
+ * SubjectNumber
+ * Visit Date
+ * Entnahmedatum
+ * Einlagerungsdatum
+ * If yes, Date of HRCT
+ * Date of PFT
+ * If yes, Date of assessment for ECG
+ * If yes, Date of assessment for ECHO
+ * If, yes Date of assessment for Walk test
+ * onset_nonRP
+ * Unique Sample ID 
+(for letters standard A-Z only)
+ * Subject-ID (EUSTAR)
+ * Entnahmedatum_Clean</code></pre>
+<pre class="r"><code>cat(&quot;\n---\n\n&quot;)</code></pre>
+<pre><code>
+---</code></pre>
+<pre class="r"><code># Final check: Keep only numeric columns for the correlation matrix
+cor_data &lt;- cor_data %&gt;% select(where(is.numeric))
+
+cat(&quot;**Success:** Data successfully binarized and converted to continuous ordinal ranks!\n&quot;)</code></pre>
+<pre><code>**Success:** Data successfully binarized and converted to continuous ordinal ranks!</code></pre>
+</div>
+<div id="matrix-correlation-1" class="section level2">
+<h2>Matrix Correlation</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Applied a sparsity filter to exclude clinical variables with fewer than
+10 valid observations.
+</li>
+<li>
+Calculated a robust pairwise Spearman correlation matrix, gracefully
+handling ‘zero standard deviation’ errors and ties.
+</li>
+<li>
+Generated an interactive, full-dataset heatmap using heatmaply for deep
+exploratory data analysis.
+</li>
+<li>
+Extracted a highly focused static heatmap (corrplot) showing only
+significant correlations exceeding the defined strength threshold,
+automatically exported for presentations.
+</li>
+</ul>
+</div>
+<pre class="r"><code>cat(&quot;### Clinical Spearman Correlation Matrix\n\n&quot;)</code></pre>
+<pre><code>### Clinical Spearman Correlation Matrix</code></pre>
+<pre class="r"><code># Apply Parameterized Sparsity Rule
+min_obs &lt;- corr_config$min_required_obs
+
+valid_counts &lt;- colSums(!is.na(cor_data))
+valid_col_names &lt;- names(valid_counts)[valid_counts &gt;= min_obs]
+dropped_sparse &lt;- names(valid_counts)[valid_counts &lt; min_obs]
+
+if (length(dropped_sparse) &gt; 0) {
+  cat(&quot;\n#### Dropped due to extreme sparsity (&lt;&quot;, min_obs, &quot; observations) ####\n&quot;)
+  for(col in dropped_sparse) cat(sprintf(&quot; * %s\n&quot;, col))
+}</code></pre>
+<pre><code>
+#### Dropped due to extreme sparsity (&lt; 10  observations) ####
+ * ANA positivity
+ * SSc-specific antibodies positivity
+ * Other anti-nuclear antibodies positivity
+ * Other antibodies positivity
+ * Myositis antibodies positivity
+ * Tricuspid regurgitation velocity?</code></pre>
+<pre class="r"><code>cor_data &lt;- cor_data %&gt;% select(all_of(valid_col_names))
+cat(&quot;\n---\n\n&quot;)</code></pre>
+<pre><code>
+---</code></pre>
+<pre class="r"><code># ----------------------------------------------------------------------------
+# Run Matrix Math
+# ----------------------------------------------------------------------------
+cat(&quot;\nCalculating robust pairwise correlations...\n&quot;)</code></pre>
+<pre><code>
+Calculating robust pairwise correlations...</code></pre>
+<pre class="r"><code>cor_matrix &lt;- cor(cor_data, use = &quot;pairwise.complete.obs&quot;, method = &quot;spearman&quot;)
+
+robust_cor_mtest &lt;- function(mat) {
+  n &lt;- ncol(mat)
+  p_mat &lt;- matrix(1, n, n)
+  colnames(p_mat) &lt;- rownames(p_mat) &lt;- colnames(mat)
+  
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      p_val &lt;- suppressWarnings(
+        tryCatch({
+          cor.test(mat[[i]], mat[[j]], method = &quot;spearman&quot;, exact = FALSE)$p.value
+        }, error = function(e) 1) 
+      )
+      p_mat[i, j] &lt;- p_mat[j, i] &lt;- p_val
+    }
+  }
+  return(p_mat)
+}
+
+p_matrix &lt;- robust_cor_mtest(cor_data)
+
+# Parameterized Masking and Safety Nets
+p_matrix[is.na(p_matrix)] &lt;- 1
+cor_matrix[is.na(cor_matrix)] &lt;- 0
+
+col_palette &lt;- colorRampPalette(c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))(200)
+
+# ----------------------------------------------------------------------------
+# 1. Interactive HTML Heatmap (FULL DATASET)
+# ----------------------------------------------------------------------------
+cat(&quot;\n#### 1. Interactive Full Heatmap\n&quot;)</code></pre>
+<pre><code>
+#### 1. Interactive Full Heatmap</code></pre>
+<pre class="r"><code>cat(&quot;Hover over squares to explore specific correlation values and parameters. Non-significant relationships are masked.\n\n&quot;)</code></pre>
+<pre><code>Hover over squares to explore specific correlation values and parameters. Non-significant relationships are masked.</code></pre>
+<pre class="r"><code># Mask insignificant values with NA for interactive display
+masked_cor &lt;- cor_matrix
+masked_cor[p_matrix &gt;= corr_config$p_cutoff] &lt;- NA
+
+tryCatch({
+  p_interactive &lt;- heatmaply_cor(
+    masked_cor,
+    colors = col_palette,
+    showticklabels = c(FALSE, FALSE), # Hides the crushed axis text
+    k_row = 4, k_col = 4,             # Draws boxes to highlight main clusters
+    main = sprintf(&quot;Interactive Full Matrix (p &lt; %s)&quot;, corr_config$p_cutoff),
+    margins = c(10, 10, 30, 10)
+  )
+  print(p_interactive)
+}, error = function(e) cat(&quot;Interactive heatmap could not be generated in this environment.\n&quot;))</code></pre>
+<pre><code>Interactive heatmap could not be generated in this environment.</code></pre>
+<pre class="r"><code>cat(&quot;\n---\n\n&quot;)</code></pre>
+<pre><code>
+---</code></pre>
+<pre class="r"><code># ----------------------------------------------------------------------------
+# 2. Static PNG Heatmap (FOCUSED DATASET)
+# ----------------------------------------------------------------------------
+cat(&quot;\n#### 2. Focused Heatmap (Highlight Reel)\n&quot;)</code></pre>
+<pre><code>
+#### 2. Focused Heatmap (Highlight Reel)</code></pre>
+<pre class="r"><code>cat(sprintf(&quot;Showing only variables with at least one off-diagonal correlation &gt; %s (p &lt; %s).\n\n&quot;, 
+            corr_config$rho_cutoff, corr_config$p_cutoff))</code></pre>
+<pre><code>Showing only variables with at least one off-diagonal correlation &gt; 0.4 (p &lt; 0.05).</code></pre>
+<pre class="r"><code># Logical filter: Is abs(correlation) &gt;= threshold AND is it significant?
+sig_strong_logic &lt;- (abs(cor_matrix) &gt;= corr_config$rho_cutoff) &amp; (p_matrix &lt; corr_config$p_cutoff)
+diag(sig_strong_logic) &lt;- FALSE # We don&#39;t care about self-correlation (which is always 1.0)
+
+# Keep variables that have at least one TRUE in their row/column
+keep_vars &lt;- rowSums(sig_strong_logic) &gt; 0
+
+if (sum(keep_vars) &gt;= 2) {
+  cor_matrix_filt &lt;- cor_matrix[keep_vars, keep_vars]
+  p_matrix_filt &lt;- p_matrix[keep_vars, keep_vars]
+  
+  # Print the focused plot to the HTML document
+  corrplot(
+    cor_matrix_filt,
+    method = &quot;color&quot;,          
+    type = &quot;upper&quot;,            
+    order = &quot;hclust&quot;,          
+    hclust.method = &quot;ward.D2&quot;, 
+    col = col_palette,         
+    tl.col = &quot;black&quot;,          
+    tl.cex = 0.8,              
+    tl.srt = 45,               
+    p.mat = p_matrix_filt,          
+    sig.level = corr_config$p_cutoff,          
+    insig = &quot;blank&quot;,           
+    diag = FALSE,              
+    mar = c(0, 0, 2, 0),       
+    title = sprintf(&quot;Focused Clinical Correlations (Spearman &gt; %s, p &lt; %s)&quot;, corr_config$rho_cutoff, corr_config$p_cutoff)
+  )
+
+  # Save the High-Res Image for PowerPoint
+  png(file.path(output_dir_data, &quot;Focused_Clinical_Correlation_Matrix.png&quot;), width = 12, height = 12, units = &quot;in&quot;, res = 300)
+  corrplot(
+    cor_matrix_filt, method = &quot;color&quot;, type = &quot;upper&quot;, order = &quot;hclust&quot;, hclust.method = &quot;ward.D2&quot;,
+    col = col_palette, tl.col = &quot;black&quot;, tl.cex = 0.9, tl.srt = 45, p.mat = p_matrix_filt,
+    sig.level = corr_config$p_cutoff, insig = &quot;blank&quot;, diag = FALSE, mar = c(0, 0, 2, 0),
+    title = sprintf(&quot;Focused Clinical Correlations (Spearman &gt; %s, p &lt; %s)&quot;, corr_config$rho_cutoff, corr_config$p_cutoff)
+  )
+  dev.off()
+  
+  cat(&quot;**Success:** Focused PNG saved to output folder.\n&quot;)
+} else {
+  cat(&quot;**Result:** No variables met the focused correlation threshold. Static plot not generated.\n&quot;)
+}</code></pre>
+<p><img src="figure/02_cohort_characterization.Rmd/mat_corr-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>**Success:** Focused PNG saved to output folder.</code></pre>
+<pre class="r"><code>cat(&quot;Script 02 Complete!&quot;)</code></pre>
+<pre><code>Script 02 Complete!</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1305,58 +2356,69 @@ Session information
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.5.0 (2025-04-11)
-Platform: aarch64-apple-darwin20
-Running under: macOS 26.3
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 
-time zone: Europe/Zurich
-tzcode source: internal
+time zone: Etc/UTC
+tzcode source: system (glibc)
 
 attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] gt_1.3.0            ggpubr_0.6.3        patchwork_1.3.2    
- [4] here_1.0.2          gtsummary_2.5.0     data.table_1.18.2.1
- [7] lubridate_1.9.5     forcats_1.0.1       stringr_1.6.0      
-[10] dplyr_1.2.1         purrr_1.2.1         readr_2.2.0        
-[13] tidyr_1.3.2         tibble_3.3.1        ggplot2_4.0.2      
-[16] tidyverse_2.0.0     workflowr_1.7.2    
+ [1] heatmaply_1.6.0     viridis_0.6.5       viridisLite_0.4.3  
+ [4] plotly_4.12.0       corrplot_0.95       kableExtra_1.4.0   
+ [7] gt_1.3.0            ggpubr_0.6.3        patchwork_1.3.2    
+[10] here_1.0.2          gtsummary_2.5.0     data.table_1.18.2.1
+[13] lubridate_1.9.5     forcats_1.0.1       stringr_1.6.0      
+[16] dplyr_1.2.1         purrr_1.2.1         readr_2.2.0        
+[19] tidyr_1.3.2         tibble_3.3.1        tidyverse_2.0.0    
+[22] ggplot2_4.0.2       workflowr_1.7.2    
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6        xfun_0.57           bslib_0.10.0       
- [4] processx_3.8.7      rstatix_0.7.3       callr_3.7.6        
- [7] tzdb_0.5.0          vctrs_0.7.2         tools_4.5.0        
-[10] generics_0.1.4      parallel_4.5.0      pkgconfig_2.0.3    
-[13] RColorBrewer_1.1-3  S7_0.2.1            lifecycle_1.0.5    
-[16] compiler_4.5.0      farver_2.1.2        git2r_0.36.2       
-[19] textshaping_1.0.5   getPass_0.2-4       carData_3.0-6      
-[22] httpuv_1.6.16       htmltools_0.5.9     sass_0.4.10        
-[25] yaml_2.3.12         Formula_1.2-5       crayon_1.5.3       
-[28] later_1.4.8         pillar_1.11.1       car_3.1-5          
-[31] jquerylib_0.1.4     whisker_0.4.1       cachem_1.1.0       
-[34] abind_1.4-8         tidyselect_1.2.1    digest_0.6.39      
-[37] stringi_1.8.7       labeling_0.4.3      rprojroot_2.1.1    
-[40] fastmap_1.2.0       grid_4.5.0          cli_3.6.5          
-[43] magrittr_2.0.4      cards_0.7.1         broom_1.0.12       
-[46] withr_3.0.2         scales_1.4.0        promises_1.5.0     
-[49] backports_1.5.1     bit64_4.6.0-1       cardx_0.3.2        
-[52] timechange_0.4.0    rmarkdown_2.31      httr_1.4.8         
-[55] bit_4.6.0           otel_0.2.0          ggsignif_0.6.4     
-[58] ragg_1.5.2          hms_1.1.4           evaluate_1.0.5     
-[61] knitr_1.51          rlang_1.1.7         Rcpp_1.1.1         
-[64] glue_1.8.0          xml2_1.5.2          BiocManager_1.30.27
-[67] renv_1.2.0          vroom_1.7.1         rstudioapi_0.18.0  
-[70] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2  
-[73] fs_2.0.1           </code></pre>
-</div>
+ [1] gridExtra_2.3       rlang_1.2.0         magrittr_2.0.5     
+ [4] git2r_0.36.2        otel_0.2.0          compiler_4.5.2     
+ [7] getPass_0.2-4       systemfonts_1.3.2   callr_3.7.6        
+[10] vctrs_0.7.2         crayon_1.5.3        pkgconfig_2.0.3    
+[13] fastmap_1.2.0       backports_1.5.1     labeling_0.4.3     
+[16] ca_0.71.1           promises_1.5.0      rmarkdown_2.31     
+[19] tzdb_0.5.0          ps_1.9.2            ragg_1.5.2         
+[22] bit_4.6.0           xfun_0.57           cachem_1.1.0       
+[25] jsonlite_2.0.0      later_1.4.8         parallel_4.5.2     
+[28] broom_1.0.12        R6_2.6.1            bslib_0.10.0       
+[31] stringi_1.8.7       RColorBrewer_1.1-3  car_3.1-5          
+[34] jquerylib_0.1.4     Rcpp_1.1.1          assertthat_0.2.1   
+[37] iterators_1.0.14    knitr_1.51          httpuv_1.6.16      
+[40] timechange_0.4.0    tidyselect_1.2.1    rstudioapi_0.18.0  
+[43] abind_1.4-8         yaml_2.3.12         TSP_1.2.7          
+[46] codetools_0.2-20    processx_3.8.7      withr_3.0.2        
+[49] S7_0.2.1            evaluate_1.0.5      xml2_1.5.2         
+[52] pillar_1.11.1       BiocManager_1.30.27 carData_3.0-6      
+[55] whisker_0.4.1       renv_1.1.5          foreach_1.5.2      
+[58] generics_0.1.4      vroom_1.7.1         rprojroot_2.1.1    
+[61] hms_1.1.4           scales_1.4.0        glue_1.8.0         
+[64] lazyeval_0.2.2      tools_4.5.2         dendextend_1.19.1  
+[67] webshot_0.5.5       ggsignif_0.6.4      registry_0.5-1     
+[70] fs_2.0.1            grid_4.5.2          seriation_1.5.8    
+[73] cards_0.7.1         cardx_0.3.2         Formula_1.2-5      
+[76] cli_3.6.5           textshaping_1.0.5   svglite_2.2.2      
+[79] gtable_0.3.6        rstatix_0.7.3       sass_0.4.10        
+[82] digest_0.6.39       htmlwidgets_1.6.4   farver_2.1.2       
+[85] htmltools_0.5.9     lifecycle_1.0.5     httr_1.4.8         
+[88] bit64_4.6.0-1      </code></pre>
 </div>
 </div>
 </div>

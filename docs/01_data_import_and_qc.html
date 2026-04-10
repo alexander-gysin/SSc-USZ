@@ -12,7 +12,7 @@
 <meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
 
 
-<title>01_data_import_and_qc</title>
+<title>Data Import and Quality Control</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -74,6 +74,7 @@ if (window.hljs) {
 
 
 
+<link rel="stylesheet" href="style.css" type="text/css" />
 
 
 
@@ -333,7 +334,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">SSc-USZ Proteomics</a>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -344,7 +345,7 @@ div.tocify {
   <a href="01_data_import_and_qc.html">Data</a>
 </li>
 <li>
-  <a href="02_cohort _characterization.html">Cohort</a>
+  <a href="02_cohort_characterization.html">Cohort</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -354,10 +355,16 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="03a_proteomics_differential.html">Differential</a>
+      <a href="03a_proteomics_variance.html">Global</a>
     </li>
     <li>
-      <a href="03b_proteomics_linear_models.html">Linear Models</a>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_predictive.html">Predictive</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
     </li>
   </ul>
 </li>
@@ -385,11 +392,11 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">01_data_import_and_qc</h1>
+<h1 class="title toc-ignore">Data Import and Quality Control</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">06 April, 2026</h4>
+<h4 class="date">10 April, 2026</h4>
 
 </div>
 
@@ -397,7 +404,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -408,8 +415,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -418,16 +425,16 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-06
+<strong>Last updated:</strong> 2026-04-10
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>SSc_USZ/</code> <span
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -447,21 +454,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -552,15 +556,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree8eccdb620f109bf53c0956e0aee3172607e96606targetblank8eccdb6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -570,7 +574,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/8eccdb620f109bf53c0956e0aee3172607e96606" target="_blank">8eccdb6</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -585,19 +589,23 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
-    Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
-    Ignored:    output/03a_proteomics_differential/
+    Ignored:    output/03a_proteomics_global/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_predictive/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
+Untracked files:
+    Untracked:  analysis/style.css
+
 Unstaged changes:
-    Modified:   analysis/01_data_import_and_qc.Rmd
-    Modified:   analysis/03a_proteomics_differential.Rmd
     Modified:   analysis/_site.yml
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -642,6 +650,74 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e7fad4ec08b0b32324214a1242726c9318dc9ff0/analysis/01_data_import_and_qc.Rmd" target="_blank">e7fad4e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+<td>
+wflow_publish("analysis/*.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/083bc851a530b716d35871ef1663c64a5e9a35d4/analysis/01_data_import_and_qc.Rmd" target="_blank">083bc85</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-09
+</td>
+<td>
+meta data type, VPA, split the scripts to abcd
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/76c931bb4e26b4ba79a4b60c009e3992e1526408/analysis/01_data_import_and_qc.Rmd" target="_blank">76c931b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-07
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/76c931bb4e26b4ba79a4b60c009e3992e1526408/docs/01_data_import_and_qc.html" target="_blank">76c931b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-07
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -753,9 +829,31 @@ wflow_publish("analysis/01_data_import_and_qc.Rmd")
 </div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
+<p>This script imports, cleans and formats raw data. The output is saved
+for downstream scripts to use.</p>
 </div>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required utility packages (tidyverse, data.table, readxl,
+matrixStats).
+</li>
+<li>
+Established dynamic output directory paths to safely save data and
+figures.
+</li>
+<li>
+Sourced global project configurations, color palettes, and standard
+themes.
+</li>
+<li>
+Configured default knitr chunk options to suppress unnecessary warnings.
+</li>
+</ul>
+</div>
 <pre class="r"><code># Utility Packages
 library(tidyverse)   # Data manipulation
 library(readxl)      # Reading messy Excel files
@@ -765,6 +863,7 @@ library(matrixStats) # Fast matrix math for QC and Imputation
 
 # Get current file name to make folder
 current_file &lt;- &quot;01_data_import_and_qc&quot;
+
 #Output paths
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
@@ -782,24 +881,84 @@ Configuration Successfully Loaded!</code></pre>
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined strict quality control missingness thresholds for proteomics
+filtering (5% max missingness).
+</li>
+<li>
+Set the clinical variable completeness threshold (variables must be 80%
+complete in patients to survive).
+</li>
+<li>
+Established core reference dates for accurate feature engineering (Olink
+run date, default fallback control date).
+</li>
+<li>
+Listed protected variables and explicit date columns to prevent
+accidental deletion during automated pruning.
+</li>
+</ul>
+</div>
 <pre class="r"><code># Define thresholds and critical column names
 qc_config &lt;- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
   selected_col         = &quot;SELECTED&quot;, # Column flagging study inclusion
   
+  # Completeness Threshold (Variables must be at least this complete to survive)
+  min_completeness_clin_var = 0.80, 
+  
+  # Protection list (IDs and Dates that should never be dropped or mutated automatically)
+  exclude_from_clean = c(&quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Entnahmedatum&quot;, 
+                         &quot;Einlagerungsdatum&quot;, &quot;Entnahmedatum_Clean&quot;, &quot;Visit Date&quot;),
+  
   # Replace these with the EXACT column names from your Excel file that need date conversion
-  date_cols            = c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;),
+  date_cols            = c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;, 
+                           &quot;If yes, Date of HRCT&quot;, &quot;onset_nonRP&quot;, &quot;Date of PFT&quot;, 
+                           &quot;If yes, Date of assessment for ECG&quot;, &quot;If yes, Date of assessment for ECHO&quot;,
+                           &quot;If, yes Date of assessment for Walk test&quot;),
   
   # REFERENCE DATES (Required for feature engineering)
   olink_date           = as.Date(&quot;2026-03-30&quot;), 
   default_control_date = as.Date(&quot;2024-01-01&quot;) 
 )</code></pre>
+<div id="clinical-data-cleanup" class="section level2">
+<h2>Clinical Data Cleanup</h2>
+</div>
 </div>
 <div id="data-ingestion-and-cleanup" class="section level1">
 <h1>Data Ingestion and Cleanup</h1>
-<div id="clinical-data-cleanup" class="section level2">
-<h2>Clinical Data Cleanup</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Imported raw clinical and sample mapping Excel files and resolved ID
+discrepancies.
+</li>
+<li>
+Engineered core analytical features including Age, Sample_Age,
+cohort_group, and Sex.
+</li>
+<li>
+Pruned clinical variables according to the defined 80% completeness
+filter.
+</li>
+<li>
+Enforced strict data typing and dropped manually excluded variables
+using the clinical_dictionary.
+</li>
+<li>
+Standardized factor levels: converted ‘UN’ and ‘Unknown’ to NA.
+</li>
+<li>
+Converted ‘Yes’ to 1 and ‘No’ to 0 (retained explicitly as factors to
+ensure mathematical compatibility with downstream models).
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;Importing Clinical Data and ID Maps...\n&quot;)</code></pre>
 <pre><code>Importing Clinical Data and ID Maps...</code></pre>
 <pre class="r"><code># ------------------------------------------------------------------------------
@@ -862,11 +1021,16 @@ master_spine &lt;- merge(
   all = FALSE
 )
 
+# Sanitize special characters in column names to prevent encoding mismatches
+setnames(master_spine, &quot;Right atrium area (cm²)&quot;, &quot;Right atrium area (cm2)&quot;, skip_absent = TRUE)
+setnames(master_spine, &quot;Right ventricular area (cm²)&quot;, &quot;Right ventricular area (cm2)&quot;, skip_absent = TRUE)
+
 # ------------------------------------------------------------------------------
-# 4. Group Assignment &amp; NEW Feature Engineering
+# 4. Feature Engineering (Groups, Dates, Age, Sex)
 # ------------------------------------------------------------------------------
 master_spine &lt;- setnames(master_spine, old = &quot;Subject ID&quot;, new = &quot;Subject_ID&quot;, skip_absent = TRUE)
 
+# Assign Groups
 master_spine &lt;- master_spine[, cohort_group := fcase(
   str_detect(Subject_ID, &quot;^Nonact&quot;), GRP_NON_ACTIVE,
   str_detect(Subject_ID, &quot;^Act&quot;),    GRP_ACTIVE,
@@ -874,44 +1038,153 @@ master_spine &lt;- master_spine[, cohort_group := fcase(
   default = NA_character_
 )]
 
-master_spine &lt;- master_spine[!is.na(cohort_group)]
-
-master_spine &lt;- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
-
-# ------------------------------------------------------------------------------
-# THE DATE FIX: Bypassing fcase() entirely using data.table conditional subsetting
-# ------------------------------------------------------------------------------
-# 1. First, assign all dates exactly as they were parsed in Step 1.5
+# The Date Fix &amp; Age Calculation
 master_spine &lt;- master_spine[, Entnahmedatum_Clean := as.Date(Entnahmedatum)]
-
-# 2. Then, target ONLY the controls that are missing a date, and inject the default
 master_spine &lt;- master_spine[is.na(Entnahmedatum_Clean) &amp; cohort_group == GRP_CONTROL, 
                              Entnahmedatum_Clean := as.Date(&quot;2024-01-01&quot;)]
 
-# Calculate numerical ages
+master_spine &lt;- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
 master_spine &lt;- master_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
 master_spine &lt;- master_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
 
+# Assign Sex
 master_spine &lt;- master_spine[, Sex := fcase(
   Geschlecht == &quot;weiblich&quot;, SEX_FEMALE,
   Geschlecht == &quot;männlich&quot;, SEX_MALE,
   default = NA_character_
 )]
 
-# Reorder columns to make Subject_ID the true Primary Key at the front
-master_spine &lt;- setcolorder(master_spine, c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, &quot;inCentraxx&quot;))
+# ------------------------------------------------------------------------------
+# 4.5 Feature Engineering (Clinical Date Deltas)
+# ------------------------------------------------------------------------------
+# Isolate the specific assessment dates (ignoring the core visit/blood draw dates)
+assessment_dates &lt;- setdiff(qc_config$date_cols, c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;))
 
-cat(sprintf(&quot;Clinical Spine generated for %d unique cross-sectional samples.\n&quot;, nrow(master_spine)))</code></pre>
-<pre><code>Clinical Spine generated for 131 unique cross-sectional samples.</code></pre>
+for (d_col in assessment_dates) {
+  if (d_col %in% names(master_spine)) {
+    # Generate a clean name: Strips out the messy &quot;If yes, Date of assessment for...&quot; prefixes
+    clean_prefix &lt;- gsub(&quot;.*Date of assessment for |.*Date of &quot;, &quot;&quot;, d_col)
+    clean_name &lt;- paste0(&quot;Delta_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, clean_prefix), &quot;_Years&quot;)
+    
+    # Calculate Time Delta (Test Date - Blood Draw Date)
+    # Negative means test happened BEFORE the blood draw. Positive means AFTER.
+    master_spine[, (clean_name) := as.numeric(difftime(get(d_col), Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
+  }
+}
+
+# ------------------------------------------------------------------------------
+# 5. Completeness Pruning &amp; Dictionary Enforcement
+# ------------------------------------------------------------------------------
+cat(&quot;\nFiltering by completeness and applying TSV Data Dictionary...\n&quot;)</code></pre>
+<pre><code>
+Filtering by completeness and applying TSV Data Dictionary...</code></pre>
+<pre class="r"><code># A. COMPLETENESS PRUNING
+# Protect core variables and dates from being dropped due to missingness
+protected_vars &lt;- c(&quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, qc_config$date_cols)
+
+# Calculate completeness ONLY on Patients (ignore Controls for this threshold)
+completeness &lt;- master_spine[cohort_group %in% c(GRP_ACTIVE, GRP_NON_ACTIVE), 
+                             lapply(.SD, function(x) sum(!is.na(x)) / .N)]
+
+cols_to_keep &lt;- names(completeness)[completeness &gt;= qc_config$min_completeness_clin_var | names(completeness) %in% protected_vars]
+
+n_dropped &lt;- ncol(master_spine) - length(cols_to_keep)
+master_spine &lt;- master_spine[, ..cols_to_keep]
+cat(sprintf(&quot;- Pruning: Dropped %d columns for having &lt; %s%% completeness in patients.\n&quot;, 
+            n_dropped, qc_config$min_completeness_clin_var * 100))</code></pre>
+<pre><code>- Pruning: Dropped 226 columns for having &lt; 80% completeness in patients.</code></pre>
+<pre class="r"><code># B. DICTIONARY ENFORCEMENT
+dict_path &lt;- here::here(&quot;data&quot;, &quot;clinical_dictionary.txt&quot;)
+if (file.exists(dict_path)) {
+  data_dict &lt;- readr::read_tsv(dict_path, show_col_types = FALSE)
+  
+  # Extract classification lists
+  vars_n &lt;- data_dict %&gt;% filter(Type == &quot;n&quot;) %&gt;% pull(Variable_Name)
+  vars_c &lt;- data_dict %&gt;% filter(Type == &quot;c&quot;) %&gt;% pull(Variable_Name)
+  vars_x &lt;- data_dict %&gt;% filter(Type == &quot;x&quot;) %&gt;% pull(Variable_Name)
+  
+  # Only attempt to mutate columns that survived the completeness prune
+  vars_n &lt;- intersect(vars_n, names(master_spine))
+  vars_c &lt;- intersect(vars_c, names(master_spine))
+  vars_x &lt;- intersect(vars_x, names(master_spine))
+  
+  # 1. Drop explicitly excluded columns
+  if (length(vars_x) &gt; 0) {
+    master_spine[, (vars_x) := NULL]
+  }
+  
+  # 2. Force Numerics (Handles Swiss decimal commas, converts text to NA safely)
+  safe_numeric &lt;- function(x) {
+    if (is.numeric(x)) return(x)
+    clean_x &lt;- gsub(&quot;,&quot;, &quot;.&quot;, trimws(as.character(x)))
+    suppressWarnings(as.numeric(clean_x))
+  }
+  if (length(vars_n) &gt; 0) {
+    master_spine[, (vars_n) := lapply(.SD, safe_numeric), .SDcols = vars_n]
+  }
+  
+  # 3. Force Categoricals
+  if (length(vars_c) &gt; 0) {
+    master_spine[, (vars_c) := lapply(.SD, function(x) as.factor(as.character(x))), .SDcols = vars_c]
+  }
+  
+  cat(sprintf(&quot;- Enforcement: Cleaned %d Numeric and %d Categorical variables based on dictionary.\n&quot;, 
+              length(vars_n), length(vars_c)))
+  cat(sprintf(&quot;- Exclusion: Dropped %d manually blacklisted variables.\n&quot;, length(vars_x)))
+  
+} else {
+  cat(&quot;! WARNING: &#39;clinical_dictionary.txt&#39; not found in data/. Skipping explicit type enforcement.\n&quot;)
+}</code></pre>
+<pre><code>- Enforcement: Cleaned 52 Numeric and 84 Categorical variables based on dictionary.
+- Exclusion: Dropped 4 manually blacklisted variables.</code></pre>
+<pre class="r"><code># Reorder core columns to the front of the dataframe for easy viewing
+core_cols &lt;- intersect(c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;), names(master_spine))
+setcolorder(master_spine, core_cols)
+
+cat(sprintf(&quot;\n✓ Clinical Spine Ready: %d rows x %d columns.\n&quot;, nrow(master_spine), ncol(master_spine)))</code></pre>
+<pre><code>
+✓ Clinical Spine Ready: 131 rows x 158 columns.</code></pre>
 <pre class="r"><code>print(table(master_spine$cohort_group))</code></pre>
 <pre><code>
     Active    Control Non-Active 
         48         35         48 </code></pre>
-<pre class="r"><code>rm(raw_clin, id_map)
+<pre class="r"><code># ------------------------------------------------------------------------------
+# 6. Factor Standardization (Binarization &amp; Cleaning)
+# ------------------------------------------------------------------------------
+cat(&quot;\nStandardizing factor variables (Yes/No -&gt; 1/0, UN/Unknown -&gt; NA)...\n&quot;)</code></pre>
+<pre><code>
+Standardizing factor variables (Yes/No -&gt; 1/0, UN/Unknown -&gt; NA)...</code></pre>
+<pre class="r"><code>master_spine &lt;- master_spine %&gt;%
+  mutate(across(where(is.factor), ~ {
+    char_vec &lt;- as.character(.x)
+    lower_vec &lt;- tolower(char_vec)
+    
+    # Apply standardizations (case insensitive)
+    char_vec[lower_vec %in% c(&quot;un&quot;, &quot;unknown&quot;, &quot;not done&quot;)] &lt;- NA
+    char_vec[lower_vec == &quot;yes&quot;] &lt;- &quot;1&quot;
+    char_vec[lower_vec == &quot;no&quot;] &lt;- &quot;0&quot;
+    
+    # BEST PRACTICE: Keep everything as a factor for the VPA engine.
+    # We will temporarily cast to numeric later inside the correlation engine.
+    as.factor(char_vec)
+  }))
+rm(raw_clin, id_map)
 invisible(gc())</code></pre>
-</div>
 <div id="olink-import" class="section level2">
 <h2>OLINK import</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Pre-quantified Olink data was pivoted from long to wide format (Samples
+as columns, Assays as rows).
+</li>
+<li>
+The Olink matrix was strictly subset to include only samples
+definitively present in the clinical master_spine.
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;Importing and Pivoting Olink Data...\n&quot;)</code></pre>
 <pre><code>Importing and Pivoting Olink Data...</code></pre>
 <pre class="r"><code># Load Long-format Olink Data (Update filename if necessary)
@@ -938,6 +1211,23 @@ invisible(gc())</code></pre>
 </div>
 <div id="proteomics-qc-imputation-sync" class="section level2">
 <h2>Proteomics QC, Imputation, Sync</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Proteins and Samples exceeding the previously defined missingness
+threshold were entirely dropped.
+</li>
+<li>
+Remaining NA values were imputed using a row-wise (protein-wise) median
+approach.
+</li>
+<li>
+The master_spine clinical dataset and the Olink matrix were
+cross-synchronized to guarantee identical sample inclusion and ordering.
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;Running Missingness QC and Imputation...\n&quot;)</code></pre>
 <pre><code>Running Missingness QC and Imputation...</code></pre>
 <pre class="r"><code># 1. Quality Control (Missingness Rules from qc_config)
@@ -986,6 +1276,16 @@ qc_mat &lt;- qc_mat[, master_spine$Subject_ID, drop = FALSE]</code></pre>
 </div>
 <div id="export-final-data" class="section level2">
 <h2>Export final Data</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+The finalized arrays (clinical_spine.rds and clean_olink_matrix.rds)
+were exported as serialized R objects for quick, standardized ingestion
+by downstream scripts.
+</li>
+</ul>
+</div>
 <pre class="r"><code># 4. Export Final Data
 cat(&quot;Saving finalized datasets to output folder...\n&quot;)</code></pre>
 <pre><code>Saving finalized datasets to output folder...</code></pre>
@@ -1003,19 +1303,24 @@ Session information
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.5.0 (2025-04-11)
-Platform: aarch64-apple-darwin20
-Running under: macOS 26.3
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
 
 Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 
-time zone: Europe/Zurich
-tzcode source: internal
+time zone: Etc/UTC
+tzcode source: system (glibc)
 
 attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
@@ -1025,27 +1330,29 @@ other attached packages:
  [4] readxl_1.4.5        lubridate_1.9.5     forcats_1.0.1      
  [7] stringr_1.6.0       dplyr_1.2.1         purrr_1.2.1        
 [10] readr_2.2.0         tidyr_1.3.2         tibble_3.3.1       
-[13] ggplot2_4.0.2       tidyverse_2.0.0     workflowr_1.7.2    
+[13] tidyverse_2.0.0     ggplot2_4.0.2       workflowr_1.7.2    
 
 loaded via a namespace (and not attached):
- [1] sass_0.4.10         generics_0.1.4      renv_1.2.0         
- [4] stringi_1.8.7       hms_1.1.4           digest_0.6.39      
- [7] magrittr_2.0.4      timechange_0.4.0    evaluate_1.0.5     
-[10] grid_4.5.0          RColorBrewer_1.1-3  fastmap_1.2.0      
-[13] cellranger_1.1.0    rprojroot_2.1.1     jsonlite_2.0.0     
-[16] processx_3.8.7      whisker_0.4.1       promises_1.5.0     
-[19] BiocManager_1.30.27 httr_1.4.8          scales_1.4.0       
-[22] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.7        
-[25] withr_3.0.2         cachem_1.1.0        yaml_2.3.12        
-[28] otel_0.2.0          tools_4.5.0         tzdb_0.5.0         
-[31] httpuv_1.6.16       vctrs_0.7.2         R6_2.6.1           
-[34] lifecycle_1.0.5     git2r_0.36.2        fs_2.0.1           
-[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.11.1      
-[40] bslib_0.10.0        later_1.4.8         gtable_0.3.6       
-[43] glue_1.8.0          Rcpp_1.1.1          xfun_0.57          
-[46] tidyselect_1.2.1    rstudioapi_0.18.0   knitr_1.51         
-[49] farver_2.1.2        htmltools_0.5.9     rmarkdown_2.31     
-[52] compiler_4.5.0      getPass_0.2-4       S7_0.2.1           </code></pre>
+ [1] gtable_0.3.6        xfun_0.57           bslib_0.10.0       
+ [4] processx_3.8.7      callr_3.7.6         tzdb_0.5.0         
+ [7] vctrs_0.7.2         tools_4.5.2         ps_1.9.2           
+[10] generics_0.1.4      parallel_4.5.2      pkgconfig_2.0.3    
+[13] RColorBrewer_1.1-3  S7_0.2.1            lifecycle_1.0.5    
+[16] compiler_4.5.2      farver_2.1.2        git2r_0.36.2       
+[19] getPass_0.2-4       httpuv_1.6.16       htmltools_0.5.9    
+[22] sass_0.4.10         yaml_2.3.12         later_1.4.8        
+[25] pillar_1.11.1       crayon_1.5.3        jquerylib_0.1.4    
+[28] whisker_0.4.1       cachem_1.1.0        tidyselect_1.2.1   
+[31] digest_0.6.39       stringi_1.8.7       rprojroot_2.1.1    
+[34] fastmap_1.2.0       grid_4.5.2          cli_3.6.5          
+[37] magrittr_2.0.5      withr_3.0.2         scales_1.4.0       
+[40] promises_1.5.0      bit64_4.6.0-1       timechange_0.4.0   
+[43] rmarkdown_2.31      httr_1.4.8          bit_4.6.0          
+[46] otel_0.2.0          cellranger_1.1.0    hms_1.1.4          
+[49] evaluate_1.0.5      knitr_1.51          rlang_1.2.0        
+[52] Rcpp_1.1.1          glue_1.8.0          BiocManager_1.30.27
+[55] renv_1.1.5          rstudioapi_0.18.0   vroom_1.7.1        
+[58] jsonlite_2.0.0      R6_2.6.1            fs_2.0.1           </code></pre>
 </div>
 </div>
 </div>
