@@ -128,4 +128,31 @@ theme_project_base <- function(base_size = 14) {
     )
 }
 
+# Custom Box Generators
+what_this_does <- function(...) {
+  points <- list(...)
+  li_items <- paste0("    <li>", unlist(points), "</li>", collapse = "\n")
+  html <- sprintf('
+<div class="info-box">
+  <strong>What this code does:</strong>
+  <ul>
+%s
+  </ul>
+</div>', li_items)
+  return(html)
+}
+
+analysis_decision <- function(...) {
+  points <- list(...)
+  li_items <- paste0("    <li>", unlist(points), "</li>", collapse = "\n")
+  html <- sprintf('
+<div class="decision-box">
+  <strong>Analysis Decisions:</strong>
+  <ul>
+%s
+  </ul>
+</div>', li_items)
+  return(html)
+}
+
 cat("Configuration Successfully Loaded!\n")

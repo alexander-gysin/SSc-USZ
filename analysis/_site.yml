@@ -12,12 +12,12 @@ navbar:
   - text: Proteomics
     menu:
     - text: Global
-      href: 03a_proteomics_global.html
+      href: 03a_proteomics_variance.html
     - text: Differential
       href: 03b_proteomics_differential.html
     - text: Predictive
       href: 03c_proteomics_predictive.html
-    - text: Clinical Correlations
+    - text: Linear
       href: 03d_proteomics_clinical_correlations.html
   - text: About
     href: about.html
@@ -34,3 +34,4 @@ output:
       collapsed: no
     theme: cosmo
     highlight: textmate
+    css: style.css

@@ -395,67 +395,97 @@ wrap_predictive_pipeline <- function(omics_mat, clin_df, lasso_conf, model_id, b
 }
 
 # 5a. Joint VPA Wrapper --------------------------------------------------------
-# Description:
-#   Constructs a Variance Partition Analysis (VPA) using a joint linear mixed
-#   model. It dynamically auto-detects variable types (factors vs numerics)
-#   from the strictly typed dataframe to build the formula automatically.
-# Args:
-#   omics_mat: Cleaned omics matrix.
-#   clin_df: Clinical metadata dataframe (strictly typed).
-#   vpa_conf: List defining variables to include (a single 'variables' array).
-#   vpa_id: Identifier for output saving.
-#   base_output_dir: Path for saving results.
-# Returns:
-#   Barplot and violin plot of variance decomposition, plus the raw variance dataframe.
 wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
 
   vpa_sub_dir <- file.path(base_output_dir, "VPA_Joint", vpa_id)
   if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
 
-  # 1. Align Data FIRST (so we can check types safely)
+  # 1. EXPLICIT CHARACTER EXCLUSION
+  # Find all variables that are characters and remove them from the list
   all_vars <- vpa_conf$variables
-  clin_sub <- clin_df %>% select(Subject_ID, all_of(all_vars)) %>% drop_na()
+  char_vars <- sapply(all_vars, function(v) is.character(clin_df[[v]]))
+  valid_vars <- all_vars[!char_vars]
+
+  if(length(valid_vars) == 0) return(list(error_msg = "All variables were characters and excluded."))
+
+  # 2. Align Data & Purge NAs
+  clin_sub <- clin_df %>% select(Subject_ID, any_of(valid_vars)) %>% drop_na() %>% droplevels()
   valid_ids <- intersect(colnames(omics_mat), clin_sub$Subject_ID)
   clin_sub <- clin_sub %>% filter(Subject_ID %in% valid_ids)
 
-  # 2. Dynamic Formula Builder
-  # Auto-detects factors to add the random effect (1|x) syntax
-  formula_terms <- sapply(all_vars, function(v) {
-    if (is.factor(clin_sub[[v]])) paste0("(1|`", v, "`)") else paste0("`", v, "`")
+  if (nrow(clin_sub) < 5) return(list(error_msg = "Less than 5 patients remained after NA filtering."))
+
+  # 3. Dynamic Formula Builder
+  formula_terms <- sapply(valid_vars, function(v) {
+    if (is.factor(clin_sub[[v]]) || is.logical(clin_sub[[v]])) {
+      paste0("(1|`", v, "`)")
+    } else {
+      paste0("`", v, "`")
+    }
   })
   vpa_formula <- as.formula(paste("~", paste(formula_terms, collapse = " + ")))
 
-  # 3. Execution
-  res <- run_vpa_engine(omics_mat[, valid_ids], clin_sub, vpa_formula, vpa_conf$title)
+  # 4. Execution (WITH ERROR CAPTURE)
+  # Instead of returning NULL on failure, we capture the exact lme4 error message
+  res_varPart <- tryCatch({
+    fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_sub, BPPARAM = SerialParam())
+  }, error = function(e) return(e$message))
 
-  if(!is.null(res)) {
-    write_csv(res$data, file.path(vpa_sub_dir, paste0(vpa_id, "_Joint_VPA.csv")))
-    ggsave(file.path(vpa_sub_dir, paste0(vpa_id, "_Bar.png")), res$plots$bar, width = 8, height = 6, bg="white")
+  # If res_varPart is a string, it means the model crashed and caught the error text
+  if (is.character(res_varPart)) {
+    return(list(error_msg = res_varPart))
   }
-  return(res)
+
+  # Process successful results
+  varPart_df <- as.data.frame(res_varPart) %>% rownames_to_column("Feature")
+  summary_df <- data.frame(
+    Covariate = colnames(res_varPart),
+    Mean_Var = colMeans(res_varPart, na.rm = TRUE),
+    SEM = apply(res_varPart, 2, sd, na.rm = TRUE) / sqrt(nrow(res_varPart))
+  ) %>%
+    mutate(CI_upper = pmin(1, Mean_Var + (1.96 * SEM))) %>%
+    arrange(desc(Mean_Var))
+
+  plot_summary <- head(summary_df, 10)
+
+  p_bar <- ggplot(plot_summary, aes(x = reorder(Covariate, Mean_Var), y = Mean_Var, fill = Covariate)) +
+    geom_bar(stat = "identity", color = "black", alpha = 0.8) +
+    geom_errorbar(aes(ymin = pmax(0, Mean_Var - (1.96 * SEM)), ymax = CI_upper), width = 0.2) +
+    geom_text(aes(y = CI_upper, label = sprintf("%.1f%%", Mean_Var * 100)), hjust = -0.2, fontface = "bold") +
+    coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+    theme_project_base() + theme(legend.position = "none") +
+    labs(title = vpa_conf$title, subtitle = "Average Variance Explained", y = "% Variance Explained", x = NULL)
+
+  long_var <- varPart_df %>%
+    select(Feature, all_of(plot_summary$Covariate)) %>%
+    pivot_longer(-Feature, names_to = "Covariate", values_to = "Val") %>%
+    mutate(Covariate = factor(Covariate, levels = rev(plot_summary$Covariate)))
+
+  p_violin <- ggplot(long_var, aes(x = Covariate, y = Val, fill = Covariate)) +
+    geom_violin(alpha = 0.6, color = "grey40", scale = "width") +
+    geom_boxplot(width = 0.08, fill = "white", color = "black", outlier.shape = 19, outlier.size = 1, outlier.alpha = 0.4) +
+    coord_flip() + scale_y_continuous(labels = scales::percent) +
+    theme_project_base() + theme(legend.position = "none") +
+    labs(title = vpa_conf$title, x = NULL, y = "% Variance Explained")
+
+  # Save outputs
+  write_csv(varPart_df, file.path(vpa_sub_dir, paste0(vpa_id, "_Joint_VPA.csv")))
+  ggsave(file.path(vpa_sub_dir, paste0(vpa_id, "_Bar.png")), p_bar, width = 8, height = 6, bg="white")
+
+  return(list(plots = list(bar = p_bar, violin = p_violin), data = varPart_df))
 }
 
+
 # 5b. Univariate VPA Scan Wrapper ----------------------------------------------
-# Description:
-#   An exploratory parallel computing tool. Filters clinical variables and evaluates
-#   survivors against the proteome. Automatically builds a Joint Multivariate VPA
-#   on the top discoveries by leveraging the auto-typing Joint VPA wrapper.
-# Args:
-#   omics_mat: Cleaned omics matrix.
-#   clin_df: Massive clinical metadata dataframe.
-#   vpa_conf: Configuration list with filtering and multivariate settings.
-#   vpa_id: Identifier for saving.
-#   base_output_dir: Path for saving results.
-# Returns:
-#   List containing univariate/multivariate plots and kableExtra HTML tables.
 wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
 
   # Setup Directories
   vpa_sub_dir <- file.path(base_output_dir, "VPA_Univariate", vpa_id)
   if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
 
+  # Drop ghost levels immediately after subsetting cohorts
   if (!is.null(vpa_conf$subset_to_groups)) {
-    clin_df <- clin_df %>% filter(cohort_group %in% vpa_conf$subset_to_groups)
+    clin_df <- clin_df %>% filter(cohort_group %in% vpa_conf$subset_to_groups) %>% droplevels()
   }
 
   # --- EXCLUSION LOGGER & FILTERING -------------------------------------------
@@ -516,8 +546,7 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
 
   html_excl_log <- kableExtra::kbl(excl_df, format = "html", caption = "Variable Exclusion Log") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
-    kableExtra::column_spec(1, bold = TRUE, width = "25%") %>%
-    kableExtra::scroll_box(height = "250px")
+    kableExtra::column_spec(1, bold = TRUE, width = "25%")
 
   # --- UNIVARIATE SCAN (PARALLEL) ---------------------------------------------
   p <- progressor(steps = length(cols_to_scan))
@@ -526,13 +555,22 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
     p()
     vec <- clin_df[[v]]
 
-    # SIMPLIFIED: Because Script 01 guarantees types, we just check is.factor()
-    term <- if(is.factor(vec)) paste0("(1|`", v, "`)") else paste0("`", v, "`")
+    if (is.character(vec)) return(NULL) # Safely ignore characters
+
+    term <- if(is.factor(vec) || is.logical(vec)) {
+      paste0("(1|`", v, "`)")
+    } else {
+      paste0("`", v, "`")
+    }
     vpa_formula <- as.formula(paste("~", term))
 
-    clin_tmp <- clin_df %>% select(Subject_ID, all_of(v)) %>% drop_na()
+    clin_tmp <- clin_df %>% select(Subject_ID, all_of(v)) %>% drop_na() %>% droplevels()
     valid_ids <- intersect(colnames(omics_mat), clin_tmp$Subject_ID)
     if(length(valid_ids) < 5) return(NULL)
+
+    # Final variance check post-NA drop
+    if (is.factor(clin_tmp[[v]]) && length(unique(clin_tmp[[v]])) < 2) return(NULL)
+    if (is.numeric(clin_tmp[[v]]) && var(clin_tmp[[v]], na.rm = TRUE) == 0) return(NULL)
 
     res_var <- tryCatch({
       fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_tmp %>% filter(Subject_ID %in% valid_ids), BPPARAM = SerialParam())
@@ -555,8 +593,8 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
     coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
     theme_project_base() + labs(title = vpa_conf$title, subtitle = "Univariate Leaderboard", y = "Mean Variance Explained", x = NULL)
 
-  # Build Summary Statistics Table
-  vars_to_summarize <- unique(c(plot_df$Variable, vpa_conf$force_multivariate))
+  # Build Summary Statistics Table (Removed forced vars, only uses the plot winners)
+  vars_to_summarize <- unique(plot_df$Variable)
   summary_rows <- lapply(vars_to_summarize, function(v) {
     if (!v %in% colnames(clin_df)) return(NULL)
     vec <- clin_df[[v]][!is.na(clin_df[[v]])]
@@ -575,45 +613,17 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
   })
 
   html_summary_table <- bind_rows(summary_rows) %>%
-    kableExtra::kbl(format = "html", caption = "Summary Statistics: Top Drivers & Forced Variables") %>%
+    kableExtra::kbl(format = "html", caption = "Summary Statistics: Top Univariate Drivers") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
 
-  # --- MULTIVARIATE INTEGRATION -----------------------------------------------
-  return_payload <- list(univariate_bar = p_scan, tables = list(exclusion = html_excl_log, summary = html_summary_table))
-
-  if (!is.null(vpa_conf$top_n_multivariate)) {
-
-    # SIMPLIFIED: Just grab the unique variables, the Joint Wrapper handles the rest!
-    top_vars <- head(full_results$Variable, vpa_conf$top_n_multivariate)
-    multi_vars <- unique(c(top_vars, vpa_conf$force_multivariate))
-
-    multi_conf <- list(
-      title = sprintf("%s (Joint Model: Top %d + Forced)", vpa_conf$title, length(top_vars)),
-      variables = multi_vars # Passed directly
-    )
-
-    multi_res <- wrap_vpa_pipeline(omics_mat, clin_df, multi_conf, paste0(vpa_id, "_Multi_Joint"), base_output_dir)
-
-    if(!is.null(multi_res)) {
-      return_payload$multi_bar <- multi_res$plots$bar
-      return_payload$multi_violin <- multi_res$plots$violin
-    } else {
-      warning_html <- sprintf(
-        "<div class='alert alert-warning' style='margin-top: 20px; padding: 15px; border-left: 5px solid #f39c12; background-color: #fdfefe;'>
-        <h4 style='margin-top:0; color: #d68910;'>&#9888; Multivariate Model Failed</h4>
-        <p>The joint VPA model attempting to fit <strong>%d combined variables</strong> failed to converge.</p>
-        <p><strong>Diagnosis:</strong> This is almost always caused by <em>Listwise Deletion</em>. When combining many clinical variables, patients missing data in <em>any</em> of the columns are dropped entirely. The resulting sample size was likely too small to solve the mathematical equation.</p>
-        <p><strong>Fix:</strong> Lower the <code>top_n_multivariate</code> parameter in your configuration to reduce model complexity.</p>
-        </div>",
-        length(multi_vars)
-      )
-      return_payload$multi_warning <- warning_html
-    }
-  }
+  # --- RETURN PAYLOAD ---------------------------------------------------------
+  return_payload <- list(
+    univariate_bar = p_scan,
+    tables = list(exclusion = html_excl_log, summary = html_summary_table)
+  )
 
   return(return_payload)
 }
-
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
 
