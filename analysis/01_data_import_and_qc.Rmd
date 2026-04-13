@@ -345,7 +345,7 @@ cat(paste(audit_log_olink, collapse = "\n"))
 
 ## OLINK QC, Imputation & Sync
 
-`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.")`
+`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.", "VAriables whith more than 20% NA were dropped")`
 
 `r what_this_does("Proteins and Samples exceeding the previously defined missingness threshold were entirely dropped.", "Remaining NA values were imputed using a row-wise (protein-wise) median approach.", "The master_spine clinical dataset and the Olink matrix were cross-synchronized to guarantee identical sample inclusion and ordering.")`
 
