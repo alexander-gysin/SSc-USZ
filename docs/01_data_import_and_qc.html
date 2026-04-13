@@ -556,15 +556,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb7f5b667e326377866e689559b09dbd2ca33e15btargetblankb7f5b66a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26targetblankbc0e5daa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b7f5b667e326377866e689559b09dbd2ca33e15b" target="_blank">b7f5b66</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26" target="_blank">bc0e5da</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb7f5b667e326377866e689559b09dbd2ca33e15btargetblankb7f5b66a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26targetblankbc0e5daa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -574,7 +574,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b7f5b667e326377866e689559b09dbd2ca33e15b" target="_blank">b7f5b66</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26" target="_blank">bc0e5da</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -652,6 +652,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26/analysis/01_data_import_and_qc.Rmd" target="_blank">bc0e5da</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-13
+</td>
+<td>
+audit of script 01 complete
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/8bbe0556ed191db5c5f28024022c10d9eeae4b27/docs/01_data_import_and_qc.html" target="_blank">8bbe055</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1000,12 +1034,9 @@ clinical_rename_map &lt;- c(
   &quot;Non-Raynaud Symptom&quot; = &quot;Any non-Raynaud symptom present?&quot;,
   &quot;Puffy Fingers&quot; = &quot;of the fingers as puffy fingers&quot;
 )</code></pre>
-<div id="clinical-data-cleanup" class="section level2">
-<h2>Clinical Data Cleanup</h2>
 </div>
-</div>
-<div id="data-ingestion-and-cleanup" class="section level1">
-<h1>Data Ingestion and Cleanup</h1>
+<div id="clinical-data-cleanup" class="section level1">
+<h1>Clinical Data Cleanup</h1>
 <div class="decision-box">
 <strong>Analysis Decisions:</strong>
 <ul>
@@ -1269,8 +1300,11 @@ Applying final clinical feature engineering (Renaming, Factor levels)...
 ✓ Clinical Spine Ready: 131 rows x 144 columns.</code></pre>
 <pre class="r"><code>rm(raw_clin, id_map, audit_log)
 invisible(gc())</code></pre>
+</div>
+<div id="olink-data" class="section level1">
+<h1>OLINK Data</h1>
 <div id="olink-import" class="section level2">
-<h2>OLINK import</h2>
+<h2>OLINK Import</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -1303,8 +1337,8 @@ cat(paste(audit_log_olink, collapse = &quot;\n&quot;))</code></pre>
 <pre class="r"><code>rm(raw_olink, wide_olink, audit_log_olink)
 invisible(gc())</code></pre>
 </div>
-<div id="proteomics-qc-imputation-sync" class="section level2">
-<h2>Proteomics QC, Imputation, Sync</h2>
+<div id="olink-qc-imputation-sync" class="section level2">
+<h2>OLINK QC, Imputation &amp; Sync</h2>
 <div class="decision-box">
 <strong>Analysis Decisions:</strong>
 <ul>
@@ -1378,8 +1412,9 @@ cat(paste(audit_log_qc, collapse = &quot;\n&quot;))</code></pre>
 - Post-QC Matrix: 1034 Proteins | 131 Samples</code></pre>
 <pre class="r"><code>rm(audit_log_qc)</code></pre>
 </div>
-<div id="export-final-data" class="section level2">
-<h2>Export final Data</h2>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -1459,7 +1494,6 @@ loaded via a namespace (and not attached):
 [52] Rcpp_1.1.1          glue_1.8.0          BiocManager_1.30.27
 [55] renv_1.1.5          rstudioapi_0.18.0   vroom_1.7.1        
 [58] jsonlite_2.0.0      R6_2.6.1            fs_2.0.1           </code></pre>
-</div>
 </div>
 </div>
 </div>
