@@ -34,6 +34,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
@@ -233,6 +234,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -355,7 +359,7 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="03a_proteomics_variance.html">Global</a>
+      <a href="03a_proteomics_variance.html">Variance</a>
     </li>
     <li>
       <a href="03b_proteomics_differential.html">Differential</a>
@@ -389,6 +393,14 @@ div.tocify {
 </div><!--/.navbar -->
 
 <div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
 
@@ -556,15 +568,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26targetblankbc0e5daa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd0b4a6ffd556ea4ce28833e3aaf75854a63e2f8targetblankdd0b4a6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26" target="_blank">bc0e5da</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd0b4a6ffd556ea4ce28833e3aaf75854a63e2f8" target="_blank">dd0b4a6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26targetblankbc0e5daa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd0b4a6ffd556ea4ce28833e3aaf75854a63e2f8targetblankdd0b4a6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -574,7 +586,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bc0e5da4fd3fc7be337a9b90e9f157e1bfb44f26" target="_blank">bc0e5da</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd0b4a6ffd556ea4ce28833e3aaf75854a63e2f8" target="_blank">dd0b4a6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -606,6 +618,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/02_cohort_characterization.Rmd
+    Modified:   analysis/_site.yml
     Modified:   code/00_config.R
     Modified:   renv.lock
 
@@ -652,6 +665,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/dd0b4a6ffd556ea4ce28833e3aaf75854a63e2f8/analysis/01_data_import_and_qc.Rmd" target="_blank">dd0b4a6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-13
+</td>
+<td>
+audit of script 01 complete
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/15a2313bf19558b10385ed9f0b79e4ca40d45ab2/docs/01_data_import_and_qc.html" target="_blank">15a2313</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1280,6 +1327,9 @@ setcolorder(master_spine, core_cols)
 
 audit_log &lt;- c(audit_log, sprintf(&quot;\n✓ Clinical Spine Ready: %d rows x %d columns.&quot;, nrow(master_spine), ncol(master_spine)))
 
+rm(raw_clin, id_map)
+invisible(gc())
+
 # Print consolidated output to prevent HTML fragmentation
 cat(paste(audit_log, collapse = &quot;\n&quot;))</code></pre>
 <pre><code>Importing Clinical Data and ID Maps...
@@ -1298,8 +1348,6 @@ Standardizing factor variables (Yes/No -&gt; 1/0, UN/Unknown -&gt; NA)...
 Applying final clinical feature engineering (Renaming, Factor levels)...
 
 ✓ Clinical Spine Ready: 131 rows x 144 columns.</code></pre>
-<pre class="r"><code>rm(raw_clin, id_map, audit_log)
-invisible(gc())</code></pre>
 </div>
 <div id="olink-data" class="section level1">
 <h1>OLINK Data</h1>
@@ -1331,11 +1379,12 @@ rownames(olink_mat) &lt;- wide_olink$Assay
 
 audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Initial Matrix: %d Proteins | %d Samples&quot;, nrow(olink_mat), ncol(olink_mat)))
 
+rm(raw_olink, wide_olink)
+invisible(gc())
+
 cat(paste(audit_log_olink, collapse = &quot;\n&quot;))</code></pre>
 <pre><code>Importing and Pivoting Olink Data...
 - Initial Matrix: 1034 Proteins | 131 Samples</code></pre>
-<pre class="r"><code>rm(raw_olink, wide_olink, audit_log_olink)
-invisible(gc())</code></pre>
 </div>
 <div id="olink-qc-imputation-sync" class="section level2">
 <h2>OLINK QC, Imputation &amp; Sync</h2>
@@ -1410,7 +1459,6 @@ cat(paste(audit_log_qc, collapse = &quot;\n&quot;))</code></pre>
 ✓ All patients passed QC (&lt; 5% missing).
 
 - Post-QC Matrix: 1034 Proteins | 131 Samples</code></pre>
-<pre class="r"><code>rm(audit_log_qc)</code></pre>
 </div>
 </div>
 <div id="export" class="section level1">
@@ -1551,6 +1599,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {
