@@ -17,7 +17,7 @@ The output is saved for downstream scripts to use.
 
 
 # Setup
-`r what_this_does("Loaded required utility packages (tidyverse, data.table, readxl, matrixStats).", "Established dynamic output directory paths to safely save data and figures.", "Sourced global project configurations, color palettes, and standard themes.", "Configured default knitr chunk options to suppress unnecessary warnings.")`
+`r what_this_does("Loaded required utility packages (tidyverse, data.table, readxl, matrixStats).", "Established dynamic output directory paths to safely save data and figures.", "Configured default knitr chunk options to suppress unnecessary warnings.")`
 
 ```{r setup, message=FALSE, warning=FALSE}
 # Utility Packages
@@ -36,107 +36,132 @@ if (!dir.exists(output_dir_data)) dir.create(output_dir_data)
 
 if (!dir.exists(here::here("docs", "figure"))) dir.create(here::here("docs", "figure"))
 
-# Source global formatting (colors, themes, seed)
-source(here::here("code", "00_config.R"))
-
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
 )
-
 ```
 
 # Configuration
 
-`r what_this_does("Defined strict quality control missingness thresholds for proteomics filtering (5% max missingness).", "Set the clinical variable completeness threshold (variables must be 80% complete in patients to survive).", "Established core reference dates for accurate feature engineering (Olink run date, default fallback control date).", "Listed protected variables and explicit date columns to prevent accidental deletion during automated pruning.")`
+`r what_this_does("Defined strict quality control missingness thresholds for proteomics filtering (5% max missingness).", "Set the clinical variable completeness threshold (variables must be 80% complete in patients to survive).", "Established core reference dates for accurate feature engineering.", "Listed protected variables and explicit date columns to prevent accidental deletion during automated pruning.", "Defined regex patterns to globally purge procedural meta-variables.", "Established a global renaming dictionary.", "Parameterized all raw data file names to avoid hardcoding deep in the script.")`
 
 ```{r config}
-# Define thresholds and critical column names
+# 1. Global File Paths ---------------------------------------------------------
+file_paths <- list(
+  clinical_raw  = "Patients__20022025_105625_modified.xlsx",
+  id_map        = "Samples for OLink submitted_final_0226.xlsx",
+  clinical_dict = "clinical_dictionary.txt",
+  olink_raw     = "pre_quant.csv"
+)
+
+# 2. Global QC Thresholds & Column Names ---------------------------------------
 qc_config <- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
-  selected_col         = "SELECTED", # Column flagging study inclusion
+  selected_col         = "SELECTED", 
   
-  # Completeness Threshold (Variables must be at least this complete to survive)
   min_completeness_clin_var = 0.80, 
   
-  # Protection list (IDs and Dates that should never be dropped or mutated automatically)
   exclude_from_clean = c("Subject_ID", "inCentraxx", "Entnahmedatum", 
                          "Einlagerungsdatum", "Entnahmedatum_Clean", "Visit Date"),
   
-  # Replace these with the EXACT column names from your Excel file that need date conversion
   date_cols            = c("Visit Date", "Entnahmedatum", "Einlagerungsdatum", 
                            "If yes, Date of HRCT", "onset_nonRP", "Date of PFT", 
                            "If yes, Date of assessment for ECG", "If yes, Date of assessment for ECHO",
                            "If, yes Date of assessment for Walk test"),
+                           
+  meta_drop_patterns   = c("performed", "measured", "done", "velocity\\?", "ratio\\?", "area\\?", "excursion\\?", "fraction %\\?", "done\\?"),
   
-  # REFERENCE DATES (Required for feature engineering)
-  olink_date           = as.Date("2026-03-30"), 
-  default_control_date = as.Date("2024-01-01") 
+  olink_date           = as.Date("2026-03-30")
 )
-  
+
+# 3. Global Variable Renaming Map ----------------------------------------------
+clinical_rename_map <- c(
+  "Sclerodactyly" = "of the fingers as sclerodactyly (distal to the metacarpophalangeal joints but proximal to the proximal interphalangeal joints)",
+  "SSc Antibody Score" = "Score: Scleroderma related antibodies (any of anti-centromere, Anti-topoisomerase I [ anti-SCL 70], anti-RNA polymerase III",
+  "SSc Antibodies" = "Scleroderma related antibodies (any of anti-centromere, Anti-topoisomerase I [ anti-SCL 70], anti-RNA polymerase III",
+  "Skin Thickening (Ext. MCP)" = "of the fingers of both hands extending proximally to the metacarpophalangeal joints",
+  "Skin Thickening (Prox. MCP)" = "Skin thickening of the fingers of both hands extending proximal to the MCP joints",
+  "New PAH" = "Does the patient have pulmonary arterial hypertension since the last visit?",
+  "PAH/ILD" = "Pulmonary arterial hypertension and/or Interstitial lung Disease",
+  "Max Borg Dyspnea" = "Worst modified Borg dyspnea score during the test (from 0 to 10)",
+  "New Cardiac Manifest." = "Does the patient have cardiac manifestation since last visit?",
+  "Diastolic Dysf. (Echo)" = "Diastolic function abnormal(on echo, E/a less than 10cm/sec)",
+  "MD Global Activity (NA)" = "Physicians global assessment of disease activity VAS Unknown",
+  "Pt Global Activity (NA)" = "Patients global assessment of disease activity VAS Unknown",
+  "mRSS Worsening (1yr)" = "Was there a worsening of mRSS over the last 12 months?",
+  "Intestinal Symptoms" = "Intestinal symptoms (diarrhea, bloating, constipation)",
+  "Arthritis Activity (NA)" = "Activity of arthritis during the past week Unknown",
+  "EULAR/ACR 2013 Criteria" = "2013 EULAR/ACR classification criteria fulfilled",
+  "TAPSE (cm)" = "Tricuspid annular plane systolic excursion (cm)",
+  "Stomach Symptoms" = "Stomach symptoms (early satiety, vomiting)",
+  "FVC %pred" = "Forced Vital Capacity (FVC- % predicted)",
+  "Capillaroscopy Score" = "Score: Abnormal nailfold capillaroscopy",
+  "TLC %pred" = "Total lung capacity (TLC- % predicted)",
+  "GAVE" = "Gastric Antral Vascular Ectasia (GAVE)",
+  "LVEF %" = "Left ventricular ejection fraction %",
+  "Min SpO2 (Exercise)" = "Worst O2-saturation at exercise (%)",
+  "Capillaroscopy Pattern" = "Capillaroscopy scleroderma pattern",
+  "Joint Contractures" = "Joint contractures (at any joint)",
+  "Abnormal Capillaroscopy" = "Abnormal nailfold capillaroscopy",
+  "Non-Raynaud Symptom" = "Any non-Raynaud symptom present?",
+  "Puffy Fingers" = "of the fingers as puffy fingers"
+)
 ```
 
 ## Clinical Data Cleanup
 # Data Ingestion and Cleanup
+`r analysis_decision("Dropped the follow-up sample 'Act_4_2' to strictly enforce a cross-sectional study design.", "Excluded patients who were missing from either the CentraXX output or the Biobank sample manifest.")`
 
-`r what_this_does("Imported raw clinical and sample mapping Excel files and resolved ID discrepancies.", "Engineered core analytical features including Age, Sample_Age, cohort_group, and Sex.", "Pruned clinical variables according to the defined 80% completeness filter.", "Enforced strict data typing and dropped manually excluded variables using the clinical_dictionary.", "Standardized factor levels: converted 'UN' and 'Unknown' to NA.", "Converted 'Yes' to 1 and 'No' to 0 (retained explicitly as factors to ensure mathematical compatibility with downstream models).")`
+`r what_this_does("Imported raw clinical and sample mapping Excel files and resolved ID discrepancies.", "Engineered core analytical features including Age, Sample_Age, cohort_group, and Sex.", "Calculated time deltas (in years) between clinical assessment dates and the blood draw date.", "Pruned clinical variables according to the defined 80% completeness filter.", "Enforced strict data typing and dropped manually excluded variables using the clinical_dictionary.", "Dynamically dropped procedural meta-variables based on parameterized config patterns.", "Standardized factor levels: converted 'UN' and 'Unknown' to NA.", "Finalized downstream features (renamed long columns, fixed illogical CRP values, locked factor levels).")`
 
 ```{r clin_cleanup}
-cat("Importing Clinical Data and ID Maps...\n")
+audit_log <- c("Importing Clinical Data and ID Maps...")
 
-# ------------------------------------------------------------------------------
-# 1. Process Master Clinical File (Sheet 1 only)
-# ------------------------------------------------------------------------------
-raw_clin <- read_excel(here::here("data", "Patients__20022025_105625_modified.xlsx"), sheet = 1)
+
+# 1. Process Master Clinical File (Sheet 1 only) -------------------------------
+raw_clin <- read_excel(here::here("data", file_paths$clinical_raw), sheet = 1)
 setDT(raw_clin) 
 
-# Force the clinical ID to be a character string for safe merging (Silenced)
+# Force the clinical ID to be a character string for safe merging
 raw_clin <- raw_clin[, inCentraxx := as.character(inCentraxx)]
 
 # Strict Filter: Keep ONLY samples explicitly marked for this study
 raw_clin <- raw_clin[get(qc_config$selected_col) == 1 | get(qc_config$selected_col) == "1"]
 
-# ------------------------------------------------------------------------------
-# 1.5 Fix Excel Numeric Dates (DIRECT PARSING)
-# ------------------------------------------------------------------------------
-# Safely target only the date columns that actually exist in the file
+
+# 1.5 Fix Excel Numeric Dates (DIRECT PARSING) ---------------------------------
 valid_date_cols <- intersect(qc_config$date_cols, names(raw_clin))
 
 if(length(valid_date_cols) > 0) {
   raw_clin <- raw_clin[, (valid_date_cols) := lapply(.SD, function(x) {
-    # The data is exactly "45601" (character). Convert to numeric, then safely to Date.
     suppressWarnings(as.Date(as.numeric(x), origin = "1899-12-30"))
   }), .SDcols = valid_date_cols]
 }
 
-# ------------------------------------------------------------------------------
-# 2. Process Mapping File & Coalesce IDs
-# ------------------------------------------------------------------------------
-id_map <- read_excel(here::here("data", "Samples for OLink submitted_final_0226.xlsx"))
+
+# 2. Process Mapping File & Coalesce IDs ---------------------------------------
+id_map <- read_excel(here::here("data", file_paths$id_map))
 setDT(id_map)
 
 # Explicitly drop the follow-up sample to enforce cross-sectional design
 id_map <- id_map[`Subject ID` != "Act_4_2"]
 
-# Force both ID columns to character (Silenced)
 id_map <- id_map[, `Subject-ID (EUSTAR)`      := as.character(`Subject-ID (EUSTAR)`)]
 id_map <- id_map[, `Subject-ID (Biobank RUZ)` := as.character(`Subject-ID (Biobank RUZ)`)]
 
-# COALESCE: Create a master 'Merge_ID' (Silenced)
+# COALESCE: Create a master 'Merge_ID'
 id_map <- id_map[, Merge_ID := fifelse(
   is.na(`Subject-ID (EUSTAR)`) | `Subject-ID (EUSTAR)` == "", 
   `Subject-ID (Biobank RUZ)`, 
   `Subject-ID (EUSTAR)`
 )]
 
-# Drop rows from the mapping file that have no ID in either column
 id_map <- id_map[!is.na(Merge_ID) & Merge_ID != ""]
 
-# ------------------------------------------------------------------------------
-# 3. Merge and Structure
-# ------------------------------------------------------------------------------
-# Inner join: keeps only participants present in BOTH the clinical and mapping files
+
+# 3. Merge and Structure -------------------------------------------------------
 master_spine <- merge(
   raw_clin, 
   id_map, 
@@ -145,16 +170,17 @@ master_spine <- merge(
   all = FALSE
 )
 
-# Sanitize special characters in column names to prevent encoding mismatches
+# SANITY CHECK: Ensure the merge actually yielded data
+stopifnot("FATAL: Inner join resulted in 0 rows. Check ID formatting." = nrow(master_spine) > 0)
+audit_log <- c(audit_log, "- Sanity Check: Inner join successful.")
+
 setnames(master_spine, "Right atrium area (cm²)", "Right atrium area (cm2)", skip_absent = TRUE)
 setnames(master_spine, "Right ventricular area (cm²)", "Right ventricular area (cm2)", skip_absent = TRUE)
 
-# ------------------------------------------------------------------------------
-# 4. Feature Engineering (Groups, Dates, Age, Sex)
-# ------------------------------------------------------------------------------
+
+# 4. Feature Engineering (Groups, Dates, Age, Sex) -----------------------------
 master_spine <- setnames(master_spine, old = "Subject ID", new = "Subject_ID", skip_absent = TRUE)
 
-# Assign Groups
 master_spine <- master_spine[, cohort_group := fcase(
   str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
   str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
@@ -162,50 +188,36 @@ master_spine <- master_spine[, cohort_group := fcase(
   default = NA_character_
 )]
 
-# The Date Fix & Age Calculation
 master_spine <- master_spine[, Entnahmedatum_Clean := as.Date(Entnahmedatum)]
-master_spine <- master_spine[is.na(Entnahmedatum_Clean) & cohort_group == GRP_CONTROL, 
-                             Entnahmedatum_Clean := as.Date("2024-01-01")]
 
 master_spine <- master_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
 master_spine <- master_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
 master_spine <- master_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = "days")) / 365.25]
 
-# Assign Sex
 master_spine <- master_spine[, Sex := fcase(
   Geschlecht == "weiblich", SEX_FEMALE,
   Geschlecht == "männlich", SEX_MALE,
   default = NA_character_
 )]
 
-# ------------------------------------------------------------------------------
-# 4.5 Feature Engineering (Clinical Date Deltas)
-# ------------------------------------------------------------------------------
-# Isolate the specific assessment dates (ignoring the core visit/blood draw dates)
+
+# 4.5 Feature Engineering (Clinical Date Deltas) -------------------------------
 assessment_dates <- setdiff(qc_config$date_cols, c("Visit Date", "Entnahmedatum", "Einlagerungsdatum"))
 
 for (d_col in assessment_dates) {
   if (d_col %in% names(master_spine)) {
-    # Generate a clean name: Strips out the messy "If yes, Date of assessment for..." prefixes
     clean_prefix <- gsub(".*Date of assessment for |.*Date of ", "", d_col)
     clean_name <- paste0("Delta_", gsub("[^A-Za-z0-9]", "_", clean_prefix), "_Years")
-    
-    # Calculate Time Delta (Test Date - Blood Draw Date)
-    # Negative means test happened BEFORE the blood draw. Positive means AFTER.
     master_spine[, (clean_name) := as.numeric(difftime(get(d_col), Entnahmedatum_Clean, units = "days")) / 365.25]
   }
 }
 
-# ------------------------------------------------------------------------------
-# 5. Completeness Pruning & Dictionary Enforcement
-# ------------------------------------------------------------------------------
-cat("\nFiltering by completeness and applying TSV Data Dictionary...\n")
 
-# A. COMPLETENESS PRUNING
-# Protect core variables and dates from being dropped due to missingness
+# 5. Completeness Pruning & Dictionary Enforcement -----------------------------
+audit_log <- c(audit_log, "\nFiltering by completeness and applying TSV Data Dictionary...")
+
 protected_vars <- c("Subject_ID", "inCentraxx", "cohort_group", "Age", "Sex", "Sample_Age", qc_config$date_cols)
 
-# Calculate completeness ONLY on Patients (ignore Controls for this threshold)
 completeness <- master_spine[cohort_group %in% c(GRP_ACTIVE, GRP_NON_ACTIVE), 
                              lapply(.SD, function(x) sum(!is.na(x)) / .N)]
 
@@ -213,80 +225,96 @@ cols_to_keep <- names(completeness)[completeness >= qc_config$min_completeness_c
 
 n_dropped <- ncol(master_spine) - length(cols_to_keep)
 master_spine <- master_spine[, ..cols_to_keep]
-cat(sprintf("- Pruning: Dropped %d columns for having < %s%% completeness in patients.\n", 
+audit_log <- c(audit_log, sprintf("- Pruning: Dropped %d columns for having < %s%% completeness in patients.", 
             n_dropped, qc_config$min_completeness_clin_var * 100))
 
-# B. DICTIONARY ENFORCEMENT
-dict_path <- here::here("data", "clinical_dictionary.txt")
+dict_path <- here::here("data", file_paths$clinical_dict)
 if (file.exists(dict_path)) {
   data_dict <- readr::read_tsv(dict_path, show_col_types = FALSE)
   
-  # Extract classification lists
-  vars_n <- data_dict %>% filter(Type == "n") %>% pull(Variable_Name)
-  vars_c <- data_dict %>% filter(Type == "c") %>% pull(Variable_Name)
-  vars_x <- data_dict %>% filter(Type == "x") %>% pull(Variable_Name)
+  vars_n <- intersect(data_dict %>% filter(Type == "n") %>% pull(Variable_Name), names(master_spine))
+  vars_c <- intersect(data_dict %>% filter(Type == "c") %>% pull(Variable_Name), names(master_spine))
+  vars_x <- intersect(data_dict %>% filter(Type == "x") %>% pull(Variable_Name), names(master_spine))
   
-  # Only attempt to mutate columns that survived the completeness prune
-  vars_n <- intersect(vars_n, names(master_spine))
-  vars_c <- intersect(vars_c, names(master_spine))
-  vars_x <- intersect(vars_x, names(master_spine))
+  if (length(vars_x) > 0) master_spine[, (vars_x) := NULL]
   
-  # 1. Drop explicitly excluded columns
-  if (length(vars_x) > 0) {
-    master_spine[, (vars_x) := NULL]
-  }
-  
-  # 2. Force Numerics (Handles Swiss decimal commas, converts text to NA safely)
   safe_numeric <- function(x) {
     if (is.numeric(x)) return(x)
     clean_x <- gsub(",", ".", trimws(as.character(x)))
     suppressWarnings(as.numeric(clean_x))
   }
-  if (length(vars_n) > 0) {
-    master_spine[, (vars_n) := lapply(.SD, safe_numeric), .SDcols = vars_n]
-  }
+  if (length(vars_n) > 0) master_spine[, (vars_n) := lapply(.SD, safe_numeric), .SDcols = vars_n]
+  if (length(vars_c) > 0) master_spine[, (vars_c) := lapply(.SD, function(x) as.factor(as.character(x))), .SDcols = vars_c]
   
-  # 3. Force Categoricals
-  if (length(vars_c) > 0) {
-    master_spine[, (vars_c) := lapply(.SD, function(x) as.factor(as.character(x))), .SDcols = vars_c]
-  }
-  
-  cat(sprintf("- Enforcement: Cleaned %d Numeric and %d Categorical variables based on dictionary.\n", 
-              length(vars_n), length(vars_c)))
-  cat(sprintf("- Exclusion: Dropped %d manually blacklisted variables.\n", length(vars_x)))
-  
+  audit_log <- c(audit_log, sprintf("- Enforcement: Cleaned %d Numeric and %d Categorical variables based on dictionary.", length(vars_n), length(vars_c)))
+  audit_log <- c(audit_log, sprintf("- Exclusion: Dropped %d manually blacklisted variables.", length(vars_x)))
 } else {
-  cat("! WARNING: 'clinical_dictionary.txt' not found in data/. Skipping explicit type enforcement.\n")
+  audit_log <- c(audit_log, "! WARNING: 'clinical_dictionary.txt' not found in data/. Skipping explicit type enforcement.")
 }
 
-# Reorder core columns to the front of the dataframe for easy viewing
-core_cols <- intersect(c("Subject_ID", "cohort_group", "Age", "Sex", "Sample_Age"), names(master_spine))
-setcolorder(master_spine, core_cols)
 
-cat(sprintf("\n✓ Clinical Spine Ready: %d rows x %d columns.\n", nrow(master_spine), ncol(master_spine)))
-print(table(master_spine$cohort_group))
+# 5.5 Meta-Variable Pruning (Dropping Measurement Indicators) ------------------
+audit_log <- c(audit_log, "\nPruning procedural meta-variables (measurement indicators)...")
+
+regex_pattern <- paste(tolower(qc_config$meta_drop_patterns), collapse = "|")
+cols_to_drop <- names(master_spine)[str_detect(tolower(names(master_spine)), regex_pattern)]
+
+if (length(cols_to_drop) > 0) {
+  master_spine <- master_spine %>% select(-all_of(cols_to_drop))
+  audit_log <- c(audit_log, sprintf("- Dropped %d procedural variables to prevent analytical confounding.", length(cols_to_drop)))
+}
 
 
-# ------------------------------------------------------------------------------
-# 6. Factor Standardization (Binarization & Cleaning)
-# ------------------------------------------------------------------------------
-cat("\nStandardizing factor variables (Yes/No -> 1/0, UN/Unknown -> NA)...\n")
+# 6. Factor Standardization (Binarization & Cleaning) --------------------------
+audit_log <- c(audit_log, "\nStandardizing factor variables (Yes/No -> 1/0, UN/Unknown -> NA)...")
 
 master_spine <- master_spine %>%
   mutate(across(where(is.factor), ~ {
     char_vec <- as.character(.x)
     lower_vec <- tolower(char_vec)
     
-    # Apply standardizations (case insensitive)
     char_vec[lower_vec %in% c("un", "unknown", "not done")] <- NA
     char_vec[lower_vec == "yes"] <- "1"
     char_vec[lower_vec == "no"] <- "0"
     
-    # BEST PRACTICE: Keep everything as a factor for the VPA engine.
-    # We will temporarily cast to numeric later inside the correlation engine.
     as.factor(char_vec)
   }))
-rm(raw_clin, id_map)
+setDT(master_spine)
+
+
+# 7. Final Downstream Feature Engineering --------------------------------------
+audit_log <- c(audit_log, "\nApplying final clinical feature engineering (Renaming, Factor levels)...")
+
+setnames(master_spine, 
+         old = as.character(clinical_rename_map), 
+         new = names(clinical_rename_map), 
+         skip_absent = TRUE)
+
+setnames(master_spine, 
+         old = c("OR serum creatinine (micromoles/L)", "CRP (mg/dl)"), 
+         new = c("Creatinine", "CRP"), 
+         skip_absent = TRUE)
+
+if("CRP" %in% names(master_spine)) {
+  master_spine[, CRP := as.numeric(gsub(",", ".", as.character(CRP)))]
+  master_spine[CRP <= 0, CRP := NA_real_]
+}
+
+if("Creatinine" %in% names(master_spine)) {
+  master_spine[, Creatinine := as.numeric(gsub(",", ".", as.character(Creatinine)))]
+}
+
+master_spine[, cohort_group := factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))]
+
+core_cols <- intersect(c("Subject_ID", "cohort_group", "Age", "Sex", "Sample_Age"), names(master_spine))
+setcolorder(master_spine, core_cols)
+
+audit_log <- c(audit_log, sprintf("\n✓ Clinical Spine Ready: %d rows x %d columns.", nrow(master_spine), ncol(master_spine)))
+
+# Print consolidated output to prevent HTML fragmentation
+cat(paste(audit_log, collapse = "\n"))
+
+rm(raw_clin, id_map, audit_log)
 invisible(gc())
 ```
 
@@ -295,93 +323,85 @@ invisible(gc())
 `r what_this_does("Pre-quantified Olink data was pivoted from long to wide format (Samples as columns, Assays as rows).", "The Olink matrix was strictly subset to include only samples definitively present in the clinical master_spine.")`
 
 ```{r olink_import}
-cat("Importing and Pivoting Olink Data...\n")
+audit_log_olink <- c("Importing and Pivoting Olink Data...")
 
-# Load Long-format Olink Data (Update filename if necessary)
-raw_olink <- fread(here::here("data", "pre_quant.csv"))
+raw_olink <- fread(here::here("data", file_paths$olink_raw))
 
-# SubjectID is the identifier in the master_spine
-# SampleID is the identifier in the OLINK file
-# They both contain the same information
 raw_olink <- raw_olink[SampleID %in% master_spine$Subject_ID]
 
-# Pivot Long to Wide (Rows = Proteins, Cols = Patients)
-# Assuming "Assay" is the protein name and "NPX" is the read value
 wide_olink <- dcast(raw_olink, Assay ~ SampleID, value.var = "NPX")
 
-# Convert to standard numeric matrix
 olink_mat <- as.matrix(wide_olink[, -1, with = FALSE])
 rownames(olink_mat) <- wide_olink$Assay
 
-cat(sprintf("- Initial Matrix: %d Proteins | %d Samples\n", nrow(olink_mat), ncol(olink_mat)))
+audit_log_olink <- c(audit_log_olink, sprintf("- Initial Matrix: %d Proteins | %d Samples", nrow(olink_mat), ncol(olink_mat)))
 
-# Clean up RAM
-rm(raw_olink, wide_olink)
+cat(paste(audit_log_olink, collapse = "\n"))
+
+rm(raw_olink, wide_olink, audit_log_olink)
 invisible(gc())
 ```
 
 
 ## Proteomics QC, Imputation, Sync
 
+`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.")`
+
 `r what_this_does("Proteins and Samples exceeding the previously defined missingness threshold were entirely dropped.", "Remaining NA values were imputed using a row-wise (protein-wise) median approach.", "The master_spine clinical dataset and the Olink matrix were cross-synchronized to guarantee identical sample inclusion and ordering.")`
 
 ```{r qc_imputation_sync}
 cat("Running Missingness QC and Imputation...\n")
 
-# 1. Quality Control (Missingness Rules from qc_config)
+audit_log_qc <- c("Running Missingness QC and Imputation...")
+
 miss_prots <- rowMeans(is.na(olink_mat))
 miss_samps <- colMeans(is.na(olink_mat))
 
 valid_prots <- miss_prots < qc_config$max_missing_pct_prot
 valid_samps <- miss_samps < qc_config$max_missing_pct_pat
 
-# Extract the names of the failures before we drop them
 failed_prots <- rownames(olink_mat)[!valid_prots]
 failed_samps <- colnames(olink_mat)[!valid_samps]
 
-# --- Print Protein QC Results ---
 if(length(failed_prots) > 0) {
-  cat(sprintf("! Dropped %d Proteins (>= %s%% missing):\n  %s\n", 
+  audit_log_qc <- c(audit_log_qc, sprintf("! Dropped %d Proteins (>= %s%% missing):\n  %s", 
               length(failed_prots), qc_config$max_missing_pct_prot * 100, paste(failed_prots, collapse = ", ")))
 } else {
-  cat(sprintf("✓ All proteins passed QC (< %s%% missing).\n", qc_config$max_missing_pct_prot * 100))
+  audit_log_qc <- c(audit_log_qc, sprintf("✓ All proteins passed QC (< %s%% missing).", qc_config$max_missing_pct_prot * 100))
 }
 
-# --- Print Patient QC Results ---
 if(length(failed_samps) > 0) {
-  cat(sprintf("! Dropped %d Patients (>= %s%% missing):\n  %s\n", 
+  audit_log_qc <- c(audit_log_qc, sprintf("! Dropped %d Patients (>= %s%% missing):\n  %s", 
               length(failed_samps), qc_config$max_missing_pct_pat * 100, paste(failed_samps, collapse = ", ")))
 } else {
-  cat(sprintf("✓ All patients passed QC (< %s%% missing).\n", qc_config$max_missing_pct_pat * 100))
+  audit_log_qc <- c(audit_log_qc, sprintf("✓ All patients passed QC (< %s%% missing).", qc_config$max_missing_pct_pat * 100))
 }
 
-# Apply the filters
 qc_mat <- olink_mat[valid_prots, valid_samps, drop = FALSE]
-cat(sprintf("\n- Post-QC Matrix: %d Proteins | %d Samples\n", nrow(qc_mat), ncol(qc_mat)))
+audit_log_qc <- c(audit_log_qc, sprintf("\n- Post-QC Matrix: %d Proteins | %d Samples", nrow(qc_mat), ncol(qc_mat)))
 
-# 2. Impute remaining NAs (Zero-Copy Median Imputation)
 row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
 na_coords <- which(is.na(qc_mat), arr.ind = TRUE)
 qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
 
-# 3. Synchronize Clinical Spine
-# Ensure our clinical spine ONLY contains samples that passed Olink QC
 master_spine <- master_spine[Subject_ID %in% colnames(qc_mat)]
 
-# Ensure matrix columns perfectly align with the spine 
 qc_mat <- qc_mat[, master_spine$Subject_ID, drop = FALSE]
+
+cat(paste(audit_log_qc, collapse = "\n"))
+rm(audit_log_qc)
 ```
 ## Export final Data
 
-`r what_this_does("The finalized arrays (clinical_spine.rds and clean_olink_matrix.rds) were exported as serialized R objects for quick, standardized ingestion by downstream scripts.")`
+`r what_this_does("The finalized arrays (clinical_spine.rds and clean_olink_matrix.rds) were exported as serialized R objects for quick, standardized ingestion by downstream scripts.", "The clinical spine was exported as .csv")`
 
 ```{r export}
-# 4. Export Final Data
-cat("Saving finalized datasets to output folder...\n")
 saveRDS(master_spine, file.path(output_dir_data, "clinical_spine.rds"))
 saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
 
-cat("Script 01 Complete! Data is ready for analysis.\n")
+write_csv(master_spine, file.path(output_dir_data, "clinical_spine.csv"))
+
+cat("Script 01 Complete! Data is ready for analysis.")
 ```
 
 
