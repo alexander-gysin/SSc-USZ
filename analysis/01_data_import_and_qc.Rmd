@@ -310,11 +310,11 @@ setcolorder(master_spine, core_cols)
 
 audit_log <- c(audit_log, sprintf("\n✓ Clinical Spine Ready: %d rows x %d columns.", nrow(master_spine), ncol(master_spine)))
 
+rm(raw_clin, id_map)
+invisible(gc())
+
 # Print consolidated output to prevent HTML fragmentation
 cat(paste(audit_log, collapse = "\n"))
-
-rm(raw_clin, id_map, audit_log)
-invisible(gc())
 ```
 
 # OLINK Data
@@ -336,10 +336,10 @@ rownames(olink_mat) <- wide_olink$Assay
 
 audit_log_olink <- c(audit_log_olink, sprintf("- Initial Matrix: %d Proteins | %d Samples", nrow(olink_mat), ncol(olink_mat)))
 
-cat(paste(audit_log_olink, collapse = "\n"))
-
-rm(raw_olink, wide_olink, audit_log_olink)
+rm(raw_olink, wide_olink)
 invisible(gc())
+
+cat(paste(audit_log_olink, collapse = "\n"))
 ```
 
 
@@ -389,7 +389,6 @@ master_spine <- master_spine[Subject_ID %in% colnames(qc_mat)]
 qc_mat <- qc_mat[, master_spine$Subject_ID, drop = FALSE]
 
 cat(paste(audit_log_qc, collapse = "\n"))
-rm(audit_log_qc)
 ```
 # Export 
 
