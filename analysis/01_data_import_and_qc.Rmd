@@ -110,8 +110,7 @@ clinical_rename_map <- c(
 )
 ```
 
-## Clinical Data Cleanup
-# Data Ingestion and Cleanup
+# Clinical Data Cleanup
 `r analysis_decision("Dropped the follow-up sample 'Act_4_2' to strictly enforce a cross-sectional study design.", "Excluded patients who were missing from either the CentraXX output or the Biobank sample manifest.")`
 
 `r what_this_does("Imported raw clinical and sample mapping Excel files and resolved ID discrepancies.", "Engineered core analytical features including Age, Sample_Age, cohort_group, and Sex.", "Calculated time deltas (in years) between clinical assessment dates and the blood draw date.", "Pruned clinical variables according to the defined 80% completeness filter.", "Enforced strict data typing and dropped manually excluded variables using the clinical_dictionary.", "Dynamically dropped procedural meta-variables based on parameterized config patterns.", "Standardized factor levels: converted 'UN' and 'Unknown' to NA.", "Finalized downstream features (renamed long columns, fixed illogical CRP values, locked factor levels).")`
@@ -318,7 +317,8 @@ rm(raw_clin, id_map, audit_log)
 invisible(gc())
 ```
 
-## OLINK import
+# OLINK Data
+## OLINK Import
 
 `r what_this_does("Pre-quantified Olink data was pivoted from long to wide format (Samples as columns, Assays as rows).", "The Olink matrix was strictly subset to include only samples definitively present in the clinical master_spine.")`
 
@@ -343,7 +343,7 @@ invisible(gc())
 ```
 
 
-## Proteomics QC, Imputation, Sync
+## OLINK QC, Imputation & Sync
 
 `r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.")`
 
@@ -391,7 +391,7 @@ qc_mat <- qc_mat[, master_spine$Subject_ID, drop = FALSE]
 cat(paste(audit_log_qc, collapse = "\n"))
 rm(audit_log_qc)
 ```
-## Export final Data
+# Export 
 
 `r what_this_does("The finalized arrays (clinical_spine.rds and clean_olink_matrix.rds) were exported as serialized R objects for quick, standardized ingestion by downstream scripts.", "The clinical spine was exported as .csv")`
 
