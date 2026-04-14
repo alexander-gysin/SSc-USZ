@@ -49,7 +49,7 @@ knitr::opts_chunk$set(
 ```{r config}
 # 1. Global File Paths ---------------------------------------------------------
 file_paths <- list(
-  clinical_raw  = "Patients__20022025_105625_modified.xlsx",
+  clinical_raw  = "clinical_data.xlsx",
   id_map        = "Samples for OLink submitted_final_0226.xlsx",
   clinical_dict = "clinical_dictionary.txt",
   olink_raw     = "pre_quant.csv"

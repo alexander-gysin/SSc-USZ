@@ -441,11 +441,11 @@ if (!dir.exists(heatmap_dir)) dir.create(heatmap_dir, recursive = TRUE)
 
 cor_data_prep <- master_spine %>%
   mutate(
-    Subset_Diffuse = if_else(`Subsets of SSc according to LeRoy (1988):` == "diffuse cutaneous", 1, 0),
-    Subset_Limited = if_else(`Subsets of SSc according to LeRoy (1988):` == "limited cutaneous", 1, 0),
-    Subset_Sine    = if_else(`Subsets of SSc according to LeRoy (1988):` == "sine scleroderma", 1, 0)
+    Subset_Diffuse = if_else(`Subset_diffuse` == "diffuse cutaneous", 1, 0),
+    Subset_Limited = if_else(`Subset_diffuse` == "limited cutaneous", 1, 0),
+    Subset_Sine    = if_else(`Subset_diffuse` == "sine scleroderma", 1, 0)
   ) %>%
-  select(-`Subsets of SSc according to LeRoy (1988):`) %>%
+  select(-`Subset_diffuse`) %>%
   mutate(across(where(is.factor), ~ {
     val <- tolower(as.character(.x))
     case_when(
@@ -524,79 +524,241 @@ rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_
 invisible(gc())
 ```
 
+## Core Metadata vs. Clinical Phenotype
 
-### How to Interpret These Heatmaps
-These networks visualize the **Spearman Rank Correlation** between clinical features. Because clinical data is often non-linear and ordinal (e.g., severity scores), Spearman accurately captures whether two variables move together, regardless of their exact numeric scale.
+`r what_this_does("Combined the predefined SSc Clinical Parameters from the global config with core demographics (Age, Sex, Cohort, Sample Age).", "Filtered the list to ensure all requested variables survived the sparsity and completeness filters.", "Generated a symmetrical, hierarchically clustered heatmap to reveal which clinical symptoms organically group with core demographics.", "Exported a high-resolution PNG for presentations.")`
 
-* **Color (Direction):** <span style="color:#d73027;">**Red**</span> indicates a positive correlation (as Variable A increases, Variable B increases). <span style="color:#4575b4;">**Blue**</span> indicates a negative correlation (as Variable A increases, Variable B decreases).
-* **Intensity (Strength):** Darker, more saturated colors represent stronger mathematical relationships (closer to +1.0 or -1.0).
-* **Blank Spaces (Significance):** If a square is entirely blank, the correlation failed to reach statistical significance (p ≥ 0.05). Only statistically robust relationships are displayed.
-* **Clustering:** In the Intra-Domain plots (Self vs. Self), variables are automatically ordered using hierarchical clustering (`ward.D2`). Variables that behave similarly across the cohort will group tightly together.
+```{r core_phenotype_heatmap, fig.width=10, fig.height=8, out.width="100%", results='asis'}
+# 1. Define the Variables ------------------------------------------------------
+core_vars <- c("Age", "Sex", "Sample_Age", "cohort_group", "CRP", "Creatinine")
+all_target_vars <- unique(c(core_vars, ssc_clinical_parameters))
+
+# Intersect with the final matrix to prevent crashes from dropped/renamed columns
+valid_target_vars <- intersect(all_target_vars, colnames(cor_matrix))
+
+# 2. Subset Matrices -----------------------------------------------------------
+sym_cor <- cor_matrix[valid_target_vars, valid_target_vars]
+sym_p   <- p_matrix[valid_target_vars, valid_target_vars]
+
+# 3. Hierarchical Clustering ---------------------------------------------------
+dist_mat <- as.dist(1 - sym_cor)
+hc <- hclust(dist_mat, method = "ward.D2")
+ordered_vars <- valid_target_vars[hc$order]
+
+# 4. Reshape and Filter for Upper Triangle -------------------------------------
+cor_long <- as.data.frame(sym_cor) %>%
+  rownames_to_column("Var1") %>%
+  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+p_long <- as.data.frame(sym_p) %>%
+  rownames_to_column("Var1") %>%
+  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "P_Value")
+
+plot_df <- cor_long %>%
+  left_join(p_long, by = c("Var1", "Var2")) %>%
+  mutate(
+    idx_1 = match(Var1, ordered_vars),
+    idx_2 = match(Var2, ordered_vars)
+  ) %>%
+  filter(idx_2 > idx_1) %>% # Keep only the upper triangle
+  mutate(
+    Var2 = factor(Var2, levels = ordered_vars),
+    Var1 = factor(Var1, levels = rev(ordered_vars)),
+    Is_Significant = P_Value < corr_config$p_cutoff,
+    Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
+  )
+
+# 5. Build the ggplot ----------------------------------------------------------
+pheno_plot <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  
+  scale_x_discrete(position = "top") +
+  scale_y_discrete(position = "right") +
+  
+  scale_fill_gradientn(
+    colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+    limits = c(-1, 1),
+    na.value = "gray93", 
+    name = "Spearman Rho\n"
+  ) +
+  labs(title = "Core Metadata vs SSc Parameters", 
+       subtitle = sprintf("Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff)) +
+  theme_minimal(base_size = 14) +
+  theme(
+    # --- X-AXIS LABELS ---
+    axis.text.x.top = element_text(
+      angle = 45, 
+      hjust = 0, 
+      vjust = 0.01,               
+      margin = margin(b = -2), 
+      face = "bold", 
+      color = "black", 
+      size = rel(0.7)
+    ),
+    
+    # --- Y-AXIS LABELS ---
+    axis.text.y.right = element_text(
+      hjust = 0,               
+      margin = margin(l = 2),  
+      face = "bold", 
+      color = "black", 
+      size = rel(0.75)
+    ),
+    
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+    plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+    
+    # --- LEGEND ---
+    legend.position = "left",
+    legend.key.height = unit(1.5, "cm"), 
+    legend.key.width = unit(0.5, "cm")
+  ) +
+  coord_fixed() 
+
+# 6. Export and Print ----------------------------------------------------------
+# <--- ADJUSTMENT: Export width matched to the new 16-inch chunk width
+ggsave(file.path(output_dir_data, "heatmaps", "Core_Phenotype_Correlation_Symmetrical.png"), 
+       plot = pheno_plot, width = 10, height = 8, dpi = 300, bg = "white")
+
+# Consolidated HTML Output to prevent fragmentation
+html_output <- paste0(
+  "### Core Metadata & SSc Parameters\n\n",
+  "This symmetrical heatmap illustrates the inter-relationships between core cohort demographics and primary SSc clinical parameters, clustered by similarity.\n\n"
+)
+
+cat(html_output)
+print(pheno_plot)
+cat("\n\n")
+
+# 7. Cleanup -------------------------------------------------------------------
+rm(core_vars, all_target_vars, valid_target_vars, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, pheno_plot, html_output)
+invisible(gc())
+```
 
 ## Intra Domain Correlation MAtrix {.tabset}
 
 `r what_this_does("Visualized local correlations within clinical domains using hierarchical clustering.", "Optimized text scaling and margins for maximum legibility.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.")`
-```{r mat_corr_plot, results='asis'}
-# 1. Shared Aesthetics
-col_palette <- colorRampPalette(c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))(200)
-
-# 2. Filter domains for plotting
+```{r intra_corr_plots, fig.width=10, fig.height=8, out.width="100%", results='asis'}
+# Iterate through each defined clinical domain to create a targeted heatmap
 for (d_name in names(clinical_domains)) {
   
+  # 1. Variable Validation & Variance Filtering --------------------------------
   raw_vars <- clinical_domains[[d_name]]
   existing_vars <- intersect(raw_vars, colnames(cor_matrix))
   
   if (length(existing_vars) < 2) next
 
+  # Check for zero-variance to prevent mathematical failure in hclust
   v_vals <- sapply(cor_mat_final[, existing_vars, with=FALSE], function(x) var(x, na.rm=TRUE))
   valid_vars <- names(v_vals)[!is.na(v_vals) & v_vals > 0]
   
+  clean_title <- gsub("_", " ", d_name)
+  
   if (length(valid_vars) < 2) {
-    cat(sprintf("### %s\n", gsub("_", " ", d_name)))
-    cat("\n> **Note:** Domain skipped. Insufficient variance detected.\n\n")
+    cat(sprintf("### %s\n\n> **Note:** Domain skipped. Insufficient variance detected.\n\n", clean_title))
     next
   }
 
-  sub_cor <- cor_matrix[valid_vars, valid_vars, drop = FALSE]
-  sub_p   <- p_matrix[valid_vars, valid_vars, drop = FALSE]
+  # 2. Subset Matrices ---------------------------------------------------------
+  sym_cor <- cor_matrix[valid_vars, valid_vars, drop = FALSE]
+  sym_p   <- p_matrix[valid_vars, valid_vars, drop = FALSE]
   
-  if (!all(dim(sub_cor) == dim(sub_p))) next
+  # 3. Hierarchical Clustering -------------------------------------------------
+  dist_mat <- as.dist(1 - sym_cor)
+  hc <- hclust(dist_mat, method = "ward.D2")
+  ordered_vars <- valid_vars[hc$order]
 
-  cat(sprintf("### %s\n", gsub("_", " ", d_name)))
+  # 4. Reshape and Filter for Upper Triangle -----------------------------------
+  cor_long <- as.data.frame(sym_cor) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+  p_long <- as.data.frame(sym_p) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "P_Value")
+
+  plot_df <- cor_long %>%
+    left_join(p_long, by = c("Var1", "Var2")) %>%
+    mutate(
+      idx_1 = match(Var1, ordered_vars),
+      idx_2 = match(Var2, ordered_vars)
+    ) %>%
+    filter(idx_2 > idx_1) %>% # Keep only the upper triangle
+    mutate(
+      Var2 = factor(Var2, levels = ordered_vars),
+      Var1 = factor(Var1, levels = rev(ordered_vars)),
+      Is_Significant = P_Value < corr_config$p_cutoff,
+      Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
+    )
+
+  # 5. Build the ggplot --------------------------------------------------------
+  p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    
+    scale_x_discrete(position = "top") +
+    scale_y_discrete(position = "right") +
+    
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = "gray93", 
+      name = "Spearman Rho\n"
+    ) +
+    labs(title = clean_title, 
+         subtitle = sprintf("Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff)) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x.top = element_text(
+        angle = 45, 
+        hjust = 0, 
+        vjust = 0.01,               
+        margin = margin(b = -2), 
+        face = "bold", 
+        color = "black", 
+        size = rel(1.1)
+      ),
+      axis.text.y.right = element_text(
+        hjust = 0,               
+        margin = margin(l = 2),  
+        face = "bold", 
+        color = "black", 
+        size = rel(1.1)
+      ),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = "left",
+      legend.key.height = unit(1.5, "cm"), 
+      legend.key.width = unit(0.5, "cm")
+    ) +
+    coord_fixed() 
+
+  # 6. Export and Print --------------------------------------------------------
+  # Dynamic sizing formula scaled to maintain text-to-grid ratio across domains
+  dyn_width  <- max(6, length(valid_vars) * 0.35 + 4)
+  dyn_height <- max(5, length(valid_vars) * 0.35 + 3)
   
-  dyn_size <- 4 + (length(valid_vars) * 0.5)
-  png(file.path(output_dir_data, "heatmaps", paste0("Intra_", d_name, ".png")), 
-      width=dyn_size, height=dyn_size, units="in", res=300)
-  
-  try({
-    corrplot(sub_cor, method="color", type="upper", order="hclust", 
-             col=col_palette, tl.col="black", tl.srt=45,
-             tl.cex=corr_config$label_font_size, 
-             p.mat=sub_p, sig.level=corr_config$p_cutoff, insig="blank", 
-             diag=FALSE, title=gsub("_", " ", d_name), 
-             mar=c(0, 0, 2, 0))
-  }, silent = TRUE)
-  dev.off()
-  
-  # Render to HTML
-  try({
-    corrplot(sub_cor, method="color", type="upper", order="hclust", 
-             col=col_palette, tl.col="black", tl.cex=corr_config$label_font_size, tl.srt=45, 
-             p.mat=sub_p, sig.level=corr_config$p_cutoff, insig="blank", 
-             diag=FALSE, mar=c(0, 0, 1, 0))
-  }, silent = TRUE)
-  
+  ggsave(file.path(output_dir_data, "heatmaps", "intra", paste0("Intra_", d_name, ".png")), 
+         plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = "white")
+
+  # Consolidated HTML Output to prevent fragmentation
+  cat(sprintf("### %s\n\n", clean_title))
+  print(p_heatmap)
   cat("\n\n")
 }
 
-# Cleanup
-rm(sub_cor, sub_p, valid_vars, existing_vars, v_vals)
+# 7. Cleanup -------------------------------------------------------------------
+rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, p_heatmap, dyn_width, dyn_height)
 invisible(gc())
 ```
 ## Interdomain Combos {.tabset}
 
 `r what_this_does("Visualized correlations between different biological systems using non-square matrices.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.")`
-```{r inter_domain, results='asis'} 
+```{r inter_domain, fig.width=12, fig.height=8, out.width="100%", results='asis'}
 # 1. Regenerate the safe plot list (ensuring names exist in the matrix)
 plotting_domains <- list()
 for (n in names(clinical_domains)) {
@@ -605,72 +767,119 @@ for (n in names(clinical_domains)) {
 }
 
 domain_combos <- combn(names(plotting_domains), 2, simplify = FALSE)
-col_palette <- colorRampPalette(c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))(200)
 
+# 2. Iterate through each combination ------------------------------------------
 for (combo in domain_combos) {
   d1_name <- combo[1]; d2_name <- combo[2]
   v1_raw <- plotting_domains[[d1_name]]; v2_raw <- plotting_domains[[d2_name]]
   
-  # Safety Filters
+  # Safety Filters & Variance Check
   v1_vals <- sapply(cor_mat_final[, v1_raw, with=FALSE], function(x) var(x, na.rm=TRUE))
   v1_valid <- names(v1_vals)[!is.na(v1_vals) & v1_vals > 0]
+  
   v2_vals <- sapply(cor_mat_final[, v2_raw, with=FALSE], function(x) var(x, na.rm=TRUE))
   v2_valid <- names(v2_vals)[!is.na(v2_vals) & v2_vals > 0]
   
-  if (length(v1_valid) < 1 || length(v2_valid) < 1) next 
+  # Require at least 2 variables per domain to run hierarchical clustering
+  if (length(v1_valid) < 2 || length(v2_valid) < 2) next 
   
-  sub_cor <- cor_matrix[v1_valid, v2_valid, drop = FALSE]
-  sub_p   <- p_matrix[v1_valid, v2_valid, drop = FALSE]
-  
-  if (!all(dim(sub_cor) == dim(sub_p))) next
-
-  # Tracking for Domain Labels
-  lab_y <- d1_name; lab_x <- d2_name
-
-  # Always display larger axis as X 
-  if (nrow(sub_cor) > ncol(sub_cor)) {
-    sub_cor <- t(sub_cor)
-    sub_p   <- t(sub_p)
-    lab_y <- d2_name; lab_x <- d1_name
+  # 3. Dynamic Orientation (Force longer axis to X) ----------------------------
+  if (length(v1_valid) >= length(v2_valid)) {
+    var_x <- v1_valid;   var_y <- v2_valid
+    lab_x <- d1_name;    lab_y <- d2_name
+  } else {
+    var_x <- v2_valid;   var_y <- v1_valid
+    lab_x <- d2_name;    lab_y <- d1_name
   }
 
-  cat(sprintf("### %s vs %s\n", gsub("_", " ", d1_name), gsub("_", " ", d2_name)))
-  
-  dynamic_width  <- 4 + (ncol(sub_cor) * 0.7)
-  dynamic_height <- 4 + (nrow(sub_cor) * 0.7)
-  
-  # Export PNG
-  png(file.path(output_dir_data, "heatmaps", paste0("Inter_", d1_name, "_vs_", d2_name, ".png")), 
-      width = dynamic_width, height = dynamic_height, units = "in", res = 300)
-  
-  try({
-    corrplot(sub_cor, method="color", type="full", col=col_palette, 
-             tl.col="black", tl.srt=45, tl.cex=corr_config$label_font_size,
-             p.mat=sub_p, sig.level=corr_config$p_cutoff, insig="blank", 
-             mar=c(2, 4, 4, 2)) 
+  sub_cor <- cor_matrix[var_y, var_x, drop = FALSE] # Rows = Y, Cols = X
+  sub_p   <- p_matrix[var_y, var_x, drop = FALSE]
+
+  # 4. Dual Hierarchical Clustering --------------------------------------------
+  # We cluster rows and columns independently because they are different variables
+  hc_x <- hclust(dist(t(sub_cor)), method = "ward.D2")
+  hc_y <- hclust(dist(sub_cor), method = "ward.D2")
+
+  ordered_x <- var_x[hc_x$order]
+  ordered_y <- var_y[hc_y$order]
+
+  # 5. Reshape Data ------------------------------------------------------------
+  cor_long <- as.data.frame(sub_cor) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+  p_long <- as.data.frame(sub_p) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "P_Value")
+
+  plot_df <- cor_long %>%
+    left_join(p_long, by = c("Var1", "Var2")) %>%
+    mutate(
+      # Lock factors: X is standard, Y is reversed for Top-to-Bottom rendering
+      Var2 = factor(Var2, levels = ordered_x),
+      Var1 = factor(Var1, levels = rev(ordered_y)),
+      Is_Significant = P_Value < corr_config$p_cutoff,
+      Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
+    )
+
+  # Titles Formatting
+  clean_lab_x <- gsub("_", " ", lab_x)
+  clean_lab_y <- gsub("_", " ", lab_y)
+  clean_title <- sprintf("%s vs %s", clean_lab_x, clean_lab_y)
+
+  # 6. Build the ggplot --------------------------------------------------------
+  p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = "white", linewidth = 0.5) +
     
-    mtext(gsub("_", " ", lab_x), side = 3, line = 2, cex = 1.6, font = 2)
-    mtext(gsub("_", " ", lab_y), side = 2, line = 2, cex = 1.6, font = 2)
-  }, silent = TRUE)
-  dev.off()
-  
-  # Render to HTML
-  try({
-    corrplot(sub_cor, method="color", type="full", col=col_palette, 
-             tl.col="black", tl.srt=45, tl.cex=corr_config$label_font_size,
-             p.mat=sub_p, sig.level=corr_config$p_cutoff, insig="blank", 
-             mar=c(2, 4, 2, 2))
+    scale_x_discrete(position = "top") +
+    scale_y_discrete(position = "right") +
     
-    mtext(gsub("_", " ", lab_x), side = 3, line = 0.5, cex = 1.2, font = 2)
-    mtext(gsub("_", " ", lab_y), side = 2, line = 2, cex = 1.2, font = 2)
-  }, silent = TRUE)
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = "gray93", 
+      name = "Spearman Rho\n"
+    ) +
+    labs(
+      title = clean_title, 
+      subtitle = sprintf("Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff),
+      x = clean_lab_x,
+      y = clean_lab_y
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      # Axis Labels (Ticks)
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(1)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(1.1)),
+      
+      # Axis Titles (Domain Names)
+      axis.title.x.top = element_text(face = "bold", size = rel(1.4), margin = margin(b = 15)),
+      axis.title.y.right = element_text(face = "bold", size = rel(1.4), margin = margin(l = 15), angle = -90),
+      
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = "left",
+      legend.key.height = unit(1.5, "cm"), 
+      legend.key.width = unit(0.5, "cm")
+    ) +
+    coord_fixed() 
+
+  # 7. Export and Print --------------------------------------------------------
+  dyn_width  <- max(8, length(ordered_x) * 0.35 + 4)
+  dyn_height <- max(6, length(ordered_y) * 0.35 + 3)
   
+  ggsave(file.path(output_dir_data, "heatmaps", "inter", paste0("Inter_", lab_x, "_vs_", lab_y, ".png")), 
+         plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = "white")
+
+  # Consolidated HTML Output
+  cat(sprintf("### %s\n\n", clean_title))
+  print(p_heatmap)
   cat("\n\n")
 }
 
-# Final Clean up
-graphics.off()
-rm(sub_cor, sub_p, plotting_domains, col_palette, v1_valid, v2_valid, d1_name, d2_name)
+# 8. Cleanup -------------------------------------------------------------------
+rm(plotting_domains, domain_combos, d1_name, d2_name, v1_raw, v2_raw, v1_vals, v1_valid, v2_vals, v2_valid, var_x, var_y, lab_x, lab_y, sub_cor, sub_p, hc_x, hc_y, ordered_x, ordered_y, cor_long, p_long, plot_df, clean_lab_x, clean_lab_y, clean_title, p_heatmap, dyn_width, dyn_height, combo, n, v)
 invisible(gc())
 ```
 
