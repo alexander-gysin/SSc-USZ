@@ -1,7 +1,7 @@
-name: "SSc-USZ" # <-- Change the overall site name here
+name: "SSc-USZ"
 output_dir: ../docs
 navbar:
-  title: "SSc-USZ" # <-- Change the display title on the navbar here
+  title: "SSc-USZ"
   left:
   - text: Home
     href: index.html
@@ -11,7 +11,7 @@ navbar:
     href: 02_cohort_characterization.html
   - text: Proteomics
     menu:
-    - text: Global
+    - text: Variance
       href: 03a_proteomics_variance.html
     - text: Differential
       href: 03b_proteomics_differential.html
@@ -34,4 +34,6 @@ output:
       collapsed: no
     theme: cosmo
     highlight: textmate
+    code_folding: hide
+    search: true
     css: style.css

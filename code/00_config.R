@@ -2,7 +2,6 @@
 # GLOBAL CONFIGURATION FILE (00_config.R)
 # Project: Systemic Sclerosis Disease Activity Multi-Omics
 # ==============================================================================
-cat("Loading Global Configuration...\n")
 
 # 1. GLOBAL LIBRARIES REQUIRED FOR CONFIG
 library(ggplot2)
@@ -36,12 +35,12 @@ HM_Z_HIGH <- "firebrick4"
 
 # 5. CLINICAL VARIABLES SUBSETS
 # Clinical description of SSC:
-ssc_clinical_parameters <- c("2013 EULAR/ACR classification criteria fulfilled",
-                             "Abnormal nailfold capillaroscopy",
+ssc_clinical_parameters <- c("EULAR/ACR 2013 Criteria",
+                             "Abnormal Capillaroscopy",
                              "Raynaud phenomenon",
                              "Modified rodnan skin score",
-                             "Subset_diffuse",
-                             "Puffy fingers",
+                             "Subset_Diffuse",
+                             "Puffy Fingers",
                              "Digital ulcer",
                              "Telangiectasia (any)",
                              "Joint involvement",
@@ -50,47 +49,47 @@ ssc_clinical_parameters <- c("2013 EULAR/ACR classification criteria fulfilled",
                              "Anti-centromere (ACA)",
                              "Anti-Scl70",
                              "Anti-RNA polymerase III",
-                             "CRP (mg/dl)",
+                             "CRP",
                              "CK value in serum (U/L)",
                              "ILD diagnosed via HRCT",
                              "DLCO (SB) (% predicted)",
-                             "Forced Vital Capacity (FVC- % predicted)",
-                             "Diastolic fction abnormal(on echo, E/a less than 10cm/sec)",
-                             "Left ventricular ejection fraction %",
+                             "FVC %pred",
+                             "Diastolic Dysf. (Echo)",
+                             "LVEF %",
                              "Esophageal symptom at the time of visit",
-                             "Stomach symptoms (early satiety, vomiting)",
-                             "Intestinal symptoms (diarrhea, bloating, constipation)",
+                             "Stomach Symptoms",
+                             "Intestinal Symptoms",
                              "eustarAI"
-                             )
+)
 
-ssc_clinical_parameters_categorical <- c("2013 EULAR/ACR classification criteria fulfilled",
-                             "Abnormal nailfold capillaroscopy",
-                             "Raynaud phenomenon",
-                             "Subset_diffuse",
-                             "Puffy fingers",
-                             "Digital ulcer",
-                             "Telangiectasia (any)",
-                             "Joint involvement",
-                             "Tendon friction rubs",
-                             "Proximal muscle weakness",
-                             "Anti-centromere (ACA)",
-                             "Anti-Scl70",
-                             "Anti-RNA polymerase III",
-                             "ILD diagnosed via HRCT",
-                             "Diastolic fction abnormal(on echo, E/a less than 10cm/sec)",
-                             "Esophageal symptom at the time of visit",
-                             "Stomach symptoms (early satiety, vomiting)",
-                             "Intestinal symptoms (diarrhea, bloating, constipation)"
-                             )
+ssc_clinical_parameters_categorical <- c("EULAR/ACR 2013 Criteria",
+                                         "Abnormal Capillaroscopy",
+                                         "Raynaud phenomenon",
+                                         "Subset_Diffuse",
+                                         "Puffy Fingers",
+                                         "Digital ulcer",
+                                         "Telangiectasia (any)",
+                                         "Joint involvement",
+                                         "Tendon friction rubs",
+                                         "Proximal muscle weakness",
+                                         "Anti-centromere (ACA)",
+                                         "Anti-Scl70",
+                                         "Anti-RNA polymerase III",
+                                         "ILD diagnosed via HRCT",
+                                         "Diastolic Dysf. (Echo)",
+                                         "Esophageal symptom at the time of visit",
+                                         "Stomach Symptoms",
+                                         "Intestinal Symptoms"
+)
 
 ssc_clinical_parameters_continuous <- c("Modified rodnan skin score",
-                                        "CRP (mg/dl)",
+                                        "CRP",
                                         "CK value in serum (U/L)",
                                         "DLCO (SB) (% predicted)",
-                                        "Forced Vital Capacity (FVC- % predicted)",
-                                        "Left ventricular ejection fraction %",
+                                        "FVC %pred",
+                                        "LVEF %",
                                         "eustarAI"
-                                        )
+)
 
 # ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY
@@ -154,5 +153,3 @@ analysis_decision <- function(...) {
 </div>', li_items)
   return(html)
 }
-
-cat("Configuration Successfully Loaded!\n")
