@@ -25,6 +25,8 @@ source(here::here("code", "00_config.R"))
 | High VPA Variance & High correlation with Covariate | Pick the VPA winner | Redundancy/Collinearity |
 | Low VPA VAriance | Exclude | Unnecessarily reduces degrees of freedom |
 
+Limit umber of variables to abeout 1 variable per 10 patients.
+
 
 # Setup and Import
 
