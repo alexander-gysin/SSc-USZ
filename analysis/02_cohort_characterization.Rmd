@@ -12,9 +12,13 @@ editor_options:
 ```{r setup_boxes, include=FALSE}
 source(here::here("code", "00_config.R"))
 ```
+# Introduction
+This script describes the cohors by showing the distributions of technical and clinical parameters.
 
 # Setup and Data Import
+
 `r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the clinical spine generated previously.")`
+
 ```{r setup_import, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(data.table)
@@ -51,6 +55,7 @@ master_spine <- readRDS(input_paths$clinical_spine)
 ```
 
 # Configuration
+
 `r what_this_does("Defined statistical thresholds for normality (Shapiro-Wilk) and variance (Bartlett) testing.", "Configured correlation matrix parameters including sparsity filters, significance limits, and targeted anchor variables.", "Constructed dynamic configuration lists to dictate Table 1 and Figure layouts using the pre-engineered master_spine.")`
 
 ```{r configuration}
@@ -255,7 +260,9 @@ upset_configs <- list(
 ```
 
 # Tables
+
 `r what_this_does("Dynamically evaluated each clinical variable to select appropriate parametric (ANOVA/t-test) or non-parametric (Kruskal-Wallis/Wilcoxon) statistical tests.", "Generated comprehensive baseline demographic tables using the gtsummary package.", "Calculated and appended both global and pairwise group comparison p-values.", "Exported standard tables as CSV files and rendered interactive HTML equivalents.")`
+
 ```{r table_engine, results='asis'}
 generated_tables <- list()
 
@@ -310,7 +317,9 @@ invisible(gc())
 ```
 
 # Figures
+
 `r what_this_does("Generated dynamic clinical visualizations (stacked histograms, violin plots) based on the configuration dictionary.", "Automatically applied appropriate parametric or non-parametric pairwise statistical comparisons to the plots.", "Assembled individual plots into comprehensive multi-panel figure layouts using patchwork.")`
+
 ```{r figure_engine}
 group_levels <- levels(master_spine$cohort_group) 
 plot_colors <- get_project_colors(group_levels) 
@@ -399,7 +408,9 @@ invisible(gc())
 ```
 
 ## Merged Figures
+
 `r what_this_does("Rendered the assembled multi-panel figures for the HTML report.", "Exported high-resolution PNG copies of the merged figures to the output directory.")`
+
 ```{r print_figures, fig.width=12, fig.height=10}
 for (fig_name in names(stitched_figures)) {
   print(stitched_figures[[fig_name]])
@@ -408,7 +419,9 @@ for (fig_name in names(stitched_figures)) {
 ```
 
 ## Individual Plots {.tabset}
+
 `r what_this_does("Generated tabbed sections in the HTML report for easy navigation of individual plots.", "Exported standalone high-resolution PNGs for each individual plot.")`
+
 ```{r print_individual_plots, results='asis', fig.width=7, fig.height=5.5}
 for (p_name in names(individual_plots)) {
   tab_title <- individual_plots[[p_name]]$labels$title
@@ -422,8 +435,13 @@ for (p_name in names(individual_plots)) {
 ```
 
 # Matrix Correlation
+
 ## Factor Exploration
+
 `r what_this_does("Scanned all factor variables to identify their category distributions and assess variance.", "Filtered out cleanly binarized variables to reduce noise.", "Generated an audit table grouping remaining factors by level counts (>2 levels, exactly 2 non-standard levels, or 0 variance) to guide manual binarization.")`
+
+`r why_is_this_done("For the matrix correlation to work all variables must either be continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows which variables need some adjustment to fulfill these criteria.", "The table following this one will show you how these were binarized or converted to ordinal ranks.")`
+
 ```{r factor_exploration}
 get_level_pct <- function(vec) {
   vec <- vec[!is.na(vec)]
@@ -471,8 +489,8 @@ rm(exploration_df, vec, clean_vec, unique_levels, dist_str)
 invisible(gc())
 ```
 
-
 ## Data Prep and Matrix Calculation
+
 `r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Standardized categorical data into ordinal ranks.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
 
 `r what_this_does("Standardized clinical factors into ordinal ranks and calculated the master Spearman correlation matrix.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting numeric mapping and variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
@@ -563,7 +581,6 @@ saveRDS(list(rho = cor_matrix, p = p_matrix),
         file.path(output_dir_data, "clinical_correlation_matrices.rds"))
 
 # 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
-cat("### Data Transformation Audit Report\n\n")
 
 # Table 1: Mappings
 print(mapping_audit_df %>% 
@@ -586,7 +603,7 @@ rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_
 invisible(gc())
 ```
 
-## Custom Configuration Heatmaps {.tabset}
+## Custom Correlation Heatmaps {.tabset}
 
 `r what_this_does("Dynamically evaluates custom correlation configurations to generate either symmetrical or asymmetrical hierarchically clustered heatmaps.", "Automatically de-duplicates variables and securely filters out any features that failed sparsity checks.", "Calculates dynamic image dimensions based on variable count and exports high-resolution PNGs.")`
 
@@ -696,13 +713,13 @@ for (h_id in names(custom_heatmap_configs)) {
     ggsave(file.path(output_dir_data, "heatmaps", paste0("Custom_", safe_name, ".png")), 
            plot = res$plot, width = res$width, height = res$height, dpi = 300, bg = "white")
     
-    # Print to HTML
-    cat(sprintf("### %s\n\n", conf$title))
+    # Print to HTML (Added \n\n to front!)
+    cat(sprintf("\n\n### %s\n\n", conf$title))
     print(res$plot)
     cat("\n\n")
     
   } else {
-    cat(sprintf("### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
+    cat(sprintf("\n\n### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
   }
 }
 
@@ -711,9 +728,10 @@ rm(h_id, conf, res, generate_custom_cor_heatmap)
 invisible(gc())
 ```
 
-## Intra Domain Correlation MAtrix {.tabset}
+## Intra Domain Correlation Matrix {.tabset}
 
 `r what_this_does("Visualized local correlations within clinical domains using hierarchical clustering.", "Optimized text scaling and margins for maximum legibility.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.")`
+
 ```{r intra_corr_plots, fig.width=10, fig.height=8, out.width="100%", results='asis'}
 # Iterate through each defined clinical domain to create a targeted heatmap
 for (d_name in names(clinical_domains)) {
@@ -731,7 +749,7 @@ for (d_name in names(clinical_domains)) {
   clean_title <- gsub("_", " ", d_name)
   
   if (length(valid_vars) < 2) {
-    cat(sprintf("### %s\n\n> **Note:** Domain skipped. Insufficient variance detected.\n\n", clean_title))
+    cat(sprintf("\n\n### %s\n\n> **Note:** Domain skipped. Insufficient variance detected.\n\n", clean_title))
     next
   }
 
@@ -784,22 +802,8 @@ for (d_name in names(clinical_domains)) {
          subtitle = sprintf("Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff)) +
     theme_minimal(base_size = 14) +
     theme(
-      axis.text.x.top = element_text(
-        angle = 45, 
-        hjust = 0, 
-        vjust = 0.01,               
-        margin = margin(b = -2), 
-        face = "bold", 
-        color = "black", 
-        size = rel(1.1)
-      ),
-      axis.text.y.right = element_text(
-        hjust = 0,               
-        margin = margin(l = 2),  
-        face = "bold", 
-        color = "black", 
-        size = rel(1.1)
-      ),
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(1.1)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(1.1)),
       axis.title = element_blank(),
       panel.grid = element_blank(),
       plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
@@ -811,15 +815,14 @@ for (d_name in names(clinical_domains)) {
     coord_fixed() 
 
   # 6. Export and Print --------------------------------------------------------
-  # Dynamic sizing formula scaled to maintain text-to-grid ratio across domains
   dyn_width  <- max(6, length(valid_vars) * 0.35 + 4)
   dyn_height <- max(5, length(valid_vars) * 0.35 + 3)
   
   ggsave(file.path(output_dir_data, "heatmaps", "intra", paste0("Intra_", d_name, ".png")), 
          plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = "white")
 
-  # Consolidated HTML Output to prevent fragmentation
-  cat(sprintf("### %s\n\n", clean_title))
+  # Consolidated HTML Output (Added \n\n to front!)
+  cat(sprintf("\n\n### %s\n\n", clean_title))
   print(p_heatmap)
   cat("\n\n")
 }
@@ -828,9 +831,11 @@ for (d_name in names(clinical_domains)) {
 rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, p_heatmap, dyn_width, dyn_height)
 invisible(gc())
 ```
-## Interdomain Combos {.tabset}
+
+## Interdomain Combinations {.tabset}
 
 `r what_this_does("Visualized correlations between different biological systems using non-square matrices.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.")`
+
 ```{r inter_domain, fig.width=12, fig.height=8, out.width="100%", results='asis'}
 # 1. Regenerate the safe plot list (ensuring names exist in the matrix)
 plotting_domains <- list()
@@ -921,14 +926,10 @@ for (combo in domain_combos) {
     ) +
     theme_minimal(base_size = 14) +
     theme(
-      # Axis Labels (Ticks)
       axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(1)),
       axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(1.1)),
-      
-      # Axis Titles (Domain Names)
       axis.title.x.top = element_text(face = "bold", size = rel(1.4), margin = margin(b = 15)),
       axis.title.y.right = element_text(face = "bold", size = rel(1.4), margin = margin(l = 15), angle = -90),
-      
       panel.grid = element_blank(),
       plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
       plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
@@ -945,8 +946,8 @@ for (combo in domain_combos) {
   ggsave(file.path(output_dir_data, "heatmaps", "inter", paste0("Inter_", lab_x, "_vs_", lab_y, ".png")), 
          plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = "white")
 
-  # Consolidated HTML Output
-  cat(sprintf("### %s\n\n", clean_title))
+  # Consolidated HTML Output (Added \n\n to front!)
+  cat(sprintf("\n\n### %s\n\n", clean_title))
   print(p_heatmap)
   cat("\n\n")
 }
@@ -1008,7 +1009,8 @@ for (u_id in names(upset_configs)) {
   res <- generate_upset_plot(conf, master_spine)
   
   if (res$status == "success") {
-    cat(sprintf("### %s\n\n", conf$title))
+    # Added \n\n to front!
+    cat(sprintf("\n\n### %s\n\n", conf$title))
     
     # Print for HTML / Interactive Viewer
     print(res$plot)
@@ -1022,7 +1024,7 @@ for (u_id in names(upset_configs)) {
     invisible(dev.off())
     
   } else {
-    cat(sprintf("### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
+    cat(sprintf("\n\n### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
   }
 }
 
@@ -1031,8 +1033,6 @@ rm(u_id, conf, res, upset_dir, upset_configs, safe_name)
 invisible(gc())
 ```
 
-
 ```{r finish_message}
 cat("Script 02 Complete!")
 ```
-
