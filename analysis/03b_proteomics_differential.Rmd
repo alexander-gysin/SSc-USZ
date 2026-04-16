@@ -59,10 +59,10 @@ omics_config <- list(
 
 # 3. Differential Expression Contrasts (Target vs Reference)
 contrast_configs <- list(
-  active_vs_control = list(
-    title = "Active vs Control",
+  ssc_vs_control = list(
+    title = "SSc vs Control",
     group_col = "cohort_group",
-    target_groups = c(GRP_ACTIVE),
+    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
     ref_groups = c(GRP_CONTROL),
     is_continuous = FALSE,
     covariates = c("Age", "Sex"),
