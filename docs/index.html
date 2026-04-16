@@ -30,6 +30,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
@@ -229,6 +230,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -272,7 +276,7 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="03a_proteomics_variance.html">Global</a>
+      <a href="03a_proteomics_variance.html">Variance</a>
     </li>
     <li>
       <a href="03b_proteomics_differential.html">Differential</a>
@@ -307,6 +311,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Home</h1>
@@ -338,7 +350,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-10
+<strong>Last updated:</strong> 2026-04-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -385,15 +397,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee7fad4ec08b0b32324214a1242726c9318dc9ff0targetblanke7fad4ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -403,7 +415,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e7fad4ec08b0b32324214a1242726c9318dc9ff0" target="_blank">e7fad4e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -420,23 +432,21 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_global/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_predictive/
+    Ignored:    output/randomizer/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
 Untracked files:
     Untracked:  analysis/style.css
+    Untracked:  code/randomizer.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/00_config.R
-    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -480,6 +490,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2425ca234d0902039e7844366cdac6d46338cb0b/analysis/index.Rmd" target="_blank">2425ca2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/index.html" target="_blank">2e39eed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -540,29 +584,8 @@ Start workflowr project.
 </div>
 <p>You’ll find all the analysis performed for the USZ SSc cohort on this
 website.</p>
-<div id="how-to-read-the-code" class="section level3">
-<h3>How to read the code</h3>
-<p>In each section it is described what the code does:</p>
-<div class="info-box">
-<strong>What this code does:</strong>
-<ul>
-<li>
-. . .
-</li>
-</ul>
-</div>
-<p>Major decisions are highlighted with:</p>
-<div class="decision-box">
-<strong>Analysis Decisions:</strong>
-<ul>
-<li>
-. . .
-</li>
-</ul>
-</div>
-</div>
-<div id="pipeline" class="section level2">
-<h2>Pipeline</h2>
+<div id="pipeline" class="section level1">
+<h1>Pipeline</h1>
 <p>The analysis is divided into modules:</p>
 <table>
 <colgroup>
@@ -615,6 +638,36 @@ data.</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="how-to-read-the-code" class="section level1">
+<h1>How to read the code</h1>
+<p>In each section it is described what the code does:</p>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+. . .
+</li>
+</ul>
+</div>
+<p>Major decisions are highlighted with:</p>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+. . .
+</li>
+</ul>
+</div>
+<p>Key insights are highlighted with:</p>
+<div class="insight-box">
+<strong>Key Insight:</strong>
+<ul>
+<li>
+. . .
+</li>
+</ul>
+</div>
 <hr />
 </div>
 </div>
@@ -670,6 +723,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

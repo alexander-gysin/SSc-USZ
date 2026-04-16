@@ -410,7 +410,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">14 April, 2026</h4>
+<h4 class="date">16 April, 2026</h4>
 
 </div>
 
@@ -439,7 +439,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-14
+<strong>Last updated:</strong> 2026-04-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebcd3e8f0f994327f94dbb44976647f9ad6b9cce8targetblankbcd3e8fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bcd3e8f0f994327f94dbb44976647f9ad6b9cce8" target="_blank">bcd3e8f</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebcd3e8f0f994327f94dbb44976647f9ad6b9cce8targetblankbcd3e8fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bcd3e8f0f994327f94dbb44976647f9ad6b9cce8" target="_blank">bcd3e8f</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -611,17 +611,14 @@ Ignored files:
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_predictive/
+    Ignored:    output/randomizer/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
 Untracked files:
     Untracked:  analysis/style.css
+    Untracked:  code/randomizer.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/00_config.R
-    Modified:   renv.lock
 
 </code></pre>
 <p>
@@ -667,6 +664,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2425ca234d0902039e7844366cdac6d46338cb0b/analysis/02_cohort_characterization.Rmd" target="_blank">2425ca2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/7d14932160b92d1c77a031467ea33a1df124ec97/docs/02_cohort_characterization.html" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1032,7 +1063,7 @@ table_configs &lt;- list(
     title = &quot;Baseline Demographics and Clinical Characteristics&quot;,
     group_by = &quot;cohort_group&quot;,
     pairwise = TRUE, 
-    variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;Sample_Age&quot;),
+    variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;Sample_Age&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Age&quot;, &quot;DLCO (SB) (% predicted)&quot;),
     labels = list(
       Age = &quot;Patient Age (Years)&quot;,
       Sex = &quot;Biological Sex&quot;,
@@ -1046,7 +1077,7 @@ table_configs &lt;- list(
 # 4. Figure Configurations -----------------------------------------------------
 figure_configs &lt;- list(
   figure_1 = list(
-    figure_title = &quot;Baseline Clinical Distributions&quot;, 
+    figure_title = &quot;Demografic and Technical Distributions&quot;, 
     plots = list(
       plot_1 = list(
         title = &quot;Age and Sex Distribution&quot;, 
@@ -1057,7 +1088,7 @@ figure_configs &lt;- list(
         facet_by = &quot;cohort_group&quot;,
         bins = 10  
       ),
-      plot_4 = list(
+      plot_2 = list(
         title = &quot;Sample Storage Age&quot;, 
         type = &quot;violin&quot;,
         y_var = &quot;Sample_Age&quot;,
@@ -1071,9 +1102,9 @@ figure_configs &lt;- list(
   ),
   
   figure_2 = list(
-    figure_title = &quot;Baseline Laboratory Values&quot;, 
+    figure_title = &quot;Baseline Laboratory and Spirometry Values&quot;, 
     plots = list(
-      plot_2 = list(
+      plot_3 = list(
         title = &quot;Baseline CRP&quot;, 
         type = &quot;violin&quot;,
         y_var = &quot;CRP&quot;,
@@ -1083,13 +1114,33 @@ figure_configs &lt;- list(
         add_stat_test = TRUE,
         pairwise = TRUE
       ),
-      plot_3 = list(
+      plot_4 = list(
         title = &quot;Baseline Creatinine&quot;, 
         type = &quot;violin&quot;,
         y_var = &quot;Creatinine&quot;,
         x_var = &quot;cohort_group&quot;,
         y_transform = &quot;log10&quot;, 
         y_label = &quot;Serum Creatinine (µmol/L) [Log10 Scale]&quot;, 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_5 = list(
+        title = &quot;Baseline NT-proBNP (pg/ml)&quot;, 
+        type = &quot;violin&quot;,
+        y_var = &quot;NT-proBNP (pg/ml)&quot;,
+        x_var = &quot;cohort_group&quot;,
+        y_transform = &quot;log10&quot;, 
+        y_label = &quot;Serum NT-proBNP (pg/ml)&quot;, 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_6 = list(
+        title = &quot;Baseline DLCO (SB) (% predicted)&quot;, 
+        type = &quot;violin&quot;,
+        y_var = &quot;DLCO (SB) (% predicted)&quot;,
+        x_var = &quot;cohort_group&quot;,
+        y_transform = &quot;log10&quot;, 
+        y_label = &quot;Serum DLCO (SB) (% predicted)&quot;, 
         add_stat_test = TRUE,
         pairwise = TRUE
       )
@@ -1177,7 +1228,7 @@ class="section level3">
 Variable
 </th>
 <th style="text-align:center;white-space: nowrap;">
-Active <br>N = 49
+Active <br>N = 48
 </th>
 <th style="text-align:center;white-space: nowrap;">
 Non-Active <br>N = 48
@@ -1205,7 +1256,7 @@ Non-Active vs Control
 <span style=" font-weight: bold;    ">Age</span>
 </td>
 <td style="text-align:center;">
-62 (49, 73)
+62 (48, 74)
 </td>
 <td style="text-align:center;">
 62 (48, 70)
@@ -1217,7 +1268,7 @@ Non-Active vs Control
 0.5
 </td>
 <td style="text-align:center;">
-0.8
+0.9
 </td>
 <td style="text-align:center;">
 0.3
@@ -1240,10 +1291,10 @@ Non-Active vs Control
 &gt;0.9
 </td>
 <td style="text-align:center;">
-0.8
+&gt;0.9
 </td>
 <td style="text-align:center;">
-0.8
+&gt;0.9
 </td>
 <td style="text-align:center;">
 &gt;0.9
@@ -1254,7 +1305,7 @@ Non-Active vs Control
 Female
 </td>
 <td style="text-align:center;">
-38 (78%)
+38 (79%)
 </td>
 <td style="text-align:center;">
 38 (79%)
@@ -1276,7 +1327,7 @@ Female
 Male
 </td>
 <td style="text-align:center;">
-11 (22%)
+10 (21%)
 </td>
 <td style="text-align:center;">
 10 (21%)
@@ -1298,7 +1349,7 @@ Male
 <span style=" font-weight: bold;    ">CRP</span>
 </td>
 <td style="text-align:center;">
-0.18 (0.06, 0.70)
+0.21 (0.06, 0.79)
 </td>
 <td style="text-align:center;">
 0.13 (0.06, 0.26)
@@ -1307,10 +1358,10 @@ Male
 NA (NA, NA)
 </td>
 <td style="text-align:center;">
-0.015
+0.009
 </td>
 <td style="text-align:center;">
-0.015
+0.010
 </td>
 <td style="text-align:center;">
 </td>
@@ -1344,7 +1395,7 @@ Missing (NA)
 <span style=" font-weight: bold;    ">Creatinine</span>
 </td>
 <td style="text-align:center;">
-70 (62, 88)
+70 (62, 87)
 </td>
 <td style="text-align:center;">
 68 (61, 81)
@@ -1353,10 +1404,10 @@ Missing (NA)
 NA (NA, NA)
 </td>
 <td style="text-align:center;">
-0.6
+0.7
 </td>
 <td style="text-align:center;">
-0.6
+0.7
 </td>
 <td style="text-align:center;">
 </td>
@@ -1390,7 +1441,7 @@ Missing (NA)
 <span style=" font-weight: bold;    ">Sample_Age</span>
 </td>
 <td style="text-align:center;">
-1.13 (0.78, 1.46)
+1.14 (0.80, 1.47)
 </td>
 <td style="text-align:center;">
 1.36 (1.04, 1.61)
@@ -1399,33 +1450,127 @@ Missing (NA)
 1.17 (0.99, 1.20)
 </td>
 <td style="text-align:center;">
-0.025
+0.026
 </td>
 <td style="text-align:center;">
-0.090
+0.12
 </td>
 <td style="text-align:center;">
-0.7
+0.5
 </td>
 <td style="text-align:center;">
 0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">NT-proBNP (pg/ml)</span>
+</td>
+<td style="text-align:center;">
+172 (70, 448)
+</td>
+<td style="text-align:center;">
+78 (52, 184)
+</td>
+<td style="text-align:center;">
+NA (NA, NA)
+</td>
+<td style="text-align:center;">
+0.026
+</td>
+<td style="text-align:center;">
+0.026
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Missing (NA)
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">DLCO (SB) (% predicted)</span>
+</td>
+<td style="text-align:center;">
+59 (18)
+</td>
+<td style="text-align:center;">
+67 (18)
+</td>
+<td style="text-align:center;">
+NA (NA)
+</td>
+<td style="text-align:center;">
+0.062
+</td>
+<td style="text-align:center;">
+0.062
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Missing (NA)
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
 </td>
 </tr>
 </tbody>
 <tfoot>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup>1</sup> Median (Q1, Q3); n (%)
+<sup>1</sup> Median (Q1, Q3); n (%); Mean (SD)
 </td>
 </tr>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup>2</sup> Kruskal-Wallis rank sum test; Pearson’s Chi-squared test
+<sup>2</sup> Kruskal-Wallis rank sum test; Pearson’s Chi-squared test;
+One-way analysis of means
 </td>
 </tr>
 <tr>
 <td style="padding: 0; " colspan="100%">
-<sup>3</sup> Wilcoxon rank sum test; Pearson’s Chi-squared test
+<sup>3</sup> Wilcoxon rank sum test; Pearson’s Chi-squared test; Welch
+Two Sample t-test
 </td>
 </tr>
 <tr>
@@ -1588,6 +1733,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_figures-1.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_figures-1.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -1624,6 +1780,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">2e39eed</a>
@@ -1690,6 +1857,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-1.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-1.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -1729,6 +1907,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-2.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-2.png" target="_blank">2e39eed</a>
@@ -1772,6 +1961,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-3.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-3.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -1813,6 +2013,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -1826,6 +2037,14 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="baseline-nt-probnp-pgml" class="section level3">
+<h3>Baseline NT-proBNP (pg/ml)</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="baseline-dlco-sb-predicted" class="section level3">
+<h3>Baseline DLCO (SB) (% predicted)</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -1916,7 +2135,7 @@ ACTIVE_AI
 1: &gt; 2 Levels (Needs Bucketing/Exclusion)
 </td>
 <td style="text-align:left;">
--1: 26.5% <br> 0: 47.7% <br> 1: 25.8%
+-1: 26.7% <br> 0: 48.1% <br> 1: 25.2%
 </td>
 </tr>
 <tr>
@@ -1924,7 +2143,7 @@ ACTIVE_AI
 Capillary loss
 </td>
 <td style="text-align:left;">
-Extensive: 6.5% <br> Moderate: 25.0% <br> None: 29.3% <br> Rare: 39.1%
+Extensive: 6.6% <br> Moderate: 25.3% <br> None: 29.7% <br> Rare: 38.5%
 </td>
 </tr>
 <tr>
@@ -1932,7 +2151,7 @@ Extensive: 6.5% <br> Moderate: 25.0% <br> None: 29.3% <br> Rare: 39.1%
 Digital ulcer
 </td>
 <td style="text-align:left;">
-Current: 19.6% <br> never: 1.0% <br> Never: 55.7% <br> Previously: 23.7%
+Current: 18.8% <br> never: 1.0% <br> Never: 56.2% <br> Previously: 24.0%
 </td>
 </tr>
 <tr>
@@ -1940,7 +2159,7 @@ Current: 19.6% <br> never: 1.0% <br> Never: 55.7% <br> Previously: 23.7%
 Dyspnea NYHA Stage
 </td>
 <td style="text-align:left;">
-0: 20.7% <br> 1: 13.8% <br> I: 41.4% <br> II: 20.7% <br> III: 3.4%
+0: 19.8% <br> 1: 14.0% <br> I: 41.9% <br> II: 20.9% <br> III: 3.5%
 </td>
 </tr>
 <tr>
@@ -1948,7 +2167,7 @@ Dyspnea NYHA Stage
 Giant capillaries
 </td>
 <td style="text-align:left;">
-Extensive: 2.2% <br> Moderate: 6.6% <br> None: 40.7% <br> Rare: 50.5%
+Extensive: 2.2% <br> Moderate: 6.7% <br> None: 41.1% <br> Rare: 50.0%
 </td>
 </tr>
 <tr>
@@ -1956,7 +2175,7 @@ Extensive: 2.2% <br> Moderate: 6.6% <br> None: 40.7% <br> Rare: 50.5%
 Hemorrhages
 </td>
 <td style="text-align:left;">
-Moderate: 5.6% <br> None: 40.0% <br> Rare: 54.4%
+Moderate: 5.6% <br> None: 40.4% <br> Rare: 53.9%
 </td>
 </tr>
 <tr>
@@ -1964,7 +2183,7 @@ Moderate: 5.6% <br> None: 40.0% <br> Rare: 54.4%
 Pitting scars on finger tips
 </td>
 <td style="text-align:left;">
-Current: 46.9% <br> Never: 46.9% <br> Previously: 6.2%
+Current: 46.3% <br> Never: 47.4% <br> Previously: 6.3%
 </td>
 </tr>
 <tr>
@@ -1972,7 +2191,7 @@ Current: 46.9% <br> Never: 46.9% <br> Previously: 6.2%
 Ramified bushy capillaries
 </td>
 <td style="text-align:left;">
-Moderate: 15.2% <br> None: 21.7% <br> Rare: 63.0%
+Moderate: 14.3% <br> None: 22.0% <br> Rare: 63.7%
 </td>
 </tr>
 <tr>
@@ -1980,7 +2199,7 @@ Moderate: 15.2% <br> None: 21.7% <br> Rare: 63.0%
 Skin Thickening (Prox. MCP)
 </td>
 <td style="text-align:left;">
-1: 1.1% <br> Current: 24.2% <br> Never: 65.3% <br> Previously: 9.5%
+1: 1.1% <br> Current: 23.4% <br> Never: 66.0% <br> Previously: 9.6%
 </td>
 </tr>
 <tr>
@@ -1988,7 +2207,7 @@ Skin Thickening (Prox. MCP)
 VisitNumber
 </td>
 <td style="text-align:left;">
-Follow Up Visit (1): 73.7% <br> Follow Up Visit (2): 25.3% <br> Visit 0:
+Follow Up Visit (1): 73.4% <br> Follow Up Visit (2): 25.5% <br> Visit 0:
 1.1%
 </td>
 </tr>
@@ -1997,7 +2216,7 @@ Follow Up Visit (1): 73.7% <br> Follow Up Visit (2): 25.3% <br> Visit 0:
 cohort_group
 </td>
 <td style="text-align:left;">
-Active: 37.1% <br> Non-Active: 36.4% <br> Control: 26.5%
+Active: 36.6% <br> Non-Active: 36.6% <br> Control: 26.7%
 </td>
 </tr>
 <tr>
@@ -2016,7 +2235,7 @@ Never: 95.7% <br> Previously: 4.3%
 Geschlecht
 </td>
 <td style="text-align:left;">
-männlich: 21.2% <br> weiblich: 78.8%
+männlich: 20.6% <br> weiblich: 79.4%
 </td>
 </tr>
 <tr>
@@ -2024,7 +2243,7 @@ männlich: 21.2% <br> weiblich: 78.8%
 Sex
 </td>
 <td style="text-align:left;">
-Female: 78.8% <br> Male: 21.2%
+Female: 79.4% <br> Male: 20.6%
 </td>
 </tr>
 <tr>
@@ -2110,9 +2329,15 @@ intermediate variables from RAM.
 </div>
 <pre class="r"><code># 1. Audit Table: Binarization &amp; Ordinal Mapping -------------------------------
 mapping_audit_df &lt;- data.frame(
-  Source_Category = c(&quot;Sex&quot;, &quot;Cohort Group&quot;, &quot;Smoking/History&quot;, &quot;Severity Ranks&quot;, &quot;Clinical Visits&quot;),
-  Original_Levels = c(&quot;Female / Male&quot;, &quot;Control / Non-Active / Active&quot;, &quot;Never / Previously / Current&quot;, &quot;None / Rare / Moderate / Extensive&quot;, &quot;Visit 0 / FU 1 / FU 2&quot;),
-  Numeric_Value = c(&quot;1 / 0&quot;, &quot;0 / 1 / 2&quot;, &quot;0 / 1 / 2&quot;, &quot;0 / 1 / 2 / 3&quot;, &quot;0 / 1 / 2&quot;),
+  Variable_Type = c(&quot;Sex&quot;, &quot;Cohort Group&quot;, &quot;Subset Features&quot;, &quot;Smoking/History&quot;, &quot;Severity Ranks&quot;, &quot;Clinical Visits&quot;, &quot;Standard Binary&quot;),
+  Original_Levels = c(&quot;Female / Male&quot;, &quot;Control / Non-Active / Active&quot;, &quot;Diffuse / Limited / Sine&quot;, &quot;Never / Previously / Current&quot;, &quot;None / Rare / Moderate / Extensive&quot;, &quot;I / II / III&quot;, &quot;1 / 0 (or Yes/No)&quot;),
+  Numeric_Mapping = c(&quot;Female = 1, Male = 0&quot;, 
+                      &quot;Control = 0, Non-Active = 1, Active = 2&quot;, 
+                      &quot;Present = 1, Absent = 0 (One-Hot Encoded)&quot;, 
+                      &quot;Never = 0, Previously = 1, Current = 2&quot;, 
+                      &quot;None = 0, Rare = 1, Moderate = 2, Extensive = 3&quot;, 
+                      &quot;I = 1, II = 2, III = 3&quot;, 
+                      &quot;1 = 1, 0 = 0&quot;),
   stringsAsFactors = FALSE
 )
 
@@ -2177,95 +2402,192 @@ for (i in 1:(ncol(cor_mat_final) - 1)) {
   }
 }
 
-write_csv(as.data.frame(cor_matrix), file.path(output_dir_data, &quot;clinical_spearman_rho.csv&quot;))
+# 4.5 Export Matrices for Downstream Use (Script 03a/04) -----------------------
+# Save CSV for human readability (preserving rownames as a column)
+write_csv(as.data.frame(cor_matrix) %&gt;% rownames_to_column(&quot;Variable&quot;), 
+          file.path(output_dir_data, &quot;clinical_spearman_rho.csv&quot;))
+
+# Save serialized RDS for strict programmatic use
+saveRDS(list(rho = cor_matrix, p = p_matrix), 
+        file.path(output_dir_data, &quot;clinical_correlation_matrices.rds&quot;))
 
 # 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
-cat(&quot;### Data Transformation Audit Report\n\n&quot;)
-### Data Transformation Audit Report
-
+cat(&quot;### Data Transformation Audit Report\n\n&quot;)</code></pre>
+<div id="data-transformation-audit-report" class="section level3">
+<h3>Data Transformation Audit Report</h3>
+<pre class="r"><code>
 # Table 1: Mappings
 print(mapping_audit_df %&gt;% 
   kableExtra::kbl(caption = &quot;1. Binarization and Ordinal Mapping Dictionary&quot;, format = &quot;html&quot;) %&gt;%
-  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;)) %&gt;%
-  kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;))
-&lt;div style=&quot;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; &quot;&gt;&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
-&lt;caption&gt;1. Binarization and Ordinal Mapping Dictionary&lt;/caption&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Source_Category &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Original_Levels &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Numeric_Value &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Sex &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Female / Male &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 1 / 0 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Cohort Group &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Control / Non-Active / Active &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 0 / 1 / 2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Smoking/History &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Never / Previously / Current &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 0 / 1 / 2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Severity Ranks &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; None / Rare / Moderate / Extensive &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 0 / 1 / 2 / 3 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Clinical Visits &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Visit 0 / FU 1 / FU 2 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 0 / 1 / 2 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;&lt;/div&gt;
-
+  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
+<caption>
+<ol style="list-style-type: decimal">
+<li>Binarization and Ordinal Mapping Dictionary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable_Type
+</th>
+<th style="text-align:left;">
+Original_Levels
+</th>
+<th style="text-align:left;">
+Numeric_Mapping
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+Female / Male
+</td>
+<td style="text-align:left;">
+Female = 1, Male = 0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cohort Group
+</td>
+<td style="text-align:left;">
+Control / Non-Active / Active
+</td>
+<td style="text-align:left;">
+Control = 0, Non-Active = 1, Active = 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subset Features
+</td>
+<td style="text-align:left;">
+Diffuse / Limited / Sine
+</td>
+<td style="text-align:left;">
+Present = 1, Absent = 0 (One-Hot Encoded)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Smoking/History
+</td>
+<td style="text-align:left;">
+Never / Previously / Current
+</td>
+<td style="text-align:left;">
+Never = 0, Previously = 1, Current = 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Severity Ranks
+</td>
+<td style="text-align:left;">
+None / Rare / Moderate / Extensive
+</td>
+<td style="text-align:left;">
+None = 0, Rare = 1, Moderate = 2, Extensive = 3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Clinical Visits
+</td>
+<td style="text-align:left;">
+I / II / III
+</td>
+<td style="text-align:left;">
+I = 1, II = 2, III = 3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Standard Binary
+</td>
+<td style="text-align:left;">
+1 / 0 (or Yes/No)
+</td>
+<td style="text-align:left;">
+1 = 1, 0 = 0
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol>
+<pre class="r"><code>
 cat(&quot;\n\n&quot;)
 
 # Table 2: Exclusions
 if(nrow(exclusion_audit_df) &gt; 0) {
   print(exclusion_audit_df %&gt;% 
     kableExtra::kbl(caption = &quot;2. Variable Exclusion Log (Sparsity Filter)&quot;, format = &quot;html&quot;) %&gt;%
-    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;)) %&gt;%
-    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;))
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;))
 } else {
   cat(&quot;#### 2. Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n&quot;)
-}
-&lt;div style=&quot;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; &quot;&gt;&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
-&lt;caption&gt;2. Variable Exclusion Log (Sparsity Filter)&lt;/caption&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Variable &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Observations &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Status &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;position: sticky; top:0; background-color: #FFFFFF;&quot;&gt; Reason &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; SiteNumber &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 0 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; DROPPED &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Sparse data (&amp;lt; 10 obs) &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; VisitNumber &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 0 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; DROPPED &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Sparse data (&amp;lt; 10 obs) &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;&lt;/div&gt;
-
+}</code></pre>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
+<caption>
+<ol start="2" style="list-style-type: decimal">
+<li>Variable Exclusion Log (Sparsity Filter)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Observations
+</th>
+<th style="text-align:left;">
+Status
+</th>
+<th style="text-align:left;">
+Reason
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+SiteNumber
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+DROPPED
+</td>
+<td style="text-align:left;">
+Sparse data (&lt; 10 obs)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VisitNumber
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+DROPPED
+</td>
+<td style="text-align:left;">
+Sparse data (&lt; 10 obs)
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol>
+<pre class="r"><code>
 # Clear Memory
 rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_df)
 invisible(gc())</code></pre>
+</div>
 </div>
 <div id="core-metadata-vs.-clinical-phenotype" class="section level2">
 <h2>Core Metadata vs. Clinical Phenotype</h2>
@@ -2341,7 +2663,7 @@ pheno_plot &lt;- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
     na.value = &quot;gray93&quot;, 
     name = &quot;Spearman Rho\n&quot;
   ) +
-  labs(title = &quot;Core Metadata vs SSc Parameters&quot;, 
+  labs(title = &quot;Core Metadata Correlations&quot;, 
        subtitle = sprintf(&quot;Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)&quot;, corr_config$p_cutoff)) +
   theme_minimal(base_size = 14) +
   theme(
@@ -2385,24 +2707,57 @@ ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;Core_Phenotype_Cor
 
 # Consolidated HTML Output to prevent fragmentation
 html_output &lt;- paste0(
-  &quot;### Core Metadata &amp; SSc Parameters\n\n&quot;,
   &quot;This symmetrical heatmap illustrates the inter-relationships between core cohort demographics and primary SSc clinical parameters, clustered by similarity.\n\n&quot;
 )
 
 cat(html_output)</code></pre>
-<div id="core-metadata-ssc-parameters" class="section level3">
-<h3>Core Metadata &amp; SSc Parameters</h3>
 <p>This symmetrical heatmap illustrates the inter-relationships between
 core cohort demographics and primary SSc clinical parameters, clustered
 by similarity.</p>
 <pre class="r"><code>print(pheno_plot)</code></pre>
 <p><img src="figure/02_cohort_characterization.Rmd/core_phenotype_heatmap-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_phenotype_heatmap-1">
+Past versions of core_phenotype_heatmap-1.png
+</button>
+</p>
+<div id="fig-core_phenotype_heatmap-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/core_phenotype_heatmap-1.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cat(&quot;\n\n&quot;)
 
 # 7. Cleanup -------------------------------------------------------------------
 rm(core_vars, all_target_vars, valid_target_vars, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, pheno_plot, html_output)
 invisible(gc())</code></pre>
-</div>
 </div>
 <div id="intra-domain-correlation-matrix" class="section level2 tabset">
 <h2 class="tabset">Intra Domain Correlation MAtrix</h2>
@@ -2531,19 +2886,278 @@ for (d_name in names(clinical_domains)) {
 }</code></pre>
 <div id="demographics-and-scores" class="section level3">
 <h3>Demographics and Scores</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Cutaneous and Vascular</p>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Musculoskeletal</p>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Pulmonary</p>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Cardiac</p>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Gastrointestinal</p>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Labs and Biomarkers</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-1">
+Past versions of intra_corr_plots-1.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Cutaneous and Vascular</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-2">
+Past versions of intra_corr_plots-2.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Musculoskeletal</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-3">
+Past versions of intra_corr_plots-3.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Pulmonary</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-4">
+Past versions of intra_corr_plots-4.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Cardiac</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-5">
+Past versions of intra_corr_plots-5.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Gastrointestinal</p>
+<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-6">
+Past versions of intra_corr_plots-6.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>### Labs and Biomarkers</p>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-7">
+Past versions of intra_corr_plots-7.png
+</button>
+</p>
+<div id="fig-intra_corr_plots-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 # 7. Cleanup -------------------------------------------------------------------
 rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, p_heatmap, dyn_width, dyn_height)
@@ -2710,6 +3324,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -2747,6 +3372,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">03f21b0</a>
@@ -2788,6 +3424,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -2825,6 +3472,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">03f21b0</a>
@@ -2866,6 +3524,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -2903,6 +3572,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">03f21b0</a>
@@ -2944,6 +3624,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -2981,6 +3672,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">03f21b0</a>
@@ -3022,6 +3724,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3059,6 +3772,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">03f21b0</a>
@@ -3100,6 +3824,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3137,6 +3872,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">03f21b0</a>
@@ -3178,6 +3924,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3215,6 +3972,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">03f21b0</a>
@@ -3256,6 +4024,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3293,6 +4072,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">03f21b0</a>
@@ -3334,6 +4124,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3371,6 +4172,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">03f21b0</a>
@@ -3412,6 +4224,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3451,6 +4274,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">03f21b0</a>
 </td>
 <td>
@@ -3488,6 +4322,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">7d14932</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">03f21b0</a>

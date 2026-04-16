@@ -31,3 +31,24 @@
   margin-top: 10px;
   margin-bottom: 0;
 }
+
+/* Insight Box (Green) */
+.insight-box {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-size: 1.15em;
+  color: #2c3e50;
+  border-left: 6px solid #2ecc71; /* Emerald Green */
+  background-color: #f0fff4;      /* Very Light Mint */
+}
+
+.insight-box strong {
+  color: #155724; /* Deep Forest Green */
+}
+
+/* Ensure lists inside the insight box inherit the same layout as others */
+.insight-box ul {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
