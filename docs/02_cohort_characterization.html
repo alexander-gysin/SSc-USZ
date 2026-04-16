@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeaf32618c50f5f7ce47a5e068580fac53e74ea2eetargetblankaf32618a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/af32618c50f5f7ce47a5e068580fac53e74ea2ee" target="_blank">af32618</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeaf32618c50f5f7ce47a5e068580fac53e74ea2eetargetblankaf32618a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/af32618c50f5f7ce47a5e068580fac53e74ea2ee" target="_blank">af32618</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -605,6 +605,7 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_global/
@@ -664,6 +665,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/af32618c50f5f7ce47a5e068580fac53e74ea2ee/analysis/02_cohort_characterization.Rmd" target="_blank">af32618</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+wflow_publish("analysis/02_cohort_characterization.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2909df13c96f0adbf323c88879d6403c50cf5997/docs/02_cohort_characterization.html" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -939,6 +974,7 @@ library(gt)
 library(kableExtra)
 library(corrplot)
 library(heatmaply)
+library(UpSetR)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -1146,6 +1182,36 @@ figure_configs &lt;- list(
       )
     )
   )
+)
+
+# 5. Custom Correlation Heatmaps -----------------------------------------------
+custom_heatmap_configs &lt;- list(
+  core_metadata = list(
+    title = &quot;Core Metadata Correlations&quot;,
+    y_vars = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, &quot;cohort_group&quot;, &quot;Creatinine&quot;, &quot;Inflamm_active&quot;, &quot;vascular_active&quot;, &quot;fibrotic_active&quot;, ssc_clinical_parameters),
+    x_vars = NULL # Leaving this NULL creates a symmetrical, upper-triangle heatmap
+  ),
+  classification_vs_clinical = list(
+    title = &quot;Classification vs. Clinical&quot;,
+    y_vars = c(&quot;cohort_group&quot;, &quot;Inflamm_active&quot;, &quot;vascular_active&quot;, &quot;fibrotic_active&quot;),
+    x_vars = c(ssc_clinical_parameters)
+  )
+)
+
+# 6. Upset Plots ---------------------------------------------------------------
+upset_configs &lt;- list(
+  phenotype_overlap = list(
+    title = &quot;Patient Overlap: Phenotypes vs Global Activity&quot;,
+    variables = list(
+      # The &#39;target&#39; is the value that means the patient is &quot;IN&quot; this set
+      &quot;Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_ACTIVE),
+      &quot;Non-Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_NON_ACTIVE),
+      &quot;Inflammatory&quot;  = list(col = &quot;Inflamm_active&quot;, target = 1),
+      &quot;Vascular&quot;      = list(col = &quot;vascular_active&quot;, target = 1),
+      &quot;Fibrotic&quot;      = list(col = &quot;fibrotic_active&quot;, target = 1)
+    )
+  )
+  # You can easily add more configs here (e.g., specific antibodies vs organ involvement)
 )</code></pre>
 </div>
 <div id="tables" class="section level1">
@@ -1733,6 +1799,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_figures-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_figures-1.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -1780,6 +1857,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">7d14932</a>
@@ -1857,6 +1945,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-1.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -1907,6 +2006,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-2.png" target="_blank">7d14932</a>
@@ -1961,6 +2071,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-3.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-3.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -2013,6 +2134,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-4.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -2041,10 +2173,84 @@ alexander-gysin
 <div id="baseline-nt-probnp-pgml" class="section level3">
 <h3>Baseline NT-proBNP (pg/ml)</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-5">
+Past versions of print_individual_plots-5.png
+</button>
+</p>
+<div id="fig-print_individual_plots-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-5.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="baseline-dlco-sb-predicted" class="section level3">
 <h3>Baseline DLCO (SB) (% predicted)</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-6">
+Past versions of print_individual_plots-6.png
+</button>
+</p>
+<div id="fig-print_individual_plots-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-6.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2589,175 +2795,149 @@ rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_
 invisible(gc())</code></pre>
 </div>
 </div>
-<div id="core-metadata-vs.-clinical-phenotype" class="section level2">
-<h2>Core Metadata vs. Clinical Phenotype</h2>
+<div id="custom-configuration-heatmaps" class="section level2 tabset">
+<h2 class="tabset">Custom Configuration Heatmaps</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
 <li>
-Combined the predefined SSc Clinical Parameters from the global config
-with core demographics (Age, Sex, Cohort, Sample Age).
+Dynamically evaluates custom correlation configurations to generate
+either symmetrical or asymmetrical hierarchically clustered heatmaps.
 </li>
 <li>
-Filtered the list to ensure all requested variables survived the
-sparsity and completeness filters.
+Automatically de-duplicates variables and securely filters out any
+features that failed sparsity checks.
 </li>
 <li>
-Generated a symmetrical, hierarchically clustered heatmap to reveal
-which clinical symptoms organically group with core demographics.
-</li>
-<li>
-Exported a high-resolution PNG for presentations.
+Calculates dynamic image dimensions based on variable count and exports
+high-resolution PNGs.
 </li>
 </ul>
 </div>
-<pre class="r"><code># 1. Define the Variables ------------------------------------------------------
-core_vars &lt;- c(&quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, &quot;cohort_group&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;)
-all_target_vars &lt;- unique(c(core_vars, ssc_clinical_parameters))
-
-# Intersect with the final matrix to prevent crashes from dropped/renamed columns
-valid_target_vars &lt;- intersect(all_target_vars, colnames(cor_matrix))
-
-# 2. Subset Matrices -----------------------------------------------------------
-sym_cor &lt;- cor_matrix[valid_target_vars, valid_target_vars]
-sym_p   &lt;- p_matrix[valid_target_vars, valid_target_vars]
-
-# 3. Hierarchical Clustering ---------------------------------------------------
-dist_mat &lt;- as.dist(1 - sym_cor)
-hc &lt;- hclust(dist_mat, method = &quot;ward.D2&quot;)
-ordered_vars &lt;- valid_target_vars[hc$order]
-
-# 4. Reshape and Filter for Upper Triangle -------------------------------------
-cor_long &lt;- as.data.frame(sym_cor) %&gt;%
-  rownames_to_column(&quot;Var1&quot;) %&gt;%
-  pivot_longer(cols = -Var1, names_to = &quot;Var2&quot;, values_to = &quot;Correlation&quot;)
-
-p_long &lt;- as.data.frame(sym_p) %&gt;%
-  rownames_to_column(&quot;Var1&quot;) %&gt;%
-  pivot_longer(cols = -Var1, names_to = &quot;Var2&quot;, values_to = &quot;P_Value&quot;)
-
-plot_df &lt;- cor_long %&gt;%
-  left_join(p_long, by = c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
-  mutate(
-    idx_1 = match(Var1, ordered_vars),
-    idx_2 = match(Var2, ordered_vars)
-  ) %&gt;%
-  filter(idx_2 &gt; idx_1) %&gt;% # Keep only the upper triangle
-  mutate(
-    Var2 = factor(Var2, levels = ordered_vars),
-    Var1 = factor(Var1, levels = rev(ordered_vars)),
-    Is_Significant = P_Value &lt; corr_config$p_cutoff,
-    Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
-  )
-
-# 5. Build the ggplot ----------------------------------------------------------
-pheno_plot &lt;- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
-  geom_tile(color = &quot;white&quot;, linewidth = 0.5) +
+<pre class="r"><code># 1. Local Function: Custom Heatmap Engine -------------------------------------
+generate_custom_cor_heatmap &lt;- function(conf, cor_mat, p_mat) {
   
-  scale_x_discrete(position = &quot;top&quot;) +
-  scale_y_discrete(position = &quot;right&quot;) +
+  # A. Safely extract and de-duplicate variables
+  req_y &lt;- unique(conf$y_vars)
+  req_x &lt;- if (!is.null(conf$x_vars)) unique(conf$x_vars) else req_y
   
-  scale_fill_gradientn(
-    colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
-    limits = c(-1, 1),
-    na.value = &quot;gray93&quot;, 
-    name = &quot;Spearman Rho\n&quot;
-  ) +
-  labs(title = &quot;Core Metadata Correlations&quot;, 
-       subtitle = sprintf(&quot;Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)&quot;, corr_config$p_cutoff)) +
-  theme_minimal(base_size = 14) +
-  theme(
-    # --- X-AXIS LABELS ---
-    axis.text.x.top = element_text(
-      angle = 45, 
-      hjust = 0, 
-      vjust = 0.01,               
-      margin = margin(b = -2), 
-      face = &quot;bold&quot;, 
-      color = &quot;black&quot;, 
-      size = rel(0.7)
-    ),
+  valid_y &lt;- intersect(req_y, colnames(cor_mat))
+  valid_x &lt;- intersect(req_x, colnames(cor_mat))
+  
+  if (length(valid_y) &lt; 2 || length(valid_x) &lt; 2) {
+    return(list(status = &quot;failed&quot;, msg = &quot;Insufficient surviving variables for clustering.&quot;))
+  }
+  
+  # B. Determine plot type (Symmetrical vs Asymmetrical)
+  is_symmetrical &lt;- setequal(valid_y, valid_x)
+  
+  sub_cor &lt;- cor_mat[valid_y, valid_x, drop = FALSE]
+  sub_p   &lt;- p_mat[valid_y, valid_x, drop = FALSE]
+  
+  # C. Hierarchical Clustering &amp; Reshaping
+  if (is_symmetrical) {
+    dist_mat &lt;- as.dist(1 - sub_cor)
+    hc &lt;- hclust(dist_mat, method = &quot;ward.D2&quot;)
+    ordered_vars &lt;- valid_y[hc$order]
     
-    # --- Y-AXIS LABELS ---
-    axis.text.y.right = element_text(
-      hjust = 0,               
-      margin = margin(l = 2),  
-      face = &quot;bold&quot;, 
-      color = &quot;black&quot;, 
-      size = rel(0.75)
-    ),
+    cor_long &lt;- as.data.frame(sub_cor) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;Correlation&quot;)
+    p_long   &lt;- as.data.frame(sub_p) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;P_Value&quot;)
     
-    axis.title = element_blank(),
-    panel.grid = element_blank(),
+    plot_df &lt;- cor_long %&gt;% left_join(p_long, by=c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
+      mutate(idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars)) %&gt;%
+      filter(idx_2 &gt; idx_1) %&gt;% # Keep ONLY upper triangle
+      mutate(
+        Var2 = factor(Var2, levels = ordered_vars),
+        Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value &lt; corr_config$p_cutoff,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      )
+    subtitle_text &lt;- sprintf(&quot;Upper triangle. Blank/Grey indicates non-significance (p ≥ %s)&quot;, corr_config$p_cutoff)
     
-    plot.title = element_text(face = &quot;bold&quot;, size = 20, hjust = 0.5),
-    plot.subtitle = element_text(color = &quot;grey40&quot;, size = 14, margin = margin(b = 15), hjust = 0.5),
+  } else {
+    hc_y &lt;- hclust(dist(sub_cor), method = &quot;ward.D2&quot;)
+    hc_x &lt;- hclust(dist(t(sub_cor)), method = &quot;ward.D2&quot;)
     
-    # --- LEGEND ---
-    legend.position = &quot;left&quot;,
-    legend.key.height = unit(1.5, &quot;cm&quot;), 
-    legend.key.width = unit(0.5, &quot;cm&quot;)
-  ) +
-  coord_fixed() 
+    ordered_y &lt;- valid_y[hc_y$order]
+    ordered_x &lt;- valid_x[hc_x$order]
+    
+    cor_long &lt;- as.data.frame(sub_cor) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;Correlation&quot;)
+    p_long   &lt;- as.data.frame(sub_p) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;P_Value&quot;)
+    
+    plot_df &lt;- cor_long %&gt;% left_join(p_long, by=c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
+      mutate(
+        Var2 = factor(Var2, levels = ordered_x),
+        Var1 = factor(Var1, levels = rev(ordered_y)),
+        Is_Sig = P_Value &lt; corr_config$p_cutoff,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      )
+    subtitle_text &lt;- sprintf(&quot;Blank/Grey indicates non-significance (p ≥ %s)&quot;, corr_config$p_cutoff)
+  }
+  
+  # D. Build the ggplot
+  p &lt;- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = &quot;white&quot;, linewidth = 0.5) +
+    scale_x_discrete(position = &quot;top&quot;) +
+    scale_y_discrete(position = &quot;right&quot;) +
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = &quot;gray93&quot;, 
+      name = &quot;Spearman Rho\n&quot;
+    ) +
+    labs(title = conf$title, subtitle = subtitle_text) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(0.7)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(0.75)),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      plot.title = element_text(face = &quot;bold&quot;, size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = &quot;grey40&quot;, size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = &quot;left&quot;,
+      legend.key.height = unit(1.5, &quot;cm&quot;), 
+      legend.key.width = unit(0.5, &quot;cm&quot;)
+    ) + coord_fixed() 
+  
+  # E. Dynamic Sizing Math
+  dyn_w &lt;- max(8, length(unique(plot_df$Var2)) * 0.35 + 4)
+  dyn_h &lt;- max(6, length(unique(plot_df$Var1)) * 0.35 + 3)
+  
+  return(list(status = &quot;success&quot;, plot = p, width = dyn_w, height = dyn_h))
+}
 
-# 6. Export and Print ----------------------------------------------------------
-# &lt;--- ADJUSTMENT: Export width matched to the new 16-inch chunk width
-ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;Core_Phenotype_Correlation_Symmetrical.png&quot;), 
-       plot = pheno_plot, width = 10, height = 8, dpi = 300, bg = &quot;white&quot;)
-
-# Consolidated HTML Output to prevent fragmentation
-html_output &lt;- paste0(
-  &quot;This symmetrical heatmap illustrates the inter-relationships between core cohort demographics and primary SSc clinical parameters, clustered by similarity.\n\n&quot;
-)
-
-cat(html_output)</code></pre>
-<p>This symmetrical heatmap illustrates the inter-relationships between
-core cohort demographics and primary SSc clinical parameters, clustered
-by similarity.</p>
-<pre class="r"><code>print(pheno_plot)</code></pre>
-<p><img src="figure/02_cohort_characterization.Rmd/core_phenotype_heatmap-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_phenotype_heatmap-1">
-Past versions of core_phenotype_heatmap-1.png
-</button>
-</p>
-<div id="fig-core_phenotype_heatmap-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/core_phenotype_heatmap-1.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>cat(&quot;\n\n&quot;)
-
-# 7. Cleanup -------------------------------------------------------------------
-rm(core_vars, all_target_vars, valid_target_vars, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, pheno_plot, html_output)
+# 2. Execution Loop ------------------------------------------------------------
+for (h_id in names(custom_heatmap_configs)) {
+  conf &lt;- custom_heatmap_configs[[h_id]]
+  
+  res &lt;- generate_custom_cor_heatmap(conf, cor_matrix, p_matrix)
+  
+  if (res$status == &quot;success&quot;) {
+    
+    # Export Dynamic PNG
+    safe_name &lt;- gsub(&quot;[^A-Za-z0-9_.-]&quot;, &quot;_&quot;, conf$title)
+    ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, paste0(&quot;Custom_&quot;, safe_name, &quot;.png&quot;)), 
+           plot = res$plot, width = res$width, height = res$height, dpi = 300, bg = &quot;white&quot;)
+    
+    # Print to HTML
+    cat(sprintf(&quot;### %s\n\n&quot;, conf$title))
+    print(res$plot)
+    cat(&quot;\n\n&quot;)
+    
+  } else {
+    cat(sprintf(&quot;### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
+  }
+}</code></pre>
+<div id="core-metadata-correlations" class="section level3">
+<h3>Core Metadata Correlations</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" alt="" width="100%" style="display: block; margin: auto;" />###
+Classification vs. Clinical</p>
+<p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+# 3. Cleanup
+rm(h_id, conf, res, generate_custom_cor_heatmap)
 invisible(gc())</code></pre>
+</div>
 </div>
 <div id="intra-domain-correlation-matrix" class="section level2 tabset">
 <h2 class="tabset">Intra Domain Correlation MAtrix</h2>
@@ -2911,6 +3091,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -2948,6 +3139,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" target="_blank">7d14932</a>
@@ -2989,6 +3191,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3026,6 +3239,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" target="_blank">7d14932</a>
@@ -3067,6 +3291,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3106,6 +3341,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3143,6 +3389,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" target="_blank">7d14932</a>
@@ -3324,6 +3581,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3372,6 +3640,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">7d14932</a>
@@ -3424,6 +3703,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3472,6 +3762,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">7d14932</a>
@@ -3524,6 +3825,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3572,6 +3884,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">7d14932</a>
@@ -3624,6 +3947,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3672,6 +4006,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">7d14932</a>
@@ -3724,6 +4069,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3772,6 +4128,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">7d14932</a>
@@ -3824,6 +4191,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3872,6 +4250,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">7d14932</a>
@@ -3924,6 +4313,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -3972,6 +4372,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">7d14932</a>
@@ -4024,6 +4435,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -4072,6 +4494,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">7d14932</a>
@@ -4124,6 +4557,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -4172,6 +4616,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">7d14932</a>
@@ -4224,6 +4679,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -4272,6 +4738,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">7d14932</a>
@@ -4324,6 +4801,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">7d14932</a>
 </td>
 <td>
@@ -4351,6 +4839,80 @@ alexander-gysin
 <pre class="r"><code>
 # 8. Cleanup -------------------------------------------------------------------
 rm(plotting_domains, domain_combos, d1_name, d2_name, v1_raw, v2_raw, v1_vals, v1_valid, v2_vals, v2_valid, var_x, var_y, lab_x, lab_y, sub_cor, sub_p, hc_x, hc_y, ordered_x, ordered_y, cor_long, p_long, plot_df, clean_lab_x, clean_lab_y, clean_title, p_heatmap, dyn_width, dyn_height, combo, n, v)
+invisible(gc())</code></pre>
+</div>
+</div>
+</div>
+<div id="upset-plots" class="section level1">
+<h1>Upset Plots</h1>
+<pre class="r"><code>generate_upset_plot &lt;- function(conf, df) {
+  set_names &lt;- names(conf$variables)
+  upset_df &lt;- data.frame(Subject_ID = df$Subject_ID)
+  
+  for (s in set_names) {
+    col &lt;- conf$variables[[s]]$col
+    target &lt;- conf$variables[[s]]$target
+    
+    if (!(col %in% colnames(df))) {
+      return(list(status = &quot;failed&quot;, msg = sprintf(&quot;Column &#39;%s&#39; not found in clinical spine.&quot;, col)))
+    }
+    
+    # Create binary membership (Treats NAs as 0 / Not in Set)
+    upset_df[[s]] &lt;- ifelse(!is.na(df[[col]]) &amp; df[[col]] == target, 1, 0)
+  }
+  
+  # Drop the ID column to create the pure binary matrix required by UpSetR
+  plot_mat &lt;- upset_df %&gt;% select(-Subject_ID)
+  
+  if (sum(rowSums(plot_mat)) == 0) {
+    return(list(status = &quot;failed&quot;, msg = &quot;No patients match any target criteria.&quot;))
+  }
+  
+  # Generate Plot
+  p &lt;- upset(
+    plot_mat, 
+    sets = set_names,
+    keep.order = TRUE,
+    order.by = &quot;freq&quot;,
+    mainbar.y.label = &quot;Number of Patients in Intersection&quot;,
+    sets.x.label = &quot;Total Patients per Category&quot;,
+    text.scale = c(1.3, 1.3, 1, 1, 1.2, 1.2),
+    set_size.show = TRUE
+  )
+  
+  return(list(status = &quot;success&quot;, plot = p, data = plot_mat))
+}</code></pre>
+<pre class="r"><code>upset_dir &lt;- file.path(output_dir_data, &quot;upset-plots&quot;)
+if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
+
+for (u_id in names(upset_configs)) {
+  conf &lt;- upset_configs[[u_id]]
+  
+  res &lt;- generate_upset_plot(conf, master_spine)
+  
+  if (res$status == &quot;success&quot;) {
+    cat(sprintf(&quot;### %s\n\n&quot;, conf$title))
+    
+    # Print for HTML / Interactive Viewer
+    print(res$plot)
+    cat(&quot;\n\n&quot;)
+    
+    # Export High-Res PNG (UpSetR requires png/dev.off pipeline)
+    safe_name &lt;- gsub(&quot;[^A-Za-z0-9_.-]&quot;, &quot;_&quot;, conf$title)
+    png(file.path(upset_dir, paste0(&quot;UpSet_&quot;, safe_name, &quot;.png&quot;)), 
+        width = 10, height = 7, units = &quot;in&quot;, res = 300, bg = &quot;white&quot;)
+    print(res$plot)
+    invisible(dev.off())
+    
+  } else {
+    cat(sprintf(&quot;### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
+  }
+}
+### Patient Overlap: Phenotypes vs Global Activity</code></pre>
+<p><img src="figure/02_cohort_characterization.Rmd/upset_execution-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>
+# Cleanup
+rm(u_id, conf, res, upset_dir, upset_configs, safe_name)
 invisible(gc())</code></pre>
 <pre class="r"><code>cat(&quot;Script 02 Complete!&quot;)
 Script 02 Complete!</code></pre>
@@ -4386,14 +4948,14 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] heatmaply_1.6.0     viridis_0.6.5       viridisLite_0.4.3  
- [4] plotly_4.12.0       corrplot_0.95       kableExtra_1.4.0   
- [7] gt_1.3.0            ggpubr_0.6.3        patchwork_1.3.2    
-[10] here_1.0.2          gtsummary_2.5.0     data.table_1.18.2.1
-[13] lubridate_1.9.5     forcats_1.0.1       stringr_1.6.0      
-[16] dplyr_1.2.1         purrr_1.2.1         readr_2.2.0        
-[19] tidyr_1.3.2         tibble_3.3.1        tidyverse_2.0.0    
-[22] ggplot2_4.0.2       workflowr_1.7.2    
+ [1] UpSetR_1.4.0        heatmaply_1.6.0     viridis_0.6.5      
+ [4] viridisLite_0.4.3   plotly_4.12.0       corrplot_0.95      
+ [7] kableExtra_1.4.0    gt_1.3.0            ggpubr_0.6.3       
+[10] patchwork_1.3.2     here_1.0.2          gtsummary_2.5.0    
+[13] data.table_1.18.2.1 lubridate_1.9.5     forcats_1.0.1      
+[16] stringr_1.6.0       dplyr_1.2.1         purrr_1.2.1        
+[19] readr_2.2.0         tidyr_1.3.2         tibble_3.3.1       
+[22] tidyverse_2.0.0     ggplot2_4.0.2       workflowr_1.7.2    
 
 loaded via a namespace (and not attached):
  [1] gridExtra_2.3       rlang_1.2.0         magrittr_2.0.5     
@@ -4411,23 +4973,21 @@ loaded via a namespace (and not attached):
 [37] iterators_1.0.14    knitr_1.51          httpuv_1.6.16      
 [40] timechange_0.4.0    tidyselect_1.2.1    rstudioapi_0.18.0  
 [43] abind_1.4-8         yaml_2.3.12         TSP_1.2.7          
-[46] codetools_0.2-20    processx_3.8.7      withr_3.0.2        
-[49] S7_0.2.1            evaluate_1.0.5      xml2_1.5.2         
-[52] pillar_1.11.1       BiocManager_1.30.27 carData_3.0-6      
-[55] whisker_0.4.1       renv_1.1.5          foreach_1.5.2      
-[58] generics_0.1.4      vroom_1.7.1         rprojroot_2.1.1    
-[61] hms_1.1.4           scales_1.4.0        glue_1.8.0         
-[64] lazyeval_0.2.2      tools_4.5.2         dendextend_1.19.1  
-[67] webshot_0.5.5       ggsignif_0.6.4      registry_0.5-1     
-[70] fs_2.0.1            grid_4.5.2          seriation_1.5.8    
-[73] cards_0.7.1         cardx_0.3.2         Formula_1.2-5      
-[76] cli_3.6.5           textshaping_1.0.5   svglite_2.2.2      
-[79] gtable_0.3.6        rstatix_0.7.3       sass_0.4.10        
-[82] digest_0.6.39       htmlwidgets_1.6.4   farver_2.1.2       
-[85] htmltools_0.5.9     lifecycle_1.0.5     httr_1.4.8         
-[88] bit64_4.6.0-1      </code></pre>
-</div>
-</div>
+[46] codetools_0.2-20    processx_3.8.7      plyr_1.8.9         
+[49] withr_3.0.2         S7_0.2.1            evaluate_1.0.5     
+[52] xml2_1.5.2          pillar_1.11.1       BiocManager_1.30.27
+[55] carData_3.0-6       whisker_0.4.1       renv_1.1.5         
+[58] foreach_1.5.2       generics_0.1.4      vroom_1.7.1        
+[61] rprojroot_2.1.1     hms_1.1.4           scales_1.4.0       
+[64] glue_1.8.0          lazyeval_0.2.2      tools_4.5.2        
+[67] dendextend_1.19.1   webshot_0.5.5       ggsignif_0.6.4     
+[70] registry_0.5-1      fs_2.0.1            grid_4.5.2         
+[73] seriation_1.5.8     cards_0.7.1         cardx_0.3.2        
+[76] Formula_1.2-5       cli_3.6.5           textshaping_1.0.5  
+[79] svglite_2.2.2       gtable_0.3.6        rstatix_0.7.3      
+[82] sass_0.4.10         digest_0.6.39       htmlwidgets_1.6.4  
+[85] farver_2.1.2        htmltools_0.5.9     lifecycle_1.0.5    
+[88] httr_1.4.8          bit64_4.6.0-1      </code></pre>
 </div>
 </div>
 </div>
