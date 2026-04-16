@@ -568,15 +568,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4ab2fc3f3d07ed53519f4081fcfe02e40f54aaddtargetblank4ab2fc3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4ab2fc3f3d07ed53519f4081fcfe02e40f54aadd" target="_blank">4ab2fc3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2425ca234d0902039e7844366cdac6d46338cb0btargetblank2425ca2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4ab2fc3f3d07ed53519f4081fcfe02e40f54aaddtargetblank4ab2fc3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -586,7 +586,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2425ca234d0902039e7844366cdac6d46338cb0b" target="_blank">2425ca2</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4ab2fc3f3d07ed53519f4081fcfe02e40f54aadd" target="_blank">4ab2fc3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -603,6 +603,7 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_global/
@@ -614,9 +615,11 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  analysis/style.css
     Untracked:  code/randomizer.R
     Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/03b_proteomics_differential.Rmd
 
 </code></pre>
 <p>
@@ -662,6 +665,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/4ab2fc3f3d07ed53519f4081fcfe02e40f54aadd/analysis/03a_proteomics_variance.Rmd" target="_blank">4ab2fc3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+added decision table for variable inclusion
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0cb45fb3fa0f9b3ff781e31ac0f485aa085318f1/analysis/03a_proteomics_variance.Rmd" target="_blank">0cb45fb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2909df13c96f0adbf323c88879d6403c50cf5997/docs/03a_proteomics_variance.html" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -729,6 +783,50 @@ PCA, VPA and exploratory VPA)</li>
 <li>To determine which variables should be included in the downstream
 Differential Expression Analysis</li>
 </ul>
+<div id="dea-variable-inclusion-logic" class="section level2">
+<h2>DEA VAriable Inclusion Logic</h2>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Scenario</th>
+<th align="left">Action</th>
+<th align="left">Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">High VPA Variance &amp; Low Correlation with
+Contrast</td>
+<td align="left">Include</td>
+<td align="left">Noise</td>
+</tr>
+<tr class="even">
+<td align="left">High VPA VAriance &amp; High Correlation with
+Contrast</td>
+<td align="left">Compare Include/Exclude</td>
+<td align="left">Confounder: Correcting for this could erase the
+signal</td>
+</tr>
+<tr class="odd">
+<td align="left">High VPA Variance &amp; High correlation with
+Covariate</td>
+<td align="left">Pick the VPA winner</td>
+<td align="left">Redundancy/Collinearity</td>
+</tr>
+<tr class="even">
+<td align="left">Low VPA VAriance</td>
+<td align="left">Exclude</td>
+<td align="left">Unnecessarily reduces degrees of freedom</td>
+</tr>
+</tbody>
+</table>
+<p>Limit umber of variables to abeout 1 variable per 10 patients.</p>
+</div>
 </div>
 <div id="setup-and-import" class="section level1">
 <h1>Setup and Import</h1>
@@ -1077,6 +1175,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">2e39eed</a>
@@ -2321,6 +2430,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -2357,6 +2477,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">2e39eed</a>
@@ -2399,6 +2530,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -2437,6 +2579,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">2e39eed</a>
 </td>
 <td>
@@ -2453,14 +2606,236 @@ alexander-gysin
 <p>#### Analysis: Potential DEA Model for: Fibrotic vs. Non-Fibrotic SSc
 Patients</p>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" alt="" width="768" style="display: block; margin: auto;" />####
-Analysis: Potential DEA Model for: Vascular vs. Non-Vascular SSc
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-5">
+Past versions of targeted_vpa_engine-5.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-6">
+Past versions of targeted_vpa_engine-6.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### Analysis: Potential DEA Model for: Vascular vs. Non-Vascular SSc
 Patients</p>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" alt="" width="768" style="display: block; margin: auto;" />####
-Analysis: Potential DEA Model for: SSc vs. Control</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-7">
+Past versions of targeted_vpa_engine-7.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-8">
+Past versions of targeted_vpa_engine-8.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#### Analysis: Potential DEA Model for: SSc vs. Control</p>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-9">
+Past versions of targeted_vpa_engine-9.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-10">
+Past versions of targeted_vpa_engine-10.png
+</button>
+</p>
+<div id="fig-targeted_vpa_engine-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Clean memory
 rm(vpa_id, conf, res)
 invisible(gc())</code></pre>
