@@ -17,6 +17,15 @@ source(here::here("code", "00_config.R"))
 -   To determine which variables correlate with each other
 -   To determine which variables should be included in the downstream Differential Expression Analysis
 
+## DEA VAriable Inclusion Logic
+| Scenario | Action | Explanation |
+|:---|:---|:---|
+| High VPA Variance & Low Correlation with Contrast | Include | Noise |
+| High VPA VAriance & High Correlation with Contrast | Compare Include/Exclude | Confounder: Correcting for this could erase the signal |
+| High VPA Variance & High correlation with Covariate | Pick the VPA winner | Redundancy/Collinearity |
+| Low VPA VAriance | Exclude | Unnecessarily reduces degrees of freedom |
+
+
 # Setup and Import
 
 `r what_this_does("Loaded analytical packages (FactoMineR, factoextra) and parallel processing tools (future, progressr).", "Sourced custom omics engines to handle repetitive matrix operations.", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Initialized parallel processing to accelerate computationally intensive variance partition calculations.")`
