@@ -22,7 +22,7 @@ COLOR_NON_ACTIVE <- "#0072B2"
 COLOR_CONTROL    <- "#999999"
 COLOR_MALE       <- "#56B4E9"
 COLOR_FEMALE     <- "#E69F00"
-COLOR_HIGHLIGHT <- "#E6007E" # Magenta/Pink for shared trajectory drivers
+COLOR_HIGHLIGHT  <- "#E6007E" # Magenta/Pink for shared trajectory drivers
 
 # Age Gradient (Purple)
 COLOR_AGE_LOW <- "white"
@@ -32,6 +32,12 @@ COLOR_AGE_HIGH <- "purple4"
 HM_Z_LOW  <- "dodgerblue4"
 HM_Z_MID  <- "white"
 HM_Z_HIGH <- "firebrick4"
+
+
+# Fallback Palettes for Exploratory Plotting (PCA, etc.)
+# Used automatically when a variable doesn't have a strict color mapped above
+FALLBACK_CAT_PALETTE  <- c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#0072B2", "#F0E442", "#999999")
+FALLBACK_CONT_PALETTE <- "viridis" # Continuous fallback palette (viridis, plasma, magma, etc.)
 
 # 5. CLINICAL VARIABLES SUBSETS
 # Clinical description of SSC:
@@ -147,6 +153,19 @@ analysis_decision <- function(...) {
   html <- sprintf('
 <div class="decision-box">
   <strong>Analysis Decisions:</strong>
+  <ul>
+%s
+  </ul>
+</div>', li_items)
+  return(html)
+}
+
+key_insight <- function(...) {
+  points <- list(...)
+  li_items <- paste0("    <li>", unlist(points), "</li>", collapse = "\n")
+  html <- sprintf('
+<div class="insight-box">
+  <strong>Key Insight:</strong>
   <ul>
 %s
   </ul>

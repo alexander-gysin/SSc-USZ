@@ -26,6 +26,7 @@ library(readxl)      # Reading messy Excel files
 library(data.table)  # High-performance data wrangling
 library(here)        # Safe file paths
 library(matrixStats) # Fast matrix math for QC and Imputation
+library(writexl)
 
 # Get current file name to make folder
 current_file <- "01_data_import_and_qc"
@@ -145,6 +146,7 @@ id_map <- read_excel(here::here("data", file_paths$id_map))
 setDT(id_map)
 
 # Explicitly drop the follow-up sample to enforce cross-sectional design
+audit_log <- c(audit_log)
 id_map <- id_map[`Subject ID` != "Act_4_2"]
 
 id_map <- id_map[, `Subject-ID (EUSTAR)`      := as.character(`Subject-ID (EUSTAR)`)]
@@ -398,7 +400,7 @@ cat(paste(audit_log_qc, collapse = "\n"))
 saveRDS(master_spine, file.path(output_dir_data, "clinical_spine.rds"))
 saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
 
-write_csv(master_spine, file.path(output_dir_data, "clinical_spine.csv"))
+write_xlsx(master_spine, path = file.path(output_dir_data, "clinical_spine.xlsx"))
 
 cat("Script 01 Complete! Data is ready for analysis.")
 ```

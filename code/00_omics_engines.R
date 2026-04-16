@@ -18,25 +18,23 @@ library(variancePartition)
 library(BiocParallel)
 library(future)
 library(future.apply)
-library(progressr)
 
 # PART 1: THE MASTER PIPELINE WRAPPERS (The "Managers") ------------------------
 
 # 1. PCA Pipeline Wrapper ------------------------------------------------------
 # Description:
-#   Executes a complete Principal Component Analysis pipeline. It filters the data
-#   to the requested subgroups, calculates the PCA, and generates a suite of standard
-#   visualizations including scree plots, loadings, top drivers, and color-coded
-#   scatter plots overlaid with clinical metadata.
+#   Executes a complete Principal Component Analysis pipeline. It filters data,
+#   calculates PCA, and saves a suite of dynamically scaled visualizations to PNG,
+#   returning the ggplot objects and their direct file paths.
 # Args:
-#   omics_mat: Numeric matrix of omics data (features in rows, subjects in columns).
-#   clin_df: Clinical metadata dataframe.
-#   pca_conf: List containing settings (title, subset_to_contrast, color_vars).
+#   omics_mat: Numeric matrix (features in rows, subjects in columns).
+#   clin_df: Aligned clinical metadata dataframe.
+#   pca_conf: List of settings (title, subset_to_contrast, color_vars).
 #   pca_id: String identifier for saving outputs.
-#   base_output_dir: Root directory for saving results.
-#   project_colors_func: Function that returns specific hex codes for cohorts.
+#   base_output_dir: Path for saving results.
+#   project_colors_func: Function to map cohort specific hex codes.
 # Returns:
-#   A list of ggplot objects (individual plots and merged grids).
+#   Nested list with 'plots' (ggplot objects) and 'paths' (string file paths).
 wrap_pca_pipeline <- function(omics_mat, clin_df, pca_conf, pca_id, base_output_dir, project_colors_func) {
 
   # Setup Directories
@@ -58,11 +56,16 @@ wrap_pca_pipeline <- function(omics_mat, clin_df, pca_conf, pca_id, base_output_
   # PCA Calculation
   pca_res <- FactoMineR::PCA(t(mat_sub), scale.unit = TRUE, graph = FALSE)
   plots <- list()
+  paths <- list() # Store paths for HTML rendering
+
+  # --- AESTHETIC REFACTOR: TITLE WRAPPING ---
+  # We wrap the main title at ~55 characters so it never overflows.
+  wrapped_main_title <- stringr::str_wrap(pca_conf$title, width = 55)
 
   # Generate Individual Plots
   plots[["scree"]] <- fviz_eig(pca_res, addlabels = TRUE) +
     theme_project_base() +
-    labs(title = sprintf("%s: Variance Explained (Scree)", pca_conf$title))
+    labs(title = sprintf("%s: Variance Explained (Scree)", wrapped_main_title))
 
   plots[["loadings"]] <- fviz_pca_var(pca_res, select.var = list(contrib = 30),
                                       col.var = "contrib",
@@ -70,7 +73,7 @@ wrap_pca_pipeline <- function(omics_mat, clin_df, pca_conf, pca_id, base_output_
                                       repel = TRUE) +
     theme_project_base() +
     guides(colour = guide_colorbar(barwidth = unit(8, "cm"), barheight = unit(0.3, "cm"))) +
-    labs(title = sprintf("%s: PCA Loadings (Top 30)", pca_conf$title))
+    labs(title = sprintf("%s: PCA Loadings (Top 30)", wrapped_main_title))
 
   plots[["pc1_drivers"]] <- fviz_contrib(pca_res, choice = "var", axes = 1, top = 10, fill = "grey30", color = "grey30") +
     theme_project_base() + coord_flip() + labs(title = "Top PC1 Drivers")
@@ -83,50 +86,90 @@ wrap_pca_pipeline <- function(omics_mat, clin_df, pca_conf, pca_id, base_output_
   for (c_var in pca_conf$color_vars) {
     if (!(c_var %in% colnames(clin_df))) next
 
-    dynamic_title <- sprintf("%s (Colored by %s)", pca_conf$title, c_var)
+    # --- AESTHETIC REFACTOR: SPLIT TITLE/SUBTITLE ---
+    # Failsafe: Replicate design decision for interactive viewing
+    interact_main_title <- stringr::str_wrap(pca_conf$title, width = 50)
+    interact_labs_list <- labs(title = interact_main_title, subtitle = paste("Colored by:", c_var))
 
+    clean_vec <- clin_df[[c_var]][!is.na(clin_df[[c_var]])]
+    if (length(clean_vec) == 0) next
+
+    # A. CONTINUOUS VARIABLE LOGIC (Reverted to Viridis from config)
     if (is.numeric(clin_df[[c_var]])) {
+      cont_pal <- if(exists("FALLBACK_CONT_PALETTE")) FALLBACK_CONT_PALETTE else "viridis"
+
       p <- fviz_pca_ind(pca_res, label = "none", col.ind = clin_df[[c_var]], legend.title = c_var) +
-        scale_color_viridis_c(option = "viridis") + theme_project_base() + labs(title = dynamic_title)
+        scale_color_viridis_c(option = cont_pal, na.value = "grey85") +
+        theme_project_base() + interact_labs_list
+
+      # B. CATEGORICAL VARIABLE LOGIC
     } else {
       clin_df[[c_var]] <- as.factor(clin_df[[c_var]])
+      lvl_names <- levels(clin_df[[c_var]])
+
+      mapped_colors <- project_colors_func(lvl_names)
+
+      if (all(mapped_colors == "#333333")) {
+        safe_pal <- if(exists("FALLBACK_CAT_PALETTE")) FALLBACK_CAT_PALETTE else c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#0072B2", "#F0E442", "#999999")
+        if (length(lvl_names) <= length(safe_pal)) {
+          mapped_colors <- safe_pal[1:length(lvl_names)]
+        } else {
+          mapped_colors <- colorRampPalette(safe_pal)(length(lvl_names))
+        }
+      }
+
       p <- fviz_pca_ind(pca_res, label = "none", habillage = clin_df[[c_var]],
-                        palette = project_colors_func(levels(clin_df[[c_var]])),
-                        addEllipses = TRUE) + theme_project_base() + labs(title = dynamic_title)
+                        palette = mapped_colors,
+                        addEllipses = TRUE) +
+        theme_project_base() + interact_labs_list
     }
 
     plots[[paste0("PCA_Plot_", c_var)]] <- p
-    overlay_plots_for_grid[[c_var]] <- p + labs(title = sprintf("Colored by %s", c_var))
+
+    # Grid Title Setup (Cleaner than interactive viewer)
+    overlay_plots_for_grid[[c_var]] <- p + labs(title = wrapped_main_title, subtitle = paste("Colored by:", c_var))
   }
 
-  # Automated Saving (Individual Plots)
+  # Automated Saving (With filename sanitization)
   for (p_name in names(plots)) {
-    ggsave(filename = file.path(pca_sub_dir, paste0(pca_id, "_", p_name, ".png")),
-           plot = plots[[p_name]], width = 7, height = 6, dpi = 300, bg = "white")
+    # Sanitize to prevent '%' crashes
+    safe_p_name <- gsub("%", "pct", p_name)
+    safe_p_name <- gsub("[^A-Za-z0-9_.-]", "_", safe_p_name)
+    safe_p_name <- gsub("_+", "_", safe_p_name)
+
+    file_path <- file.path(pca_sub_dir, paste0(pca_id, "_", safe_p_name, ".png"))
+    ggsave(filename = file_path, plot = plots[[p_name]], width = 7, height = 6, dpi = 300, bg = "white")
+    paths[[p_name]] <- file_path # Store path
   }
 
   # Stitch & Save Merged Drivers
   driver_grid <- (plots[["pc1_drivers"]] | plots[["pc2_drivers"]]) +
-    plot_annotation(title = sprintf("%s: PCA Variance Drivers", pca_conf$title),
+    plot_annotation(title = sprintf("%s: PCA Variance Drivers", wrapped_main_title),
                     tag_levels = 'A', theme = theme(plot.title = element_text(size = 16, face = "bold")))
 
-  ggsave(file.path(pca_sub_dir, paste0(pca_id, "_Merged_Drivers.png")), driver_grid, width = 12, height = 6, dpi = 300, bg="white")
-  plots[["merged_drivers"]] <- driver_grid
+  driver_path <- file.path(pca_sub_dir, paste0(pca_id, "_Merged_Drivers.png"))
+  ggsave(driver_path, driver_grid, width = 12, height = 6, dpi = 300, bg="white")
 
-  # Stitch & Save Merged Overlays
+  plots[["merged_drivers"]] <- driver_grid
+  paths[["merged_drivers"]] <- driver_path
+
+  # Stitch & Save Merged Overlays (Dynamic height!)
   if (length(overlay_plots_for_grid) > 0) {
     ncol_val <- if(length(overlay_plots_for_grid) > 2) 2 else 1
     master_scatter_grid <- wrap_plots(overlay_plots_for_grid, ncol = ncol_val) +
-      plot_annotation(title = pca_conf$title, subtitle = "Colored Scatter Overlays",
+      plot_annotation(title = wrapped_main_title, subtitle = "Hierarchical Grid: Metadata Colored Overlays",
                       tag_levels = 'A', theme = theme(plot.title = element_text(size = 18, face = "bold")))
 
-    ggsave(file.path(pca_sub_dir, paste0(pca_id, "_Merged_Scatter_Overlays.png")), master_scatter_grid,
+    overlay_path <- file.path(pca_sub_dir, paste0(pca_id, "_Merged_Scatter_Overlays.png"))
+    # Calculation handles odd number of plots gracefully
+    ggsave(overlay_path, master_scatter_grid,
            width = 14, height = (6 * ceiling(length(overlay_plots_for_grid)/2)), dpi = 300, bg="white")
 
     plots[["merged_overlays"]] <- master_scatter_grid
+    paths[["merged_overlays"]] <- overlay_path
   }
 
-  return(plots)
+  return(list(plots = plots, paths = paths))
 }
 
 # 2. DEA & Discovery Pipeline Wrapper ------------------------------------------
@@ -395,48 +438,69 @@ wrap_predictive_pipeline <- function(omics_mat, clin_df, lasso_conf, model_id, b
 }
 
 # 5a. Joint VPA Wrapper --------------------------------------------------------
-wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
+wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir, top_n_plot = 30) {
+
+  results <- list(status = "success", plots = list(), data = list())
 
   vpa_sub_dir <- file.path(base_output_dir, "VPA_Joint", vpa_id)
   if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
 
-  # 1. EXPLICIT CHARACTER EXCLUSION
-  # Find all variables that are characters and remove them from the list
-  all_vars <- vpa_conf$variables
-  char_vars <- sapply(all_vars, function(v) is.character(clin_df[[v]]))
-  valid_vars <- all_vars[!char_vars]
+  min_minority <- if(!is.null(vpa_conf$min_minority_pct)) vpa_conf$min_minority_pct else 0.10
 
-  if(length(valid_vars) == 0) return(list(error_msg = "All variables were characters and excluded."))
+  # 1. Variable Safety Checks
+  existing_vars <- intersect(vpa_conf$variables, colnames(clin_df))
+  if(length(existing_vars) == 0) return(list(status = "failed", error_msg = "No matching variables found."))
 
-  # 2. Align Data & Purge NAs
-  clin_sub <- clin_df %>% select(Subject_ID, any_of(valid_vars)) %>% drop_na() %>% droplevels()
+  # 2. Align Data, Purge NAs, and Scale Numerics
+  clin_sub <- clin_df %>%
+    select(Subject_ID, any_of(existing_vars)) %>%
+    drop_na() %>%
+    droplevels() %>%
+    mutate(across(where(is.numeric), ~ as.numeric(scale(.))))
+
   valid_ids <- intersect(colnames(omics_mat), clin_sub$Subject_ID)
   clin_sub <- clin_sub %>% filter(Subject_ID %in% valid_ids)
 
-  if (nrow(clin_sub) < 5) return(list(error_msg = "Less than 5 patients remained after NA filtering."))
+  if (nrow(clin_sub) < 15) {
+    return(list(status = "failed", error_msg = sprintf("NA-Wipeout: Only %d patients remained after requiring complete cases.", nrow(clin_sub))))
+  }
 
-  # 3. Dynamic Formula Builder
-  formula_terms <- sapply(valid_vars, function(v) {
-    if (is.factor(clin_sub[[v]]) || is.logical(clin_sub[[v]])) {
+  # 3. Build Formula & Protect Against Ghost Levels + Class Imbalance
+  formula_terms <- sapply(existing_vars, function(v) {
+    if ((is.factor(clin_sub[[v]]) || is.character(clin_sub[[v]])) && length(unique(clin_sub[[v]])) < 2) {
+      return(NULL)
+    }
+
+    is_categorical <- is.factor(clin_sub[[v]]) || is.character(clin_sub[[v]]) || is.logical(clin_sub[[v]])
+    if (is_categorical) {
+      tbl <- prop.table(table(clin_sub[[v]]))
+      if (length(tbl) < 2 || min(tbl) < min_minority) return(NULL)
+    }
+
+    num_levels <- length(unique(clin_sub[[v]]))
+
+    if (is_categorical && num_levels >= 5) {
       paste0("(1|`", v, "`)")
     } else {
       paste0("`", v, "`")
     }
   })
+
+  formula_terms <- formula_terms[!sapply(formula_terms, is.null)]
+  if(length(formula_terms) == 0) return(list(status="failed", error_msg="All variables had zero variance or extreme imbalance."))
+
   vpa_formula <- as.formula(paste("~", paste(formula_terms, collapse = " + ")))
 
-  # 4. Execution (WITH ERROR CAPTURE)
-  # Instead of returning NULL on failure, we capture the exact lme4 error message
+  # 4. Execution (PARALLELIZED ACROSS 4 CORES)
   res_varPart <- tryCatch({
-    fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_sub, BPPARAM = SerialParam())
+    fitExtractVarPartModel(omics_mat[, valid_ids], vpa_formula, clin_sub, BPPARAM = SnowParam(workers = 4))
   }, error = function(e) return(e$message))
 
-  # If res_varPart is a string, it means the model crashed and caught the error text
   if (is.character(res_varPart)) {
-    return(list(error_msg = res_varPart))
+    return(list(status = "failed", error_msg = res_varPart))
   }
 
-  # Process successful results
+  # 5. Process & Plot
   varPart_df <- as.data.frame(res_varPart) %>% rownames_to_column("Feature")
   summary_df <- data.frame(
     Covariate = colnames(res_varPart),
@@ -446,7 +510,7 @@ wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_
     mutate(CI_upper = pmin(1, Mean_Var + (1.96 * SEM))) %>%
     arrange(desc(Mean_Var))
 
-  plot_summary <- head(summary_df, 10)
+  plot_summary <- head(summary_df, top_n_plot)
 
   p_bar <- ggplot(plot_summary, aes(x = reorder(Covariate, Mean_Var), y = Mean_Var, fill = Covariate)) +
     geom_bar(stat = "identity", color = "black", alpha = 0.8) +
@@ -454,7 +518,7 @@ wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_
     geom_text(aes(y = CI_upper, label = sprintf("%.1f%%", Mean_Var * 100)), hjust = -0.2, fontface = "bold") +
     coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
     theme_project_base() + theme(legend.position = "none") +
-    labs(title = vpa_conf$title, subtitle = "Average Variance Explained", y = "% Variance Explained", x = NULL)
+    labs(title = vpa_conf$title, subtitle = "Average Variance Explained", y = "% Variance Explained (± 95% CI)", x = NULL)
 
   long_var <- varPart_df %>%
     select(Feature, all_of(plot_summary$Covariate)) %>%
@@ -468,13 +532,14 @@ wrap_vpa_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_
     theme_project_base() + theme(legend.position = "none") +
     labs(title = vpa_conf$title, x = NULL, y = "% Variance Explained")
 
-  # Save outputs
-  write_csv(varPart_df, file.path(vpa_sub_dir, paste0(vpa_id, "_Joint_VPA.csv")))
-  ggsave(file.path(vpa_sub_dir, paste0(vpa_id, "_Bar.png")), p_bar, width = 8, height = 6, bg="white")
+  # 6. Package Results
+  results$plots <- list(bar = p_bar, violin = p_violin)
+  results$data <- varPart_df
+  readr::write_csv(varPart_df, file.path(vpa_sub_dir, paste0(vpa_id, "_Joint_VPA_Results.csv")))
+  ggsave(file.path(vpa_sub_dir, paste0(vpa_id, "_Bar.png")), p_bar, width = 8, height = max(6, nrow(plot_summary)*0.3), bg="white")
 
-  return(list(plots = list(bar = p_bar, violin = p_violin), data = varPart_df))
+  return(results)
 }
-
 
 # 5b. Univariate VPA Scan Wrapper ----------------------------------------------
 wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, base_output_dir) {
@@ -483,36 +548,65 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
   vpa_sub_dir <- file.path(base_output_dir, "VPA_Univariate", vpa_id)
   if (!dir.exists(vpa_sub_dir)) dir.create(vpa_sub_dir, recursive = TRUE)
 
-  # Drop ghost levels immediately after subsetting cohorts
   if (!is.null(vpa_conf$subset_to_groups)) {
     clin_df <- clin_df %>% filter(cohort_group %in% vpa_conf$subset_to_groups) %>% droplevels()
   }
 
-  # --- EXCLUSION LOGGER & FILTERING -------------------------------------------
+  # EXCLUSION LOGGER & FILTERING
   all_cols <- setdiff(colnames(clin_df), "Subject_ID")
   vip_vars <- if(!is.null(vpa_conf$include_vars)) intersect(all_cols, vpa_conf$include_vars) else c()
   excl_log <- list()
 
-  # 1. Exact Match Exclusions
+  # 1. Exact Match Exclusions (No details needed)
   exact_excl <- setdiff(intersect(all_cols, vpa_conf$exclude_vars), vip_vars)
   if(length(exact_excl) > 0) {
     excl_log[["Exact Match (Blacklist)"]] <- exact_excl
     all_cols <- setdiff(all_cols, exact_excl)
   }
 
-  # 2. Missingness & Variance Exclusions
-  miss_excl <- c(); var_excl <- c(); surviving_cols <- c()
+  # 2. Missingness, Variance, & Imbalance Exclusions (With Detailed Metrics)
+  min_minority <- if(!is.null(vpa_conf$min_minority_pct)) vpa_conf$min_minority_pct else 0.10
+  miss_excl <- c(); var_excl <- c(); imbalance_excl <- c(); surviving_cols <- c()
 
   for(v in all_cols) {
     if (v %in% vip_vars) {
       surviving_cols <- c(surviving_cols, v)
       next
     }
+
     vec <- clin_df[[v]]
-    if ((sum(is.na(vec))/length(vec)) > vpa_conf$missingness_cutoff) {
-      miss_excl <- c(miss_excl, v)
-    } else if (length(unique(vec[!is.na(vec)])) < 2) {
-      var_excl <- c(var_excl, v)
+    clean_vec <- vec[!is.na(vec)]
+    miss_pct <- sum(is.na(vec)) / length(vec)
+
+    # A. Missingness Filter
+    if (miss_pct > vpa_conf$missingness_cutoff) {
+      miss_excl <- c(miss_excl, sprintf("%s (%.1f%%)", v, miss_pct * 100))
+
+      # B. Zero/Low Variance Filter
+    } else if (length(unique(clean_vec)) < 2) {
+      if (length(clean_vec) < 2) {
+        var_excl <- c(var_excl, sprintf("%s (N < 2)", v))
+      } else if (is.numeric(clean_vec)) {
+        # Numeric variance is 0
+        var_excl <- c(var_excl, sprintf("%s (Var: 0)", v))
+      } else {
+        # Categorical has only 1 level
+        var_excl <- c(var_excl, sprintf("%s (<2 levels)", v))
+      }
+
+      # C. Extreme Imbalance Filter (Categorical only)
+    } else if (is.factor(clean_vec) || is.character(clean_vec) || is.logical(clean_vec)) {
+      props <- prop.table(table(clean_vec))
+      min_prop <- min(props)
+      min_level_name <- names(props)[which.min(props)]
+
+      if (min_prop < min_minority) {
+        imbalance_excl <- c(imbalance_excl, sprintf("%s (%s: %.1f%%)", v, min_level_name, min_prop * 100))
+      } else {
+        surviving_cols <- c(surviving_cols, v)
+      }
+
+      # Passed all filters
     } else {
       surviving_cols <- c(surviving_cols, v)
     }
@@ -520,9 +614,10 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
 
   if(length(miss_excl) > 0) excl_log[[sprintf("Missing > %s%%", vpa_conf$missingness_cutoff*100)]] <- miss_excl
   if(length(var_excl) > 0) excl_log[["Zero/Low Variance (<2 unique)"]] <- var_excl
+  if(length(imbalance_excl) > 0) excl_log[[sprintf("Extreme Imbalance (< %s%% in minority class)", min_minority*100)]] <- imbalance_excl
   all_cols <- surviving_cols
 
-  # 3. Partial Match Exclusions
+  # 3. Partial Match Exclusions (No details needed)
   if(!is.null(vpa_conf$exclude_patterns)) {
     pat_excl <- c()
     for(pat in vpa_conf$exclude_patterns) {
@@ -538,24 +633,20 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
   cols_to_scan <- all_cols
   if(length(cols_to_scan) == 0) return(NULL)
 
-  # Create Kable Exclusion Log
   excl_df <- data.frame(Reason = character(), Variables = character(), stringsAsFactors = FALSE)
   for(reason in names(excl_log)) {
     excl_df <- rbind(excl_df, data.frame(Reason = reason, Variables = paste(excl_log[[reason]], collapse = ", ")))
   }
 
-  html_excl_log <- kableExtra::kbl(excl_df, format = "html", caption = "Variable Exclusion Log") %>%
+  html_excl_log <- kableExtra::kbl(excl_df, format = "html", caption = "Variable Exclusion Log (with specific metrics)") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
     kableExtra::column_spec(1, bold = TRUE, width = "25%")
 
-  # --- UNIVARIATE SCAN (PARALLEL) ---------------------------------------------
-  p <- progressor(steps = length(cols_to_scan))
-
+  # UNIVARIATE SCAN (PARALLEL)
   results_list <- future_lapply(cols_to_scan, function(v) {
-    p()
     vec <- clin_df[[v]]
 
-    if (is.character(vec)) return(NULL) # Safely ignore characters
+    if (is.character(vec)) return(NULL)
 
     term <- if(is.factor(vec) || is.logical(vec)) {
       paste0("(1|`", v, "`)")
@@ -568,7 +659,6 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
     valid_ids <- intersect(colnames(omics_mat), clin_tmp$Subject_ID)
     if(length(valid_ids) < 5) return(NULL)
 
-    # Final variance check post-NA drop
     if (is.factor(clin_tmp[[v]]) && length(unique(clin_tmp[[v]])) < 2) return(NULL)
     if (is.numeric(clin_tmp[[v]]) && var(clin_tmp[[v]], na.rm = TRUE) == 0) return(NULL)
 
@@ -584,7 +674,7 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
   if (nrow(full_results) == 0) return(NULL)
   write_csv(full_results, file.path(vpa_sub_dir, paste0(vpa_id, "_Univariate_Results.csv")))
 
-  # --- UNIVARIATE PLOT & SUMMARY TABLE ----------------------------------------
+  # UNIVARIATE PLOT & SUMMARY TABLE
   plot_df <- head(full_results, vpa_conf$top_n_plot)
 
   p_scan <- ggplot(plot_df, aes(x = reorder(Variable, Mean_Variance), y = Mean_Variance)) +
@@ -593,30 +683,43 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
     coord_flip() + scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
     theme_project_base() + labs(title = vpa_conf$title, subtitle = "Univariate Leaderboard", y = "Mean Variance Explained", x = NULL)
 
-  # Build Summary Statistics Table (Removed forced vars, only uses the plot winners)
   vars_to_summarize <- unique(plot_df$Variable)
   summary_rows <- lapply(vars_to_summarize, function(v) {
     if (!v %in% colnames(clin_df)) return(NULL)
-    vec <- clin_df[[v]][!is.na(clin_df[[v]])]
+
+    vec_full <- clin_df[[v]]
+    miss_pct <- sum(is.na(vec_full)) / length(vec_full)
+    vec <- vec_full[!is.na(vec_full)]
+
+    var_val <- full_results$Mean_Variance[full_results$Variable == v]
 
     if (is.numeric(vec)) {
-      details <- sprintf("Mean: %.2f | Median: %.2f | IQR: [%.2f - %.2f]", mean(vec), median(vec), quantile(vec, 0.25), quantile(vec, 0.75))
+      details <- sprintf("Mean: %.2f | IQR: [%.2f - %.2f]", mean(vec), quantile(vec, 0.25), quantile(vec, 0.75))
       type <- "Continuous"
     } else {
       tbl <- prop.table(table(vec)) * 100
       lvl_strs <- paste0(names(tbl), ": ", sprintf("%.1f%%", tbl))
-      if(length(lvl_strs) > 4) lvl_strs <- c(lvl_strs[1:4], "...(more)")
+      if(length(lvl_strs) > 3) lvl_strs <- c(lvl_strs[1:3], "...(more)")
       details <- sprintf("Levels: %d | %s", length(table(vec)), paste(lvl_strs, collapse = ", "))
       type <- "Categorical"
     }
-    return(data.frame(Variable = v, Type = type, N_Valid = length(vec), Summary = details))
+
+    return(data.frame(
+      Variable = v,
+      Type = type,
+      Mean_Variance = scales::percent(var_val, accuracy = 0.01),
+      Missingness = scales::percent(miss_pct, accuracy = 0.1),  # <-- NEW COLUMN HERE
+      N_Valid = length(vec),
+      Summary = details
+    ))
   })
 
   html_summary_table <- bind_rows(summary_rows) %>%
     kableExtra::kbl(format = "html", caption = "Summary Statistics: Top Univariate Drivers") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+    kableExtra::column_spec(3, bold = TRUE, color = "darkred")
 
-  # --- RETURN PAYLOAD ---------------------------------------------------------
+  # RETURN PAYLOAD
   return_payload <- list(
     univariate_bar = p_scan,
     tables = list(exclusion = html_excl_log, summary = html_summary_table)
@@ -625,9 +728,105 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
   return(return_payload)
 }
 
+# 6. Pre-DEA Validation Wrapper & Formatter -----------------------------------
+# Description:
+#   Wraps the validate_dea_design mathematical engine. Parses the raw results
+#   and formats them into a publication-ready, color-coded HTML diagnostic table.
+# Args:
+#   clin_df: Clinical metadata dataframe.
+#   conf: A single DEA configuration list.
+#   rules: The dea_validation_rules list containing thresholds.
+#   cor_matrices: The loaded Spearman correlation matrices.
+# Returns:
+#   A list containing the raw engine results and the compiled kableExtra HTML table.
+wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
+
+  # 1. Run the Mathematical Engine
+  res <- validate_dea_design(
+    clin_df               = clin_df,
+    group_col             = conf$group_col,
+    target_groups         = conf$target_groups,
+    ref_groups            = conf$ref_groups,
+    covariates            = conf$covariates,
+    min_samples_per_param = rules$min_samples_per_param,
+    min_group_n           = rules$min_group_n,
+    cor_matrices          = cor_matrices,
+    max_cor_rho           = rules$max_cor_rho,
+    max_cor_p             = rules$max_cor_p
+  )
+
+  # 2. Format Global Metadata (HTML Footnote)
+  status_color <- ifelse(res$Status == "Pass", "#27ae60", "#c0392b")
+
+  spp_str <- case_when(
+    is.na(res$SPP) ~ "-",
+    res$SPP < rules$min_samples_per_param ~ sprintf("<span style='color:#c0392b; font-weight:bold;'>%.1f</span>", res$SPP),
+    TRUE ~ as.character(round(res$SPP, 1))
+  )
+
+  params_str <- ifelse(is.na(res$Num_Params), "-", as.character(res$Num_Params))
+  reasons_html <- paste(sprintf("&#8226; %s", res$Reasons), collapse = "<br>")
+
+  matrix_rank_str <- case_when(
+    all(res$Var_Details$Collinear == "-") ~ "<span style='color:gray;'>- (Skipped)</span>",
+    any(grepl("Aliased", res$Var_Details$Collinear)) ~ "<span style='color:#c0392b; font-weight:bold;'>Rank Deficient (Aliased)</span>",
+    TRUE ~ "<span style='color:black; font-weight:bold;'>Full Rank (Independent)</span>"
+  )
+
+  meta_html <- sprintf(
+    "<div style='text-align: left; padding-top: 10px; font-size: 14px; color: #333;'>
+      <b>Cohort Survival:</b> Started with %d patients &rarr; <b>%d complete cases</b> survived.<br>
+      <b>Statistical Power:</b> <b>%s</b> samples per parameter (Total Parameters: %s).<br>
+      <b>Matrix Algebra:</b> %s<br><br>
+
+      <div style='margin-bottom: 5px;'><b>Verdict:</b> <span style='color:%s; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;'>%s</span></div>
+      <b>Reason(s):</b><br>%s<br><br>
+
+      <i>Thresholds: Min Samples/Param = %d | Min Group N = %d | Max Corr = |%.2f|</i>
+    </div>",
+    res$N_Start, res$N_Final, spp_str, params_str, matrix_rank_str,
+    status_color, toupper(res$Status), reasons_html,
+    rules$min_samples_per_param, rules$min_group_n, rules$max_cor_rho
+  )
+
+  # 3. Format the Variable-Level Data
+  plot_df <- res$Var_Details %>%
+    mutate(
+      Variance_Levels = case_when(
+        grepl("^Var: 0\\.00$|^1 Levels$|^0 Levels$", Variance_Levels) ~ sprintf("<span style='color:#c0392b; font-weight:bold;'>%s</span>", Variance_Levels),
+        TRUE ~ Variance_Levels
+      ),
+      High_Correlation = case_when(
+        High_Correlation == "No" ~ "<span style='color:black;'>None</span>",
+        High_Correlation == "-" ~ "<span style='color:gray;'>-</span>",
+        TRUE ~ sprintf("<span style='color:#c0392b; font-weight:bold;'>%s</span>", High_Correlation)
+      )
+    ) %>%
+    select(-Collinear)
+
+  # 4. Render the kableExtra Table
+  tbl <- plot_df %>%
+    kableExtra::kbl(
+      format = "html",
+      escape = FALSE,
+      row.names = FALSE,
+      col.names = c("Variable", "Role", "N (Valid)", "Missingness", "Variance / Levels", "High Correlation (rho)"),
+      caption = sprintf("<div style='color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;'>%s</div>", conf$title)
+    ) %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), full_width = TRUE, position = "left") %>%
+    kableExtra::column_spec(1, bold = TRUE) %>%
+    kableExtra::footnote(
+      general = meta_html,
+      escape = FALSE,
+      general_title = ""
+    )
+
+  return(list(raw_data = res, html_table = tbl))
+}
+
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
 
-# 6. Limma & Volcano Engine ----------------------------------------------------
+# 7. Limma & Volcano Engine ----------------------------------------------------
 # Description:
 #   The mathematical core for differential expression. Creates a design matrix
 #   (including any specified covariates), fits linear models using eBayes, and
@@ -699,7 +898,7 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
   return(list(data = dea_res, volcano = p_volc))
 }
 
-# 7. GSEA Engine ---------------------------------------------------------------
+# 8. GSEA Engine ---------------------------------------------------------------
 # Description:
 #   Ranks the Limma features by t-statistic and performs Gene Set Enrichment
 #   Analysis. Automatically cleans pathway names and generates DotPlots and RidgePlots.
@@ -739,7 +938,7 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge))
 }
 
-# 8. Heatmap Engine ------------------------------------------------------------
+# 9. Heatmap Engine ------------------------------------------------------------
 # Description:
 #   Selects the top N most significant features from a DEA result, converts them
 #   to Z-scores across the requested subjects, and renders an annotated heatmap
@@ -772,7 +971,7 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
           col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
 }
 
-# 9. LASSO Engine --------------------------------------------------------------
+# 10. LASSO Engine --------------------------------------------------------------
 # Description:
 #   Runs a generalized linear model with L1 penalty (LASSO) using cross-validation.
 #   Extracts the coefficients at the optimal lambda ("lambda.min") to identify
@@ -812,7 +1011,7 @@ run_lasso_engine <- function(mat, clin, target_col, target_groups, title) {
   return(list(cv_plot = cv_fit, coeff_plot = p_lasso, data = df_coeffs))
 }
 
-# 10. Cross-Contrast Engine ----------------------------------------------------
+# 11. Cross-Contrast Engine ----------------------------------------------------
 # Description:
 #   Joins two different Limma topTable dataframes on 'Feature'. Determines if
 #   features are significant in one, the other, or both. Maps them to a quadrant
@@ -884,7 +1083,7 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, colo
     coord_fixed(ratio = 1)
 }
 
-# 11. Shared VPA Worker Engine -------------------------------------------------
+# 12. Shared VPA Worker Engine -------------------------------------------------
 # Description:
 #   The math core for Variance Partitioning. Uses linear mixed models via the
 #   variancePartition package. Calculates the mean variance and 95% CI explained
@@ -899,9 +1098,9 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, colo
 #   Raw variance dataframe, a barplot (with CI bounds), and a violin distribution plot.
 run_vpa_engine <- function(mat, clin, vpa_formula, title, top_n = 10) {
 
-  # Fit the Model
+  # Fit the Model (PARALLELIZED)
   varPart <- tryCatch({
-    fitExtractVarPartModel(mat, vpa_formula, clin, BPPARAM = SerialParam())
+    fitExtractVarPartModel(mat, vpa_formula, clin, BPPARAM = SnowParam(workers = 4))
   }, error = function(e) return(NULL))
 
   if(is.null(varPart)) return(NULL)
@@ -916,7 +1115,6 @@ run_vpa_engine <- function(mat, clin, vpa_formula, title, top_n = 10) {
     mutate(CI_upper = pmin(1, Mean_Var + (1.96 * SEM))) %>%
     arrange(desc(Mean_Var))
 
-  # Limit to Top N for visualization
   plot_summary <- head(summary_df, top_n)
 
   # Barplot
@@ -942,4 +1140,157 @@ run_vpa_engine <- function(mat, clin, vpa_formula, title, top_n = 10) {
     labs(title = title, x = NULL, y = "% Variance Explained")
 
   return(list(data = varPart_df, plots = list(bar = p_bar, violin = p_violin)))
+}
+
+# 13. Pre-DEA Validation Engine (Variable-Level Profiler) ----------------------
+validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, covariates,
+                                min_samples_per_param = 10, min_group_n = 2,
+                                cor_matrices = NULL, max_cor_rho = 0.7, max_cor_p = 0.05) {
+
+  all_vars <- c(group_col, covariates)
+
+  var_details <- data.frame(
+    Variable = all_vars,
+    Role = c("Contrast Group", rep("Covariate", length(covariates))),
+    N_Valid = NA_integer_,
+    Missingness = NA_character_,
+    Variance_Levels = NA_character_,
+    Collinear = "-",
+    High_Correlation = "-",
+    stringsAsFactors = FALSE
+  )
+
+  # NEW SAFETY CATCH: Check if variables actually exist in the dataframe
+  missing_vars <- setdiff(all_vars, colnames(clin_df))
+  if (length(missing_vars) > 0) {
+    return(list(Status = "Fail",
+                Reasons = c(sprintf("FATAL: Variables not found in clinical data: %s", paste(missing_vars, collapse = ", "))),
+                Var_Details = var_details, N_Start = 0, N_Final = 0, SPP = NA, Num_Params = NA))
+  }
+
+  sub_df <- clin_df %>% filter(!!sym(group_col) %in% c(target_groups, ref_groups))
+  n_start <- nrow(sub_df)
+
+  if (n_start == 0) return(list(Status = "Fail", Reasons = c("Target/Ref groups not found in data."), Var_Details = var_details, N_Start = 0, N_Final = 0, SPP = NA, Num_Params = NA))
+
+  # 2. Variable-Level N_Valid & Missingness
+  # ... (Keep the rest of your engine exactly the same below this line)
+
+  # 2. Variable-Level N_Valid & Missingness
+  for(i in 1:nrow(var_details)) {
+    v <- var_details$Variable[i]
+    valid_count <- sum(!is.na(sub_df[[v]]))
+    var_details$N_Valid[i] <- valid_count
+
+    pct <- (n_start - valid_count) / n_start
+    var_details$Missingness[i] <- sprintf("%.1f%%", pct * 100)
+  }
+
+  # 3. Complete Case Filter
+  cc_df <- sub_df %>% select(Subject_ID, all_of(all_vars)) %>% drop_na() %>% droplevels()
+  n_final <- nrow(cc_df)
+
+  if (n_final == 0) return(list(Status = "Fail", Reasons = c("100% NA-Wipeout. No patients have complete data."), Var_Details = var_details, N_Start = n_start, N_Final = 0, SPP = NA, Num_Params = NA))
+
+  reasons <- c()
+  has_zero_variance <- FALSE
+
+  # 4. Variable-Level Variance & Group Limits
+  for(i in 1:nrow(var_details)) {
+    v <- var_details$Variable[i]
+    vec <- cc_df[[v]]
+
+    if (is.numeric(vec)) {
+      var_val <- var(vec, na.rm = TRUE)
+      var_details$Variance_Levels[i] <- sprintf("Var: %.2f", var_val)
+      if (var_val == 0) {
+        reasons <- c(reasons, sprintf("'%s' has 0 variance.", v))
+        has_zero_variance <- TRUE
+      }
+    } else {
+      lvl_count <- length(unique(vec))
+      var_details$Variance_Levels[i] <- sprintf("%d Levels", lvl_count)
+      if (lvl_count < 2) {
+        reasons <- c(reasons, sprintf("'%s' collapsed to <2 levels.", v))
+        has_zero_variance <- TRUE
+      }
+    }
+  }
+
+  t_count <- sum(cc_df[[group_col]] %in% target_groups)
+  r_count <- sum(cc_df[[group_col]] %in% ref_groups)
+  if (t_count < min_group_n || r_count < min_group_n) {
+    reasons <- c(reasons, sprintf("Primary groups too small (Target: %d, Ref: %d. Min: %d).", t_count, r_count, min_group_n))
+    has_zero_variance <- TRUE
+  }
+
+  num_params <- NA
+  spp <- NA
+
+  # 5. Collinearity, Correlation, & Overfitting
+  if (!has_zero_variance) {
+    var_details$Collinear <- "No"
+    var_details$High_Correlation <- "No"
+
+    # A. Matrix Rank Check (Fatal Collinearity)
+    cc_df[[group_col]] <- factor(cc_df[[group_col]], levels = c(ref_groups[1], target_groups[1]))
+    formula_str <- paste("~", paste(sprintf("`%s`", all_vars), collapse = " + "))
+
+    design <- tryCatch(model.matrix(as.formula(formula_str), data = cc_df), error = function(e) NULL)
+
+    if (is.null(design)) {
+      reasons <- c(reasons, "Could not construct linear design matrix.")
+    } else {
+      num_params <- ncol(design)
+      q <- qr(design)
+
+      if (q$rank < num_params) {
+        aliased_cols <- colnames(design)[q$pivot[(q$rank + 1):num_params]]
+        aliased_vars <- c()
+
+        for(i in 1:nrow(var_details)) {
+          v <- var_details$Variable[i]
+          if (any(grepl(v, aliased_cols, fixed = TRUE))) {
+            var_details$Collinear[i] <- "Yes (Aliased)"
+            aliased_vars <- c(aliased_vars, v)
+          }
+        }
+        reasons <- c(reasons, sprintf("Algebraic Collinearity detected. Aliased variable(s): %s.", paste(aliased_vars, collapse = ", ")))
+      }
+
+      # B. Spearman Variance Inflation Check (Biological Correlation)
+      if (!is.null(cor_matrices) && length(covariates) > 1) {
+        cor_vars <- intersect(covariates, rownames(cor_matrices$rho))
+        if (length(cor_vars) > 1) {
+          combos <- combn(cor_vars, 2, simplify = FALSE)
+          for (combo in combos) {
+            v1 <- combo[1]; v2 <- combo[2]
+            rho_val <- cor_matrices$rho[v1, v2]
+            p_val <- cor_matrices$p[v1, v2]
+
+            if (!is.na(rho_val) && !is.na(p_val)) {
+              if (abs(rho_val) >= max_cor_rho && p_val <= max_cor_p) {
+                reasons <- c(reasons, sprintf("Variance Inflation Risk: '%s' & '%s' are highly correlated (rho = %.2f).", v1, v2, rho_val))
+                var_details$High_Correlation[var_details$Variable == v1] <- sprintf("Yes (with %s)", v2)
+                var_details$High_Correlation[var_details$Variable == v2] <- sprintf("Yes (with %s)", v1)
+              }
+            }
+          }
+        }
+      }
+
+      # C. Overfitting Check
+      spp <- n_final / num_params
+      if (spp < min_samples_per_param) {
+        reasons <- c(reasons, sprintf("Overfitting risk. Only %.1f samples per parameter (Requires >= %d).", spp, min_samples_per_param))
+      }
+    }
+  } else {
+    reasons <- c(reasons, "Skipped collinearity & correlation checks due to missing groups or zero variance.")
+  }
+
+  status <- if(length(reasons) == 0) "Pass" else "Fail"
+  if (length(reasons) == 0) reasons <- c("All metrics within acceptable mathematical thresholds.")
+
+  return(list(Status = status, Reasons = reasons, Var_Details = var_details, N_Start = n_start, N_Final = n_final, SPP = spp, Num_Params = num_params))
 }

@@ -10,7 +10,19 @@ editor_options:
 
 You'll find all the analysis performed for the USZ SSc cohort on this website.
 
-### How to read the code
+# Pipeline
+The analysis is divided into modules:
+
+| Section | Focus & Methods | Description |
+|:---|:---|:---|
+| **1. Data** | Cleanup & QC | Imports, cleans, and saves the raw data for downstream analysis. |
+| **2. Cohort** | Characterization | Describes the cohort and assesses clinical parameter relationships. |
+| **x.1 Omics Variance** | PCA & VPA | Assesses the global relationship between clinical parameters and proteins. |
+| **x.2 Omics Differential** | DEA & GSEA | Shows differentially expressed proteins and pathways between groups. |
+| **x.3 Omics Predictive** | ML Models | Finds patterns via UMAP, LASSO, and Random Forest. |
+| **x.4 Omics Linear** | Linear Models | Correlates clinical parameters directly with Omics data. |
+
+# How to read the code
 In each section it is described what the code does:
 
 <div class="info-box">
@@ -29,17 +41,14 @@ Major decisions are highlighted with:
   </ul>
 </div>
 
+Key insights are highlighted with:
 
-## Pipeline
-The analysis is divided into modules:
+<div class="insight-box">
+  <strong>Key Insight:</strong>
+   <ul>
+    <li>. . .</li>
+  </ul>
+</div>
 
-| Section | Focus & Methods | Description |
-|:---|:---|:---|
-| **1. Data** | Cleanup & QC | Imports, cleans, and saves the raw data for downstream analysis. |
-| **2. Cohort** | Characterization | Describes the cohort and assesses clinical parameter relationships. |
-| **x.1 Omics Variance** | PCA & VPA | Assesses the global relationship between clinical parameters and proteins. |
-| **x.2 Omics Differential** | DEA & GSEA | Shows differentially expressed proteins and pathways between groups. |
-| **x.3 Omics Predictive** | ML Models | Finds patterns via UMAP, LASSO, and Random Forest. |
-| **x.4 Omics Linear** | Linear Models | Correlates clinical parameters directly with Omics data. |
 
 ---

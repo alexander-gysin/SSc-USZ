@@ -137,7 +137,7 @@ table_configs <- list(
     title = "Baseline Demographics and Clinical Characteristics",
     group_by = "cohort_group",
     pairwise = TRUE, 
-    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age"),
+    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)"),
     labels = list(
       Age = "Patient Age (Years)",
       Sex = "Biological Sex",
@@ -151,7 +151,7 @@ table_configs <- list(
 # 4. Figure Configurations -----------------------------------------------------
 figure_configs <- list(
   figure_1 = list(
-    figure_title = "Baseline Clinical Distributions", 
+    figure_title = "Demografic and Technical Distributions", 
     plots = list(
       plot_1 = list(
         title = "Age and Sex Distribution", 
@@ -162,7 +162,7 @@ figure_configs <- list(
         facet_by = "cohort_group",
         bins = 10  
       ),
-      plot_4 = list(
+      plot_2 = list(
         title = "Sample Storage Age", 
         type = "violin",
         y_var = "Sample_Age",
@@ -176,9 +176,9 @@ figure_configs <- list(
   ),
   
   figure_2 = list(
-    figure_title = "Baseline Laboratory Values", 
+    figure_title = "Baseline Laboratory and Spirometry Values", 
     plots = list(
-      plot_2 = list(
+      plot_3 = list(
         title = "Baseline CRP", 
         type = "violin",
         y_var = "CRP",
@@ -188,13 +188,33 @@ figure_configs <- list(
         add_stat_test = TRUE,
         pairwise = TRUE
       ),
-      plot_3 = list(
+      plot_4 = list(
         title = "Baseline Creatinine", 
         type = "violin",
         y_var = "Creatinine",
         x_var = "cohort_group",
         y_transform = "log10", 
         y_label = "Serum Creatinine (µmol/L) [Log10 Scale]", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_5 = list(
+        title = "Baseline NT-proBNP (pg/ml)", 
+        type = "violin",
+        y_var = "NT-proBNP (pg/ml)",
+        x_var = "cohort_group",
+        y_transform = "log10", 
+        y_label = "Serum NT-proBNP (pg/ml)", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_6 = list(
+        title = "Baseline DLCO (SB) (% predicted)", 
+        type = "violin",
+        y_var = "DLCO (SB) (% predicted)",
+        x_var = "cohort_group",
+        y_transform = "log10", 
+        y_label = "Serum DLCO (SB) (% predicted)", 
         add_stat_test = TRUE,
         pairwise = TRUE
       )
@@ -349,7 +369,7 @@ invisible(gc())
 
 ## Merged Figures
 `r what_this_does("Rendered the assembled multi-panel figures for the HTML report.", "Exported high-resolution PNG copies of the merged figures to the output directory.")`
-```{r print_figures, fig.width=12, fig.height=8}
+```{r print_figures, fig.width=12, fig.height=10}
 for (fig_name in names(stitched_figures)) {
   print(stitched_figures[[fig_name]])
   ggsave(filename = file.path(output_dir_data, paste0(fig_name, ".png")), plot = stitched_figures[[fig_name]], width = 12, height = 8, dpi = 300, bg = "white")
@@ -426,12 +446,18 @@ invisible(gc())
 
 `r what_this_does("Standardized clinical factors into ordinal ranks and calculated the master Spearman correlation matrix.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting numeric mapping and variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
 
-```{r mat_corr_calc, warning=FALSE}
+```{r mat_corr_calc, warning=FALSE, results='asis'}
 # 1. Audit Table: Binarization & Ordinal Mapping -------------------------------
 mapping_audit_df <- data.frame(
-  Source_Category = c("Sex", "Cohort Group", "Smoking/History", "Severity Ranks", "Clinical Visits"),
-  Original_Levels = c("Female / Male", "Control / Non-Active / Active", "Never / Previously / Current", "None / Rare / Moderate / Extensive", "Visit 0 / FU 1 / FU 2"),
-  Numeric_Value = c("1 / 0", "0 / 1 / 2", "0 / 1 / 2", "0 / 1 / 2 / 3", "0 / 1 / 2"),
+  Variable_Type = c("Sex", "Cohort Group", "Subset Features", "Smoking/History", "Severity Ranks", "Clinical Visits", "Standard Binary"),
+  Original_Levels = c("Female / Male", "Control / Non-Active / Active", "Diffuse / Limited / Sine", "Never / Previously / Current", "None / Rare / Moderate / Extensive", "I / II / III", "1 / 0 (or Yes/No)"),
+  Numeric_Mapping = c("Female = 1, Male = 0", 
+                      "Control = 0, Non-Active = 1, Active = 2", 
+                      "Present = 1, Absent = 0 (One-Hot Encoded)", 
+                      "Never = 0, Previously = 1, Current = 2", 
+                      "None = 0, Rare = 1, Moderate = 2, Extensive = 3", 
+                      "I = 1, II = 2, III = 3", 
+                      "1 = 1, 0 = 0"),
   stringsAsFactors = FALSE
 )
 
@@ -496,7 +522,14 @@ for (i in 1:(ncol(cor_mat_final) - 1)) {
   }
 }
 
-write_csv(as.data.frame(cor_matrix), file.path(output_dir_data, "clinical_spearman_rho.csv"))
+# 4.5 Export Matrices for Downstream Use (Script 03a/04) -----------------------
+# Save CSV for human readability (preserving rownames as a column)
+write_csv(as.data.frame(cor_matrix) %>% rownames_to_column("Variable"), 
+          file.path(output_dir_data, "clinical_spearman_rho.csv"))
+
+# Save serialized RDS for strict programmatic use
+saveRDS(list(rho = cor_matrix, p = p_matrix), 
+        file.path(output_dir_data, "clinical_correlation_matrices.rds"))
 
 # 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
 cat("### Data Transformation Audit Report\n\n")
@@ -504,8 +537,7 @@ cat("### Data Transformation Audit Report\n\n")
 # Table 1: Mappings
 print(mapping_audit_df %>% 
   kableExtra::kbl(caption = "1. Binarization and Ordinal Mapping Dictionary", format = "html") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
-  kableExtra::scroll_box(width = "100%", height = "300px"))
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
 
 cat("\n\n")
 
@@ -513,8 +545,7 @@ cat("\n\n")
 if(nrow(exclusion_audit_df) > 0) {
   print(exclusion_audit_df %>% 
     kableExtra::kbl(caption = "2. Variable Exclusion Log (Sparsity Filter)", format = "html") %>%
-    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
-    kableExtra::scroll_box(width = "100%", height = "300px"))
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
 } else {
   cat("#### 2. Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n")
 }
@@ -581,7 +612,7 @@ pheno_plot <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
     na.value = "gray93", 
     name = "Spearman Rho\n"
   ) +
-  labs(title = "Core Metadata vs SSc Parameters", 
+  labs(title = "Core Metadata Correlations", 
        subtitle = sprintf("Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff)) +
   theme_minimal(base_size = 14) +
   theme(
@@ -625,7 +656,6 @@ ggsave(file.path(output_dir_data, "heatmaps", "Core_Phenotype_Correlation_Symmet
 
 # Consolidated HTML Output to prevent fragmentation
 html_output <- paste0(
-  "### Core Metadata & SSc Parameters\n\n",
   "This symmetrical heatmap illustrates the inter-relationships between core cohort demographics and primary SSc clinical parameters, clustered by similarity.\n\n"
 )
 
