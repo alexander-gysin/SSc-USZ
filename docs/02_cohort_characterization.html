@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeaf32618c50f5f7ce47a5e068580fac53e74ea2eetargetblankaf32618a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree14a794af1c19a7b9c48b4b4d52a3669be3796bbatargetblank14a794aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/af32618c50f5f7ce47a5e068580fac53e74ea2ee" target="_blank">af32618</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/14a794af1c19a7b9c48b4b4d52a3669be3796bba" target="_blank">14a794a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeaf32618c50f5f7ce47a5e068580fac53e74ea2eetargetblankaf32618a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree14a794af1c19a7b9c48b4b4d52a3669be3796bbatargetblank14a794aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/af32618c50f5f7ce47a5e068580fac53e74ea2ee" target="_blank">af32618</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/14a794af1c19a7b9c48b4b4d52a3669be3796bba" target="_blank">14a794a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -605,7 +605,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_global/
@@ -617,9 +616,14 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  analysis/style.css
     Untracked:  code/randomizer.R
     Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/01_data_import_and_qc.Rmd
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/style.css
+    Modified:   code/00_config.R
 
 </code></pre>
 <p>
@@ -665,6 +669,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/14a794af1c19a7b9c48b4b4d52a3669be3796bba/analysis/02_cohort_characterization.Rmd" target="_blank">14a794a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+wflow_publish("analysis/02_cohort_characterization.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/e2e924096ec9c8c388bb401b824303f78a17c946/docs/02_cohort_characterization.html" target="_blank">e2e9240</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -943,6 +981,11 @@ finished characterization
 <hr>
 </div>
 </div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This script describes the cohors by showing the distributions of
+technical and clinical parameters.</p>
 </div>
 <div id="setup-and-data-import" class="section level1">
 <h1>Setup and Data Import</h1>
@@ -2275,6 +2318,20 @@ manual binarization.
 </li>
 </ul>
 </div>
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+For the matrix correlation to work all variables must either be
+continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows
+which variables need some adjustment to fulfill these criteria.
+</li>
+<li>
+The table following this one will show you how these were binarized or
+converted to ordinal ranks.
+</li>
+</ul>
+</div>
 <pre class="r"><code>get_level_pct &lt;- function(vec) {
   vec &lt;- vec[!is.na(vec)]
   if(length(vec) == 0) return(&quot;All NA&quot;)
@@ -2618,10 +2675,7 @@ saveRDS(list(rho = cor_matrix, p = p_matrix),
         file.path(output_dir_data, &quot;clinical_correlation_matrices.rds&quot;))
 
 # 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
-cat(&quot;### Data Transformation Audit Report\n\n&quot;)</code></pre>
-<div id="data-transformation-audit-report" class="section level3">
-<h3>Data Transformation Audit Report</h3>
-<pre class="r"><code>
+
 # Table 1: Mappings
 print(mapping_audit_df %&gt;% 
   kableExtra::kbl(caption = &quot;1. Binarization and Ordinal Mapping Dictionary&quot;, format = &quot;html&quot;) %&gt;%
@@ -2794,9 +2848,8 @@ Sparse data (&lt; 10 obs)
 rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_df)
 invisible(gc())</code></pre>
 </div>
-</div>
-<div id="custom-configuration-heatmaps" class="section level2 tabset">
-<h2 class="tabset">Custom Configuration Heatmaps</h2>
+<div id="custom-correlation-heatmaps" class="section level2 tabset">
+<h2 class="tabset">Custom Correlation Heatmaps</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2919,20 +2972,96 @@ for (h_id in names(custom_heatmap_configs)) {
     ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, paste0(&quot;Custom_&quot;, safe_name, &quot;.png&quot;)), 
            plot = res$plot, width = res$width, height = res$height, dpi = 300, bg = &quot;white&quot;)
     
-    # Print to HTML
-    cat(sprintf(&quot;### %s\n\n&quot;, conf$title))
+    # Print to HTML (Added \n\n to front!)
+    cat(sprintf(&quot;\n\n### %s\n\n&quot;, conf$title))
     print(res$plot)
     cat(&quot;\n\n&quot;)
     
   } else {
-    cat(sprintf(&quot;### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
+    cat(sprintf(&quot;\n\n### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
   }
 }</code></pre>
 <div id="core-metadata-correlations" class="section level3">
 <h3>Core Metadata Correlations</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" alt="" width="100%" style="display: block; margin: auto;" />###
-Classification vs. Clinical</p>
+<p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-1">
+Past versions of custom_correlation_heatmaps-1.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e2e924096ec9c8c388bb401b824303f78a17c946/docs/figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" target="_blank">e2e9240</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="classification-vs.-clinical" class="section level3">
+<h3>Classification vs. Clinical</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-2">
+Past versions of custom_correlation_heatmaps-2.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e2e924096ec9c8c388bb401b824303f78a17c946/docs/figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-2.png" target="_blank">e2e9240</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 # 3. Cleanup
 rm(h_id, conf, res, generate_custom_cor_heatmap)
@@ -2940,7 +3069,7 @@ invisible(gc())</code></pre>
 </div>
 </div>
 <div id="intra-domain-correlation-matrix" class="section level2 tabset">
-<h2 class="tabset">Intra Domain Correlation MAtrix</h2>
+<h2 class="tabset">Intra Domain Correlation Matrix</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2972,7 +3101,7 @@ for (d_name in names(clinical_domains)) {
   clean_title &lt;- gsub(&quot;_&quot;, &quot; &quot;, d_name)
   
   if (length(valid_vars) &lt; 2) {
-    cat(sprintf(&quot;### %s\n\n&gt; **Note:** Domain skipped. Insufficient variance detected.\n\n&quot;, clean_title))
+    cat(sprintf(&quot;\n\n### %s\n\n&gt; **Note:** Domain skipped. Insufficient variance detected.\n\n&quot;, clean_title))
     next
   }
 
@@ -3025,22 +3154,8 @@ for (d_name in names(clinical_domains)) {
          subtitle = sprintf(&quot;Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)&quot;, corr_config$p_cutoff)) +
     theme_minimal(base_size = 14) +
     theme(
-      axis.text.x.top = element_text(
-        angle = 45, 
-        hjust = 0, 
-        vjust = 0.01,               
-        margin = margin(b = -2), 
-        face = &quot;bold&quot;, 
-        color = &quot;black&quot;, 
-        size = rel(1.1)
-      ),
-      axis.text.y.right = element_text(
-        hjust = 0,               
-        margin = margin(l = 2),  
-        face = &quot;bold&quot;, 
-        color = &quot;black&quot;, 
-        size = rel(1.1)
-      ),
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(1.1)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(1.1)),
       axis.title = element_blank(),
       panel.grid = element_blank(),
       plot.title = element_text(face = &quot;bold&quot;, size = 20, hjust = 0.5),
@@ -3052,15 +3167,14 @@ for (d_name in names(clinical_domains)) {
     coord_fixed() 
 
   # 6. Export and Print --------------------------------------------------------
-  # Dynamic sizing formula scaled to maintain text-to-grid ratio across domains
   dyn_width  &lt;- max(6, length(valid_vars) * 0.35 + 4)
   dyn_height &lt;- max(5, length(valid_vars) * 0.35 + 3)
   
   ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;intra&quot;, paste0(&quot;Intra_&quot;, d_name, &quot;.png&quot;)), 
          plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = &quot;white&quot;)
 
-  # Consolidated HTML Output to prevent fragmentation
-  cat(sprintf(&quot;### %s\n\n&quot;, clean_title))
+  # Consolidated HTML Output (Added \n\n to front!)
+  cat(sprintf(&quot;\n\n### %s\n\n&quot;, clean_title))
   print(p_heatmap)
   cat(&quot;\n\n&quot;)
 }</code></pre>
@@ -3115,7 +3229,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular</p>
+</div>
+<div id="cutaneous-and-vascular" class="section level3">
+<h3>Cutaneous and Vascular</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-2">
@@ -3165,7 +3281,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Musculoskeletal</p>
+</div>
+<div id="musculoskeletal" class="section level3">
+<h3>Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-3">
@@ -3215,7 +3333,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Pulmonary</p>
+</div>
+<div id="pulmonary" class="section level3">
+<h3>Pulmonary</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-4">
@@ -3265,7 +3385,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac</p>
+</div>
+<div id="cardiac" class="section level3">
+<h3>Cardiac</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-5">
@@ -3315,7 +3437,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Gastrointestinal</p>
+</div>
+<div id="gastrointestinal" class="section level3">
+<h3>Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-6">
@@ -3365,7 +3489,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Labs and Biomarkers</p>
+</div>
+<div id="labs-and-biomarkers" class="section level3">
+<h3>Labs and Biomarkers</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-7">
@@ -3421,8 +3547,8 @@ rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dis
 invisible(gc())</code></pre>
 </div>
 </div>
-<div id="interdomain-combos" class="section level2 tabset">
-<h2 class="tabset">Interdomain Combos</h2>
+<div id="interdomain-combinations" class="section level2 tabset">
+<h2 class="tabset">Interdomain Combinations</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -3524,14 +3650,10 @@ for (combo in domain_combos) {
     ) +
     theme_minimal(base_size = 14) +
     theme(
-      # Axis Labels (Ticks)
       axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(1)),
       axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = &quot;bold&quot;, color = &quot;black&quot;, size = rel(1.1)),
-      
-      # Axis Titles (Domain Names)
       axis.title.x.top = element_text(face = &quot;bold&quot;, size = rel(1.4), margin = margin(b = 15)),
       axis.title.y.right = element_text(face = &quot;bold&quot;, size = rel(1.4), margin = margin(l = 15), angle = -90),
-      
       panel.grid = element_blank(),
       plot.title = element_text(face = &quot;bold&quot;, size = 20, hjust = 0.5),
       plot.subtitle = element_text(color = &quot;grey40&quot;, size = 14, margin = margin(b = 15), hjust = 0.5),
@@ -3548,8 +3670,8 @@ for (combo in domain_combos) {
   ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;inter&quot;, paste0(&quot;Inter_&quot;, lab_x, &quot;_vs_&quot;, lab_y, &quot;.png&quot;)), 
          plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = &quot;white&quot;)
 
-  # Consolidated HTML Output
-  cat(sprintf(&quot;### %s\n\n&quot;, clean_title))
+  # Consolidated HTML Output (Added \n\n to front!)
+  cat(sprintf(&quot;\n\n### %s\n\n&quot;, clean_title))
   print(p_heatmap)
   cat(&quot;\n\n&quot;)
 }</code></pre>
@@ -3616,7 +3738,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Demographics and Scores vs Musculoskeletal</p>
+</div>
+<div id="demographics-and-scores-vs-musculoskeletal"
+class="section level3">
+<h3>Demographics and Scores vs Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-2">
@@ -3677,7 +3802,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Demographics and Scores vs Pulmonary</p>
+</div>
+<div id="demographics-and-scores-vs-pulmonary" class="section level3">
+<h3>Demographics and Scores vs Pulmonary</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-3">
@@ -3738,7 +3865,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac vs Demographics and Scores</p>
+</div>
+<div id="cardiac-vs-demographics-and-scores" class="section level3">
+<h3>Cardiac vs Demographics and Scores</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-4.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-4">
@@ -3799,7 +3928,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Demographics and Scores vs Gastrointestinal</p>
+</div>
+<div id="demographics-and-scores-vs-gastrointestinal"
+class="section level3">
+<h3>Demographics and Scores vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-5.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-5">
@@ -3860,7 +3992,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Demographics and Scores vs Labs and Biomarkers</p>
+</div>
+<div id="demographics-and-scores-vs-labs-and-biomarkers"
+class="section level3">
+<h3>Demographics and Scores vs Labs and Biomarkers</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-6.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-6">
@@ -3921,7 +4056,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular vs Musculoskeletal</p>
+</div>
+<div id="cutaneous-and-vascular-vs-musculoskeletal"
+class="section level3">
+<h3>Cutaneous and Vascular vs Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-7.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-7">
@@ -3982,7 +4120,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular vs Pulmonary</p>
+</div>
+<div id="cutaneous-and-vascular-vs-pulmonary" class="section level3">
+<h3>Cutaneous and Vascular vs Pulmonary</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-8.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-8">
@@ -4043,7 +4183,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular vs Cardiac</p>
+</div>
+<div id="cutaneous-and-vascular-vs-cardiac" class="section level3">
+<h3>Cutaneous and Vascular vs Cardiac</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-9.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-9">
@@ -4104,7 +4246,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular vs Gastrointestinal</p>
+</div>
+<div id="cutaneous-and-vascular-vs-gastrointestinal"
+class="section level3">
+<h3>Cutaneous and Vascular vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-10.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-10">
@@ -4165,7 +4310,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cutaneous and Vascular vs Labs and Biomarkers</p>
+</div>
+<div id="cutaneous-and-vascular-vs-labs-and-biomarkers"
+class="section level3">
+<h3>Cutaneous and Vascular vs Labs and Biomarkers</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-11.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-11">
@@ -4226,7 +4374,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Pulmonary vs Musculoskeletal</p>
+</div>
+<div id="pulmonary-vs-musculoskeletal" class="section level3">
+<h3>Pulmonary vs Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-12.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-12">
@@ -4287,7 +4437,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac vs Musculoskeletal</p>
+</div>
+<div id="cardiac-vs-musculoskeletal" class="section level3">
+<h3>Cardiac vs Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-13.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-13">
@@ -4348,7 +4500,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Musculoskeletal vs Gastrointestinal</p>
+</div>
+<div id="musculoskeletal-vs-gastrointestinal" class="section level3">
+<h3>Musculoskeletal vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-14.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-14">
@@ -4409,7 +4563,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Labs and Biomarkers vs Musculoskeletal</p>
+</div>
+<div id="labs-and-biomarkers-vs-musculoskeletal" class="section level3">
+<h3>Labs and Biomarkers vs Musculoskeletal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-15.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-15">
@@ -4470,7 +4626,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac vs Pulmonary</p>
+</div>
+<div id="cardiac-vs-pulmonary" class="section level3">
+<h3>Cardiac vs Pulmonary</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-16.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-16">
@@ -4531,7 +4689,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Pulmonary vs Gastrointestinal</p>
+</div>
+<div id="pulmonary-vs-gastrointestinal" class="section level3">
+<h3>Pulmonary vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-17.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-17">
@@ -4592,7 +4752,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Pulmonary vs Labs and Biomarkers</p>
+</div>
+<div id="pulmonary-vs-labs-and-biomarkers" class="section level3">
+<h3>Pulmonary vs Labs and Biomarkers</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-18.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-18">
@@ -4653,7 +4815,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac vs Gastrointestinal</p>
+</div>
+<div id="cardiac-vs-gastrointestinal" class="section level3">
+<h3>Cardiac vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-19.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-19">
@@ -4714,7 +4878,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Cardiac vs Labs and Biomarkers</p>
+</div>
+<div id="cardiac-vs-labs-and-biomarkers" class="section level3">
+<h3>Cardiac vs Labs and Biomarkers</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-20.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-20">
@@ -4775,7 +4941,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>### Labs and Biomarkers vs Gastrointestinal</p>
+</div>
+<div id="labs-and-biomarkers-vs-gastrointestinal"
+class="section level3">
+<h3>Labs and Biomarkers vs Gastrointestinal</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/inter_domain-21.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-21">
@@ -4891,7 +5060,8 @@ for (u_id in names(upset_configs)) {
   res &lt;- generate_upset_plot(conf, master_spine)
   
   if (res$status == &quot;success&quot;) {
-    cat(sprintf(&quot;### %s\n\n&quot;, conf$title))
+    # Added \n\n to front!
+    cat(sprintf(&quot;\n\n### %s\n\n&quot;, conf$title))
     
     # Print for HTML / Interactive Viewer
     print(res$plot)
@@ -4905,11 +5075,50 @@ for (u_id in names(upset_configs)) {
     invisible(dev.off())
     
   } else {
-    cat(sprintf(&quot;### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
+    cat(sprintf(&quot;\n\n### %s\n\n&gt; **SKIPPED:** %s\n\n&quot;, conf$title, res$msg))
   }
 }
+
+
 ### Patient Overlap: Phenotypes vs Global Activity</code></pre>
 <p><img src="figure/02_cohort_characterization.Rmd/upset_execution-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-upset_execution-1">
+Past versions of upset_execution-1.png
+</button>
+</p>
+<div id="fig-upset_execution-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e2e924096ec9c8c388bb401b824303f78a17c946/docs/figure/02_cohort_characterization.Rmd/upset_execution-1.png" target="_blank">e2e9240</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 # Cleanup
 rm(u_id, conf, res, upset_dir, upset_configs, safe_name)

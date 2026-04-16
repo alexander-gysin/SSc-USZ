@@ -1,34 +1,44 @@
 /* 1. Shared Base Styles for ALL boxes */
-.info-box, .decision-box, .insight-box {
+.info-box, .decision-box, .insight-box, .why-box {
   padding: 15px;
   margin-bottom: 20px;
-  border-radius: 5px;
+  border-radius: 7px;
   font-size: 1.15em;
   color: #000000;
-  border-left: 7px solid;
+  border-left: 8px solid;
 }
 
 /* 2. Specific Colors */
+/* Info Box (Blue) */
 .info-box {
   background-color: #eaf4ff;
   border-left-color: #3a86ff;
 }
 .info-box strong { color: #0056b3; }
 
+/* Decision Box (Red) */
 .decision-box {
   background-color: #fff0f0;
   border-left-color: #e63946;
 }
 .decision-box strong { color: #941b24; }
 
+/* Insight Box (Green) */
 .insight-box {
   background-color: #d4f7e1;
   border-left-color: #27ae60;
 }
 .insight-box strong { color: #155724; }
 
+/* Why Box (Yellow) */
+.why-box {
+  background-color: #fff9db;      /* Soft Light Yellow */
+  border-left-color: #f1c40f;     /* Strong Yellow Bar */
+}
+.why-box strong { color: #856404; } /* Deep Bronze for Title contrast */
+
 /* 3. Shared List Behavior */
-.info-box ul, .decision-box ul, .insight-box ul {
+.info-box ul, .decision-box ul, .insight-box ul, .why-box ul {
   margin-top: 10px;
   margin-bottom: 0;
 }
