@@ -1,0 +1,34 @@
+/* 1. Shared Base Styles for ALL boxes */
+.info-box, .decision-box, .insight-box {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-size: 1.15em;
+  color: #000000;
+  border-left: 7px solid;
+}
+
+/* 2. Specific Colors */
+.info-box {
+  background-color: #eaf4ff;
+  border-left-color: #3a86ff;
+}
+.info-box strong { color: #0056b3; }
+
+.decision-box {
+  background-color: #fff0f0;
+  border-left-color: #e63946;
+}
+.decision-box strong { color: #941b24; }
+
+.insight-box {
+  background-color: #d4f7e1;
+  border-left-color: #27ae60;
+}
+.insight-box strong { color: #155724; }
+
+/* 3. Shared List Behavior */
+.info-box ul, .decision-box ul, .insight-box ul {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
