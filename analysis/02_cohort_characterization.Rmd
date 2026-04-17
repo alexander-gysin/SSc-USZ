@@ -44,6 +44,10 @@ knitr::opts_chunk$set(
 current_file <- "02_cohort_characterization"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+# Public Asset Paths (Pushed to GitHub for the Website)
+public_heatmap_dir <- here::here("docs", "assets", "02_cohort_characterization", "heatmaps")
+if (!dir.exists(file.path(public_heatmap_dir, "intra"))) dir.create(file.path(public_heatmap_dir, "intra"), recursive = TRUE)
+if (!dir.exists(file.path(public_heatmap_dir, "inter"))) dir.create(file.path(public_heatmap_dir, "inter"), recursive = TRUE)
 
 # Input paths (Parameterized)
 input_paths <- list(
@@ -763,7 +767,7 @@ function switchIntraPlot() {
   var img = document.getElementById("intraImage");
   if (val) {
     // Uses ../output/ because workflowr HTMLs live in docs/
-    img.src = "../output/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
+    img.src = "assets/heatmaps/intra/Intra_" + val + ".png";
     img.style.display = "block";
   } else {
     img.style.display = "none";
@@ -854,7 +858,7 @@ for (d_name in names(clinical_domains)) {
   dyn_width  <- max(6, length(valid_vars) * 0.35 + 4)
   dyn_height <- max(5, length(valid_vars) * 0.35 + 3)
   
-  ggsave(file.path(output_dir_data, "heatmaps", "intra", paste0("Intra_", d_name, ".png")), 
+  ggsave(file.path(public_heatmap_dir, "intra", paste0("Intra_", d_name, ".png")), 
          plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = "white")
 
   # Print interactively in RStudio so you can see it while coding
@@ -917,8 +921,8 @@ function switchInterPlot() {
     img.style.display = "block";
     
     // We try the standard path: Inter_A_vs_B
-    var path1 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
-    var path2 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    var path1 = "assets/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "assets/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
     
     img.src = path1;
     
@@ -1040,7 +1044,7 @@ for (combo in domain_combos) {
   dyn_width  <- max(8, length(ordered_x) * 0.35 + 4)
   dyn_height <- max(6, length(ordered_y) * 0.35 + 3)
   
-  ggsave(file.path(output_dir_data, "heatmaps", "inter", paste0("Inter_", lab_x, "_vs_", lab_y, ".png")), 
+  ggsave(file.path(public_heatmap_dir, "inter", paste0("Inter_", lab_x, "_vs_", lab_y, ".png")), 
          plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = "white")
 
   # Print interactively in RStudio so you can see it while coding
