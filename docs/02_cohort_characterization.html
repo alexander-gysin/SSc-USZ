@@ -410,7 +410,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">16 April, 2026</h4>
+<h4 class="date">17 April, 2026</h4>
 
 </div>
 
@@ -439,7 +439,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-16
+<strong>Last updated:</strong> 2026-04-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree14a794af1c19a7b9c48b4b4d52a3669be3796bbatargetblank14a794aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee8d13b670b23d7c4455d00a46e70ff10e2bb243atargetblanke8d13b6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/14a794af1c19a7b9c48b4b4d52a3669be3796bba" target="_blank">14a794a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e8d13b670b23d7c4455d00a46e70ff10e2bb243a" target="_blank">e8d13b6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree14a794af1c19a7b9c48b4b4d52a3669be3796bbatargetblank14a794aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee8d13b670b23d7c4455d00a46e70ff10e2bb243atargetblanke8d13b6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/14a794af1c19a7b9c48b4b4d52a3669be3796bba" target="_blank">14a794a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e8d13b670b23d7c4455d00a46e70ff10e2bb243a" target="_blank">e8d13b6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -621,9 +621,12 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/01_data_import_and_qc.Rmd
+    Modified:   analysis/03a_proteomics_variance.Rmd
+    Modified:   analysis/03b_proteomics_differential.Rmd
     Modified:   analysis/index.Rmd
     Modified:   analysis/style.css
     Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -669,6 +672,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e8d13b670b23d7c4455d00a46e70ff10e2bb243a/analysis/02_cohort_characterization.Rmd" target="_blank">e8d13b6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+tried to implement heatmap dropdowns
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/5b3c1ae54b4b392771bbe2a11a4e69892523a509/docs/02_cohort_characterization.html" target="_blank">5b3c1ae</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1072,6 +1109,10 @@ corr_config &lt;- list(
   label_font_size   = 0.7  # Parameterized heatmap label size
 )
 
+candidate_vars &lt;- list(
+  set1 = c(&quot;Creatinine&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Age&quot;, &quot;DLCO (SB) (% predicted)&quot;)
+)
+
 # 2. Clinical Domains ----------------------------------------------------------
 clinical_domains &lt;- list(
   Demographics_and_Scores = c(
@@ -1238,6 +1279,11 @@ custom_heatmap_configs &lt;- list(
     title = &quot;Classification vs. Clinical&quot;,
     y_vars = c(&quot;cohort_group&quot;, &quot;Inflamm_active&quot;, &quot;vascular_active&quot;, &quot;fibrotic_active&quot;),
     x_vars = c(ssc_clinical_parameters)
+  ),
+  var_candidates_vs_contrasts = list(
+    title = &quot;Var. Candidates vs Contrasts&quot;,
+    y_vars = c(&quot;cohort_group&quot;, &quot;Inflamm_active&quot;, &quot;vascular_active&quot;, &quot;fibrotic_active&quot;),
+    x_vars = c(candidate_vars$set1)
   )
 )
 
@@ -3062,14 +3108,18 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="var.-candidates-vs-contrasts" class="section level3">
+<h3>Var. Candidates vs Contrasts</h3>
+<p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>
 # 3. Cleanup
 rm(h_id, conf, res, generate_custom_cor_heatmap)
 invisible(gc())</code></pre>
 </div>
 </div>
-<div id="intra-domain-correlation-matrix" class="section level2 tabset">
-<h2 class="tabset">Intra Domain Correlation Matrix</h2>
+<div id="intra-domain-correlation-matrix" class="section level2">
+<h2>Intra Domain Correlation Matrix</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -3083,8 +3133,40 @@ Optimized text scaling and margins for maximum legibility.
 <li>
 Dynamically saved high-resolution PNGs to the heatmap output subfolder.
 </li>
+<li>
+Implemented HTML dropdowns to cleanly navigate the results.
+</li>
 </ul>
 </div>
+<p>
+Select a clinical domain to visualize internal correlations:
+</p>
+<p><select id="intraSelector" onchange="switchIntraPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">
+<option value="">– Select Domain –</option>
+<option value="Demographics_and_Scores">Demographics and Scores</option>
+<option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+<option value="Musculoskeletal">Musculoskeletal</option>
+<option value="Pulmonary">Pulmonary</option>
+<option value="Cardiac">Cardiac</option>
+<option value="Gastrointestinal">Gastrointestinal</option>
+<option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+</select></p>
+<div id="intraPlotContainer">
+<p><img id="intraImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;"></p>
+</div>
+<script>
+function switchIntraPlot() {
+  var val = document.getElementById("intraSelector").value;
+  var img = document.getElementById("intraImage");
+  if (val) {
+    // Uses ../output/ because workflowr HTMLs live in docs/
+    img.src = "../output/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+}
+</script>
 <pre class="r"><code># Iterate through each defined clinical domain to create a targeted heatmap
 for (d_name in names(clinical_domains)) {
   
@@ -3100,10 +3182,7 @@ for (d_name in names(clinical_domains)) {
   
   clean_title &lt;- gsub(&quot;_&quot;, &quot; &quot;, d_name)
   
-  if (length(valid_vars) &lt; 2) {
-    cat(sprintf(&quot;\n\n### %s\n\n&gt; **Note:** Domain skipped. Insufficient variance detected.\n\n&quot;, clean_title))
-    next
-  }
+  if (length(valid_vars) &lt; 2) next
 
   # 2. Subset Matrices ---------------------------------------------------------
   sym_cor &lt;- cor_matrix[valid_vars, valid_vars, drop = FALSE]
@@ -3173,382 +3252,18 @@ for (d_name in names(clinical_domains)) {
   ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;intra&quot;, paste0(&quot;Intra_&quot;, d_name, &quot;.png&quot;)), 
          plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = &quot;white&quot;)
 
-  # Consolidated HTML Output (Added \n\n to front!)
-  cat(sprintf(&quot;\n\n### %s\n\n&quot;, clean_title))
-  print(p_heatmap)
-  cat(&quot;\n\n&quot;)
-}</code></pre>
-<div id="demographics-and-scores" class="section level3">
-<h3>Demographics and Scores</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-1">
-Past versions of intra_corr_plots-1.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-1.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular" class="section level3">
-<h3>Cutaneous and Vascular</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-2">
-Past versions of intra_corr_plots-2.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-2.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="musculoskeletal" class="section level3">
-<h3>Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-3">
-Past versions of intra_corr_plots-3.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-3.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="pulmonary" class="section level3">
-<h3>Pulmonary</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-4">
-Past versions of intra_corr_plots-4.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-4.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac" class="section level3">
-<h3>Cardiac</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-5">
-Past versions of intra_corr_plots-5.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-5.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="gastrointestinal" class="section level3">
-<h3>Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-6">
-Past versions of intra_corr_plots-6.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-6.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="labs-and-biomarkers" class="section level3">
-<h3>Labs and Biomarkers</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-intra_corr_plots-7">
-Past versions of intra_corr_plots-7.png
-</button>
-</p>
-<div id="fig-intra_corr_plots-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/intra_corr_plots-7.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>
+  # Print interactively in RStudio so you can see it while coding
+  if (interactive()) {
+    print(p_heatmap)
+  }
+}
+
 # 7. Cleanup -------------------------------------------------------------------
 rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, p_heatmap, dyn_width, dyn_height)
 invisible(gc())</code></pre>
 </div>
-</div>
-<div id="interdomain-combinations" class="section level2 tabset">
-<h2 class="tabset">Interdomain Combinations</h2>
+<div id="interdomain-combinations" class="section level2">
+<h2>Interdomain Combinations</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -3559,8 +3274,74 @@ non-square matrices.
 <li>
 Dynamically saved high-resolution PNGs to the heatmap output subfolder.
 </li>
+<li>
+Implemented dual-dropdown UI for cross-domain selection.
+</li>
 </ul>
 </div>
+<p>
+Select two domains to visualize their cross-correlations:
+</p>
+<div style="display: flex; gap: 20px; margin-bottom: 20px;">
+<p><select id="domainA" onchange="switchInterPlot()" class="form-control" style="width: auto;">
+<option value="">– Domain A –</option>
+<option value="Demographics_and_Scores">Demographics and Scores</option>
+<option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+<option value="Musculoskeletal">Musculoskeletal</option>
+<option value="Pulmonary">Pulmonary</option>
+<option value="Cardiac">Cardiac</option>
+<option value="Gastrointestinal">Gastrointestinal</option>
+<option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+</select></p>
+<div style="align-self: center; font-weight: bold;">
+vs
+</div>
+<p><select id="domainB" onchange="switchInterPlot()" class="form-control" style="width: auto;">
+<option value="">– Domain B –</option>
+<option value="Demographics_and_Scores">Demographics and Scores</option>
+<option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+<option value="Musculoskeletal">Musculoskeletal</option>
+<option value="Pulmonary">Pulmonary</option>
+<option value="Cardiac">Cardiac</option>
+<option value="Gastrointestinal">Gastrointestinal</option>
+<option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+</select></p>
+</div>
+<div id="interPlotContainer" style="text-align: center;">
+<p id="interPlaceholder" style="color: #999;">
+Select two different domains to view correlation.
+</p>
+<p><img id="interImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;"></p>
+</div>
+<script>
+function switchInterPlot() {
+  var a = document.getElementById("domainA").value;
+  var b = document.getElementById("domainB").value;
+  var img = document.getElementById("interImage");
+  var placeholder = document.getElementById("interPlaceholder");
+
+  if (a && b && a !== b) {
+    placeholder.style.display = "none";
+    img.style.display = "block";
+    
+    // We try the standard path: Inter_A_vs_B
+    var path1 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    
+    img.src = path1;
+    
+    // Fallback logic in case 'combn' chose the reverse alphabetical order
+    img.onerror = function() {
+      this.src = path2;
+      this.onerror = null; // prevent infinite loop
+    };
+  } else {
+    img.style.display = "none";
+    placeholder.style.display = "block";
+    placeholder.innerHTML = (a === b && a !== "") ? "Please select two different domains." : "Select two different domains to view correlation.";
+  }
+}
+</script>
 <pre class="r"><code># 1. Regenerate the safe plot list (ensuring names exist in the matrix)
 plotting_domains &lt;- list()
 for (n in names(clinical_domains)) {
@@ -3598,7 +3379,6 @@ for (combo in domain_combos) {
   sub_p   &lt;- p_matrix[var_y, var_x, drop = FALSE]
 
   # 4. Dual Hierarchical Clustering --------------------------------------------
-  # We cluster rows and columns independently because they are different variables
   hc_x &lt;- hclust(dist(t(sub_cor)), method = &quot;ward.D2&quot;)
   hc_y &lt;- hclust(dist(sub_cor), method = &quot;ward.D2&quot;)
 
@@ -3617,7 +3397,6 @@ for (combo in domain_combos) {
   plot_df &lt;- cor_long %&gt;%
     left_join(p_long, by = c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
     mutate(
-      # Lock factors: X is standard, Y is reversed for Top-to-Bottom rendering
       Var2 = factor(Var2, levels = ordered_x),
       Var1 = factor(Var1, levels = rev(ordered_y)),
       Is_Significant = P_Value &lt; corr_config$p_cutoff,
@@ -3670,1350 +3449,27 @@ for (combo in domain_combos) {
   ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;inter&quot;, paste0(&quot;Inter_&quot;, lab_x, &quot;_vs_&quot;, lab_y, &quot;.png&quot;)), 
          plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = &quot;white&quot;)
 
-  # Consolidated HTML Output (Added \n\n to front!)
-  cat(sprintf(&quot;\n\n### %s\n\n&quot;, clean_title))
-  print(p_heatmap)
-  cat(&quot;\n\n&quot;)
-}</code></pre>
-<div id="cutaneous-and-vascular-vs-demographics-and-scores"
-class="section level3">
-<h3>Cutaneous and Vascular vs Demographics and Scores</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-1">
-Past versions of inter_domain-1.png
-</button>
-</p>
-<div id="fig-inter_domain-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-1.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="demographics-and-scores-vs-musculoskeletal"
-class="section level3">
-<h3>Demographics and Scores vs Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-2">
-Past versions of inter_domain-2.png
-</button>
-</p>
-<div id="fig-inter_domain-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-2.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="demographics-and-scores-vs-pulmonary" class="section level3">
-<h3>Demographics and Scores vs Pulmonary</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-3">
-Past versions of inter_domain-3.png
-</button>
-</p>
-<div id="fig-inter_domain-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-3.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac-vs-demographics-and-scores" class="section level3">
-<h3>Cardiac vs Demographics and Scores</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-4.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-4">
-Past versions of inter_domain-4.png
-</button>
-</p>
-<div id="fig-inter_domain-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-4.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="demographics-and-scores-vs-gastrointestinal"
-class="section level3">
-<h3>Demographics and Scores vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-5.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-5">
-Past versions of inter_domain-5.png
-</button>
-</p>
-<div id="fig-inter_domain-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-5.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="demographics-and-scores-vs-labs-and-biomarkers"
-class="section level3">
-<h3>Demographics and Scores vs Labs and Biomarkers</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-6.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-6">
-Past versions of inter_domain-6.png
-</button>
-</p>
-<div id="fig-inter_domain-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-6.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular-vs-musculoskeletal"
-class="section level3">
-<h3>Cutaneous and Vascular vs Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-7.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-7">
-Past versions of inter_domain-7.png
-</button>
-</p>
-<div id="fig-inter_domain-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-7.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular-vs-pulmonary" class="section level3">
-<h3>Cutaneous and Vascular vs Pulmonary</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-8.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-8">
-Past versions of inter_domain-8.png
-</button>
-</p>
-<div id="fig-inter_domain-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-8.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular-vs-cardiac" class="section level3">
-<h3>Cutaneous and Vascular vs Cardiac</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-9.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-9">
-Past versions of inter_domain-9.png
-</button>
-</p>
-<div id="fig-inter_domain-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-9.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular-vs-gastrointestinal"
-class="section level3">
-<h3>Cutaneous and Vascular vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-10.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-10">
-Past versions of inter_domain-10.png
-</button>
-</p>
-<div id="fig-inter_domain-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-10.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cutaneous-and-vascular-vs-labs-and-biomarkers"
-class="section level3">
-<h3>Cutaneous and Vascular vs Labs and Biomarkers</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-11.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-11">
-Past versions of inter_domain-11.png
-</button>
-</p>
-<div id="fig-inter_domain-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-11.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="pulmonary-vs-musculoskeletal" class="section level3">
-<h3>Pulmonary vs Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-12.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-12">
-Past versions of inter_domain-12.png
-</button>
-</p>
-<div id="fig-inter_domain-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-12.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac-vs-musculoskeletal" class="section level3">
-<h3>Cardiac vs Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-13.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-13">
-Past versions of inter_domain-13.png
-</button>
-</p>
-<div id="fig-inter_domain-13" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-13.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="musculoskeletal-vs-gastrointestinal" class="section level3">
-<h3>Musculoskeletal vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-14.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-14">
-Past versions of inter_domain-14.png
-</button>
-</p>
-<div id="fig-inter_domain-14" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-14.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="labs-and-biomarkers-vs-musculoskeletal" class="section level3">
-<h3>Labs and Biomarkers vs Musculoskeletal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-15.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-15">
-Past versions of inter_domain-15.png
-</button>
-</p>
-<div id="fig-inter_domain-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-15.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac-vs-pulmonary" class="section level3">
-<h3>Cardiac vs Pulmonary</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-16.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-16">
-Past versions of inter_domain-16.png
-</button>
-</p>
-<div id="fig-inter_domain-16" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-16.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="pulmonary-vs-gastrointestinal" class="section level3">
-<h3>Pulmonary vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-17.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-17">
-Past versions of inter_domain-17.png
-</button>
-</p>
-<div id="fig-inter_domain-17" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-17.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="pulmonary-vs-labs-and-biomarkers" class="section level3">
-<h3>Pulmonary vs Labs and Biomarkers</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-18.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-18">
-Past versions of inter_domain-18.png
-</button>
-</p>
-<div id="fig-inter_domain-18" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-18.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac-vs-gastrointestinal" class="section level3">
-<h3>Cardiac vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-19.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-19">
-Past versions of inter_domain-19.png
-</button>
-</p>
-<div id="fig-inter_domain-19" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-19.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cardiac-vs-labs-and-biomarkers" class="section level3">
-<h3>Cardiac vs Labs and Biomarkers</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-20.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-20">
-Past versions of inter_domain-20.png
-</button>
-</p>
-<div id="fig-inter_domain-20" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-20.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="labs-and-biomarkers-vs-gastrointestinal"
-class="section level3">
-<h3>Labs and Biomarkers vs Gastrointestinal</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/inter_domain-21.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inter_domain-21">
-Past versions of inter_domain-21.png
-</button>
-</p>
-<div id="fig-inter_domain-21" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7d14932160b92d1c77a031467ea33a1df124ec97/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">7d14932</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-14
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/03f21b0315e6871b34f28f3193c3bb599f34d39b/docs/figure/02_cohort_characterization.Rmd/inter_domain-21.png" target="_blank">03f21b0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-13
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>
+  # Print interactively in RStudio so you can see it while coding
+  if (interactive()) {
+    print(p_heatmap)
+  }
+}
+
 # 8. Cleanup -------------------------------------------------------------------
 rm(plotting_domains, domain_combos, d1_name, d2_name, v1_raw, v2_raw, v1_vals, v1_valid, v2_vals, v2_valid, var_x, var_y, lab_x, lab_y, sub_cor, sub_p, hc_x, hc_y, ordered_x, ordered_y, cor_long, p_long, plot_df, clean_lab_x, clean_lab_y, clean_title, p_heatmap, dyn_width, dyn_height, combo, n, v)
 invisible(gc())</code></pre>
 </div>
 </div>
-</div>
 <div id="upset-plots" class="section level1">
 <h1>Upset Plots</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Creates the UpSet Plots specified in the configuration part
+</li>
+</ul>
+</div>
 <pre class="r"><code>generate_upset_plot &lt;- function(conf, df) {
   set_names &lt;- names(conf$variables)
   upset_df &lt;- data.frame(Subject_ID = df$Subject_ID)
@@ -5123,6 +3579,20 @@ alexander-gysin
 # Cleanup
 rm(u_id, conf, res, upset_dir, upset_configs, safe_name)
 invisible(gc())</code></pre>
+<div class="insight-box">
+<strong>Key Insight:</strong>
+<ul>
+<li>
+The groups Firotic, Vascular and Inflammatory largely share the
+patients, for example only 6 of the 33 fibrotic patients are not part of
+any other group
+</li>
+<li>
+Comparing the groups between each other (for example fibrotic vs
+vascular) does not make sense since they largely overlap
+</li>
+</ul>
+</div>
 <pre class="r"><code>cat(&quot;Script 02 Complete!&quot;)
 Script 02 Complete!</code></pre>
 <br>
