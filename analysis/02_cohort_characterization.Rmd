@@ -766,8 +766,8 @@ function switchIntraPlot() {
   var val = document.getElementById("intraSelector").value;
   var img = document.getElementById("intraImage");
   if (val) {
-    // Uses ../output/ because workflowr HTMLs live in docs/
-    img.src = "assets/heatmaps/intra/Intra_" + val + ".png";
+    // Corrected path pointing into the specific script's asset folder
+    img.src = "assets/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
     img.style.display = "block";
   } else {
     img.style.display = "none";
@@ -920,9 +920,9 @@ function switchInterPlot() {
     placeholder.style.display = "none";
     img.style.display = "block";
     
-    // We try the standard path: Inter_A_vs_B
-    var path1 = "assets/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
-    var path2 = "assets/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    // Corrected paths pointing into the specific script's asset folder
+    var path1 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
     
     img.src = path1;
     
