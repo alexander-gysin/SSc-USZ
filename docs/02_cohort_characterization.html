@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree518df84fb3a45353849fe0ff0cd8d131c470173etargetblank518df84a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/518df84fb3a45353849fe0ff0cd8d131c470173e" target="_blank">518df84</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree518df84fb3a45353849fe0ff0cd8d131c470173etargetblank518df84a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/518df84fb3a45353849fe0ff0cd8d131c470173e" target="_blank">518df84</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -618,15 +618,6 @@ Ignored files:
 Untracked files:
     Untracked:  code/randomizer.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/01_data_import_and_qc.Rmd
-    Modified:   analysis/03a_proteomics_variance.Rmd
-    Modified:   analysis/03b_proteomics_differential.Rmd
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/style.css
-    Modified:   code/00_config.R
-    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -672,6 +663,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/edcd4a8cd837eaf3829ae3e8e064ea951758701b/analysis/02_cohort_characterization.Rmd" target="_blank">edcd4a8</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/0e9937f3900b3d44762c4458b8fc5a1dbdea6ded/docs/02_cohort_characterization.html" target="_blank">0e9937f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1252,7 +1277,7 @@ check_parametric &lt;- function(df, var_col, group_col, config, transform = NULL
 # 3. Table Configurations ------------------------------------------------------
 table_configs &lt;- list(
   table_1 = list(
-    title = &quot;Baseline Demographics and Clinical Characteristics&quot;,
+    title = &quot;Demographic and Clinical Characteristics&quot;,
     group_by = &quot;cohort_group&quot;,
     pairwise = TRUE, 
     variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;Sample_Age&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Age&quot;, &quot;DLCO (SB) (% predicted)&quot;),
@@ -1445,9 +1470,9 @@ for (tbl_name in names(table_configs)) {
   cat(&quot;\n---\n\n&quot;)
   generated_tables[[tbl_name]] &lt;- gtsum_obj
 }</code></pre>
-<div id="baseline-demographics-and-clinical-characteristics"
+<div id="demographic-and-clinical-characteristics"
 class="section level3">
-<h3>Baseline Demographics and Clinical Characteristics</h3>
+<h3>Demographic and Clinical Characteristics</h3>
 <table style="NAborder-bottom: 0; width: auto !important; " class="table table-hover table-condensed">
 <thead>
 <tr>

@@ -12,7 +12,7 @@
 <meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
 
 
-<title>03a_proteomics_variance</title>
+<title>Proteomics Variance</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -404,11 +404,11 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">03a_proteomics_variance</h1>
+<h1 class="title toc-ignore">Proteomics Variance</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">16 April, 2026</h4>
+<h4 class="date">17 April, 2026</h4>
 
 </div>
 
@@ -437,7 +437,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-16
+<strong>Last updated:</strong> 2026-04-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -568,15 +568,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4ab2fc3f3d07ed53519f4081fcfe02e40f54aaddtargetblank4ab2fc3a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4ab2fc3f3d07ed53519f4081fcfe02e40f54aadd" target="_blank">4ab2fc3</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4ab2fc3f3d07ed53519f4081fcfe02e40f54aaddtargetblank4ab2fc3a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -586,7 +586,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4ab2fc3f3d07ed53519f4081fcfe02e40f54aadd" target="_blank">4ab2fc3</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -603,7 +603,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_global/
@@ -617,9 +616,6 @@ Ignored files:
 Untracked files:
     Untracked:  code/randomizer.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/03b_proteomics_differential.Rmd
 
 </code></pre>
 <p>
@@ -665,6 +661,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/edcd4a8cd837eaf3829ae3e8e064ea951758701b/analysis/03a_proteomics_variance.Rmd" target="_blank">edcd4a8</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/65915f29ee93250e9d52972fc7aacd706c082b58/docs/03a_proteomics_variance.html" target="_blank">65915f2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -776,15 +806,12 @@ wflow_publish("analysis/*.Rmd")
 </div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<ul>
-<li>To explore which variables have an influence on the omics data (by
-PCA, VPA and exploratory VPA)</li>
-<li>To determine which variables correlate with each other</li>
-<li>To determine which variables should be included in the downstream
-Differential Expression Analysis</li>
-</ul>
+<p>Goals: - To explore which variables have an influence on the omics
+data (by PCA, VPA and exploratory VPA) - To determine which variables
+correlate with each other - To determine which variables should be
+included in the downstream Differential Expression Analysis</p>
 <div id="dea-variable-inclusion-logic" class="section level2">
-<h2>DEA VAriable Inclusion Logic</h2>
+<h2>DEA Variable Inclusion Logic</h2>
 <table>
 <colgroup>
 <col width="33%" />
@@ -825,7 +852,8 @@ Covariate</td>
 </tr>
 </tbody>
 </table>
-<p>Limit umber of variables to abeout 1 variable per 10 patients.</p>
+<p>Further criteria: - Limit number of variables to abeout 1 variable
+per 10 patients.</p>
 </div>
 </div>
 <div id="setup-and-import" class="section level1">
@@ -877,7 +905,7 @@ exploratory_vpa_configs &lt;- list(
     subset_to_groups   = c(GRP_ACTIVE, GRP_NON_ACTIVE),
     
     # Filtering Rules
-    exclude_vars       = c(&quot;inCentraxx&quot;, &quot;SELECTED&quot;, &quot;Subject-ID (EUSTAR)&quot;, &quot;Geburtsdatum&quot;, &quot;Raynaud VAS Unknown&quot;, &quot;Birth_Year&quot;),
+    exclude_vars       = c(&quot;inCentraxx&quot;, &quot;SELECTED&quot;, &quot;Subject-ID (EUSTAR)&quot;, &quot;Geburtsdatum&quot;, &quot;Raynaud VAS Unknown&quot;, &quot;Birth_Year&quot;, &quot;Face&quot;,    &quot;Chest&quot;,    &quot;Abdomen&quot;,  &quot;Left_Upper Arms&quot;   ,&quot;Right_Upper Arms&quot;,    &quot;Left_Forearms&quot;,    &quot;Right_Forearms&quot;,   &quot;Left_Hands&quot;,   &quot;Right_Hands&quot;,  &quot;Left_Fingers&quot;, &quot;Right_Fingers&quot;,    &quot;Left_Thighs&quot;,  &quot;Right_Thighs&quot;, &quot;Left_Legs&quot;,    &quot;Right_Legs&quot;,   &quot;Left_Feet&quot;,    &quot;Right_Feet&quot;, &quot;Geschlecht&quot;, &quot;Active_our&quot;),
     exclude_patterns   = c(&quot;Date&quot;, &quot;?&quot;, &quot;Datum&quot;), 
     include_vars       = c(), 
     missingness_cutoff = 0.10,
@@ -947,8 +975,9 @@ targeted_vpa_configs &lt;- list(
 dea_validation_rules &lt;- list(
   min_samples_per_param = 10, 
   min_group_n           = 2,
-  max_cor_rho           = 0.70, # Threshold for Variance Inflation
-  max_cor_p             = 0.05
+  max_cor_rho           = 0.30, # Threshold for Variance Inflation
+  max_cor_p             = 0.05  
+  # It is called max_cor_p since it ist he highest p-value at which the correlation is considered to be real
 )
 
 pre_dea_configs &lt;- list(
@@ -1010,9 +1039,12 @@ factors with only one level remaining after NA-drops) to ensure
 mathematical convergence of the mixed-effects models.
 </li>
 <li>
-Applied blacklist filtering and regex pattern matching to remove
-administrative IDs and raw date columns, preventing spurious
+Removed administrative IDs and raw date columns, preventing spurious
 correlations with procedural metadata.
+</li>
+<li>
+Removed components of the mRSS (e.g. right hand) and other duplicate
+variables to prevent redundancy
 </li>
 </ul>
 </div>
@@ -1089,7 +1121,11 @@ Variables
 Exact Match (Blacklist)
 </td>
 <td style="text-align:left;">
-inCentraxx, Geburtsdatum, SELECTED, Subject-ID (EUSTAR), Birth_Year
+inCentraxx, Geburtsdatum, Geschlecht, Face, Chest, Abdomen, Left_Upper
+Arms, Right_Upper Arms, Left_Forearms, Right_Forearms, Left_Hands,
+Right_Hands, Left_Fingers, Right_Fingers, Left_Thighs, Right_Thighs,
+Left_Legs, Right_Legs, Left_Feet, Right_Feet, Active_our, SELECTED,
+Subject-ID (EUSTAR), Birth_Year
 </td>
 </tr>
 <tr>
@@ -1331,26 +1367,6 @@ Mean: 14604.96 | IQR: [510.00 - 45684.50]
 </tr>
 <tr>
 <td style="text-align:left;">
-Left_Fingers
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-2.32%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.55 | IQR: [0.00 - 1.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 DLCO/VA (% predicted)
 </td>
 <td style="text-align:left;">
@@ -1411,26 +1427,6 @@ Mean: 0.25 | IQR: [0.00 - 0.34]
 </tr>
 <tr>
 <td style="text-align:left;">
-Right_Hands
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-2.25%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.34 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Hemoglobin (g/dl)
 </td>
 <td style="text-align:left;">
@@ -1467,26 +1463,6 @@ Continuous
 </td>
 <td style="text-align:left;">
 Mean: 3022.72 | IQR: [2455.00 - 3532.50]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Right_Fingers
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-2.06%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.60 | IQR: [0.00 - 1.00]
 </td>
 </tr>
 <tr>
@@ -1611,46 +1587,6 @@ Mean: 16.08 | IQR: [14.00 - 17.50]
 </tr>
 <tr>
 <td style="text-align:left;">
-Left_Hands
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.58%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.28 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Face
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.53%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.24 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Right ventricular area (cm2)
 </td>
 <td style="text-align:left;">
@@ -1687,26 +1623,6 @@ Continuous
 </td>
 <td style="text-align:left;">
 Mean: 99.20 | IQR: [60.00 - 113.50]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Left_Legs
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.40%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.16 | IQR: [0.00 - 0.00]
 </td>
 </tr>
 <tr>
@@ -1771,26 +1687,6 @@ Mean: 15.93 | IQR: [10.00 - 22.00]
 </tr>
 <tr>
 <td style="text-align:left;">
-Right_Legs
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.27%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.14 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Sex
 </td>
 <td style="text-align:left;">
@@ -1807,26 +1703,6 @@ Categorical
 </td>
 <td style="text-align:left;">
 Levels: 2 | Female: 79.2%, Male: 20.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Geschlecht
-</td>
-<td style="text-align:left;">
-Categorical
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.26%
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-Levels: 2 | männlich: 20.8%, weiblich: 79.2%
 </td>
 </tr>
 <tr>
@@ -1891,46 +1767,6 @@ Levels: 2 | 0: 83.7%, 1: 16.3%
 </tr>
 <tr>
 <td style="text-align:left;">
-Right_Forearms
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.10%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.21 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Left_Feet
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.09%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.13 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Delta_HRCT_Years
 </td>
 <td style="text-align:left;">
@@ -1947,66 +1783,6 @@ Continuous
 </td>
 <td style="text-align:left;">
 Mean: -0.01 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Left_Forearms
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.06%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.18 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Right_Thighs
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-1.03%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.05 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Right_Feet
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-0.98%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.12 | IQR: [0.00 - 0.00]
 </td>
 </tr>
 <tr>
@@ -2073,26 +1849,6 @@ Levels: 72 | 2024-06-24: 1.0%, 2024-06-26: 1.0%, 2024-07-03: 1.0%,
 </tr>
 <tr>
 <td style="text-align:left;">
-Abdomen
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-0.91%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.05 | IQR: [0.00 - 0.00]
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 Telangiectasia
 </td>
 <td style="text-align:left;">
@@ -2109,26 +1865,6 @@ Categorical
 </td>
 <td style="text-align:left;">
 Levels: 2 | 0: 38.9%, 1: 61.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Chest
-</td>
-<td style="text-align:left;">
-Continuous
-</td>
-<td style="text-align:left;font-weight: bold;color: darkred !important;">
-0.87%
-</td>
-<td style="text-align:left;">
-2.1%
-</td>
-<td style="text-align:right;">
-94
-</td>
-<td style="text-align:left;">
-Mean: 0.02 | IQR: [0.00 - 0.00]
 </td>
 </tr>
 <tr>
@@ -2213,13 +1949,93 @@ Levels: 2 | 0: 65.6%, 1: 34.4%
 </tr>
 <tr>
 <td style="text-align:left;">
-Left_Thighs
+Delta_PFT_Years
 </td>
 <td style="text-align:left;">
 Continuous
 </td>
 <td style="text-align:left;font-weight: bold;color: darkred !important;">
-0.70%
+0.66%
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+Mean: -0.07 | IQR: [0.00 - 0.00]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cohort_group
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.55%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | Active: 50.0%, Non-Active: 50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.54%
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:right;">
+93
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 41.9%, 1: 58.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Ext. MCP)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.52%
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 62.1%, 1: 37.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.49%
 </td>
 <td style="text-align:left;">
 2.1%
@@ -2228,7 +2044,227 @@ Continuous
 94
 </td>
 <td style="text-align:left;">
-Mean: 0.04 | IQR: [0.00 - 0.00]
+Levels: 2 | 0: 67.0%, 1: 33.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.45%
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:right;">
+93
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 74.2%, 1: 25.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint involvement
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.45%
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 68.4%, 1: 31.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.42%
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 55.4%, 1: 44.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia (any)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.40%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 43.8%, 1: 56.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fibrotic_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.38%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 65.6%, 1: 34.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.35%
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 68.5%, 1: 31.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sclerodactyly
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.33%
+</td>
+<td style="text-align:left;">
+7.3%
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 74.2%, 1: 25.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vascular_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.30%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 53.1%, 1: 46.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fingertip pitting scars
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.26%
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 50.5%, 1: 49.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal Dysphagia
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.26%
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 87.0%, 1: 13.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non-Raynaud Symptom
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.23%
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:right;">
+87
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 20.7%, 1: 79.3%
 </td>
 </tr>
 </tbody>
@@ -2864,7 +2900,7 @@ block collinear variables from entering the limma pipeline.
 </li>
 <li>
 Cross-referenced all covariates against the cohort Spearman correlation
-matrix to block Variance Inflation (rho &gt;= 0.70, p &lt;= 0.05).
+matrix to block Variance Inflation (rho &gt;= 0.30, p &lt;= 0.05).
 </li>
 </ul>
 </div>
@@ -2923,10 +2959,10 @@ N (Valid)
 Missingness
 </th>
 <th style="text-align:left;">
-Variance / Levels
+Distribution (Median [IQR] or %)
 </th>
 <th style="text-align:left;">
-High Correlation (rho)
+High Correlation Warning
 </th>
 </tr>
 </thead>
@@ -2945,7 +2981,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-2 Levels
+Active: 50.6%<br>Non-Active: 49.4%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -2965,7 +3001,7 @@ Covariate
 4.2%
 </td>
 <td style="text-align:left;">
-Var: 1767.81
+Med: 68.0 [61.0 - 83.0]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -2985,10 +3021,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 349714.68
+Med: 109.0 [57.0 - 287.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
+predicted), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3005,10 +3042,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 201.14
+Med: 61.0 [48.0 - 71.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = 0.45, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3025,10 +3063,11 @@ Covariate
 3.1%
 </td>
 <td style="text-align:left;">
-Var: 350.06
+Med: 66.0 [49.0 - 77.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 </tbody>
@@ -3044,11 +3083,11 @@ style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
 
   &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
 <p><b>Verdict:</b> <span
-style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span></p>
+style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
 </div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
+<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
 
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.70|&lt;/i&gt;
+  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
 &lt;/div&gt;</code></pre>
 </td>
 </tr>
@@ -3076,10 +3115,10 @@ N (Valid)
 Missingness
 </th>
 <th style="text-align:left;">
-Variance / Levels
+Distribution (Median [IQR] or %)
 </th>
 <th style="text-align:left;">
-High Correlation (rho)
+High Correlation Warning
 </th>
 </tr>
 </thead>
@@ -3098,7 +3137,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-2 Levels
+0: 68.5%<br>1: 31.5%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3118,7 +3157,7 @@ Covariate
 4.2%
 </td>
 <td style="text-align:left;">
-Var: 1767.81
+Med: 68.0 [61.0 - 83.0]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3138,10 +3177,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 349714.68
+Med: 109.0 [57.0 - 287.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
+predicted), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3158,10 +3198,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 201.14
+Med: 61.0 [48.0 - 71.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = 0.45, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3178,10 +3219,11 @@ Covariate
 3.1%
 </td>
 <td style="text-align:left;">
-Var: 350.06
+Med: 66.0 [49.0 - 77.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 </tbody>
@@ -3197,11 +3239,11 @@ style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
 
   &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
 <p><b>Verdict:</b> <span
-style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span></p>
+style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
 </div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
+<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
 
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.70|&lt;/i&gt;
+  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
 &lt;/div&gt;</code></pre>
 </td>
 </tr>
@@ -3229,10 +3271,10 @@ N (Valid)
 Missingness
 </th>
 <th style="text-align:left;">
-Variance / Levels
+Distribution (Median [IQR] or %)
 </th>
 <th style="text-align:left;">
-High Correlation (rho)
+High Correlation Warning
 </th>
 </tr>
 </thead>
@@ -3251,7 +3293,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-2 Levels
+0: 65.2%<br>1: 34.8%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3271,7 +3313,7 @@ Covariate
 4.2%
 </td>
 <td style="text-align:left;">
-Var: 1767.81
+Med: 68.0 [61.0 - 83.0]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3291,10 +3333,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 349714.68
+Med: 109.0 [57.0 - 287.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
+predicted), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3311,10 +3354,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 201.14
+Med: 61.0 [48.0 - 71.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = 0.45, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3331,10 +3375,11 @@ Covariate
 3.1%
 </td>
 <td style="text-align:left;">
-Var: 350.06
+Med: 66.0 [49.0 - 77.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 </tbody>
@@ -3350,11 +3395,11 @@ style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
 
   &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
 <p><b>Verdict:</b> <span
-style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span></p>
+style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
 </div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
+<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
 
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.70|&lt;/i&gt;
+  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
 &lt;/div&gt;</code></pre>
 </td>
 </tr>
@@ -3382,10 +3427,10 @@ N (Valid)
 Missingness
 </th>
 <th style="text-align:left;">
-Variance / Levels
+Distribution (Median [IQR] or %)
 </th>
 <th style="text-align:left;">
-High Correlation (rho)
+High Correlation Warning
 </th>
 </tr>
 </thead>
@@ -3404,7 +3449,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-2 Levels
+0: 51.7%<br>1: 48.3%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3424,7 +3469,7 @@ Covariate
 4.2%
 </td>
 <td style="text-align:left;">
-Var: 1767.81
+Med: 68.0 [61.0 - 83.0]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3444,10 +3489,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 349714.68
+Med: 109.0 [57.0 - 287.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
+predicted), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3464,10 +3510,11 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 201.14
+Med: 61.0 [48.0 - 71.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = 0.45, p = 0.000)</span>
 </td>
 </tr>
 <tr>
@@ -3484,10 +3531,11 @@ Covariate
 3.1%
 </td>
 <td style="text-align:left;">
-Var: 350.06
+Med: 66.0 [49.0 - 77.0]
 </td>
 <td style="text-align:left;">
-<span style="color:black;">None</span>
+<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
+(pg/ml), ρ = -0.39, p = 0.000)</span>
 </td>
 </tr>
 </tbody>
@@ -3503,11 +3551,11 @@ style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
 
   &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
 <p><b>Verdict:</b> <span
-style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span></p>
+style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
 </div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
+<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
 
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.70|&lt;/i&gt;
+  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
 &lt;/div&gt;</code></pre>
 </td>
 </tr>
@@ -3535,10 +3583,10 @@ N (Valid)
 Missingness
 </th>
 <th style="text-align:left;">
-Variance / Levels
+Distribution (Median [IQR] or %)
 </th>
 <th style="text-align:left;">
-High Correlation (rho)
+High Correlation Warning
 </th>
 </tr>
 </thead>
@@ -3557,7 +3605,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-3 Levels
+Active: 36.6%<br>Non-Active: 36.6%<br>Control: 26.7%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3577,7 +3625,7 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Var: 179.92
+Med: 61.0 [49.0 - 71.0]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3597,7 +3645,7 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-2 Levels
+Female: 79.4%<br>Male: 20.6%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3620,7 +3668,7 @@ style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">
 </div>
 <pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
 
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.70|&lt;/i&gt;
+  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
 &lt;/div&gt;</code></pre>
 </td>
 </tr>
@@ -4454,7 +4502,7 @@ wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL
       format = &quot;html&quot;,
       escape = FALSE,
       row.names = FALSE,
-      col.names = c(&quot;Variable&quot;, &quot;Role&quot;, &quot;N (Valid)&quot;, &quot;Missingness&quot;, &quot;Variance / Levels&quot;, &quot;High Correlation (rho)&quot;),
+      col.names = c(&quot;Variable&quot;, &quot;Role&quot;, &quot;N (Valid)&quot;, &quot;Missingness&quot;, &quot;Distribution (Median [IQR] or %)&quot;, &quot;High Correlation Warning&quot;),
       caption = sprintf(&quot;&lt;div style=&#39;color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;&#39;&gt;%s&lt;/div&gt;&quot;, conf$title)
     ) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;bordered&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
@@ -4500,13 +4548,18 @@ run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, project_colors) {
   mat_sub &lt;- omics_mat[, clin_sub$Subject_ID, drop = FALSE]
 
   if (length(dea_conf$covariates) &gt; 0) {
-    formula_str &lt;- paste(&quot;~ 0 + limma_group +&quot;, paste(dea_conf$covariates, collapse = &quot; + &quot;))
+    # Wraps all covariates in backticks to protect special characters like -, %, ()
+    protected_covariates &lt;- paste(sprintf(&quot;`%s`&quot;, dea_conf$covariates), collapse = &quot; + &quot;)
+    formula_str &lt;- paste(&quot;~ 0 + limma_group +&quot;, protected_covariates)
   } else {
     formula_str &lt;- &quot;~ 0 + limma_group&quot;
   }
 
   design &lt;- model.matrix(as.formula(formula_str), data = clin_sub)
   colnames(design)[1:2] &lt;- c(&quot;Reference&quot;, &quot;Target&quot;)
+
+  # --- Sanitize all column names so limma&#39;s strict parser doesn&#39;t crash ---
+  colnames(design) &lt;- make.names(colnames(design))
 
   fit &lt;- lmFit(mat_sub, design)
   contrast_mat &lt;- makeContrasts(Target - Reference, levels = design)
@@ -4818,9 +4871,6 @@ validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups
   if (n_start == 0) return(list(Status = &quot;Fail&quot;, Reasons = c(&quot;Target/Ref groups not found in data.&quot;), Var_Details = var_details, N_Start = 0, N_Final = 0, SPP = NA, Num_Params = NA))
 
   # 2. Variable-Level N_Valid &amp; Missingness
-  # ... (Keep the rest of your engine exactly the same below this line)
-
-  # 2. Variable-Level N_Valid &amp; Missingness
   for(i in 1:nrow(var_details)) {
     v &lt;- var_details$Variable[i]
     valid_count &lt;- sum(!is.na(sub_df[[v]]))
@@ -4839,24 +4889,35 @@ validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups
   reasons &lt;- c()
   has_zero_variance &lt;- FALSE
 
-  # 4. Variable-Level Variance &amp; Group Limits
+  # 4. Variable-Level Variance &amp; Group Limits (UPDATED TO DESCRIPTIVE STATS)
   for(i in 1:nrow(var_details)) {
     v &lt;- var_details$Variable[i]
     vec &lt;- cc_df[[v]]
 
     if (is.numeric(vec)) {
       var_val &lt;- var(vec, na.rm = TRUE)
-      var_details$Variance_Levels[i] &lt;- sprintf(&quot;Var: %.2f&quot;, var_val)
       if (var_val == 0) {
+        var_details$Variance_Levels[i] &lt;- &quot;Var: 0.00&quot;
         reasons &lt;- c(reasons, sprintf(&quot;&#39;%s&#39; has 0 variance.&quot;, v))
         has_zero_variance &lt;- TRUE
+      } else {
+        # Valid continuous variable: show Median and IQR
+        med_val &lt;- median(vec, na.rm = TRUE)
+        q25 &lt;- quantile(vec, 0.25, na.rm = TRUE)
+        q75 &lt;- quantile(vec, 0.75, na.rm = TRUE)
+        var_details$Variance_Levels[i] &lt;- sprintf(&quot;Med: %.1f [%.1f - %.1f]&quot;, med_val, q25, q75)
       }
     } else {
       lvl_count &lt;- length(unique(vec))
-      var_details$Variance_Levels[i] &lt;- sprintf(&quot;%d Levels&quot;, lvl_count)
       if (lvl_count &lt; 2) {
+        var_details$Variance_Levels[i] &lt;- sprintf(&quot;%d Levels&quot;, lvl_count)
         reasons &lt;- c(reasons, sprintf(&quot;&#39;%s&#39; collapsed to &lt;2 levels.&quot;, v))
         has_zero_variance &lt;- TRUE
+      } else {
+        # Valid categorical variable: show Breakdown percentages
+        tbl &lt;- prop.table(table(vec)) * 100
+        lvl_strs &lt;- paste0(names(tbl), &quot;: &quot;, sprintf(&quot;%.1f%%&quot;, tbl))
+        var_details$Variance_Levels[i] &lt;- paste(lvl_strs, collapse = &quot;&lt;br&gt;&quot;)
       }
     }
   }
@@ -4902,7 +4963,7 @@ validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups
         reasons &lt;- c(reasons, sprintf(&quot;Algebraic Collinearity detected. Aliased variable(s): %s.&quot;, paste(aliased_vars, collapse = &quot;, &quot;)))
       }
 
-      # B. Spearman Variance Inflation Check (Biological Correlation)
+      # B. Spearman Variance Inflation Check (Biological Correlation) - UPDATED TO INCLUDE EXACT VALUES
       if (!is.null(cor_matrices) &amp;&amp; length(covariates) &gt; 1) {
         cor_vars &lt;- intersect(covariates, rownames(cor_matrices$rho))
         if (length(cor_vars) &gt; 1) {
@@ -4915,8 +4976,13 @@ validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups
             if (!is.na(rho_val) &amp;&amp; !is.na(p_val)) {
               if (abs(rho_val) &gt;= max_cor_rho &amp;&amp; p_val &lt;= max_cor_p) {
                 reasons &lt;- c(reasons, sprintf(&quot;Variance Inflation Risk: &#39;%s&#39; &amp; &#39;%s&#39; are highly correlated (rho = %.2f).&quot;, v1, v2, rho_val))
-                var_details$High_Correlation[var_details$Variable == v1] &lt;- sprintf(&quot;Yes (with %s)&quot;, v2)
-                var_details$High_Correlation[var_details$Variable == v2] &lt;- sprintf(&quot;Yes (with %s)&quot;, v1)
+
+                # Append exactly the details to the output column
+                exact_warning &lt;- sprintf(&quot;Yes (with %s, &amp;rho; = %.2f, p = %.3f)&quot;, v2, rho_val, p_val)
+                exact_warning2 &lt;- sprintf(&quot;Yes (with %s, &amp;rho; = %.2f, p = %.3f)&quot;, v1, rho_val, p_val)
+
+                var_details$High_Correlation[var_details$Variable == v1] &lt;- exact_warning
+                var_details$High_Correlation[var_details$Variable == v2] &lt;- exact_warning2
               }
             }
           }
