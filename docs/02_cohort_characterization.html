@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee8d13b670b23d7c4455d00a46e70ff10e2bb243atargetblanke8d13b6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree85ee23f5f9bacd0c95769d647dd7272ba7aa9262targetblank85ee23fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e8d13b670b23d7c4455d00a46e70ff10e2bb243a" target="_blank">e8d13b6</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/85ee23f5f9bacd0c95769d647dd7272ba7aa9262" target="_blank">85ee23f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee8d13b670b23d7c4455d00a46e70ff10e2bb243atargetblanke8d13b6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree85ee23f5f9bacd0c95769d647dd7272ba7aa9262targetblank85ee23fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e8d13b670b23d7c4455d00a46e70ff10e2bb243a" target="_blank">e8d13b6</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/85ee23f5f9bacd0c95769d647dd7272ba7aa9262" target="_blank">85ee23f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -672,6 +672,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/85ee23f5f9bacd0c95769d647dd7272ba7aa9262/analysis/02_cohort_characterization.Rmd" target="_blank">85ee23f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+second try at the heatmaps
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/5d831d269c14e098bab01f31a688c5e1404f4f80/docs/02_cohort_characterization.html" target="_blank">5d831d2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1067,6 +1101,10 @@ knitr::opts_chunk$set(
 current_file &lt;- &quot;02_cohort_characterization&quot;
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+# Public Asset Paths (Pushed to GitHub for the Website)
+public_heatmap_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, &quot;02_cohort_characterization&quot;, &quot;heatmaps&quot;)
+if (!dir.exists(file.path(public_heatmap_dir, &quot;intra&quot;))) dir.create(file.path(public_heatmap_dir, &quot;intra&quot;), recursive = TRUE)
+if (!dir.exists(file.path(public_heatmap_dir, &quot;inter&quot;))) dir.create(file.path(public_heatmap_dir, &quot;inter&quot;), recursive = TRUE)
 
 # Input paths (Parameterized)
 input_paths &lt;- list(
@@ -3112,6 +3150,43 @@ alexander-gysin
 <div id="var.-candidates-vs-contrasts" class="section level3">
 <h3>Var. Candidates vs Contrasts</h3>
 <p><img src="figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-3">
+Past versions of custom_correlation_heatmaps-3.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5d831d269c14e098bab01f31a688c5e1404f4f80/docs/figure/02_cohort_characterization.Rmd/custom_correlation_heatmaps-3.png" target="_blank">5d831d2</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 # 3. Cleanup
 rm(h_id, conf, res, generate_custom_cor_heatmap)
@@ -3160,7 +3235,7 @@ function switchIntraPlot() {
   var img = document.getElementById("intraImage");
   if (val) {
     // Uses ../output/ because workflowr HTMLs live in docs/
-    img.src = "../output/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
+    img.src = "assets/heatmaps/intra/Intra_" + val + ".png";
     img.style.display = "block";
   } else {
     img.style.display = "none";
@@ -3249,7 +3324,7 @@ for (d_name in names(clinical_domains)) {
   dyn_width  &lt;- max(6, length(valid_vars) * 0.35 + 4)
   dyn_height &lt;- max(5, length(valid_vars) * 0.35 + 3)
   
-  ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;intra&quot;, paste0(&quot;Intra_&quot;, d_name, &quot;.png&quot;)), 
+  ggsave(file.path(public_heatmap_dir, &quot;intra&quot;, paste0(&quot;Intra_&quot;, d_name, &quot;.png&quot;)), 
          plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = &quot;white&quot;)
 
   # Print interactively in RStudio so you can see it while coding
@@ -3325,8 +3400,8 @@ function switchInterPlot() {
     img.style.display = "block";
     
     // We try the standard path: Inter_A_vs_B
-    var path1 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
-    var path2 = "../output/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    var path1 = "assets/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "assets/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
     
     img.src = path1;
     
@@ -3446,7 +3521,7 @@ for (combo in domain_combos) {
   dyn_width  &lt;- max(8, length(ordered_x) * 0.35 + 4)
   dyn_height &lt;- max(6, length(ordered_y) * 0.35 + 3)
   
-  ggsave(file.path(output_dir_data, &quot;heatmaps&quot;, &quot;inter&quot;, paste0(&quot;Inter_&quot;, lab_x, &quot;_vs_&quot;, lab_y, &quot;.png&quot;)), 
+  ggsave(file.path(public_heatmap_dir, &quot;inter&quot;, paste0(&quot;Inter_&quot;, lab_x, &quot;_vs_&quot;, lab_y, &quot;.png&quot;)), 
          plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = &quot;white&quot;)
 
   # Print interactively in RStudio so you can see it while coding
