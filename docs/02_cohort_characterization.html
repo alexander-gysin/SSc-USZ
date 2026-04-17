@@ -570,15 +570,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree85ee23f5f9bacd0c95769d647dd7272ba7aa9262targetblank85ee23fa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree518df84fb3a45353849fe0ff0cd8d131c470173etargetblank518df84a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/85ee23f5f9bacd0c95769d647dd7272ba7aa9262" target="_blank">85ee23f</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/518df84fb3a45353849fe0ff0cd8d131c470173e" target="_blank">518df84</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree85ee23f5f9bacd0c95769d647dd7272ba7aa9262targetblank85ee23fa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree518df84fb3a45353849fe0ff0cd8d131c470173etargetblank518df84a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -588,7 +588,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/85ee23f5f9bacd0c95769d647dd7272ba7aa9262" target="_blank">85ee23f</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/518df84fb3a45353849fe0ff0cd8d131c470173e" target="_blank">518df84</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -672,6 +672,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/518df84fb3a45353849fe0ff0cd8d131c470173e/analysis/02_cohort_characterization.Rmd" target="_blank">518df84</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+third try at the heatmap dropdowns
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/15d6fbab50b463a472cc957ca73fdcb8f953902e/docs/02_cohort_characterization.html" target="_blank">15d6fba</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3234,8 +3268,8 @@ function switchIntraPlot() {
   var val = document.getElementById("intraSelector").value;
   var img = document.getElementById("intraImage");
   if (val) {
-    // Uses ../output/ because workflowr HTMLs live in docs/
-    img.src = "assets/heatmaps/intra/Intra_" + val + ".png";
+    // Corrected path pointing into the specific script's asset folder
+    img.src = "assets/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
     img.style.display = "block";
   } else {
     img.style.display = "none";
@@ -3399,9 +3433,9 @@ function switchInterPlot() {
     placeholder.style.display = "none";
     img.style.display = "block";
     
-    // We try the standard path: Inter_A_vs_B
-    var path1 = "assets/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
-    var path2 = "assets/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    // Corrected paths pointing into the specific script's asset folder
+    var path1 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
     
     img.src = path1;
     
