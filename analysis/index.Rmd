@@ -10,6 +10,11 @@ editor_options:
 
 You'll find all the analysis performed for the USZ SSc cohort on this website.
 
+# Current State of the Analysis
+Date: 16.04.2026
+Data Import and QC is complete.
+Cohort description and proteomics variance analysis complete.
+
 # Pipeline
 The analysis is divided into modules:
 
@@ -22,7 +27,7 @@ The analysis is divided into modules:
 | **x.3 Omics Predictive** | ML Models | Finds patterns via UMAP, LASSO, and Random Forest. |
 | **x.4 Omics Linear** | Linear Models | Correlates clinical parameters directly with Omics data. |
 
-# How to read the code
+# How to read the website
 In each section it is described what the code does:
 
 <div class="info-box">

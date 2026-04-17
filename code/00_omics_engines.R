@@ -810,7 +810,7 @@ wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
       format = "html",
       escape = FALSE,
       row.names = FALSE,
-      col.names = c("Variable", "Role", "N (Valid)", "Missingness", "Variance / Levels", "High Correlation (rho)"),
+      col.names = c("Variable", "Role", "N (Valid)", "Missingness", "Distribution (Median [IQR] or %)", "High Correlation Warning"),
       caption = sprintf("<div style='color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;'>%s</div>", conf$title)
     ) %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), full_width = TRUE, position = "left") %>%
@@ -856,13 +856,18 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
   mat_sub <- omics_mat[, clin_sub$Subject_ID, drop = FALSE]
 
   if (length(dea_conf$covariates) > 0) {
-    formula_str <- paste("~ 0 + limma_group +", paste(dea_conf$covariates, collapse = " + "))
+    # Wraps all covariates in backticks to protect special characters like -, %, ()
+    protected_covariates <- paste(sprintf("`%s`", dea_conf$covariates), collapse = " + ")
+    formula_str <- paste("~ 0 + limma_group +", protected_covariates)
   } else {
     formula_str <- "~ 0 + limma_group"
   }
 
   design <- model.matrix(as.formula(formula_str), data = clin_sub)
   colnames(design)[1:2] <- c("Reference", "Target")
+
+  # --- Sanitize all column names so limma's strict parser doesn't crash ---
+  colnames(design) <- make.names(colnames(design))
 
   fit <- lmFit(mat_sub, design)
   contrast_mat <- makeContrasts(Target - Reference, levels = design)
@@ -1174,9 +1179,6 @@ validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, c
   if (n_start == 0) return(list(Status = "Fail", Reasons = c("Target/Ref groups not found in data."), Var_Details = var_details, N_Start = 0, N_Final = 0, SPP = NA, Num_Params = NA))
 
   # 2. Variable-Level N_Valid & Missingness
-  # ... (Keep the rest of your engine exactly the same below this line)
-
-  # 2. Variable-Level N_Valid & Missingness
   for(i in 1:nrow(var_details)) {
     v <- var_details$Variable[i]
     valid_count <- sum(!is.na(sub_df[[v]]))
@@ -1195,24 +1197,35 @@ validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, c
   reasons <- c()
   has_zero_variance <- FALSE
 
-  # 4. Variable-Level Variance & Group Limits
+  # 4. Variable-Level Variance & Group Limits (UPDATED TO DESCRIPTIVE STATS)
   for(i in 1:nrow(var_details)) {
     v <- var_details$Variable[i]
     vec <- cc_df[[v]]
 
     if (is.numeric(vec)) {
       var_val <- var(vec, na.rm = TRUE)
-      var_details$Variance_Levels[i] <- sprintf("Var: %.2f", var_val)
       if (var_val == 0) {
+        var_details$Variance_Levels[i] <- "Var: 0.00"
         reasons <- c(reasons, sprintf("'%s' has 0 variance.", v))
         has_zero_variance <- TRUE
+      } else {
+        # Valid continuous variable: show Median and IQR
+        med_val <- median(vec, na.rm = TRUE)
+        q25 <- quantile(vec, 0.25, na.rm = TRUE)
+        q75 <- quantile(vec, 0.75, na.rm = TRUE)
+        var_details$Variance_Levels[i] <- sprintf("Med: %.1f [%.1f - %.1f]", med_val, q25, q75)
       }
     } else {
       lvl_count <- length(unique(vec))
-      var_details$Variance_Levels[i] <- sprintf("%d Levels", lvl_count)
       if (lvl_count < 2) {
+        var_details$Variance_Levels[i] <- sprintf("%d Levels", lvl_count)
         reasons <- c(reasons, sprintf("'%s' collapsed to <2 levels.", v))
         has_zero_variance <- TRUE
+      } else {
+        # Valid categorical variable: show Breakdown percentages
+        tbl <- prop.table(table(vec)) * 100
+        lvl_strs <- paste0(names(tbl), ": ", sprintf("%.1f%%", tbl))
+        var_details$Variance_Levels[i] <- paste(lvl_strs, collapse = "<br>")
       }
     }
   }
@@ -1258,7 +1271,7 @@ validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, c
         reasons <- c(reasons, sprintf("Algebraic Collinearity detected. Aliased variable(s): %s.", paste(aliased_vars, collapse = ", ")))
       }
 
-      # B. Spearman Variance Inflation Check (Biological Correlation)
+      # B. Spearman Variance Inflation Check (Biological Correlation) - UPDATED TO INCLUDE EXACT VALUES
       if (!is.null(cor_matrices) && length(covariates) > 1) {
         cor_vars <- intersect(covariates, rownames(cor_matrices$rho))
         if (length(cor_vars) > 1) {
@@ -1271,8 +1284,13 @@ validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, c
             if (!is.na(rho_val) && !is.na(p_val)) {
               if (abs(rho_val) >= max_cor_rho && p_val <= max_cor_p) {
                 reasons <- c(reasons, sprintf("Variance Inflation Risk: '%s' & '%s' are highly correlated (rho = %.2f).", v1, v2, rho_val))
-                var_details$High_Correlation[var_details$Variable == v1] <- sprintf("Yes (with %s)", v2)
-                var_details$High_Correlation[var_details$Variable == v2] <- sprintf("Yes (with %s)", v1)
+
+                # Append exactly the details to the output column
+                exact_warning <- sprintf("Yes (with %s, &rho; = %.2f, p = %.3f)", v2, rho_val, p_val)
+                exact_warning2 <- sprintf("Yes (with %s, &rho; = %.2f, p = %.3f)", v1, rho_val, p_val)
+
+                var_details$High_Correlation[var_details$Variable == v1] <- exact_warning
+                var_details$High_Correlation[var_details$Variable == v2] <- exact_warning2
               }
             }
           }

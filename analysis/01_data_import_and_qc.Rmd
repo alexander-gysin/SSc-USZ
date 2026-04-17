@@ -112,7 +112,7 @@ clinical_rename_map <- c(
 ```
 
 # Clinical Data Cleanup
-`r analysis_decision("Dropped the follow-up sample 'Act_4_2' to strictly enforce a cross-sectional study design.", "Excluded patients who were missing from either the CentraXX output or the Biobank sample manifest.")`
+`r analysis_decision("Dropped the follow-up sample 'Act_4_2' to strictly enforce a cross-sectional study design.", "Excluded patients who were missing from either the CentraXX output or the Biobank sample manifest.", "Datafields not complying with column data type are turned to NA", "Variables whith more than 20% NA were dropped")`
 
 `r what_this_does("Imported raw clinical and sample mapping Excel files and resolved ID discrepancies.", "Engineered core analytical features including Age, Sample_Age, cohort_group, and Sex.", "Calculated time deltas (in years) between clinical assessment dates and the blood draw date.", "Pruned clinical variables according to the defined 80% completeness filter.", "Enforced strict data typing and dropped manually excluded variables using the clinical_dictionary.", "Dynamically dropped procedural meta-variables based on parameterized config patterns.", "Standardized factor levels: converted 'UN' and 'Unknown' to NA.", "Finalized downstream features (renamed long columns, fixed illogical CRP values, locked factor levels).")`
 
@@ -347,7 +347,7 @@ cat(paste(audit_log_olink, collapse = "\n"))
 
 ## OLINK QC, Imputation & Sync
 
-`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.", "VAriables whith more than 20% NA were dropped")`
+`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold (max_missing_pct_prot and max_missing_pct_pat) to ensure robust downstream imputation.")`
 
 `r what_this_does("Proteins and Samples exceeding the previously defined missingness threshold were entirely dropped.", "Remaining NA values were imputed using a row-wise (protein-wise) median approach.", "The master_spine clinical dataset and the Olink matrix were cross-synchronized to guarantee identical sample inclusion and ordering.")`
 

@@ -35,8 +35,7 @@ current_file <- "03b_proteomics_differential"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
-# Source Configuration & Engines
-source(here::here("code", "00_config.R"))
+# Source Engines
 source(here::here("code", "00_omics_engines.R"))
 
 # Load Pre-Cleaned Data from Script 01
@@ -58,6 +57,11 @@ omics_config <- list(
 
 
 # 3. Differential Expression Contrasts (Target vs Reference)
+
+candidate_vars <- list(
+  set1 = c("Creatinine", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)")
+)
+
 contrast_configs <- list(
   ssc_vs_control = list(
     title = "SSc vs Control",
@@ -69,33 +73,43 @@ contrast_configs <- list(
     dea_p_cutoff = 0.05,  # <-- INDIVIDUAL CUTOFFS
     dea_fc_cutoff = 0.5
   ),
-  nonactive_vs_control = list(
-    title = "Nonactive vs Control",
-    group_col = "cohort_group",
-    target_groups = c(GRP_NON_ACTIVE),
-    ref_groups = c(GRP_CONTROL),
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
   active_vs_nonactive = list(
     title = "Active vs Nonactive",
     group_col = "cohort_group",
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_NON_ACTIVE),
     is_continuous = FALSE,
-    covariates = c("Age", "Sex"),
+    covariates = candidate_vars$set1,
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.2
   ),
-  active_vs_nonactive_sample_age_corr = list(
-    title = "Active vs Nonactive (Sample Age Corrected)",
-    group_col = "cohort_group",
-    target_groups = c(GRP_ACTIVE),
-    ref_groups = c(GRP_NON_ACTIVE),
+  inflamm_vs_noninflamm = list(
+    title = "Inflammatory vs Non-Inflammatory",
+    group_col = "Inflamm_active",
+    target_groups = c(1),
+    ref_groups = c(0),
     is_continuous = FALSE,
-    covariates = c("Age", "Sex", "Sample_Age"), 
+    covariates = candidate_vars$set1, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
+  vascular_vs_nonvascular = list(
+    title = "Vascular vs Non-Vascular",
+    group_col = "vascular_active",
+    target_groups = c(1),
+    ref_groups = c(0),
+    is_continuous = FALSE,
+    covariates = candidate_vars$set1, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
+  fibrotic_vs_nonfibrotic = list(
+    title = "Fibrotic vs Non-Fibrotic",
+    group_col = "fibrotic_active",
+    target_groups = c(1),
+    ref_groups = c(0),
+    is_continuous = FALSE,
+    covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   )

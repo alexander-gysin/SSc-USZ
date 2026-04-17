@@ -103,6 +103,9 @@ ssc_clinical_parameters_continuous <- c("Modified rodnan skin score",
 # A single, unified function that can map colors for any variable in the project
 get_project_colors <- function(requested_levels) {
 
+  # FIX: Force everything to text to prevent index-0 crashes!
+  requested_levels <- as.character(requested_levels)
+
   color_map <- setNames(
     c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE),
     c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE)
@@ -166,6 +169,19 @@ key_insight <- function(...) {
   html <- sprintf('
 <div class="insight-box">
   <strong>Key Insight:</strong>
+  <ul>
+%s
+  </ul>
+</div>', li_items)
+  return(html)
+}
+
+why_is_this_done <- function(...) {
+  points <- list(...)
+  li_items <- paste0("    <li>", unlist(points), "</li>", collapse = "\n")
+  html <- sprintf('
+<div class="why-box">
+  <strong>Why is this done?</strong>
   <ul>
 %s
   </ul>

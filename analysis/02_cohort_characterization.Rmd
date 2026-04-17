@@ -148,7 +148,7 @@ check_parametric <- function(df, var_col, group_col, config, transform = NULL) {
 # 3. Table Configurations ------------------------------------------------------
 table_configs <- list(
   table_1 = list(
-    title = "Baseline Demographics and Clinical Characteristics",
+    title = "Demographic and Clinical Characteristics",
     group_by = "cohort_group",
     pairwise = TRUE, 
     variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)"),
