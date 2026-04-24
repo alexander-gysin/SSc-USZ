@@ -22,7 +22,7 @@ Goals:
 | Scenario | Action | Explanation |
 |:---|:---|:---|
 | High VPA Variance & Low Correlation with Contrast | Include | Noise |
-| High VPA VAriance & High Correlation with Contrast | Compare Include/Exclude | Confounder: Correcting for this could erase the signal |
+| High VPA VAriance & High Correlation with Contrast | Exclude | Confounder: Correcting for this could erase the signal |
 | High VPA Variance & High correlation with Covariate | Pick the VPA winner | Redundancy/Collinearity |
 | Low VPA VAriance | Exclude | Unnecessarily reduces degrees of freedom |
 
@@ -72,31 +72,63 @@ plan(multisession, workers = 4)
 ```{r config}
 # 1. Exploratory  VPA ----------------------------------------------------------
 exploratory_vpa_configs <- list(
-  
   discovery_scan_patients = list(
     title              = "Clinical Discovery: Patients Only",
     subset_to_groups   = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    
-    # Filtering Rules
-    exclude_vars       = c("inCentraxx", "SELECTED", "Subject-ID (EUSTAR)", "Geburtsdatum", "Raynaud VAS Unknown", "Birth_Year", "Face",	"Chest",	"Abdomen",	"Left_Upper Arms"	,"Right_Upper Arms",	"Left_Forearms",	"Right_Forearms",	"Left_Hands",	"Right_Hands",	"Left_Fingers",	"Right_Fingers",	"Left_Thighs",	"Right_Thighs",	"Left_Legs",	"Right_Legs",	"Left_Feet",	"Right_Feet", "Geschlecht", "Active_our"),
+    exclude_vars       = c("inCentraxx", "SELECTED", "Subject-ID (EUSTAR)", "Geburtsdatum", "Raynaud VAS Unknown", "Birth_Year", "Face", "Chest", "Abdomen", "Left_Upper Arms", "Right_Upper Arms", "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Geschlecht", "Active_our"),
     exclude_patterns   = c("Date", "?", "Datum"), 
     include_vars       = c(), 
     missingness_cutoff = 0.10,
+    top_n_plot         = 60,
     
-    # Execution & Visualization Rules
-    top_n_plot         = 50 
+    # QC Checkpoint Parameters -------------------------------------------------
+    dist_plot_limit    = 30, # Max variables to draw in the histogram grid
+    corr_plot_limit    = 30, # Max VPA hits to feed into the heatmap
+    heatmap_add_vars   = c("cohort_group", "Sex", "Age", "Inflamm_active", "fibrotic_active", "vascular_active") # Extra vars to force into heatmap
   )
 )
 
-# 2. Candidates for correcting variables
-# Variables are selected based on the Exploratory VPA in this script
-# Selected variables will be assessed using a PCA and a Multivariate VPA
-
-candidate_vars <- list(
-  set1 = c("Creatinine", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)")
+# 2. Automated DEA Variable Selector Configurations ----------------------------
+dea_selector_configs <- list(
+  active_vs_nonactive_1 = list(
+    title = "Active vs Non-Active",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    vpa_source_id = "discovery_scan_patients", 
+    must_include = c(),          
+    must_exclude = c("Creatinine", "NT-proBNP (pg/ml)", "Distance in m", "log_Distance_in_m", "Uric ACid (mg/dl)", "mRSS_a", "Modified rodnan skin score", "eustarAI", "SSc Antibodies", "Delta_ECHO_Years", "Deöta_ECG_Years"), # Excluded based on QC
+    min_samples_per_param = 15,
+    max_cor_rho           = 0.25, 
+    max_cor_p             = 0.05,
+    # --- NEW: Pre-Selection Log ---
+    pre_selection_log     = "Some variables excluded due to non-normal distribution (mostly bimodal). eustar AI excluded due to high correlation with contrast. SSC Antibodies excluded due to skewed distribution (11% vs 89%)."
+  )
 )
 
-# 3. PCA Master Layouts (Independent grids) ------------------------------------
+# 3. Manual Model Adjustment and Creations  ------------------------------------
+manual_model_adjustments <- list(
+  
+  active_vs_nonactive_1 = list(
+    type = "adjustment", 
+    drop = c("Right ventricular area (cm2)","LVEF %"), 
+    add  = c(), 
+    log  = "Removed cardiac parameters since theyx did not explain a large enough portion of variance in the multivariate VPA. Could not include Sex or Age due to correlation with log_creatinine"
+  ),
+  
+  legacy_model = list(
+    type = "custom",     
+    title = "Custom: Legacy Model",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    covariates = c("Age", "Sex"),
+    log  = "Legacy model, created to compare the new models to."
+  )
+  
+)
+
+# 4. PCA Configs----------------------------------------------------------------
 pca_configs <- list(
   pca_global = list(
     title = "PCA: Global Cohort Structure",
@@ -104,103 +136,32 @@ pca_configs <- list(
     color_vars = c("cohort_group", "Sex", "Age", "Sample_Age") 
   ),
   
-  pca_DEA_candidate_vars = list(
-    title = "PCA: Proposed DEA Variables (Active/Non-Active Only)",
+  pca_candidate_vars = list(
+    title = "PCA: Candidate Variables",
     subset_to_contrast = list(
       group_col = "cohort_group",
       target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE)
     ), 
-    color_vars = c("cohort_group", "Inflamm_active", "fibrotic_active", "vascular_active", candidate_vars$set1) 
-  )
-  
-)
-
-# 4. Targeted VPA --------------------------------------------------------------
-
-targeted_vpa_configs <- list(
-  
-  active_nonactive = list(
-    title     = "Potential DEA Model for: Active vs. Non-Active",
-    variables = c("cohort_group", candidate_vars$set1)  
-  ),
-  
-  inflammation = list(
-    title     = "Potential DEA Model for: Inflammed vs. Non-Inflammed SSc Patients",
-    variables = c("Inflamm_active", candidate_vars$set1)  
-  ),
-  
-  fibrotic = list(
-    title     = "Potential DEA Model for: Fibrotic vs. Non-Fibrotic SSc Patients",
-    variables = c("fibrotic_active", candidate_vars$set1)  
-  ),
-  
-   vascular = list(
-    title     = "Potential DEA Model for: Vascular vs. Non-Vascular SSc Patients",
-    variables = c("vascular_active", candidate_vars$set1)  
-  ),
-   SSC_vs_Ctrl = list(
-    title     = "Potential DEA Model for: SSc vs. Control",
-    variables = c("cohort_group", "Age", "Sex")  
+    color_vars = c("cohort_group", "Sex", "Age", "log_NT_ProBNP", "log_creatinine") 
   )
 )
 
-# 5. Pre-DEA Validation Configurations -----------------------------------------
+# 5. Final Validation ----------------------------------------------------------
 dea_validation_rules <- list(
   min_samples_per_param = 10, 
   min_group_n           = 2,
-  max_cor_rho           = 0.30, # Threshold for Variance Inflation
+  max_cor_rho           = 0.25, 
   max_cor_p             = 0.05  
-  # It is called max_cor_p since it ist he highest p-value at which the correlation is considered to be real
-)
-
-pre_dea_configs <- list(
-  active_vs_nonactive = list(
-    title         = "Active vs Non-Active",
-    group_col     = "cohort_group",
-    target_groups = c(GRP_ACTIVE),
-    ref_groups    = c(GRP_NON_ACTIVE),
-    covariates    = candidate_vars$set1
-  ),
-  inflammed = list(
-    title         = "Inflammed vs. Non-Inflammed",
-    group_col     = "Inflamm_active",
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  fibrotic = list(
-    title         = "Fibrotic vs. Non-Fibrotic",
-    group_col     = "fibrotic_active",
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  vascular = list(
-    title         = "Vascular vs. Non-Vascular",
-    group_col     = "vascular_active",
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  ssc_vs_ctrl = list(
-    title         = "SSc vs Healthy Control",
-    group_col     = "cohort_group",
-    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    ref_groups    = c(GRP_CONTROL),
-    covariates    = c("Age", "Sex") 
-  )
 )
 ```
 
 # Exploratory Variance Partition Analysis
 
-`r analysis_decision("Restricted the exploratory scan to patient cohorts only (excluding healthy controls) because clinical data is only available for patients not for healthy controls", "Enforced a strict missingness cutoff (max 10% missing data per variable) to prevent modeling artifacts caused by highly sparse clinical data.", "Automatically excluded variables with zero or near-zero variance (e.g., factors with only one level remaining after NA-drops) to ensure mathematical convergence of the mixed-effects models.", "Removed administrative IDs and raw date columns, preventing spurious correlations with procedural metadata.", "Removed components of the mRSS (e.g. right hand) and other duplicate variables to prevent redundancy")`
+`r analysis_decision("Restricted the exploratory scan to patient cohorts only (excluding healthy controls) because clinical data is only available for patients not for healthy controls", "Removed variables with a >10% missingness ratio to prevent modeling artifacts caused by highly sparse clinical data.", "Removed variables with zero or near-zero variance (e.g., factors with only one level remaining after NA-drops) to ensure mathematical convergence of the mixed-effects models.", "Removed administrative IDs and raw date columns, preventing spurious correlations with procedural metadata.", "Removed components of the mRSS (e.g. right hand) and other duplicate variables to prevent redundancy")`
 
 `r what_this_does("Ran univariate Variance Partition Analysis across all eligible clinical variables to independently rank their impact on the proteomics matrix.", "Automatically filtered out sparse variables based on the missingness cutoff and generated an exclusion log.", "Rendered summary tables and bar charts highlighting the top clinical drivers of proteomic variance.")`
 
-```{r exploratory_vpa_execution, results='asis', fig.height=12}
-cat("### Executing Exploratory Variance Partition Analysis...\n\n")
-
+```{r exploratory_vpa_execution, results='asis', fig.height=15}
 for (vpa_id in names(exploratory_vpa_configs)) {
   conf <- exploratory_vpa_configs[[vpa_id]]
   cat(sprintf("#### Scan: %s\n\n", conf$title))
@@ -237,70 +198,182 @@ rm(vpa_id, conf, res)
 invisible(gc())
 ```
 
-# PCA
+# Top Hit Quality Control
 
-`r what_this_does("Executed the PCA pipeline to assess global cohort structure and identify potential outliers or batch effects.", "Generated scree plots to evaluate dimensional variance capture.", "Rendered and exported feature loadings and metadata-colored PCA overlays (e.g., by Cohort, Age, Sex).")`
+`r what_this_does("Generates a dynamic visual quality control checkpoint for the top Univariate VPA hits.", "Plots a multi-panel grid of distributions to identify extreme outliers or skew.", "Renders a clustered correlation heatmap to instantly reveal blocks of collinear variables before automated selection begins.")`
 
-```{r execution_engine_PCA, results='asis'}
-cat("### Executing Principal Component Analysis...\n\n")
-
-# Process each PCA configuration through the Master Pipeline
-for (pca_name in names(pca_configs)) {
+```{r vpa_qc_checkpoint, results='asis', fig.width=14, fig.height=10}
+# Initialize output buffer to prevent code chunk fragmentation
+for (vpa_id in names(exploratory_vpa_configs)) {
+  conf <- exploratory_vpa_configs[[vpa_id]]
+  html_out <- paste0(sprintf("#### QC: %s\n\n", conf$title))
   
-  pca_conf <- pca_configs[[pca_name]]
-  
-  # CALL THE MASTER PIPELINE
-  pca_results <- wrap_pca_pipeline(
-    omics_mat           = olink_mat, 
-    clin_df             = master_spine, 
-    pca_conf            = pca_conf, 
-    pca_id              = pca_name, 
-    base_output_dir     = output_dir_data, 
-    project_colors_func = get_project_colors
-  )
-  
-  # PRINT TO HTML REPORT
-  if (!interactive()) {
-    cat(sprintf("#### %s\n\n", pca_conf$title))
-    
-    cat(sprintf("![](%s)\n\n", pca_results$paths[["scree"]]))
-    cat(sprintf("![](%s)\n\n", pca_results$paths[["loadings"]]))
-    cat(sprintf("![](%s)\n\n", pca_results$paths[["merged_drivers"]]))
-
-    if (!is.null(pca_results$paths[["merged_overlays"]])) {
-      cat("#### Metadata Overlays (Side-by-Side Comparison Grid)\n\n")
-      
-      subtitle_desc <- case_when(
-        is.null(pca_conf$subset_to_contrast) ~ "Showing: Global Cohort",
-        TRUE ~ pca_conf$title 
-      )
-      
-      cat(sprintf("> **Grid View for:** %s\n\n", subtitle_desc))
-      
-      # Insert the already created master PNG
-      cat(sprintf("![](%s)\n\n", pca_results$paths[["merged_overlays"]]))
-    }
-  } else {
-    # INTERACTIVE MODE: Print individual plots sequentially so they don't squash!
-    cat(sprintf("#### Interactive Viewer: %s\n\n", pca_conf$title))
-    print(pca_results$plots[["scree"]])
-    print(pca_results$plots[["loadings"]])
-    print(pca_results$plots[["merged_drivers"]])
-    
-    # Loop through and print each overlay plot on its own
-    for (c_var in pca_conf$color_vars) {
-      plot_key <- paste0("PCA_Plot_", c_var)
-      if (!is.null(pca_results$plots[[plot_key]])) {
-        print(pca_results$plots[[plot_key]])
-      }
-    }
+  vpa_csv_path <- file.path(output_dir_data, "VPA_Univariate", vpa_id, paste0(vpa_id, "_Univariate_Results.csv"))
+  if (!file.exists(vpa_csv_path)) {
+    html_out <- paste0(html_out, "> **SKIPPED:** VPA Results not found.\n\n")
+    next
   }
   
-  cat("---\n\n")
+  vpa_df <- read_csv(vpa_csv_path, show_col_types = FALSE)
+  
+  # Call the DRY Engine Wrapper
+  qc_res <- wrap_vpa_qc_pipeline(vpa_df, master_spine, clinical_correlations, conf, vpa_id, output_dir_data)
+  
+  # Append any missing variable warnings to the buffer
+  if (length(qc_res$html_warnings) > 0) {
+    html_out <- paste0(html_out, paste(qc_res$html_warnings, collapse = "\n\n"), "\n\n")
+  }
+  
+  # Dump HTML string so far, then print plots sequentially
+  cat(html_out)
+  html_out <- "" # Reset buffer
+  
+  if (!is.null(qc_res$plots[["distribution_grid"]])) {
+    print(qc_res$plots[["distribution_grid"]])
+    cat("\n\n<br><hr>\n\n")
+  }
+  
+  if (!is.null(qc_res$plots[["correlation_heatmap"]])) {
+    print(qc_res$plots[["correlation_heatmap"]])
+    cat("\n\n<br>\n\n")
+  }
 }
 
 # Clean memory
-rm(pca_name, pca_conf, pca_results, subtitle_desc, plot_key, c_var)
+rm(html_out, vpa_id, conf, vpa_csv_path, vpa_df, qc_res)
+invisible(gc())
+```
+
+# Automated DEA Variable Selector {.tabset}
+
+`r what_this_does("Executes a greedy top-down selection algorithm to automatically construct the optimal Limma covariates.", "Forces must-include variables into the model, checking for confounders and variance inflation.", "Evaluates remaining variables by univariate VPA strength, rejecting those that collinearize with existing selections or break statistical power.", "Computes final Variance Inflation Factors (VIF) and outputs a custom verification heatmap of the proposed model.")`
+
+```{r dea_selector_engine, results='asis'}
+# Store the machine's drafts in memory for the Appendix
+auto_draft_models <- list()
+
+for (sel_id in names(dea_selector_configs)) {
+  conf <- dea_selector_configs[[sel_id]]
+  cat(sprintf("### %s\n\n", conf$title))
+  
+  # Print the pre-selection log if it exists!
+  if (!is.null(conf$pre_selection_log)) {
+    cat(sprintf("> **Pre-Selection Note:** *%s*\n\n", conf$pre_selection_log))
+  }
+  
+  vpa_csv_path <- file.path(output_dir_data, "VPA_Univariate", conf$vpa_source_id, paste0(conf$vpa_source_id, "_Univariate_Results.csv"))
+  if (!file.exists(vpa_csv_path)) next
+  
+  vpa_df <- read_csv(vpa_csv_path, show_col_types = FALSE)
+  res <- wrap_dea_selector(clin_df = master_spine, conf = conf, vpa_df = vpa_df, cor_matrices = clinical_correlations)
+  
+  if (res$status == "success") {
+    auto_draft_models[[sel_id]] <- res$selected_vars
+    
+    if (interactive()) print(res$html_table) else cat(as.character(res$html_table))
+    cat("\n\n<br>\n\n")
+    if (!is.null(res$heatmap)) { print(res$heatmap); cat("\n\n") }
+  } else {
+    cat(sprintf("> **SKIPPED:** %s\n\n", res$msg))
+  }
+}
+```
+
+# Manual Adjustments
+```{r model_adjustments, results='asis'}
+final_locked_models <- list()
+
+for (id in names(manual_model_adjustments)) {
+  adj <- manual_model_adjustments[[id]]
+  
+  if (is.null(adj$type) || adj$type == "adjustment") {
+    if (!(id %in% names(auto_draft_models))) next 
+    
+    auto_vars <- auto_draft_models[[id]]
+    conf <- dea_selector_configs[[id]]
+    final_vars <- setdiff(unique(c(auto_vars, adj$add)), adj$drop)
+    
+    final_locked_models[[id]] <- list(
+      id = id, title = conf$title, group_col = conf$group_col,
+      target_groups = conf$target_groups, ref_groups = conf$ref_groups,
+      covariates = final_vars, auto_vars = auto_vars, dropped_vars = adj$drop
+    )
+    
+    # FIX 1: Stripped leading spaces
+    cat(sprintf(
+"<div style='border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; margin-bottom: 20px;'>
+<h4 style='margin-top: 0;'>%s</h4>
+<b>Automated Draft:</b> %s<br>
+<b>Final Locked Model:</b> %s<br>
+<b>Biostatistician Note:</b> <i>%s</i>
+</div>\n\n", 
+    conf$title, 
+    ifelse(length(auto_vars)>0, paste(auto_vars, collapse=", "), "None"), 
+    ifelse(length(final_vars)>0, paste(final_vars, collapse=", "), "None"), 
+    adj$log))
+    
+  } else if (adj$type == "custom") {
+    final_vars <- adj$covariates
+    
+    final_locked_models[[id]] <- list(
+      id = id, title = adj$title, group_col = adj$group_col,
+      target_groups = adj$target_groups, ref_groups = adj$ref_groups,
+      covariates = final_vars, auto_vars = character(0), dropped_vars = character(0)
+    )
+    
+    # FIX 1: Stripped leading spaces
+    cat(sprintf(
+"<div style='border: 1px solid #3498db; padding: 15px; border-radius: 5px; background-color: #ebf5fb; margin-bottom: 20px;'>
+<h4 style='margin-top: 0;'>%s <span style='color:#2980b9; font-size:0.8em;'>(Manual Custom Model)</span></h4>
+<b>Final Locked Model:</b> %s<br>
+<b>Biostatistician Note:</b> <i>%s</i>
+</div>\n\n", 
+    adj$title, 
+    ifelse(length(final_vars)>0, paste(final_vars, collapse=", "), "None"), 
+    adj$log))
+  }
+}
+
+rm(id, adj, auto_vars, conf, final_vars)
+invisible(gc())
+```
+
+
+# PCA {.tabset}
+
+`r what_this_does("Executed the PCA pipeline to assess global cohort structure and identify potential outliers or batch effects.", "Generated scree plots to evaluate dimensional variance capture.", "Rendered and exported feature loadings and metadata-colored PCA overlays (e.g., by Cohort, Age, Sex).")`
+
+`r why_is_this_done("The PCA is used to validate the Variable Selector.", "The PCA can show more complex relationships than mere correlation, that might warrant variable exclusion.")`
+
+```{r execution_engine_PCA, results='asis'}
+# Run Manual / Standalone PCAs defined in the Configuration Chunk
+for (pca_name in names(pca_configs)) {
+  pca_conf <- pca_configs[[pca_name]]
+  pca_results <- wrap_pca_pipeline(olink_mat, master_spine, pca_conf, pca_name, output_dir_data, get_project_colors)
+  
+  cat(sprintf("## %s\n\n", pca_conf$title))
+  
+  # FIX 2: Print plots directly so knitr handles the HTML embedding
+  print(pca_results$plots[["scree"]])
+  cat("\n\n")
+  print(pca_results$plots[["loadings"]])
+  cat("\n\n")
+  print(pca_results$plots[["merged_drivers"]])
+  cat("\n\n")
+  
+  for (c_var in pca_conf$color_vars) { 
+    plot_key <- paste0("PCA_Plot_", c_var)
+    if (!is.null(pca_results$plots[[plot_key]])) {
+      print(pca_results$plots[[plot_key]]) 
+      cat("\n\n")
+    }
+  }
+}
+
+# Clean memory
+rm(pca_name, pca_conf, pca_results)
+if (exists("plot_key")) rm(plot_key)
+if (exists("c_var")) rm(c_var)
 invisible(gc())
 ```
 
@@ -308,67 +381,100 @@ invisible(gc())
 
 `r what_this_does("Executed multivariate Variance Partition Analysis to model the combined influence of specific clinical variable sets.", "Calculated the unique percentage of proteomics variance explained by each variable while adjusting for the others.", "Outputted bar and violin plots to visualize the distribution of explained variance across all measured proteins.")`
 
+`r why_is_this_done("The multivariate VPA is used to validate the Variable Selector (which is based o the univariate VPA).", "The multivariate VPA shows a more accurate estimation of explained variance thatn the univariate", "If the explained variance of a variable drops markedly, this warrants variable exclusion")`
+
 ```{r targeted_vpa_engine, results='asis', fig.height=10, fig.width=8}
-for (vpa_id in names(targeted_vpa_configs)) {
-  conf <- targeted_vpa_configs[[vpa_id]]
+for (id in names(final_locked_models)) {
+  m <- final_locked_models[[id]]
+  cat(sprintf("#### Analysis: %s (Locked Model)\n\n", m$title))
   
-  cat(sprintf("#### Analysis: %s\n\n", conf$title))
-  
-  res <- wrap_vpa_pipeline(
-    omics_mat       = olink_mat,  
-    clin_df         = master_spine, 
-    vpa_conf        = conf, 
-    vpa_id          = vpa_id, 
-    base_output_dir = output_dir_data
-  )
+  dyn_conf <- list(title = m$title, variables = c(m$group_col, m$covariates))
+  res <- wrap_vpa_pipeline(olink_mat, master_spine, dyn_conf, paste0("Locked_", id), output_dir_data)
   
   if(!is.null(res) && res$status == "success") {
-    print(res$plots$bar)
-    cat("\n\n")
-    print(res$plots$violin)
-  } else if (!is.null(res) && res$status == "failed") {
-    # Prints the exact reason the model was skipped
+    print(res$plots$bar); cat("\n\n"); print(res$plots$violin)
+  } else {
     cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n", res$error_msg))
   }
 }
 
 # Clean memory
-rm(vpa_id, conf, res)
+rm(id, m, dyn_conf, res)
 invisible(gc())
 ```
 
+
+
 # Pre-DEA Design Validation
 
-`r analysis_decision("Enforced the clinical 'Rule of 10' (minimum 10 samples per parameter) for all DEA designs to mathematically prevent overfitting.", "Mandated a strict minimum of 2 surviving patients per contrast group to ensure valid standard error estimation in downstream limma models.","Implemented automated exclusion for variables that collapse to zero variance or a single level after complete-case filtration.","Evaluated linear independence via QR matrix decomposition to actively block collinear variables from entering the limma pipeline.", "Cross-referenced all covariates against the cohort Spearman correlation matrix to block Variance Inflation (rho >= 0.30, p <= 0.05).")`
+`r analysis_decision("Only models that passed these criteria were accepted:", "Minimum 10 samples per parameter to prevent overfitting.", "Minimum of 2 surviving patients per contrast group to ensure valid standard error estimation in downstream limma models.","Variance > 0 after complete case filtratiion","No collinearity (checked by QR matrix)", "No correlation (rho >= 0.25 and p <= 0.05)")`
 
 `r what_this_does("Tested proposed Differential Expression Analysis configurations against 5 mathematical pillars: Complete Case Survival, Variance Stability, Matrix Collinearity, Variance Inflation, and Statistical Power.", "Generated an integrated, variable-by-variable mathematical audit table for each proposed model to guide downstream DEA script configurations.")`
+
+`r why_is_this_done("The Pre-DEA Design Validation is used to validate the candidate variables selected using the Automated Variable Selector, PCA and multivariate VPA.", "If the model passes this validation it is ready to be used in a DEA")`
+
 ```{r pre_dea_validation, results='asis'}
-for (model_id in names(pre_dea_configs)) {
+for (id in names(final_locked_models)) {
+  m <- final_locked_models[[id]]
   
-  # Call the new wrapper engine
-  res <- wrap_pre_dea_validation(
-    clin_df      = master_spine,
-    conf         = pre_dea_configs[[model_id]],
-    rules        = dea_validation_rules,
-    cor_matrices = clinical_correlations
-  )
+  dyn_conf <- list(title = sprintf("%s (Locked)", m$title), group_col = m$group_col, target_groups = m$target_groups, ref_groups = m$ref_groups, covariates = m$covariates)
+  res <- wrap_pre_dea_validation(master_spine, dyn_conf, dea_validation_rules, clinical_correlations)
   
-  # Intelligent Render Engine
+  # FIX 4: Cat the clean HTML box first, then print the stripped table
+  cat(res$meta_html)
+  
   if (interactive()) {
     print(res$html_table)
   } else {
     cat(as.character(res$html_table))
   }
-  
-  cat("\n\n") 
+  cat("\n\n<br><hr>\n\n") 
 }
 
 # Clean memory
-rm(model_id, res)
+rm(id, m, dyn_conf, res)
 invisible(gc())
 ```
 
 # Appendix
+
+`r what_this_does("Generates collapsible visual evidence (Before-State Multi-VPA and PCA) for any variables that were manually rejected from the automated draft models.")`
+
+```{r diagnostic_graveyard, results='asis'}
+for (id in names(final_locked_models)) {
+  m <- final_locked_models[[id]]
+  
+  if (length(m$dropped_vars) > 0) {
+    cat(sprintf("### Rejected Diagnostics: %s\n\n", m$title))
+    
+    # Render Dropdown wrapper
+    cat(sprintf("<details><summary style='cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 1.2em;'>▶ Click to view 'Before' State Visuals (Dropped: %s)</summary>\n<div style='padding: 15px; border-left: 3px solid #c0392b; margin-top: 10px; background-color: #fcfcfc;'>\n\n", paste(m$dropped_vars, collapse=", ")))
+    
+    cat("> **Note:** The plots below show the *Automated Draft* model before manual exclusion. They demonstrate how the dropped variables behaved in the context of the full draft model.\n\n")
+    
+    # 1. Run 'Before' VPA
+    cat("#### Multi-VPA (Draft State)\n\n")
+    draft_vpa_conf <- list(title = sprintf("Draft VPA: %s", m$title), variables = c(m$group_col, m$auto_vars))
+    vpa_res <- wrap_vpa_pipeline(olink_mat, master_spine, draft_vpa_conf, paste0("Draft_", id), output_dir_data)
+    if(!is.null(vpa_res) && vpa_res$status == "success") { print(vpa_res$plots$bar); cat("\n\n") }
+    
+    # 2. Run 'Before' PCA
+    cat("#### PCA (Draft State)\n\n")
+    draft_pca_conf <- list(title = sprintf("Draft PCA: %s", m$title), subset_to_contrast = list(group_col = m$group_col, target_groups = c(m$target_groups, m$ref_groups)), color_vars = c(m$group_col, m$auto_vars))
+    pca_res <- wrap_pca_pipeline(olink_mat, master_spine, draft_pca_conf, paste0("Draft_", id), output_dir_data, get_project_colors)
+    if (!interactive()) {
+      cat(sprintf("![](%s)\n\n![](%s)\n\n![](%s)\n\n", pca_res$paths[["scree"]], pca_res$paths[["loadings"]], pca_res$paths[["merged_drivers"]]))
+      if (!is.null(pca_res$paths[["merged_overlays"]])) cat(sprintf("![](%s)\n\n", pca_res$paths[["merged_overlays"]]))
+    } else {
+      print(pca_res$plots[["scree"]]); print(pca_res$plots[["loadings"]]); print(pca_res$plots[["merged_drivers"]])
+      for (c_var in draft_pca_conf$color_vars) { if (!is.null(pca_res$plots[[paste0("PCA_Plot_", c_var)]])) print(pca_res$plots[[paste0("PCA_Plot_", c_var)]]) }
+    }
+    
+    # Close Dropdown
+    cat("\n</div>\n</details>\n\n<hr>\n\n")
+  }
+}
+```
 
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
