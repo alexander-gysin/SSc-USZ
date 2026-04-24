@@ -408,7 +408,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">17 April, 2026</h4>
+<h4 class="date">24 April, 2026</h4>
 
 </div>
 
@@ -437,7 +437,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-17
+<strong>Last updated:</strong> 2026-04-24
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -568,15 +568,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee30a89c4b9f10c3ae14d8ef7d440887faee63ae4targetblanke30a89ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e30a89c4b9f10c3ae14d8ef7d440887faee63ae4" target="_blank">e30a89c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeedcd4a8cd837eaf3829ae3e8e064ea951758701btargetblankedcd4a8a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee30a89c4b9f10c3ae14d8ef7d440887faee63ae4targetblanke30a89ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -586,7 +586,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/edcd4a8cd837eaf3829ae3e8e064ea951758701b" target="_blank">edcd4a8</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e30a89c4b9f10c3ae14d8ef7d440887faee63ae4" target="_blank">e30a89c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -603,9 +603,9 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/02_cohort_characterization/
-    Ignored:    output/03a_proteomics_global/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_predictive/
@@ -616,6 +616,15 @@ Ignored files:
 Untracked files:
     Untracked:  code/randomizer.R
     Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/01_data_import_and_qc.Rmd
+    Modified:   analysis/02_cohort_characterization.Rmd
+    Modified:   analysis/03b_proteomics_differential.Rmd
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/style.css
+    Modified:   code/00_omics_engines.R
+    Modified:   renv.lock
 
 </code></pre>
 <p>
@@ -661,6 +670,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e30a89c4b9f10c3ae14d8ef7d440887faee63ae4/analysis/03a_proteomics_variance.Rmd" target="_blank">e30a89c</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-24
+</td>
+<td>
+wflow_publish("analysis/03a_proteomics_variance.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/96da8d0541fdc68f1e52805bc442596200335c01/docs/03a_proteomics_variance.html" target="_blank">96da8d0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -835,7 +878,7 @@ Contrast</td>
 <tr class="even">
 <td align="left">High VPA VAriance &amp; High Correlation with
 Contrast</td>
-<td align="left">Compare Include/Exclude</td>
+<td align="left">Exclude</td>
 <td align="left">Confounder: Correcting for this could erase the
 signal</td>
 </tr>
@@ -899,31 +942,63 @@ power of standard covariates versus newly discovered clinical hits.
 </div>
 <pre class="r"><code># 1. Exploratory  VPA ----------------------------------------------------------
 exploratory_vpa_configs &lt;- list(
-  
   discovery_scan_patients = list(
     title              = &quot;Clinical Discovery: Patients Only&quot;,
     subset_to_groups   = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    
-    # Filtering Rules
-    exclude_vars       = c(&quot;inCentraxx&quot;, &quot;SELECTED&quot;, &quot;Subject-ID (EUSTAR)&quot;, &quot;Geburtsdatum&quot;, &quot;Raynaud VAS Unknown&quot;, &quot;Birth_Year&quot;, &quot;Face&quot;,    &quot;Chest&quot;,    &quot;Abdomen&quot;,  &quot;Left_Upper Arms&quot;   ,&quot;Right_Upper Arms&quot;,    &quot;Left_Forearms&quot;,    &quot;Right_Forearms&quot;,   &quot;Left_Hands&quot;,   &quot;Right_Hands&quot;,  &quot;Left_Fingers&quot;, &quot;Right_Fingers&quot;,    &quot;Left_Thighs&quot;,  &quot;Right_Thighs&quot;, &quot;Left_Legs&quot;,    &quot;Right_Legs&quot;,   &quot;Left_Feet&quot;,    &quot;Right_Feet&quot;, &quot;Geschlecht&quot;, &quot;Active_our&quot;),
+    exclude_vars       = c(&quot;inCentraxx&quot;, &quot;SELECTED&quot;, &quot;Subject-ID (EUSTAR)&quot;, &quot;Geburtsdatum&quot;, &quot;Raynaud VAS Unknown&quot;, &quot;Birth_Year&quot;, &quot;Face&quot;, &quot;Chest&quot;, &quot;Abdomen&quot;, &quot;Left_Upper Arms&quot;, &quot;Right_Upper Arms&quot;, &quot;Left_Forearms&quot;, &quot;Right_Forearms&quot;, &quot;Left_Hands&quot;, &quot;Right_Hands&quot;, &quot;Left_Fingers&quot;, &quot;Right_Fingers&quot;, &quot;Left_Thighs&quot;, &quot;Right_Thighs&quot;, &quot;Left_Legs&quot;, &quot;Right_Legs&quot;, &quot;Left_Feet&quot;, &quot;Right_Feet&quot;, &quot;Geschlecht&quot;, &quot;Active_our&quot;),
     exclude_patterns   = c(&quot;Date&quot;, &quot;?&quot;, &quot;Datum&quot;), 
     include_vars       = c(), 
     missingness_cutoff = 0.10,
+    top_n_plot         = 60,
     
-    # Execution &amp; Visualization Rules
-    top_n_plot         = 50 
+    # QC Checkpoint Parameters -------------------------------------------------
+    dist_plot_limit    = 30, # Max variables to draw in the histogram grid
+    corr_plot_limit    = 30, # Max VPA hits to feed into the heatmap
+    heatmap_add_vars   = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;Inflamm_active&quot;, &quot;fibrotic_active&quot;, &quot;vascular_active&quot;) # Extra vars to force into heatmap
   )
 )
 
-# 2. Candidates for correcting variables
-# Variables are selected based on the Exploratory VPA in this script
-# Selected variables will be assessed using a PCA and a Multivariate VPA
-
-candidate_vars &lt;- list(
-  set1 = c(&quot;Creatinine&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Age&quot;, &quot;DLCO (SB) (% predicted)&quot;)
+# 2. Automated DEA Variable Selector Configurations ----------------------------
+dea_selector_configs &lt;- list(
+  active_vs_nonactive_1 = list(
+    title = &quot;Active vs Non-Active&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    vpa_source_id = &quot;discovery_scan_patients&quot;, 
+    must_include = c(),          
+    must_exclude = c(&quot;Creatinine&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Distance in m&quot;, &quot;log_Distance_in_m&quot;, &quot;Uric ACid (mg/dl)&quot;, &quot;mRSS_a&quot;, &quot;Modified rodnan skin score&quot;, &quot;eustarAI&quot;, &quot;SSc Antibodies&quot;, &quot;Delta_ECHO_Years&quot;, &quot;Deöta_ECG_Years&quot;), # Excluded based on QC
+    min_samples_per_param = 15,
+    max_cor_rho           = 0.25, 
+    max_cor_p             = 0.05,
+    # --- NEW: Pre-Selection Log ---
+    pre_selection_log     = &quot;Some variables excluded due to non-normal distribution (mostly bimodal). eustar AI excluded due to high correlation with contrast. SSC Antibodies excluded due to skewed distribution (11% vs 89%).&quot;
+  )
 )
 
-# 3. PCA Master Layouts (Independent grids) ------------------------------------
+# 3. Manual Model Adjustment and Creations  ------------------------------------
+manual_model_adjustments &lt;- list(
+  
+  active_vs_nonactive_1 = list(
+    type = &quot;adjustment&quot;, 
+    drop = c(&quot;Right ventricular area (cm2)&quot;,&quot;LVEF %&quot;), 
+    add  = c(), 
+    log  = &quot;Removed cardiac parameters since theyx did not explain a large enough portion of variance in the multivariate VPA. Could not include Sex or Age due to correlation with log_creatinine&quot;
+  ),
+  
+  legacy_model = list(
+    type = &quot;custom&quot;,     
+    title = &quot;Custom: Legacy Model&quot;,
+    group_col = &quot;cohort_group&quot;,
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_NON_ACTIVE),
+    covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
+    log  = &quot;Legacy model, created to compare the new models to.&quot;
+  )
+  
+)
+
+# 4. PCA Configs----------------------------------------------------------------
 pca_configs &lt;- list(
   pca_global = list(
     title = &quot;PCA: Global Cohort Structure&quot;,
@@ -931,91 +1006,22 @@ pca_configs &lt;- list(
     color_vars = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;Sample_Age&quot;) 
   ),
   
-  pca_DEA_candidate_vars = list(
-    title = &quot;PCA: Proposed DEA Variables (Active/Non-Active Only)&quot;,
+  pca_candidate_vars = list(
+    title = &quot;PCA: Candidate Variables&quot;,
     subset_to_contrast = list(
       group_col = &quot;cohort_group&quot;,
       target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE)
     ), 
-    color_vars = c(&quot;cohort_group&quot;, &quot;Inflamm_active&quot;, &quot;fibrotic_active&quot;, &quot;vascular_active&quot;, candidate_vars$set1) 
-  )
-  
-)
-
-# 4. Targeted VPA --------------------------------------------------------------
-
-targeted_vpa_configs &lt;- list(
-  
-  active_nonactive = list(
-    title     = &quot;Potential DEA Model for: Active vs. Non-Active&quot;,
-    variables = c(&quot;cohort_group&quot;, candidate_vars$set1)  
-  ),
-  
-  inflammation = list(
-    title     = &quot;Potential DEA Model for: Inflammed vs. Non-Inflammed SSc Patients&quot;,
-    variables = c(&quot;Inflamm_active&quot;, candidate_vars$set1)  
-  ),
-  
-  fibrotic = list(
-    title     = &quot;Potential DEA Model for: Fibrotic vs. Non-Fibrotic SSc Patients&quot;,
-    variables = c(&quot;fibrotic_active&quot;, candidate_vars$set1)  
-  ),
-  
-   vascular = list(
-    title     = &quot;Potential DEA Model for: Vascular vs. Non-Vascular SSc Patients&quot;,
-    variables = c(&quot;vascular_active&quot;, candidate_vars$set1)  
-  ),
-   SSC_vs_Ctrl = list(
-    title     = &quot;Potential DEA Model for: SSc vs. Control&quot;,
-    variables = c(&quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;)  
+    color_vars = c(&quot;cohort_group&quot;, &quot;Sex&quot;, &quot;Age&quot;, &quot;log_NT_ProBNP&quot;, &quot;log_creatinine&quot;) 
   )
 )
 
-# 5. Pre-DEA Validation Configurations -----------------------------------------
+# 5. Final Validation ----------------------------------------------------------
 dea_validation_rules &lt;- list(
   min_samples_per_param = 10, 
   min_group_n           = 2,
-  max_cor_rho           = 0.30, # Threshold for Variance Inflation
+  max_cor_rho           = 0.25, 
   max_cor_p             = 0.05  
-  # It is called max_cor_p since it ist he highest p-value at which the correlation is considered to be real
-)
-
-pre_dea_configs &lt;- list(
-  active_vs_nonactive = list(
-    title         = &quot;Active vs Non-Active&quot;,
-    group_col     = &quot;cohort_group&quot;,
-    target_groups = c(GRP_ACTIVE),
-    ref_groups    = c(GRP_NON_ACTIVE),
-    covariates    = candidate_vars$set1
-  ),
-  inflammed = list(
-    title         = &quot;Inflammed vs. Non-Inflammed&quot;,
-    group_col     = &quot;Inflamm_active&quot;,
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  fibrotic = list(
-    title         = &quot;Fibrotic vs. Non-Fibrotic&quot;,
-    group_col     = &quot;fibrotic_active&quot;,
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  vascular = list(
-    title         = &quot;Vascular vs. Non-Vascular&quot;,
-    group_col     = &quot;vascular_active&quot;,
-    target_groups = c(1),
-    ref_groups    = c(0),
-    covariates    = candidate_vars$set1
-  ),
-  ssc_vs_ctrl = list(
-    title         = &quot;SSc vs Healthy Control&quot;,
-    group_col     = &quot;cohort_group&quot;,
-    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    ref_groups    = c(GRP_CONTROL),
-    covariates    = c(&quot;Age&quot;, &quot;Sex&quot;) 
-  )
 )</code></pre>
 </div>
 <div id="exploratory-variance-partition-analysis"
@@ -1030,13 +1036,13 @@ healthy controls) because clinical data is only available for patients
 not for healthy controls
 </li>
 <li>
-Enforced a strict missingness cutoff (max 10% missing data per variable)
-to prevent modeling artifacts caused by highly sparse clinical data.
+Removed variables with a &gt;10% missingness ratio to prevent modeling
+artifacts caused by highly sparse clinical data.
 </li>
 <li>
-Automatically excluded variables with zero or near-zero variance (e.g.,
-factors with only one level remaining after NA-drops) to ensure
-mathematical convergence of the mixed-effects models.
+Removed variables with zero or near-zero variance (e.g., factors with
+only one level remaining after NA-drops) to ensure mathematical
+convergence of the mixed-effects models.
 </li>
 <li>
 Removed administrative IDs and raw date columns, preventing spurious
@@ -1065,10 +1071,6 @@ drivers of proteomic variance.
 </li>
 </ul>
 </div>
-<pre class="r"><code>cat(&quot;### Executing Exploratory Variance Partition Analysis...\n\n&quot;)</code></pre>
-<div id="executing-exploratory-variance-partition-analysis"
-class="section level3">
-<h3>Executing Exploratory Variance Partition Analysis…</h3>
 <pre class="r"><code>for (vpa_id in names(exploratory_vpa_configs)) {
   conf &lt;- exploratory_vpa_configs[[vpa_id]]
   cat(sprintf(&quot;#### Scan: %s\n\n&quot;, conf$title))
@@ -1213,6 +1215,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/96da8d0541fdc68f1e52805bc442596200335c01/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">96da8d0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-17
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">2909df1</a>
 </td>
 <td>
@@ -1287,6 +1300,26 @@ Mean: 76.47 | IQR: [61.75 - 85.25]
 </tr>
 <tr>
 <td style="text-align:left;">
+log_creatinine
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+5.53%
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+Mean: 1.86 | IQR: [1.79 - 1.93]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 NT-proBNP (pg/ml)
 </td>
 <td style="text-align:left;">
@@ -1307,6 +1340,26 @@ Mean: 315.81 | IQR: [56.50 - 284.75]
 </tr>
 <tr>
 <td style="text-align:left;">
+log_NT_ProBNP
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+4.56%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Mean: 2.13 | IQR: [1.75 - 2.45]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 Age
 </td>
 <td style="text-align:left;">
@@ -1323,6 +1376,26 @@ Continuous
 </td>
 <td style="text-align:left;">
 Mean: 60.39 | IQR: [48.00 - 71.25]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Distance_in_m
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+2.97%
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:left;">
+Mean: 3.32 | IQR: [2.71 - 4.66]
 </td>
 </tr>
 <tr>
@@ -2267,6 +2340,146 @@ Categorical
 Levels: 2 | 0: 20.7%, 1: 79.3%
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+Digital Tip Ulcers
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.21%
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 77.9%, 1: 22.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillaroscopy Pattern
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.21%
+</td>
+<td style="text-align:left;">
+8.3%
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 29.5%, 1: 70.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subcutaneous Calcinosis
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.20%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 76.0%, 1: 24.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Inflamm_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.20%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 68.8%, 1: 31.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Abnormal Capillaroscopy
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.19%
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 13.8%, 1: 86.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EULAR/ACR 2013 Criteria
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.17%
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:right;">
+96
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 11.5%, 1: 88.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;font-weight: bold;color: darkred !important;">
+0.16%
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:left;">
+Levels: 2 | 0: 51.6%, 1: 48.4%
+</td>
+</tr>
 </tbody>
 </table>
 <p><br></p>
@@ -2276,9 +2489,638 @@ rm(vpa_id, conf, res)
 invisible(gc())</code></pre>
 </div>
 </div>
+<div id="top-hit-quality-control" class="section level1">
+<h1>Top Hit Quality Control</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generates a dynamic visual quality control checkpoint for the top
+Univariate VPA hits.
+</li>
+<li>
+Plots a multi-panel grid of distributions to identify extreme outliers
+or skew.
+</li>
+<li>
+Renders a clustered correlation heatmap to instantly reveal blocks of
+collinear variables before automated selection begins.
+</li>
+</ul>
 </div>
-<div id="pca" class="section level1">
-<h1>PCA</h1>
+<pre class="r"><code># Initialize output buffer to prevent code chunk fragmentation
+for (vpa_id in names(exploratory_vpa_configs)) {
+  conf &lt;- exploratory_vpa_configs[[vpa_id]]
+  html_out &lt;- paste0(sprintf(&quot;#### QC: %s\n\n&quot;, conf$title))
+  
+  vpa_csv_path &lt;- file.path(output_dir_data, &quot;VPA_Univariate&quot;, vpa_id, paste0(vpa_id, &quot;_Univariate_Results.csv&quot;))
+  if (!file.exists(vpa_csv_path)) {
+    html_out &lt;- paste0(html_out, &quot;&gt; **SKIPPED:** VPA Results not found.\n\n&quot;)
+    next
+  }
+  
+  vpa_df &lt;- read_csv(vpa_csv_path, show_col_types = FALSE)
+  
+  # Call the DRY Engine Wrapper
+  qc_res &lt;- wrap_vpa_qc_pipeline(vpa_df, master_spine, clinical_correlations, conf, vpa_id, output_dir_data)
+  
+  # Append any missing variable warnings to the buffer
+  if (length(qc_res$html_warnings) &gt; 0) {
+    html_out &lt;- paste0(html_out, paste(qc_res$html_warnings, collapse = &quot;\n\n&quot;), &quot;\n\n&quot;)
+  }
+  
+  # Dump HTML string so far, then print plots sequentially
+  cat(html_out)
+  html_out &lt;- &quot;&quot; # Reset buffer
+  
+  if (!is.null(qc_res$plots[[&quot;distribution_grid&quot;]])) {
+    print(qc_res$plots[[&quot;distribution_grid&quot;]])
+    cat(&quot;\n\n&lt;br&gt;&lt;hr&gt;\n\n&quot;)
+  }
+  
+  if (!is.null(qc_res$plots[[&quot;correlation_heatmap&quot;]])) {
+    print(qc_res$plots[[&quot;correlation_heatmap&quot;]])
+    cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
+  }
+}</code></pre>
+<div id="qc-clinical-discovery-patients-only" class="section level4">
+<h4>QC: Clinical Discovery: Patients Only</h4>
+<p><img src="figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<br>
+<hr>
+<p><img src="figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-2.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p><br></p>
+<pre class="r"><code># Clean memory
+rm(html_out, vpa_id, conf, vpa_csv_path, vpa_df, qc_res)
+invisible(gc())</code></pre>
+</div>
+</div>
+<div id="automated-dea-variable-selector" class="section level1 tabset">
+<h1 class="tabset">Automated DEA Variable Selector</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Executes a greedy top-down selection algorithm to automatically
+construct the optimal Limma covariates.
+</li>
+<li>
+Forces must-include variables into the model, checking for confounders
+and variance inflation.
+</li>
+<li>
+Evaluates remaining variables by univariate VPA strength, rejecting
+those that collinearize with existing selections or break statistical
+power.
+</li>
+<li>
+Computes final Variance Inflation Factors (VIF) and outputs a custom
+verification heatmap of the proposed model.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Store the machine&#39;s drafts in memory for the Appendix
+auto_draft_models &lt;- list()
+
+for (sel_id in names(dea_selector_configs)) {
+  conf &lt;- dea_selector_configs[[sel_id]]
+  cat(sprintf(&quot;### %s\n\n&quot;, conf$title))
+  
+  # Print the pre-selection log if it exists!
+  if (!is.null(conf$pre_selection_log)) {
+    cat(sprintf(&quot;&gt; **Pre-Selection Note:** *%s*\n\n&quot;, conf$pre_selection_log))
+  }
+  
+  vpa_csv_path &lt;- file.path(output_dir_data, &quot;VPA_Univariate&quot;, conf$vpa_source_id, paste0(conf$vpa_source_id, &quot;_Univariate_Results.csv&quot;))
+  if (!file.exists(vpa_csv_path)) next
+  
+  vpa_df &lt;- read_csv(vpa_csv_path, show_col_types = FALSE)
+  res &lt;- wrap_dea_selector(clin_df = master_spine, conf = conf, vpa_df = vpa_df, cor_matrices = clinical_correlations)
+  
+  if (res$status == &quot;success&quot;) {
+    auto_draft_models[[sel_id]] &lt;- res$selected_vars
+    
+    if (interactive()) print(res$html_table) else cat(as.character(res$html_table))
+    cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
+    if (!is.null(res$heatmap)) { print(res$heatmap); cat(&quot;\n\n&quot;) }
+  } else {
+    cat(sprintf(&quot;&gt; **SKIPPED:** %s\n\n&quot;, res$msg))
+  }
+}</code></pre>
+<div id="active-vs-non-active" class="section level3">
+<h3>Active vs Non-Active</h3>
+<blockquote>
+<p><strong>Pre-Selection Note:</strong> <em>Some variables excluded due
+to non-normal distribution (mostly bimodal). eustar AI excluded due to
+high correlation with contrast. SSC Antibodies excluded due to skewed
+distribution (11% vs 89%).</em></p>
+</blockquote>
+<table class="table table-striped table-hover table-condensed table-bordered" style="margin-left: auto; margin-right: auto;border-bottom: 0;">
+<caption>
+<div style="color:black; font-size:1.4em; font-weight:bold;">
+Active vs Non-Active: Automated Selection
+</div>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:left;">
+VPA_Rank
+</th>
+<th style="text-align:left;">
+Distribution
+</th>
+<th style="text-align:left;">
+Recommendation
+</th>
+<th style="text-align:left;">
+Reason
+</th>
+<th style="text-align:left;">
+VIF
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+log_creatinine
+</td>
+<td style="text-align:left;">
+#2
+</td>
+<td style="text-align:left;">
+1.8 [1.8 - 1.9]
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">✅ Included</span>
+</td>
+<td style="text-align:left;">
+Top independent VPA hit
+</td>
+<td style="text-align:left;">
+1.16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_NT_ProBNP
+</td>
+<td style="text-align:left;">
+#4
+</td>
+<td style="text-align:left;">
+2.0 [1.8 - 2.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">✅ Included</span>
+</td>
+<td style="text-align:left;">
+Top independent VPA hit
+</td>
+<td style="text-align:left;">
+1.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+#5
+</td>
+<td style="text-align:left;">
+62.0 [48.0 - 71.2]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.28)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO (SB) (% predicted)
+</td>
+<td style="text-align:left;">
+#7
+</td>
+<td style="text-align:left;">
+65.0 [49.0 - 77.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_NT_ProBNP (rho=-0.39)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO/VA (% predicted)
+</td>
+<td style="text-align:left;">
+#9
+</td>
+<td style="text-align:left;">
+77.0 [65.5 - 87.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_NT_ProBNP (rho=-0.32)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Uric Acid (mg/dl)
+</td>
+<td style="text-align:left;">
+#10
+</td>
+<td style="text-align:left;">
+4.8 [4.0 - 6.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.47)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hemoglobin (g/dl)
+</td>
+<td style="text-align:left;">
+#12
+</td>
+<td style="text-align:left;">
+12.8 [12.0 - 14.2]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_NT_ProBNP (rho=-0.49)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Forced Vital Capacity (ml)
+</td>
+<td style="text-align:left;">
+#13
+</td>
+<td style="text-align:left;">
+3020.0 [2455.0 - 3532.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.31)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FVC %pred
+</td>
+<td style="text-align:left;">
+#14
+</td>
+<td style="text-align:left;">
+91.5 [80.2 - 101.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.29)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Body weight (kg)
+</td>
+<td style="text-align:left;">
+#17
+</td>
+<td style="text-align:left;">
+66.2 [55.0 - 78.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.34)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right atrium area (cm2)
+</td>
+<td style="text-align:left;">
+#19
+</td>
+<td style="text-align:left;">
+15.0 [14.0 - 17.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.27)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular area (cm2)
+</td>
+<td style="text-align:left;">
+#20
+</td>
+<td style="text-align:left;">
+16.1 [14.2 - 18.7]
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">✅ Included</span>
+</td>
+<td style="text-align:left;">
+Top independent VPA hit
+</td>
+<td style="text-align:left;">
+1.08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CK value in serum (U/L)
+</td>
+<td style="text-align:left;">
+#21
+</td>
+<td style="text-align:left;">
+78.0 [60.0 - 113.5]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=0.33)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_ECG_Years
+</td>
+<td style="text-align:left;">
+#23
+</td>
+<td style="text-align:left;">
+0.0 [0.0 - 0.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable Right ventricular area (cm2) (rho=0.26)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Score
+</td>
+<td style="text-align:left;">
+#24
+</td>
+<td style="text-align:left;">
+14.0 [10.0 - 22.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Confounder with contrast (rho=0.50)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+#25
+</td>
+<td style="text-align:left;">
+Female: 79.2%<br>Male: 20.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Exclude</span>
+</td>
+<td style="text-align:left;">
+Redundant with included variable log_creatinine (rho=-0.48)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LVEF %
+</td>
+<td style="text-align:left;">
+#26
+</td>
+<td style="text-align:left;">
+60.0 [58.0 - 63.0]
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">✅ Included</span>
+</td>
+<td style="text-align:left;">
+Top independent VPA hit
+</td>
+<td style="text-align:left;">
+1.07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<i>Remaining variables</i>
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+<td style="text-align:left;">
+<span style="color:#c0392b;">❌ Excluded</span>
+</td>
+<td style="text-align:left;">
+Power limit reached (SPP drops below 15)
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup></sup>
+<div
+style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
+<p><b>Final Complete Cases:</b> 87 / 96 (90.6%)<br> <b>Total
+Parameters:</b> 5 (Contrast + 4 Covariates)<br> <b>Statistical
+Power:</b> 17.4 SPP (Threshold: 15)<br> <b>Matrix Algebra:</b> Full Rank
+(Independent)<br> <i>Algorithm Rules: Max Cor = 0.25, Max P =
+0.05</i></p>
+</div></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</td>
+</tr>
+</tfoot>
+</table>
+<p><br></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/dea_selector_engine-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="manual-adjustments" class="section level1">
+<h1>Manual Adjustments</h1>
+<pre class="r"><code>final_locked_models &lt;- list()
+
+for (id in names(manual_model_adjustments)) {
+  adj &lt;- manual_model_adjustments[[id]]
+  
+  if (is.null(adj$type) || adj$type == &quot;adjustment&quot;) {
+    if (!(id %in% names(auto_draft_models))) next 
+    
+    auto_vars &lt;- auto_draft_models[[id]]
+    conf &lt;- dea_selector_configs[[id]]
+    final_vars &lt;- setdiff(unique(c(auto_vars, adj$add)), adj$drop)
+    
+    final_locked_models[[id]] &lt;- list(
+      id = id, title = conf$title, group_col = conf$group_col,
+      target_groups = conf$target_groups, ref_groups = conf$ref_groups,
+      covariates = final_vars, auto_vars = auto_vars, dropped_vars = adj$drop
+    )
+    
+    # FIX 1: Stripped leading spaces
+    cat(sprintf(
+&quot;&lt;div style=&#39;border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; margin-bottom: 20px;&#39;&gt;
+&lt;h4 style=&#39;margin-top: 0;&#39;&gt;%s&lt;/h4&gt;
+&lt;b&gt;Automated Draft:&lt;/b&gt; %s&lt;br&gt;
+&lt;b&gt;Final Locked Model:&lt;/b&gt; %s&lt;br&gt;
+&lt;b&gt;Biostatistician Note:&lt;/b&gt; &lt;i&gt;%s&lt;/i&gt;
+&lt;/div&gt;\n\n&quot;, 
+    conf$title, 
+    ifelse(length(auto_vars)&gt;0, paste(auto_vars, collapse=&quot;, &quot;), &quot;None&quot;), 
+    ifelse(length(final_vars)&gt;0, paste(final_vars, collapse=&quot;, &quot;), &quot;None&quot;), 
+    adj$log))
+    
+  } else if (adj$type == &quot;custom&quot;) {
+    final_vars &lt;- adj$covariates
+    
+    final_locked_models[[id]] &lt;- list(
+      id = id, title = adj$title, group_col = adj$group_col,
+      target_groups = adj$target_groups, ref_groups = adj$ref_groups,
+      covariates = final_vars, auto_vars = character(0), dropped_vars = character(0)
+    )
+    
+    # FIX 1: Stripped leading spaces
+    cat(sprintf(
+&quot;&lt;div style=&#39;border: 1px solid #3498db; padding: 15px; border-radius: 5px; background-color: #ebf5fb; margin-bottom: 20px;&#39;&gt;
+&lt;h4 style=&#39;margin-top: 0;&#39;&gt;%s &lt;span style=&#39;color:#2980b9; font-size:0.8em;&#39;&gt;(Manual Custom Model)&lt;/span&gt;&lt;/h4&gt;
+&lt;b&gt;Final Locked Model:&lt;/b&gt; %s&lt;br&gt;
+&lt;b&gt;Biostatistician Note:&lt;/b&gt; &lt;i&gt;%s&lt;/i&gt;
+&lt;/div&gt;\n\n&quot;, 
+    adj$title, 
+    ifelse(length(final_vars)&gt;0, paste(final_vars, collapse=&quot;, &quot;), &quot;None&quot;), 
+    adj$log))
+  }
+}</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9; margin-bottom: 20px;">
+<h4 style="margin-top: 0;">
+Active vs Non-Active
+</h4>
+<p><b>Automated Draft:</b> log_creatinine, log_NT_ProBNP, Right
+ventricular area (cm2), LVEF %<br> <b>Final Locked Model:</b>
+log_creatinine, log_NT_ProBNP<br> <b>Biostatistician Note:</b>
+<i>Removed cardiac parameters since theyx did not explain a large enough
+portion of variance in the multivariate VPA. Could not include Sex or
+Age due to correlation with log_creatinine</i></p>
+</div>
+<div
+style="border: 1px solid #3498db; padding: 15px; border-radius: 5px; background-color: #ebf5fb; margin-bottom: 20px;">
+<h4 style="margin-top: 0;">
+Custom: Legacy Model <span
+style="color:#2980b9; font-size:0.8em;">(Manual Custom Model)</span>
+</h4>
+<p><b>Final Locked Model:</b> Age, Sex<br> <b>Biostatistician Note:</b>
+<i>Legacy model, created to compare the new models to.</i></p>
+</div>
+<pre class="r"><code>rm(id, adj, auto_vars, conf, final_vars)
+invisible(gc())</code></pre>
+</div>
+<div id="pca" class="section level1 tabset">
+<h1 class="tabset">PCA</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2295,106 +3137,256 @@ Rendered and exported feature loadings and metadata-colored PCA overlays
 </li>
 </ul>
 </div>
-<pre class="r"><code>cat(&quot;### Executing Principal Component Analysis...\n\n&quot;)</code></pre>
-<div id="executing-principal-component-analysis" class="section level3">
-<h3>Executing Principal Component Analysis…</h3>
-<pre class="r"><code># Process each PCA configuration through the Master Pipeline
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+The PCA is used to validate the Variable Selector.
+</li>
+<li>
+The PCA can show more complex relationships than mere correlation, that
+might warrant variable exclusion.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Run Manual / Standalone PCAs defined in the Configuration Chunk
 for (pca_name in names(pca_configs)) {
-  
   pca_conf &lt;- pca_configs[[pca_name]]
+  pca_results &lt;- wrap_pca_pipeline(olink_mat, master_spine, pca_conf, pca_name, output_dir_data, get_project_colors)
   
-  # CALL THE MASTER PIPELINE
-  pca_results &lt;- wrap_pca_pipeline(
-    omics_mat           = olink_mat, 
-    clin_df             = master_spine, 
-    pca_conf            = pca_conf, 
-    pca_id              = pca_name, 
-    base_output_dir     = output_dir_data, 
-    project_colors_func = get_project_colors
-  )
+  cat(sprintf(&quot;## %s\n\n&quot;, pca_conf$title))
   
-  # PRINT TO HTML REPORT
-  if (!interactive()) {
-    cat(sprintf(&quot;#### %s\n\n&quot;, pca_conf$title))
-    
-    cat(sprintf(&quot;![](%s)\n\n&quot;, pca_results$paths[[&quot;scree&quot;]]))
-    cat(sprintf(&quot;![](%s)\n\n&quot;, pca_results$paths[[&quot;loadings&quot;]]))
-    cat(sprintf(&quot;![](%s)\n\n&quot;, pca_results$paths[[&quot;merged_drivers&quot;]]))
-
-    if (!is.null(pca_results$paths[[&quot;merged_overlays&quot;]])) {
-      cat(&quot;#### Metadata Overlays (Side-by-Side Comparison Grid)\n\n&quot;)
-      
-      subtitle_desc &lt;- case_when(
-        is.null(pca_conf$subset_to_contrast) ~ &quot;Showing: Global Cohort&quot;,
-        TRUE ~ pca_conf$title 
-      )
-      
-      cat(sprintf(&quot;&gt; **Grid View for:** %s\n\n&quot;, subtitle_desc))
-      
-      # Insert the already created master PNG
-      cat(sprintf(&quot;![](%s)\n\n&quot;, pca_results$paths[[&quot;merged_overlays&quot;]]))
-    }
-  } else {
-    # INTERACTIVE MODE: Print individual plots sequentially so they don&#39;t squash!
-    cat(sprintf(&quot;#### Interactive Viewer: %s\n\n&quot;, pca_conf$title))
-    print(pca_results$plots[[&quot;scree&quot;]])
-    print(pca_results$plots[[&quot;loadings&quot;]])
-    print(pca_results$plots[[&quot;merged_drivers&quot;]])
-    
-    # Loop through and print each overlay plot on its own
-    for (c_var in pca_conf$color_vars) {
-      plot_key &lt;- paste0(&quot;PCA_Plot_&quot;, c_var)
-      if (!is.null(pca_results$plots[[plot_key]])) {
-        print(pca_results$plots[[plot_key]])
-      }
+  # FIX 2: Print plots directly so knitr handles the HTML embedding
+  print(pca_results$plots[[&quot;scree&quot;]])
+  cat(&quot;\n\n&quot;)
+  print(pca_results$plots[[&quot;loadings&quot;]])
+  cat(&quot;\n\n&quot;)
+  print(pca_results$plots[[&quot;merged_drivers&quot;]])
+  cat(&quot;\n\n&quot;)
+  
+  for (c_var in pca_conf$color_vars) { 
+    plot_key &lt;- paste0(&quot;PCA_Plot_&quot;, c_var)
+    if (!is.null(pca_results$plots[[plot_key]])) {
+      print(pca_results$plots[[plot_key]]) 
+      cat(&quot;\n\n&quot;)
     }
   }
-  
-  cat(&quot;---\n\n&quot;)
 }</code></pre>
-<div id="pca-global-cohort-structure" class="section level4">
-<h4>PCA: Global Cohort Structure</h4>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_global/pca_global_scree.png" /></p>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_global/pca_global_loadings.png" /></p>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_global/pca_global_Merged_Drivers.png" /></p>
+<div id="pca-global-cohort-structure" class="section level2">
+<h2>PCA: Global Cohort Structure</h2>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_PCA-1">
+Past versions of execution_engine_PCA-1.png
+</button>
+</p>
+<div id="fig-execution_engine_PCA-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">2e39eed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="metadata-overlays-side-by-side-comparison-grid"
-class="section level4">
-<h4>Metadata Overlays (Side-by-Side Comparison Grid)</h4>
-<blockquote>
-<p><strong>Grid View for:</strong> Showing: Global Cohort</p>
-</blockquote>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_global/pca_global_Merged_Scatter_Overlays.png" /></p>
-<hr />
 </div>
-<div id="pca-proposed-dea-variables-activenon-active-only"
-class="section level4">
-<h4>PCA: Proposed DEA Variables (Active/Non-Active Only)</h4>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_DEA_candidate_vars/pca_DEA_candidate_vars_scree.png" /></p>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_DEA_candidate_vars/pca_DEA_candidate_vars_loadings.png" /></p>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_DEA_candidate_vars/pca_DEA_candidate_vars_Merged_Drivers.png" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_PCA-2">
+Past versions of execution_engine_PCA-2.png
+</button>
+</p>
+<div id="fig-execution_engine_PCA-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">2e39eed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="metadata-overlays-side-by-side-comparison-grid-1"
-class="section level4">
-<h4>Metadata Overlays (Side-by-Side Comparison Grid)</h4>
-<blockquote>
-<p><strong>Grid View for:</strong> PCA: Proposed DEA Variables
-(Active/Non-Active Only)</p>
-</blockquote>
-<p><img
-src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/pca_DEA_candidate_vars/pca_DEA_candidate_vars_Merged_Scatter_Overlays.png" /></p>
-<hr />
+</div>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_PCA-3">
+Past versions of execution_engine_PCA-3.png
+</button>
+</p>
+<div id="fig-execution_engine_PCA-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">2e39eed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_PCA-4">
+Past versions of execution_engine_PCA-4.png
+</button>
+</p>
+<div id="fig-execution_engine_PCA-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">2909df1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e39eed31cd0d374600f487b561e17db2a3f9308/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">2e39eed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-7.png" alt="" width="672" style="display: block; margin: auto;" />##
+PCA: Candidate Variables</p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-14.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03a_proteomics_variance.Rmd/execution_engine_PCA-15.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Clean memory
-rm(pca_name, pca_conf, pca_results, subtitle_desc, plot_key, c_var)
+rm(pca_name, pca_conf, pca_results)
+if (exists(&quot;plot_key&quot;)) rm(plot_key)
+if (exists(&quot;c_var&quot;)) rm(c_var)
 invisible(gc())</code></pre>
-</div>
 </div>
 </div>
 <div id="targeted-variance-partition-analysis" class="section level1">
@@ -2416,31 +3408,39 @@ explained variance across all measured proteins.
 </li>
 </ul>
 </div>
-<pre class="r"><code>for (vpa_id in names(targeted_vpa_configs)) {
-  conf &lt;- targeted_vpa_configs[[vpa_id]]
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+The multivariate VPA is used to validate the Variable Selector (which is
+based o the univariate VPA).
+</li>
+<li>
+The multivariate VPA shows a more accurate estimation of explained
+variance thatn the univariate
+</li>
+<li>
+If the explained variance of a variable drops markedly, this warrants
+variable exclusion
+</li>
+</ul>
+</div>
+<pre class="r"><code>for (id in names(final_locked_models)) {
+  m &lt;- final_locked_models[[id]]
+  cat(sprintf(&quot;#### Analysis: %s (Locked Model)\n\n&quot;, m$title))
   
-  cat(sprintf(&quot;#### Analysis: %s\n\n&quot;, conf$title))
-  
-  res &lt;- wrap_vpa_pipeline(
-    omics_mat       = olink_mat,  
-    clin_df         = master_spine, 
-    vpa_conf        = conf, 
-    vpa_id          = vpa_id, 
-    base_output_dir = output_dir_data
-  )
+  dyn_conf &lt;- list(title = m$title, variables = c(m$group_col, m$covariates))
+  res &lt;- wrap_vpa_pipeline(olink_mat, master_spine, dyn_conf, paste0(&quot;Locked_&quot;, id), output_dir_data)
   
   if(!is.null(res) &amp;&amp; res$status == &quot;success&quot;) {
-    print(res$plots$bar)
-    cat(&quot;\n\n&quot;)
-    print(res$plots$violin)
-  } else if (!is.null(res) &amp;&amp; res$status == &quot;failed&quot;) {
-    # Prints the exact reason the model was skipped
+    print(res$plots$bar); cat(&quot;\n\n&quot;); print(res$plots$violin)
+  } else {
     cat(sprintf(&quot;&gt; &lt;span style=&#39;color:red;&#39;&gt;**SKIPPED:** %s&lt;/span&gt;\n&quot;, res$error_msg))
   }
 }</code></pre>
-<div id="analysis-potential-dea-model-for-active-vs.-non-active"
+<div id="analysis-active-vs-non-active-locked-model"
 class="section level4">
-<h4>Analysis: Potential DEA Model for: Active vs. Non-Active</h4>
+<h4>Analysis: Active vs Non-Active (Locked Model)</h4>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-1">
@@ -2539,8 +3539,10 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>#### Analysis: Potential DEA Model for: Inflammed vs. Non-Inflammed
-SSc Patients</p>
+</div>
+<div id="analysis-custom-legacy-model-locked-model"
+class="section level4">
+<h4>Analysis: Custom: Legacy Model (Locked Model)</h4>
 <p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-3">
@@ -2639,241 +3641,8 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>#### Analysis: Potential DEA Model for: Fibrotic vs. Non-Fibrotic SSc
-Patients</p>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-5">
-Past versions of targeted_vpa_engine-5.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-6">
-Past versions of targeted_vpa_engine-6.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>#### Analysis: Potential DEA Model for: Vascular vs. Non-Vascular SSc
-Patients</p>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-7">
-Past versions of targeted_vpa_engine-7.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-8">
-Past versions of targeted_vpa_engine-8.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>#### Analysis: Potential DEA Model for: SSc vs. Control</p>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-9">
-Past versions of targeted_vpa_engine-9.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-targeted_vpa_engine-10">
-Past versions of targeted_vpa_engine-10.png
-</button>
-</p>
-<div id="fig-targeted_vpa_engine-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <pre class="r"><code># Clean memory
-rm(vpa_id, conf, res)
+rm(id, m, dyn_conf, res)
 invisible(gc())</code></pre>
 </div>
 </div>
@@ -2883,24 +3652,23 @@ invisible(gc())</code></pre>
 <strong>Analysis Decisions:</strong>
 <ul>
 <li>
-Enforced the clinical ‘Rule of 10’ (minimum 10 samples per parameter)
-for all DEA designs to mathematically prevent overfitting.
+Only models that passed these criteria were accepted:
 </li>
 <li>
-Mandated a strict minimum of 2 surviving patients per contrast group to
-ensure valid standard error estimation in downstream limma models.
+Minimum 10 samples per parameter to prevent overfitting.
 </li>
 <li>
-Implemented automated exclusion for variables that collapse to zero
-variance or a single level after complete-case filtration.
+Minimum of 2 surviving patients per contrast group to ensure valid
+standard error estimation in downstream limma models.
 </li>
 <li>
-Evaluated linear independence via QR matrix decomposition to actively
-block collinear variables from entering the limma pipeline.
+Variance &gt; 0 after complete case filtratiion
 </li>
 <li>
-Cross-referenced all covariates against the cohort Spearman correlation
-matrix to block Variance Inflation (rho &gt;= 0.30, p &lt;= 0.05).
+No collinearity (checked by QR matrix)
+</li>
+<li>
+No correlation (rho &gt;= 0.25 and p &lt;= 0.05)
 </li>
 </ul>
 </div>
@@ -2918,30 +3686,55 @@ for each proposed model to guide downstream DEA script configurations.
 </li>
 </ul>
 </div>
-<pre class="r"><code>for (model_id in names(pre_dea_configs)) {
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+The Pre-DEA Design Validation is used to validate the candidate
+variables selected using the Automated Variable Selector, PCA and
+multivariate VPA.
+</li>
+<li>
+If the model passes this validation it is ready to be used in a DEA
+</li>
+</ul>
+</div>
+<pre class="r"><code>for (id in names(final_locked_models)) {
+  m &lt;- final_locked_models[[id]]
   
-  # Call the new wrapper engine
-  res &lt;- wrap_pre_dea_validation(
-    clin_df      = master_spine,
-    conf         = pre_dea_configs[[model_id]],
-    rules        = dea_validation_rules,
-    cor_matrices = clinical_correlations
-  )
+  dyn_conf &lt;- list(title = sprintf(&quot;%s (Locked)&quot;, m$title), group_col = m$group_col, target_groups = m$target_groups, ref_groups = m$ref_groups, covariates = m$covariates)
+  res &lt;- wrap_pre_dea_validation(master_spine, dyn_conf, dea_validation_rules, clinical_correlations)
   
-  # Intelligent Render Engine
+  # FIX 4: Cat the clean HTML box first, then print the stripped table
+  cat(res$meta_html)
+  
   if (interactive()) {
     print(res$html_table)
   } else {
     cat(as.character(res$html_table))
   }
-  
-  cat(&quot;\n\n&quot;) 
+  cat(&quot;\n\n&lt;br&gt;&lt;hr&gt;\n\n&quot;) 
 }</code></pre>
-<table class="table table-striped table-hover table-condensed table-bordered" style="border-bottom: 0;">
+<div
+style="text-align: left; padding: 15px; font-size: 14px; color: #333; background-color:#fcfcfc; border: 1px solid #ddd; margin-bottom: 15px;">
+<b>Cohort Survival:</b> Started with 96 patients → <b>92 complete
+cases</b> survived.<br> <b>Statistical Power:</b> <b>23</b> samples per
+parameter (Total Parameters: 4).<br> <b>Matrix Algebra:</b> <span
+style="color:black; font-weight:bold;">Full Rank
+(Independent)</span><br><br>
+<div style="margin-bottom: 5px;">
+<b>Verdict:</b> <span
+style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span>
+</div>
+<p><b>Reason(s):</b><br>• All metrics within acceptable mathematical
+thresholds.<br><br> <i>Thresholds: Min Samples/Param = 10 | Min Group N
+= 2 | Max Corr = |0.25|</i></p>
+</div>
+<table class="table table-striped table-hover table-condensed table-bordered" style>
 <caption>
 <div
 style="color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;">
-Active vs Non-Active
+Active vs Non-Active (Locked)
 </div>
 </caption>
 <thead>
@@ -2981,7 +3774,7 @@ Contrast Group
 0.0%
 </td>
 <td style="text-align:left;">
-Active: 50.6%<br>Non-Active: 49.4%
+Active: 50.0%<br>Non-Active: 50.0%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -2989,7 +3782,7 @@ Active: 50.6%<br>Non-Active: 49.4%
 </tr>
 <tr>
 <td style="text-align:left;font-weight: bold;">
-Creatinine
+log_creatinine
 </td>
 <td style="text-align:left;">
 Covariate
@@ -3001,7 +3794,7 @@ Covariate
 4.2%
 </td>
 <td style="text-align:left;">
-Med: 68.0 [61.0 - 83.0]
+Med: 1.8 [1.8 - 1.9]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3009,7 +3802,7 @@ Med: 68.0 [61.0 - 83.0]
 </tr>
 <tr>
 <td style="text-align:left;font-weight: bold;">
-NT-proBNP (pg/ml)
+log_NT_ProBNP
 </td>
 <td style="text-align:left;">
 Covariate
@@ -3021,551 +3814,36 @@ Covariate
 0.0%
 </td>
 <td style="text-align:left;">
-Med: 109.0 [57.0 - 287.0]
+Med: 2.0 [1.7 - 2.5]
 </td>
 <td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
-predicted), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Age
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 61.0 [48.0 - 71.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = 0.45, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-DLCO (SB) (% predicted)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-93
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-<td style="text-align:left;">
-Med: 66.0 [49.0 - 77.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = -0.39, p = 0.000)</span>
+<span style="color:black;">None</span>
 </td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup>
-<div
-style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
-<pre><code>  &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with 96 patients → &lt;b&gt;89 complete cases&lt;/b&gt; survived.&lt;br&gt;
-  &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;14.8&lt;/b&gt; samples per parameter (Total Parameters: 6).&lt;br&gt;
-  &lt;b&gt;Matrix Algebra:&lt;/b&gt; &lt;span style=&quot;color:black; font-weight:bold;&quot;&gt;Full Rank (Independent)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-
-  &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
-<p><b>Verdict:</b> <span
-style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
-</div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
-
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
-&lt;/div&gt;</code></pre>
-</td>
-</tr>
-</tfoot>
 </table>
-<table class="table table-striped table-hover table-condensed table-bordered" style="border-bottom: 0;">
+<br>
+<hr>
+<div
+style="text-align: left; padding: 15px; font-size: 14px; color: #333; background-color:#fcfcfc; border: 1px solid #ddd; margin-bottom: 15px;">
+<b>Cohort Survival:</b> Started with 96 patients → <b>96 complete
+cases</b> survived.<br> <b>Statistical Power:</b> <b>24</b> samples per
+parameter (Total Parameters: 4).<br> <b>Matrix Algebra:</b> <span
+style="color:black; font-weight:bold;">Full Rank
+(Independent)</span><br><br>
+<div style="margin-bottom: 5px;">
+<b>Verdict:</b> <span
+style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span>
+</div>
+<p><b>Reason(s):</b><br>• All metrics within acceptable mathematical
+thresholds.<br><br> <i>Thresholds: Min Samples/Param = 10 | Min Group N
+= 2 | Max Corr = |0.25|</i></p>
+</div>
+<table class="table table-striped table-hover table-condensed table-bordered" style>
 <caption>
 <div
 style="color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;">
-Inflammed vs. Non-Inflammed
-</div>
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:left;">
-Role
-</th>
-<th style="text-align:right;">
-N (Valid)
-</th>
-<th style="text-align:left;">
-Missingness
-</th>
-<th style="text-align:left;">
-Distribution (Median [IQR] or %)
-</th>
-<th style="text-align:left;">
-High Correlation Warning
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Inflamm_active
-</td>
-<td style="text-align:left;">
-Contrast Group
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-0: 68.5%<br>1: 31.5%
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Creatinine
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-92
-</td>
-<td style="text-align:left;">
-4.2%
-</td>
-<td style="text-align:left;">
-Med: 68.0 [61.0 - 83.0]
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-NT-proBNP (pg/ml)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 109.0 [57.0 - 287.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
-predicted), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Age
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 61.0 [48.0 - 71.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = 0.45, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-DLCO (SB) (% predicted)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-93
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-<td style="text-align:left;">
-Med: 66.0 [49.0 - 77.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup>
-<div
-style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
-<pre><code>  &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with 96 patients → &lt;b&gt;89 complete cases&lt;/b&gt; survived.&lt;br&gt;
-  &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;14.8&lt;/b&gt; samples per parameter (Total Parameters: 6).&lt;br&gt;
-  &lt;b&gt;Matrix Algebra:&lt;/b&gt; &lt;span style=&quot;color:black; font-weight:bold;&quot;&gt;Full Rank (Independent)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-
-  &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
-<p><b>Verdict:</b> <span
-style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
-</div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
-
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
-&lt;/div&gt;</code></pre>
-</td>
-</tr>
-</tfoot>
-</table>
-<table class="table table-striped table-hover table-condensed table-bordered" style="border-bottom: 0;">
-<caption>
-<div
-style="color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;">
-Fibrotic vs. Non-Fibrotic
-</div>
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:left;">
-Role
-</th>
-<th style="text-align:right;">
-N (Valid)
-</th>
-<th style="text-align:left;">
-Missingness
-</th>
-<th style="text-align:left;">
-Distribution (Median [IQR] or %)
-</th>
-<th style="text-align:left;">
-High Correlation Warning
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-fibrotic_active
-</td>
-<td style="text-align:left;">
-Contrast Group
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-0: 65.2%<br>1: 34.8%
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Creatinine
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-92
-</td>
-<td style="text-align:left;">
-4.2%
-</td>
-<td style="text-align:left;">
-Med: 68.0 [61.0 - 83.0]
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-NT-proBNP (pg/ml)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 109.0 [57.0 - 287.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
-predicted), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Age
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 61.0 [48.0 - 71.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = 0.45, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-DLCO (SB) (% predicted)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-93
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-<td style="text-align:left;">
-Med: 66.0 [49.0 - 77.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup>
-<div
-style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
-<pre><code>  &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with 96 patients → &lt;b&gt;89 complete cases&lt;/b&gt; survived.&lt;br&gt;
-  &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;14.8&lt;/b&gt; samples per parameter (Total Parameters: 6).&lt;br&gt;
-  &lt;b&gt;Matrix Algebra:&lt;/b&gt; &lt;span style=&quot;color:black; font-weight:bold;&quot;&gt;Full Rank (Independent)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-
-  &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
-<p><b>Verdict:</b> <span
-style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
-</div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
-
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
-&lt;/div&gt;</code></pre>
-</td>
-</tr>
-</tfoot>
-</table>
-<table class="table table-striped table-hover table-condensed table-bordered" style="border-bottom: 0;">
-<caption>
-<div
-style="color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;">
-Vascular vs. Non-Vascular
-</div>
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:left;">
-Role
-</th>
-<th style="text-align:right;">
-N (Valid)
-</th>
-<th style="text-align:left;">
-Missingness
-</th>
-<th style="text-align:left;">
-Distribution (Median [IQR] or %)
-</th>
-<th style="text-align:left;">
-High Correlation Warning
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-vascular_active
-</td>
-<td style="text-align:left;">
-Contrast Group
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-0: 51.7%<br>1: 48.3%
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Creatinine
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-92
-</td>
-<td style="text-align:left;">
-4.2%
-</td>
-<td style="text-align:left;">
-Med: 68.0 [61.0 - 83.0]
-</td>
-<td style="text-align:left;">
-<span style="color:black;">None</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-NT-proBNP (pg/ml)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 109.0 [57.0 - 287.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with DLCO (SB) (%
-predicted), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Age
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-96
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-<td style="text-align:left;">
-Med: 61.0 [48.0 - 71.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = 0.45, p = 0.000)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-DLCO (SB) (% predicted)
-</td>
-<td style="text-align:left;">
-Covariate
-</td>
-<td style="text-align:right;">
-93
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-<td style="text-align:left;">
-Med: 66.0 [49.0 - 77.0]
-</td>
-<td style="text-align:left;">
-<span style="color:#c0392b; font-weight:bold;">Yes (with NT-proBNP
-(pg/ml), ρ = -0.39, p = 0.000)</span>
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup>
-<div
-style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
-<pre><code>  &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with 96 patients → &lt;b&gt;89 complete cases&lt;/b&gt; survived.&lt;br&gt;
-  &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;14.8&lt;/b&gt; samples per parameter (Total Parameters: 6).&lt;br&gt;
-  &lt;b&gt;Matrix Algebra:&lt;/b&gt; &lt;span style=&quot;color:black; font-weight:bold;&quot;&gt;Full Rank (Independent)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-
-  &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
-<p><b>Verdict:</b> <span
-style="color:#c0392b; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">FAIL</span></p>
-</div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;Age&#39; are highly correlated (rho = 0.45).&lt;br&gt;• Variance Inflation Risk: &#39;NT-proBNP (pg/ml)&#39; &amp;amp; &#39;DLCO (SB) (% predicted)&#39; are highly correlated (rho = -0.39).&lt;br&gt;&lt;br&gt;
-
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
-&lt;/div&gt;</code></pre>
-</td>
-</tr>
-</tfoot>
-</table>
-<table class="table table-striped table-hover table-condensed table-bordered" style="border-bottom: 0;">
-<caption>
-<div
-style="color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;">
-SSc vs Healthy Control
+Custom: Legacy Model (Locked)
 </div>
 </caption>
 <thead>
@@ -3599,13 +3877,13 @@ cohort_group
 Contrast Group
 </td>
 <td style="text-align:right;">
-131
+96
 </td>
 <td style="text-align:left;">
 0.0%
 </td>
 <td style="text-align:left;">
-Active: 36.6%<br>Non-Active: 36.6%<br>Control: 26.7%
+Active: 50.0%<br>Non-Active: 50.0%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3619,13 +3897,13 @@ Age
 Covariate
 </td>
 <td style="text-align:right;">
-131
+96
 </td>
 <td style="text-align:left;">
 0.0%
 </td>
 <td style="text-align:left;">
-Med: 61.0 [49.0 - 71.0]
+Med: 62.0 [48.0 - 71.2]
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
@@ -3639,47 +3917,103 @@ Sex
 Covariate
 </td>
 <td style="text-align:right;">
-131
+96
 </td>
 <td style="text-align:left;">
 0.0%
 </td>
 <td style="text-align:left;">
-Female: 79.4%<br>Male: 20.6%
+Female: 79.2%<br>Male: 20.8%
 </td>
 <td style="text-align:left;">
 <span style="color:black;">None</span>
 </td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup>
-<div
-style="text-align: left; padding-top: 10px; font-size: 14px; color: #333;">
-<pre><code>  &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with 131 patients → &lt;b&gt;131 complete cases&lt;/b&gt; survived.&lt;br&gt;
-  &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;32.8&lt;/b&gt; samples per parameter (Total Parameters: 4).&lt;br&gt;
-  &lt;b&gt;Matrix Algebra:&lt;/b&gt; &lt;span style=&quot;color:black; font-weight:bold;&quot;&gt;Full Rank (Independent)&lt;/span&gt;&lt;br&gt;&lt;br&gt;
-
-  &lt;div style=&quot;margin-bottom: 5px;&quot;&gt;</code></pre>
-<p><b>Verdict:</b> <span
-style="color:#27ae60; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;">PASS</span></p>
-</div>
-<pre><code>  &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;• All metrics within acceptable mathematical thresholds.&lt;br&gt;&lt;br&gt;
-
-  &lt;i&gt;Thresholds: Min Samples/Param = 10 | Min Group N = 2 | Max Corr = |0.30|&lt;/i&gt;
-&lt;/div&gt;</code></pre>
-</td>
-</tr>
-</tfoot>
 </table>
+<br>
+<hr>
 <pre class="r"><code># Clean memory
-rm(model_id, res)
+rm(id, m, dyn_conf, res)
 invisible(gc())</code></pre>
 </div>
 <div id="appendix" class="section level1">
 <h1>Appendix</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generates collapsible visual evidence (Before-State Multi-VPA and PCA)
+for any variables that were manually rejected from the automated draft
+models.
+</li>
+</ul>
+</div>
+<pre class="r"><code>for (id in names(final_locked_models)) {
+  m &lt;- final_locked_models[[id]]
+  
+  if (length(m$dropped_vars) &gt; 0) {
+    cat(sprintf(&quot;### Rejected Diagnostics: %s\n\n&quot;, m$title))
+    
+    # Render Dropdown wrapper
+    cat(sprintf(&quot;&lt;details&gt;&lt;summary style=&#39;cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 1.2em;&#39;&gt;▶ Click to view &#39;Before&#39; State Visuals (Dropped: %s)&lt;/summary&gt;\n&lt;div style=&#39;padding: 15px; border-left: 3px solid #c0392b; margin-top: 10px; background-color: #fcfcfc;&#39;&gt;\n\n&quot;, paste(m$dropped_vars, collapse=&quot;, &quot;)))
+    
+    cat(&quot;&gt; **Note:** The plots below show the *Automated Draft* model before manual exclusion. They demonstrate how the dropped variables behaved in the context of the full draft model.\n\n&quot;)
+    
+    # 1. Run &#39;Before&#39; VPA
+    cat(&quot;#### Multi-VPA (Draft State)\n\n&quot;)
+    draft_vpa_conf &lt;- list(title = sprintf(&quot;Draft VPA: %s&quot;, m$title), variables = c(m$group_col, m$auto_vars))
+    vpa_res &lt;- wrap_vpa_pipeline(olink_mat, master_spine, draft_vpa_conf, paste0(&quot;Draft_&quot;, id), output_dir_data)
+    if(!is.null(vpa_res) &amp;&amp; vpa_res$status == &quot;success&quot;) { print(vpa_res$plots$bar); cat(&quot;\n\n&quot;) }
+    
+    # 2. Run &#39;Before&#39; PCA
+    cat(&quot;#### PCA (Draft State)\n\n&quot;)
+    draft_pca_conf &lt;- list(title = sprintf(&quot;Draft PCA: %s&quot;, m$title), subset_to_contrast = list(group_col = m$group_col, target_groups = c(m$target_groups, m$ref_groups)), color_vars = c(m$group_col, m$auto_vars))
+    pca_res &lt;- wrap_pca_pipeline(olink_mat, master_spine, draft_pca_conf, paste0(&quot;Draft_&quot;, id), output_dir_data, get_project_colors)
+    if (!interactive()) {
+      cat(sprintf(&quot;![](%s)\n\n![](%s)\n\n![](%s)\n\n&quot;, pca_res$paths[[&quot;scree&quot;]], pca_res$paths[[&quot;loadings&quot;]], pca_res$paths[[&quot;merged_drivers&quot;]]))
+      if (!is.null(pca_res$paths[[&quot;merged_overlays&quot;]])) cat(sprintf(&quot;![](%s)\n\n&quot;, pca_res$paths[[&quot;merged_overlays&quot;]]))
+    } else {
+      print(pca_res$plots[[&quot;scree&quot;]]); print(pca_res$plots[[&quot;loadings&quot;]]); print(pca_res$plots[[&quot;merged_drivers&quot;]])
+      for (c_var in draft_pca_conf$color_vars) { if (!is.null(pca_res$plots[[paste0(&quot;PCA_Plot_&quot;, c_var)]])) print(pca_res$plots[[paste0(&quot;PCA_Plot_&quot;, c_var)]]) }
+    }
+    
+    # Close Dropdown
+    cat(&quot;\n&lt;/div&gt;\n&lt;/details&gt;\n\n&lt;hr&gt;\n\n&quot;)
+  }
+}</code></pre>
+<div id="rejected-diagnostics-active-vs-non-active"
+class="section level3">
+<h3>Rejected Diagnostics: Active vs Non-Active</h3>
+<details>
+<summary style="cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 1.2em;">
+▶ Click to view ‘Before’ State Visuals (Dropped: Right ventricular area
+(cm2), LVEF %)
+</summary>
+<div
+style="padding: 15px; border-left: 3px solid #c0392b; margin-top: 10px; background-color: #fcfcfc;">
+<blockquote>
+<p><strong>Note:</strong> The plots below show the <em>Automated
+Draft</em> model before manual exclusion. They demonstrate how the
+dropped variables behaved in the context of the full draft model.</p>
+</blockquote>
+<div id="multi-vpa-draft-state" class="section level4">
+<h4>Multi-VPA (Draft State)</h4>
+</div>
+<div id="pca-draft-state" class="section level4">
+<h4>PCA (Draft State)</h4>
+<p><img src="figure/03a_proteomics_variance.Rmd/diagnostic_graveyard-1.png" alt="" width="672" style="display: block; margin: auto;" /><img
+src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/Draft_active_vs_nonactive_1/Draft_active_vs_nonactive_1_scree.png" /></p>
+<p><img
+src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/Draft_active_vs_nonactive_1/Draft_active_vs_nonactive_1_loadings.png" /></p>
+<p><img
+src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/Draft_active_vs_nonactive_1/Draft_active_vs_nonactive_1_Merged_Drivers.png" /></p>
+<p><img
+src="/home/alexgy/SSc-USZ/output/03a_proteomics_variance/PCA/Draft_active_vs_nonactive_1/Draft_active_vs_nonactive_1_Merged_Scatter_Overlays.png" /></p>
+</div>
+</div>
+</details>
+<hr>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -3710,6 +4044,7 @@ library(variancePartition)
 library(BiocParallel)
 library(future)
 library(future.apply)
+library(car)
 
 # PART 1: THE MASTER PIPELINE WRAPPERS (The &quot;Managers&quot;) ------------------------
 
@@ -4433,7 +4768,6 @@ wrap_vpa_univariate_pipeline &lt;- function(omics_mat, clin_df, vpa_conf, vpa_id
 #   A list containing the raw engine results and the compiled kableExtra HTML table.
 wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL) {
 
-  # 1. Run the Mathematical Engine
   res &lt;- validate_dea_design(
     clin_df               = clin_df,
     group_col             = conf$group_col,
@@ -4447,7 +4781,6 @@ wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL
     max_cor_p             = rules$max_cor_p
   )
 
-  # 2. Format Global Metadata (HTML Footnote)
   status_color &lt;- ifelse(res$Status == &quot;Pass&quot;, &quot;#27ae60&quot;, &quot;#c0392b&quot;)
 
   spp_str &lt;- case_when(
@@ -4465,23 +4798,21 @@ wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL
     TRUE ~ &quot;&lt;span style=&#39;color:black; font-weight:bold;&#39;&gt;Full Rank (Independent)&lt;/span&gt;&quot;
   )
 
+  # FIX 4 &amp; 1: Removed leading spaces so Markdown doesn&#39;t treat it as a code block
   meta_html &lt;- sprintf(
-    &quot;&lt;div style=&#39;text-align: left; padding-top: 10px; font-size: 14px; color: #333;&#39;&gt;
-      &lt;b&gt;Cohort Survival:&lt;/b&gt; Started with %d patients &amp;rarr; &lt;b&gt;%d complete cases&lt;/b&gt; survived.&lt;br&gt;
-      &lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;%s&lt;/b&gt; samples per parameter (Total Parameters: %s).&lt;br&gt;
-      &lt;b&gt;Matrix Algebra:&lt;/b&gt; %s&lt;br&gt;&lt;br&gt;
-
-      &lt;div style=&#39;margin-bottom: 5px;&#39;&gt;&lt;b&gt;Verdict:&lt;/b&gt; &lt;span style=&#39;color:%s; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;&#39;&gt;%s&lt;/span&gt;&lt;/div&gt;
-      &lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;%s&lt;br&gt;&lt;br&gt;
-
-      &lt;i&gt;Thresholds: Min Samples/Param = %d | Min Group N = %d | Max Corr = |%.2f|&lt;/i&gt;
-    &lt;/div&gt;&quot;,
+    &quot;&lt;div style=&#39;text-align: left; padding: 15px; font-size: 14px; color: #333; background-color:#fcfcfc; border: 1px solid #ddd; margin-bottom: 15px;&#39;&gt;
+&lt;b&gt;Cohort Survival:&lt;/b&gt; Started with %d patients &amp;rarr; &lt;b&gt;%d complete cases&lt;/b&gt; survived.&lt;br&gt;
+&lt;b&gt;Statistical Power:&lt;/b&gt; &lt;b&gt;%s&lt;/b&gt; samples per parameter (Total Parameters: %s).&lt;br&gt;
+&lt;b&gt;Matrix Algebra:&lt;/b&gt; %s&lt;br&gt;&lt;br&gt;
+&lt;div style=&#39;margin-bottom: 5px;&#39;&gt;&lt;b&gt;Verdict:&lt;/b&gt; &lt;span style=&#39;color:%s; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;&#39;&gt;%s&lt;/span&gt;&lt;/div&gt;
+&lt;b&gt;Reason(s):&lt;/b&gt;&lt;br&gt;%s&lt;br&gt;&lt;br&gt;
+&lt;i&gt;Thresholds: Min Samples/Param = %d | Min Group N = %d | Max Corr = |%.2f|&lt;/i&gt;
+&lt;/div&gt;\n\n&quot;,
     res$N_Start, res$N_Final, spp_str, params_str, matrix_rank_str,
     status_color, toupper(res$Status), reasons_html,
     rules$min_samples_per_param, rules$min_group_n, rules$max_cor_rho
   )
 
-  # 3. Format the Variable-Level Data
   plot_df &lt;- res$Var_Details %&gt;%
     mutate(
       Variance_Levels = case_when(
@@ -4496,7 +4827,7 @@ wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL
     ) %&gt;%
     select(-Collinear)
 
-  # 4. Render the kableExtra Table
+  # FIX 4: Removed footnote from kable to render HTML separately
   tbl &lt;- plot_df %&gt;%
     kableExtra::kbl(
       format = &quot;html&quot;,
@@ -4506,19 +4837,209 @@ wrap_pre_dea_validation &lt;- function(clin_df, conf, rules, cor_matrices = NULL
       caption = sprintf(&quot;&lt;div style=&#39;color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;&#39;&gt;%s&lt;/div&gt;&quot;, conf$title)
     ) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;bordered&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
-    kableExtra::column_spec(1, bold = TRUE) %&gt;%
-    kableExtra::footnote(
-      general = meta_html,
-      escape = FALSE,
-      general_title = &quot;&quot;
-    )
+    kableExtra::column_spec(1, bold = TRUE)
 
-  return(list(raw_data = res, html_table = tbl))
+  # Passing meta_html as a separate object
+  return(list(raw_data = res, html_table = tbl, meta_html = meta_html))
+}
+
+# 7. Wrapper for DEA Selector -------------------------------------------------
+wrap_dea_selector &lt;- function(clin_df, conf, vpa_df, cor_matrices) {
+
+  res &lt;- run_dea_selector(clin_df, conf, vpa_df, cor_matrices)
+  if(res$status == &quot;failed&quot;) return(list(status = &quot;failed&quot;, msg = res$msg))
+
+  spp_str &lt;- if(res$meta$SPP &lt; conf$min_samples_per_param) sprintf(&quot;&lt;span style=&#39;color:#c0392b; font-weight:bold;&#39;&gt;%.1f (Overfitting Risk)&lt;/span&gt;&quot;, res$meta$SPP) else sprintf(&quot;%.1f&quot;, res$meta$SPP)
+  pct_cases &lt;- (res$meta$N / res$meta$N_Start) * 100
+
+  # FIX 1: Stripped leading spaces
+  meta_html &lt;- sprintf(
+    &quot;&lt;div style=&#39;text-align: left; padding-top: 10px; font-size: 14px; color: #333;&#39;&gt;
+&lt;b&gt;Final Complete Cases:&lt;/b&gt; %d / %d (%.1f%%)&lt;br&gt;
+&lt;b&gt;Total Parameters:&lt;/b&gt; %d (Contrast + %d Covariates)&lt;br&gt;
+&lt;b&gt;Statistical Power:&lt;/b&gt; %s SPP (Threshold: %d)&lt;br&gt;
+&lt;b&gt;Matrix Algebra:&lt;/b&gt; %s&lt;br&gt;
+&lt;i&gt;Algorithm Rules: Max Cor = %.2f, Max P = %.2f&lt;/i&gt;
+&lt;/div&gt;&quot;,
+    res$meta$N, res$meta$N_Start, pct_cases, res$meta$Params, length(res$selected_vars), spp_str, conf$min_samples_per_param, res$meta$Matrix, conf$max_cor_rho, conf$max_cor_p
+  )
+
+  formatted_tbl &lt;- res$table %&gt;%
+    mutate(
+      Recommendation = case_when(
+        grepl(&quot;✅&quot;, Recommendation) ~ sprintf(&quot;&lt;span style=&#39;color:#27ae60; font-weight:bold;&#39;&gt;%s&lt;/span&gt;&quot;, Recommendation),
+        TRUE ~ sprintf(&quot;&lt;span style=&#39;color:#c0392b;&#39;&gt;%s&lt;/span&gt;&quot;, Recommendation)
+      ),
+      Reason = ifelse(grepl(&quot;WARNING&quot;, Reason), sprintf(&quot;&lt;span style=&#39;color:#e67e22; font-weight:bold;&#39;&gt;%s&lt;/span&gt;&quot;, Reason), Reason)
+    ) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, row.names = FALSE, caption = sprintf(&quot;&lt;div style=&#39;color:black; font-size:1.4em; font-weight:bold;&#39;&gt;%s: Automated Selection&lt;/div&gt;&quot;, conf$title)) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;bordered&quot;), full_width = TRUE) %&gt;%
+    kableExtra::footnote(general = meta_html, escape = FALSE, general_title = &quot;&quot;)
+
+  heatmap_vars &lt;- c(conf$group_col, res$selected_vars)
+  if (length(heatmap_vars) &gt;= 2) {
+    sub_cor &lt;- cor_matrices$rho[heatmap_vars, heatmap_vars, drop = FALSE]
+    sub_p &lt;- cor_matrices$p[heatmap_vars, heatmap_vars, drop = FALSE]
+
+    dist_mat &lt;- as.dist(1 - sub_cor)
+    hc &lt;- hclust(dist_mat, method = &quot;ward.D2&quot;)
+    ordered_vars &lt;- heatmap_vars[hc$order]
+
+    plot_df &lt;- as.data.frame(sub_cor) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;Correlation&quot;) %&gt;%
+      left_join(as.data.frame(sub_p) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;P_Value&quot;), by=c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
+      mutate(
+        idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars),
+        Var2 = factor(Var2, levels = ordered_vars), Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value &lt; conf$max_cor_p,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      ) %&gt;% filter(idx_2 &gt; idx_1)
+
+    p_heatmap &lt;- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+      geom_tile(color = &quot;white&quot;, linewidth = 0.5) +
+      scale_x_discrete(position = &quot;top&quot;) + scale_y_discrete(position = &quot;right&quot;) +
+      scale_fill_gradientn(colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH), limits = c(-1, 1), na.value = &quot;gray93&quot;, name = &quot;Spearman Rho\n&quot;) +
+      labs(title = sprintf(&quot;Correlation Heatmap: %s model&quot;, conf$title), x = NULL, y = NULL) +
+      theme_minimal(base_size = 14) +
+      theme(
+        axis.text.x.top = element_text(angle=45, hjust=0, vjust=0, margin=margin(b=5), face=&quot;bold&quot;),
+        axis.text.y.right = element_text(hjust=0, face=&quot;bold&quot;),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face=&quot;bold&quot;, hjust=0.5),
+        plot.title.position = &quot;plot&quot;
+      ) + coord_fixed()
+  } else {
+    p_heatmap &lt;- NULL
+  }
+
+  return(list(
+    status = &quot;success&quot;,
+    html_table = formatted_tbl,
+    heatmap = p_heatmap,
+    selected_vars = if(is.null(res$selected_vars)) character(0) else res$selected_vars
+  ))
+}
+
+# 8. VPA Quality Control Pipeline Wrapper -------------------------------------
+# Description:
+#   Generates a distribution grid for the top VPA hits and a symmetrical
+#   correlation heatmap sorted by VPA Rank to identify extreme skew and collinear blocks.
+# Args:
+#   vpa_df: The univariate VPA results dataframe.
+#   clin_df: Clinical metadata dataframe.
+#   cor_matrices: The loaded Spearman correlation matrices.
+#   conf: The specific VPA configuration list.
+#   vpa_id: String identifier for saving outputs.
+#   base_output_dir: Path for saving results.
+# Returns:
+#   Nested list with &#39;plots&#39; and &#39;html_warnings&#39;.
+wrap_vpa_qc_pipeline &lt;- function(vpa_df, clin_df, cor_matrices, conf, vpa_id, base_output_dir) {
+  results &lt;- list(plots = list(), html_warnings = c())
+
+  # Setup Directories
+  qc_dir &lt;- file.path(base_output_dir, &quot;VPA_Univariate&quot;, &quot;QC_Plots&quot;, vpa_id)
+  if (!dir.exists(qc_dir)) dir.create(qc_dir, recursive = TRUE)
+
+  clin_sub &lt;- clin_df
+  if (!is.null(conf$subset_to_groups)) {
+    clin_sub &lt;- clin_sub %&gt;% filter(cohort_group %in% conf$subset_to_groups)
+  }
+
+  # A. Distribution Grid -------------------------------------------------------
+  dist_vars &lt;- head(vpa_df$Variable, conf$dist_plot_limit)
+  dist_plots &lt;- list()
+
+  for (v in dist_vars) {
+    if (!(v %in% colnames(clin_sub))) next
+    vec &lt;- clin_sub[[v]]
+
+    if (is.numeric(vec)) {
+      p &lt;- ggplot(clin_sub, aes(x = .data[[v]])) +
+        geom_histogram(fill = &quot;grey50&quot;, color = &quot;white&quot;, bins = 20, alpha = 0.8) +
+        theme_project_base() + labs(title = v, x = NULL, y = &quot;Count&quot;) +
+        theme(plot.title = element_text(size = 10, face = &quot;bold&quot;))
+    } else {
+      p &lt;- ggplot(clin_sub %&gt;% filter(!is.na(.data[[v]])), aes(x = as.factor(.data[[v]]))) +
+        geom_bar(fill = &quot;grey70&quot;, color = &quot;black&quot;, alpha = 0.8) +
+        theme_project_base() + labs(title = v, x = NULL, y = &quot;Count&quot;) +
+        theme(plot.title = element_text(size = 10, face = &quot;bold&quot;), axis.text.x = element_text(angle = 45, hjust = 1))
+    }
+    dist_plots[[v]] &lt;- p
+  }
+
+  if (length(dist_plots) &gt; 0) {
+    grid_plot &lt;- wrap_plots(dist_plots, ncol = 4) +
+      plot_annotation(title = sprintf(&quot;Distributions: Top %d VPA Hits (%s)&quot;, length(dist_plots), conf$title),
+                      theme = theme(plot.title = element_text(size=16, face=&quot;bold&quot;)))
+    results$plots[[&quot;distribution_grid&quot;]] &lt;- grid_plot
+
+    ggsave(file.path(qc_dir, paste0(vpa_id, &quot;_Distribution_Grid.png&quot;)), grid_plot, width = 12, height = 8, dpi = 300, bg=&quot;white&quot;)
+  }
+
+  # B. Correlation Heatmap -----------------------------------------------------
+  # heat_vars_raw is naturally ordered by VPA Rank (highest first) + forced variables at the end
+  heat_vars_raw &lt;- unique(c(head(vpa_df$Variable, conf$corr_plot_limit), conf$heatmap_add_vars))
+  available_vars &lt;- colnames(cor_matrices$rho)
+
+  missing_vars &lt;- setdiff(heat_vars_raw, available_vars)
+
+  # intersect() automatically preserves the order of the first argument (heat_vars_raw).
+  # Therefore, valid_vars is already perfectly sorted by VPA Rank!
+  valid_vars &lt;- intersect(heat_vars_raw, available_vars)
+
+  if (length(missing_vars) &gt; 0) {
+    results$html_warnings &lt;- c(results$html_warnings, sprintf(&quot;&gt; **WARNING:** Dropped from heatmap (Not strictly binarized/ordinal): *%s*&quot;, paste(missing_vars, collapse = &quot;, &quot;)))
+  }
+
+  if (length(valid_vars) &gt;= 2) {
+    sub_cor &lt;- cor_matrices$rho[valid_vars, valid_vars, drop = FALSE]
+    sub_p   &lt;- cor_matrices$p[valid_vars, valid_vars, drop = FALSE]
+
+    # BYPASS HIERARCHICAL CLUSTERING: Lock the visual order strictly to the VPA Rank
+    ordered_vars &lt;- valid_vars
+
+    # Parameterized Threshold Fallback
+    p_thresh &lt;- if(exists(&quot;dea_validation_rules&quot;)) dea_validation_rules$max_cor_p else 0.05
+
+    plot_df &lt;- as.data.frame(sub_cor) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;Correlation&quot;) %&gt;%
+      left_join(as.data.frame(sub_p) %&gt;% rownames_to_column(&quot;Var1&quot;) %&gt;% pivot_longer(-Var1, names_to=&quot;Var2&quot;, values_to=&quot;P_Value&quot;), by=c(&quot;Var1&quot;, &quot;Var2&quot;)) %&gt;%
+      mutate(
+        idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars),
+        Var2 = factor(Var2, levels = ordered_vars), Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value &lt; p_thresh,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      ) %&gt;% filter(idx_2 &gt; idx_1)
+
+    p_heatmap &lt;- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+      geom_tile(color = &quot;white&quot;, linewidth = 0.5) +
+      scale_x_discrete(position = &quot;top&quot;) + scale_y_discrete(position = &quot;right&quot;) +
+      scale_fill_gradientn(colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH), limits = c(-1, 1), na.value = &quot;gray93&quot;, name = &quot;Spearman Rho\n&quot;) +
+      # UI TWEAK: Update title to reflect the new sorting logic
+      labs(title = sprintf(&quot;Correlation Network: Top %d Valid Hits (Rank Sorted)&quot;, length(valid_vars)), subtitle = sprintf(&quot;Grey squares indicate non-significance (p &gt;= %s)&quot;, p_thresh), x = NULL, y = NULL) +
+      theme_minimal(base_size = 14) +
+      theme(
+        axis.text.x.top = element_text(angle=45, hjust=0, vjust=0, margin=margin(b=5), face=&quot;bold&quot;, size=rel(0.85)),
+        axis.text.y.right = element_text(hjust=0, face=&quot;bold&quot;, size=rel(0.85)),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face=&quot;bold&quot;, hjust=0.5),
+        plot.subtitle = element_text(color=&quot;grey40&quot;, hjust=0.5),
+        plot.title.position = &quot;plot&quot;
+      ) + coord_fixed()
+
+    results$plots[[&quot;correlation_heatmap&quot;]] &lt;- p_heatmap
+
+    # Dynamic sizing based on variable count
+    dyn_dim &lt;- max(6, length(valid_vars) * 0.4 + 2)
+    ggsave(file.path(qc_dir, paste0(vpa_id, &quot;_Correlation_Heatmap.png&quot;)), p_heatmap, width = dyn_dim, height = dyn_dim, dpi = 300, bg=&quot;white&quot;)
+  }
+
+  return(results)
 }
 
 # PART 2: INTERNAL HELPER ENGINES (The &quot;Workers&quot;) ------------------------------
 
-# 7. Limma &amp; Volcano Engine ----------------------------------------------------
+# 1. Limma &amp; Volcano Engine ----------------------------------------------------
 # Description:
 #   The mathematical core for differential expression. Creates a design matrix
 #   (including any specified covariates), fits linear models using eBayes, and
@@ -4595,7 +5116,7 @@ run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, project_colors) {
   return(list(data = dea_res, volcano = p_volc))
 }
 
-# 8. GSEA Engine ---------------------------------------------------------------
+# 2. GSEA Engine ---------------------------------------------------------------
 # Description:
 #   Ranks the Limma features by t-statistic and performs Gene Set Enrichment
 #   Analysis. Automatically cleans pathway names and generates DotPlots and RidgePlots.
@@ -4635,7 +5156,7 @@ run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title) {
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge))
 }
 
-# 9. Heatmap Engine ------------------------------------------------------------
+# 3. Heatmap Engine ------------------------------------------------------------
 # Description:
 #   Selects the top N most significant features from a DEA result, converts them
 #   to Z-scores across the requested subjects, and renders an annotated heatmap
@@ -4668,7 +5189,7 @@ run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_b
           col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
 }
 
-# 10. LASSO Engine --------------------------------------------------------------
+# 4. LASSO Engine --------------------------------------------------------------
 # Description:
 #   Runs a generalized linear model with L1 penalty (LASSO) using cross-validation.
 #   Extracts the coefficients at the optimal lambda (&quot;lambda.min&quot;) to identify
@@ -4708,7 +5229,7 @@ run_lasso_engine &lt;- function(mat, clin, target_col, target_groups, title) {
   return(list(cv_plot = cv_fit, coeff_plot = p_lasso, data = df_coeffs))
 }
 
-# 11. Cross-Contrast Engine ----------------------------------------------------
+# 5. Cross-Contrast Engine ----------------------------------------------------
 # Description:
 #   Joins two different Limma topTable dataframes on &#39;Feature&#39;. Determines if
 #   features are significant in one, the other, or both. Maps them to a quadrant
@@ -4780,7 +5301,7 @@ run_cross_contrast_engine &lt;- function(dea_x, dea_y, conf, x_label, y_label, c
     coord_fixed(ratio = 1)
 }
 
-# 12. Shared VPA Worker Engine -------------------------------------------------
+# 6. Shared VPA Worker Engine -------------------------------------------------
 # Description:
 #   The math core for Variance Partitioning. Uses linear mixed models via the
 #   variancePartition package. Calculates the mean variance and 95% CI explained
@@ -4839,7 +5360,7 @@ run_vpa_engine &lt;- function(mat, clin, vpa_formula, title, top_n = 10) {
   return(list(data = varPart_df, plots = list(bar = p_bar, violin = p_violin)))
 }
 
-# 13. Pre-DEA Validation Engine (Variable-Level Profiler) ----------------------
+# 7. Pre-DEA Validation Engine (Variable-Level Profiler) ----------------------
 validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups, covariates,
                                 min_samples_per_param = 10, min_group_n = 2,
                                 cor_matrices = NULL, max_cor_rho = 0.7, max_cor_p = 0.05) {
@@ -5003,6 +5524,148 @@ validate_dea_design &lt;- function(clin_df, group_col, target_groups, ref_groups
   if (length(reasons) == 0) reasons &lt;- c(&quot;All metrics within acceptable mathematical thresholds.&quot;)
 
   return(list(Status = status, Reasons = reasons, Var_Details = var_details, N_Start = n_start, N_Final = n_final, SPP = spp, Num_Params = num_params))
+}
+
+# 8. Automated DEA Variable Selector (Greedy Algorithm) -----------------------
+run_dea_selector &lt;- function(clin_df, conf, vpa_df, cor_matrices) {
+
+  group_col &lt;- conf$group_col
+  sub_df &lt;- clin_df %&gt;% filter(!!sym(group_col) %in% c(conf$target_groups, conf$ref_groups))
+  n_start &lt;- nrow(sub_df)
+
+  if (n_start == 0) return(list(status = &quot;failed&quot;, msg = &quot;Target/Ref groups not found.&quot;))
+
+  # Ensure target column is numeric for correlation
+  sub_df[[group_col]] &lt;- as.numeric(factor(sub_df[[group_col]], levels = c(conf$ref_groups[1], conf$target_groups[1]))) - 1
+
+  # Prep Candidate List: must_include first, then remaining sorted by VPA
+  candidates &lt;- unique(c(conf$must_include, vpa_df$Variable))
+  candidates &lt;- setdiff(candidates, c(group_col, conf$must_exclude))
+
+  results_tbl &lt;- data.frame(
+    Variable = character(), VPA_Rank = character(), Distribution = character(),
+    Recommendation = character(), Reason = character(), VIF = character(),
+    stringsAsFactors = FALSE
+  )
+
+  selected_covariates &lt;- c()
+  current_cc_n &lt;- n_start
+
+  for (i in seq_along(candidates)) {
+    v &lt;- candidates[i]
+    is_forced &lt;- v %in% conf$must_include
+    vpa_rank &lt;- ifelse(v %in% vpa_df$Variable, sprintf(&quot;#%d&quot;, which(vpa_df$Variable == v)), &quot;-&quot;)
+
+    vec &lt;- sub_df[[v]]
+
+    # UI Tweak: Hide massive factor distributions
+    dist_str &lt;- if(is.numeric(vec)) {
+      sprintf(&quot;%.1f [%.1f - %.1f]&quot;, median(vec, na.rm=T), quantile(vec, 0.25, na.rm=T), quantile(vec, 0.75, na.rm=T))
+    } else {
+      tbl &lt;- prop.table(table(vec)) * 100
+      if(length(tbl) &gt; 4) {
+        &quot;&lt;span style=&#39;color:grey;&#39;&gt;Too many levels to display&lt;/span&gt;&quot;
+      } else {
+        paste0(names(tbl), &quot;: &quot;, sprintf(&quot;%.1f%%&quot;, tbl), collapse = &quot;&lt;br&gt;&quot;)
+      }
+    }
+
+    # 1. Complete Case Check
+    temp_vars &lt;- c(group_col, selected_covariates, v)
+    temp_n &lt;- sub_df %&gt;% select(Subject_ID, all_of(temp_vars)) %&gt;% drop_na() %&gt;% nrow()
+
+    # 2. Power Check (Rule of 10) - UI Tweak: General Early Stop Message
+    spp &lt;- temp_n / length(temp_vars)
+    if (!is_forced &amp;&amp; spp &lt; conf$min_samples_per_param) {
+      results_tbl[nrow(results_tbl) + 1, ] &lt;- c(
+        &quot;&lt;i&gt;Remaining variables&lt;/i&gt;&quot;,
+        &quot;-&quot;, &quot;-&quot;, &quot;❌ Excluded&quot;,
+        sprintf(&quot;Power limit reached (SPP drops below %d)&quot;, conf$min_samples_per_param),
+        &quot;-&quot;
+      )
+      break # STOP THE LOOP!
+    }
+
+    # 3. Contrast Correlation Check (Signal Eraser)
+    rho_contrast &lt;- cor_matrices$rho[v, group_col]
+    p_contrast &lt;- cor_matrices$p[v, group_col]
+
+    if (!is.na(rho_contrast) &amp;&amp; !is.na(p_contrast) &amp;&amp; abs(rho_contrast) &gt;= conf$max_cor_rho &amp;&amp; p_contrast &lt;= conf$max_cor_p) {
+      if (is_forced) {
+        rec &lt;- &quot;✅ Include&quot;; reason &lt;- sprintf(&quot;FORCED. WARNING: Confounder with contrast (rho=%.2f)&quot;, rho_contrast)
+        selected_covariates &lt;- c(selected_covariates, v)
+      } else {
+        results_tbl[i, ] &lt;- c(v, vpa_rank, dist_str, &quot;❌ Exclude&quot;, sprintf(&quot;Confounder with contrast (rho=%.2f)&quot;, rho_contrast), &quot;-&quot;)
+        next
+      }
+    } else {
+      # 4. Collinearity Check with Already Selected Variables
+      conflict_var &lt;- NULL
+      for (sel_v in selected_covariates) {
+        rho_cov &lt;- cor_matrices$rho[v, sel_v]
+        p_cov &lt;- cor_matrices$p[v, sel_v]
+        if (!is.na(rho_cov) &amp;&amp; !is.na(p_cov) &amp;&amp; abs(rho_cov) &gt;= conf$max_cor_rho &amp;&amp; p_cov &lt;= conf$max_cor_p) {
+          conflict_var &lt;- sprintf(&quot;%s (rho=%.2f)&quot;, sel_v, rho_cov)
+          break
+        }
+      }
+
+      if (!is.null(conflict_var)) {
+        if (is_forced) {
+          rec &lt;- &quot;✅ Included&quot;; reason &lt;- sprintf(&quot;FORCED. WARNING: Redundant with %s&quot;, conflict_var)
+          selected_covariates &lt;- c(selected_covariates, v)
+        } else {
+          results_tbl[i, ] &lt;- c(v, vpa_rank, dist_str, &quot;❌ Exclude&quot;, sprintf(&quot;Redundant with included variable %s&quot;, conflict_var), &quot;-&quot;)
+          next
+        }
+      } else {
+        # Passed all checks!
+        rec &lt;- &quot;✅ Included&quot;; reason &lt;- if(is_forced) &quot;Forced (Clean)&quot; else &quot;Top independent VPA hit&quot;
+        selected_covariates &lt;- c(selected_covariates, v)
+      }
+    }
+
+    current_cc_n &lt;- temp_n
+    results_tbl[i, ] &lt;- c(v, vpa_rank, dist_str, rec, reason, &quot;-&quot;)
+  }
+
+  results_tbl &lt;- results_tbl %&gt;% drop_na(Variable)
+
+  # 5. Calculate VIF for Final Model
+  final_vars &lt;- c(group_col, selected_covariates)
+  cc_df &lt;- sub_df %&gt;% select(Subject_ID, all_of(final_vars)) %&gt;% drop_na()
+
+  matrix_status &lt;- &quot;Full Rank (Independent)&quot;
+  if (length(selected_covariates) &gt; 1) {
+    # Generate dummy variable to trick lm() into calculating VIF of covariates
+    cc_df$dummy_y &lt;- rnorm(nrow(cc_df))
+    form_str &lt;- paste(&quot;dummy_y ~&quot;, paste(sprintf(&quot;`%s`&quot;, selected_covariates), collapse = &quot; + &quot;))
+
+    vif_res &lt;- tryCatch(car::vif(lm(as.formula(form_str), data = cc_df)), error = function(e) NULL)
+
+    if (!is.null(vif_res)) {
+      for (v in names(vif_res)) {
+        # BUG FIX: car::vif returns names with backticks. Strip them so they match the table!
+        v_clean &lt;- gsub(&quot;`&quot;, &quot;&quot;, v)
+
+        # car::vif returns matrix for factors, we just take the first column (GVIF)
+        v_val &lt;- if(is.matrix(vif_res) || is.data.frame(vif_res)) vif_res[v, 1] else vif_res[v]
+        results_tbl$VIF[results_tbl$Variable == v_clean] &lt;- sprintf(&quot;%.2f&quot;, v_val)
+      }
+    } else {
+      matrix_status &lt;- &quot;&lt;span style=&#39;color:#c0392b; font-weight:bold;&#39;&gt;Rank Deficient (Aliased)&lt;/span&gt;&quot;
+    }
+  } else if (length(selected_covariates) == 1) {
+    results_tbl$VIF[results_tbl$Variable == selected_covariates[1]] &lt;- &quot;1.00 (Single Var)&quot;
+  }
+
+  # Return Payload (Added N_Start so wrapper can calculate percentages)
+  return(list(
+    status = &quot;success&quot;,
+    table = results_tbl,
+    selected_vars = selected_covariates,
+    meta = list(N = current_cc_n, N_Start = n_start, SPP = current_cc_n / length(final_vars), Params = length(final_vars), Matrix = matrix_status)
+  ))
 }</code></pre>
 <pre class="r"><code>cat(&quot;Script 03a Complete! \n&quot;)</code></pre>
 <pre><code>Script 03a Complete! </code></pre>
@@ -5039,17 +5702,17 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] variancePartition_1.40.2 BiocParallel_1.44.0      ggVennDiagram_1.5.7     
- [4] circlize_0.4.18          glmnet_4.1-10            Matrix_1.7-5            
- [7] UpSetR_1.4.0             ComplexHeatmap_2.26.1    ggridges_0.5.7          
-[10] ggrepel_0.9.8            pheatmap_1.0.13          enrichplot_1.30.5       
-[13] clusterProfiler_4.18.4   limma_3.66.0             future.apply_1.20.2     
-[16] future_1.70.0            here_1.0.2               patchwork_1.3.2         
-[19] factoextra_2.0.0         FactoMineR_2.13          lubridate_1.9.5         
-[22] forcats_1.0.1            stringr_1.6.0            dplyr_1.2.1             
-[25] purrr_1.2.1              readr_2.2.0              tidyr_1.3.2             
-[28] tibble_3.3.1             tidyverse_2.0.0          ggplot2_4.0.2           
-[31] workflowr_1.7.2         
+ [1] car_3.1-5                carData_3.0-6            variancePartition_1.40.2
+ [4] BiocParallel_1.44.0      ggVennDiagram_1.5.7      circlize_0.4.18         
+ [7] glmnet_4.1-10            Matrix_1.7-5             UpSetR_1.4.0            
+[10] ComplexHeatmap_2.26.1    ggridges_0.5.7           ggrepel_0.9.8           
+[13] pheatmap_1.0.13          enrichplot_1.30.5        clusterProfiler_4.18.4  
+[16] limma_3.66.0             future.apply_1.20.2      future_1.70.0           
+[19] here_1.0.2               patchwork_1.3.2          factoextra_2.0.0        
+[22] FactoMineR_2.13          lubridate_1.9.5          forcats_1.0.1           
+[25] stringr_1.6.0            dplyr_1.2.1              purrr_1.2.1             
+[28] readr_2.2.0              tidyr_1.3.2              tibble_3.3.1            
+[31] tidyverse_2.0.0          ggplot2_4.0.2            workflowr_1.7.2         
 
 loaded via a namespace (and not attached):
   [1] fs_2.0.1                matrixStats_1.5.0       bitops_1.0-9           
@@ -5064,55 +5727,55 @@ loaded via a namespace (and not attached):
  [28] svglite_2.2.2           DOSE_4.4.0              R.utils_2.13.0         
  [31] parallelly_1.46.1       rstudioapi_0.18.0       RSQLite_2.4.6          
  [34] generics_0.1.4          gridGraphics_0.5-1      shape_1.4.6.1          
- [37] vroom_1.7.1             gtools_3.9.5            car_3.1-5              
- [40] GO.db_3.22.0            leaps_3.2               S4Vectors_0.48.1       
- [43] abind_1.4-8             R.methodsS3_1.8.2       lifecycle_1.0.5        
- [46] whisker_0.4.1           scatterplot3d_0.3-45    yaml_2.3.12            
- [49] carData_3.0-6           gplots_3.3.0            qvalue_2.42.0          
- [52] blob_1.3.0              promises_1.5.0          crayon_1.5.3           
- [55] ggtangle_0.1.1          lattice_0.22-9          cowplot_1.2.0          
- [58] KEGGREST_1.50.0         pillar_1.11.1           knitr_1.51             
- [61] fgsea_1.36.2            rjson_0.2.23            boot_1.3-32            
- [64] estimability_1.5.1      corpcor_1.6.10          codetools_0.2-20       
- [67] fastmatch_1.1-8         glue_1.8.0              ggiraph_0.9.6          
- [70] getPass_0.2-4           ggfun_0.2.0             fontLiberation_0.1.0   
- [73] data.table_1.18.2.1     vctrs_0.7.2             png_0.1-9              
- [76] treeio_1.34.0           Rdpack_2.6.6            gtable_0.3.6           
- [79] cachem_1.1.0            xfun_0.57               rbibutils_2.4.1        
- [82] Seqinfo_1.0.0           reformulas_0.4.4        survival_3.8-6         
- [85] iterators_1.0.14        statmod_1.5.1           nlme_3.1-169           
- [88] pbkrtest_0.5.5          ggtree_4.0.5            bit64_4.6.0-1          
- [91] fontquiver_0.2.1        EnvStats_3.1.0          rprojroot_2.1.1        
- [94] bslib_0.10.0            KernSmooth_2.23-26      otel_0.2.0             
- [97] colorspace_2.1-2        BiocGenerics_0.56.0     DBI_1.3.0              
-[100] tidyselect_1.2.1        processx_3.8.7          emmeans_2.0.2          
-[103] bit_4.6.0               compiler_4.5.2          git2r_0.36.2           
-[106] xml2_1.5.2              fontBitstreamVera_0.1.1 scales_1.4.0           
-[109] caTools_1.18.3          remaCor_0.0.20          callr_3.7.6            
-[112] multcompView_0.1-11     rappdirs_0.3.4          digest_0.6.39          
-[115] minqa_1.2.8             rmarkdown_2.31          aod_1.3.3              
-[118] XVector_0.50.0          RhpcBLASctl_0.23-42     htmltools_0.5.9        
-[121] pkgconfig_2.0.3         lme4_2.0-1              fastmap_1.2.0          
-[124] rlang_1.2.0             GlobalOptions_0.1.3     htmlwidgets_1.6.4      
-[127] farver_2.1.2            jquerylib_0.1.4         jsonlite_2.0.0         
-[130] GOSemSim_2.36.0         R.oo_1.27.1             magrittr_2.0.5         
-[133] Formula_1.2-5           kableExtra_1.4.0        ggplotify_0.1.3        
-[136] Rcpp_1.1.1              ape_5.8-1               ggnewscale_0.5.2       
-[139] gdtools_0.5.0           stringi_1.8.7           MASS_7.3-65            
-[142] plyr_1.8.9              parallel_4.5.2          listenv_0.10.1         
-[145] Biostrings_2.78.0       splines_4.5.2           hms_1.1.4              
-[148] ps_1.9.2                ggpubr_0.6.3            igraph_2.2.2           
-[151] ggsignif_0.6.4          reshape2_1.4.5          stats4_4.5.2           
-[154] evaluate_1.0.5          renv_1.1.5              BiocManager_1.30.27    
-[157] nloptr_2.2.1            tzdb_0.5.0              foreach_1.5.2          
-[160] tweenr_2.0.3            httpuv_1.6.16           polyclip_1.10-7        
-[163] clue_0.3-68             ggforce_0.5.0           broom_1.0.12           
-[166] fANCOVA_0.6-1           tidytree_0.4.7          rstatix_0.7.3          
-[169] tidydr_0.0.6            later_1.4.8             ragg_1.5.2             
-[172] viridisLite_0.4.3       snow_0.4-4              lmerTest_3.2-1         
-[175] aplot_0.2.9             memoise_2.0.1           AnnotationDbi_1.72.0   
-[178] IRanges_2.44.0          cluster_2.1.8.2         timechange_0.4.0       
-[181] globals_0.19.1         </code></pre>
+ [37] vroom_1.7.1             gtools_3.9.5            GO.db_3.22.0           
+ [40] leaps_3.2               S4Vectors_0.48.1        abind_1.4-8            
+ [43] R.methodsS3_1.8.2       lifecycle_1.0.5         whisker_0.4.1          
+ [46] scatterplot3d_0.3-45    yaml_2.3.12             gplots_3.3.0           
+ [49] qvalue_2.42.0           blob_1.3.0              promises_1.5.0         
+ [52] crayon_1.5.3            ggtangle_0.1.1          lattice_0.22-9         
+ [55] cowplot_1.2.0           KEGGREST_1.50.0         pillar_1.11.1          
+ [58] knitr_1.51              fgsea_1.36.2            rjson_0.2.23           
+ [61] boot_1.3-32             estimability_1.5.1      corpcor_1.6.10         
+ [64] codetools_0.2-20        fastmatch_1.1-8         glue_1.8.0             
+ [67] ggiraph_0.9.6           getPass_0.2-4           ggfun_0.2.0            
+ [70] fontLiberation_0.1.0    data.table_1.18.2.1     vctrs_0.7.2            
+ [73] png_0.1-9               treeio_1.34.0           Rdpack_2.6.6           
+ [76] gtable_0.3.6            cachem_1.1.0            xfun_0.57              
+ [79] rbibutils_2.4.1         Seqinfo_1.0.0           reformulas_0.4.4       
+ [82] survival_3.8-6          iterators_1.0.14        statmod_1.5.1          
+ [85] nlme_3.1-169            pbkrtest_0.5.5          ggtree_4.0.5           
+ [88] bit64_4.6.0-1           fontquiver_0.2.1        EnvStats_3.1.0         
+ [91] rprojroot_2.1.1         bslib_0.10.0            KernSmooth_2.23-26     
+ [94] otel_0.2.0              colorspace_2.1-2        BiocGenerics_0.56.0    
+ [97] DBI_1.3.0               tidyselect_1.2.1        processx_3.8.7         
+[100] emmeans_2.0.2           bit_4.6.0               compiler_4.5.2         
+[103] git2r_0.36.2            xml2_1.5.2              fontBitstreamVera_0.1.1
+[106] scales_1.4.0            caTools_1.18.3          remaCor_0.0.20         
+[109] callr_3.7.6             multcompView_0.1-11     rappdirs_0.3.4         
+[112] digest_0.6.39           minqa_1.2.8             rmarkdown_2.31         
+[115] aod_1.3.3               XVector_0.50.0          RhpcBLASctl_0.23-42    
+[118] htmltools_0.5.9         pkgconfig_2.0.3         lme4_2.0-1             
+[121] fastmap_1.2.0           rlang_1.2.0             GlobalOptions_0.1.3    
+[124] htmlwidgets_1.6.4       farver_2.1.2            jquerylib_0.1.4        
+[127] jsonlite_2.0.0          GOSemSim_2.36.0         R.oo_1.27.1            
+[130] magrittr_2.0.5          kableExtra_1.4.0        Formula_1.2-5          
+[133] ggplotify_0.1.3         Rcpp_1.1.1              ape_5.8-1              
+[136] ggnewscale_0.5.2        gdtools_0.5.0           stringi_1.8.7          
+[139] MASS_7.3-65             plyr_1.8.9              parallel_4.5.2         
+[142] listenv_0.10.1          Biostrings_2.78.0       splines_4.5.2          
+[145] hms_1.1.4               ps_1.9.2                ggpubr_0.6.3           
+[148] igraph_2.2.2            ggsignif_0.6.4          reshape2_1.4.5         
+[151] stats4_4.5.2            evaluate_1.0.5          renv_1.1.5             
+[154] BiocManager_1.30.27     nloptr_2.2.1            tzdb_0.5.0             
+[157] foreach_1.5.2           tweenr_2.0.3            httpuv_1.6.16          
+[160] polyclip_1.10-7         clue_0.3-68             ggforce_0.5.0          
+[163] broom_1.0.12            fANCOVA_0.6-1           tidytree_0.4.7         
+[166] rstatix_0.7.3           tidydr_0.0.6            later_1.4.8            
+[169] ragg_1.5.2              viridisLite_0.4.3       snow_0.4-4             
+[172] lmerTest_3.2-1          aplot_0.2.9             memoise_2.0.1          
+[175] AnnotationDbi_1.72.0    IRanges_2.44.0          cluster_2.1.8.2        
+[178] timechange_0.4.0        globals_0.19.1         </code></pre>
+</div>
 </div>
 </div>
 </div>

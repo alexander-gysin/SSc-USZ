@@ -42,3 +42,13 @@
   margin-top: 10px;
   margin-bottom: 0;
 }
+
+/* Kill the 'ghosting' effect in both the browser and RStudio Viewer */
+.table, table, .table-responsive {
+  opacity: 1 !important;
+  transition: none !important; /* Prevents the 'fade-in' animation */
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f5f5f5 !important; /* Keeps the highlight but stops the dimming */
+}
