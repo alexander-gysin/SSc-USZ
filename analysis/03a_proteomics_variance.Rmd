@@ -351,7 +351,7 @@ for (pca_name in names(pca_configs)) {
   pca_conf <- pca_configs[[pca_name]]
   pca_results <- wrap_pca_pipeline(olink_mat, master_spine, pca_conf, pca_name, output_dir_data, get_project_colors)
   
-  cat(sprintf("## %s\n\n", pca_conf$title))
+ cat(sprintf("\n\n## %s\n\n", pca_conf$title))
   
   # FIX 2: Print plots directly so knitr handles the HTML embedding
   print(pca_results$plots[["scree"]])
@@ -370,6 +370,8 @@ for (pca_name in names(pca_configs)) {
   }
 }
 
+cat("\n")
+
 # Clean memory
 rm(pca_name, pca_conf, pca_results)
 if (exists("plot_key")) rm(plot_key)
@@ -377,7 +379,7 @@ if (exists("c_var")) rm(c_var)
 invisible(gc())
 ```
 
-# Targeted Variance Partition Analysis
+# Targeted Variance Partition Analysis {.tabset}
 
 `r what_this_does("Executed multivariate Variance Partition Analysis to model the combined influence of specific clinical variable sets.", "Calculated the unique percentage of proteomics variance explained by each variable while adjusting for the others.", "Outputted bar and violin plots to visualize the distribution of explained variance across all measured proteins.")`
 
@@ -386,7 +388,7 @@ invisible(gc())
 ```{r targeted_vpa_engine, results='asis', fig.height=10, fig.width=8}
 for (id in names(final_locked_models)) {
   m <- final_locked_models[[id]]
-  cat(sprintf("#### Analysis: %s (Locked Model)\n\n", m$title))
+  cat(sprintf("\n\n## Analysis: %s (Locked Model)\n\n", m$title))
   
   dyn_conf <- list(title = m$title, variables = c(m$group_col, m$covariates))
   res <- wrap_vpa_pipeline(olink_mat, master_spine, dyn_conf, paste0("Locked_", id), output_dir_data)
@@ -420,15 +422,16 @@ for (id in names(final_locked_models)) {
   dyn_conf <- list(title = sprintf("%s (Locked)", m$title), group_col = m$group_col, target_groups = m$target_groups, ref_groups = m$ref_groups, covariates = m$covariates)
   res <- wrap_pre_dea_validation(master_spine, dyn_conf, dea_validation_rules, clinical_correlations)
   
-  # FIX 4: Cat the clean HTML box first, then print the stripped table
-  cat(res$meta_html)
-  
   if (interactive()) {
     print(res$html_table)
   } else {
     cat(as.character(res$html_table))
   }
-  cat("\n\n<br><hr>\n\n") 
+  cat("\n\n") 
+  
+  # Print the metadata box BELOW the table
+  cat(res$meta_html)
+  cat("\n<br><hr>\n\n") 
 }
 
 # Clean memory
