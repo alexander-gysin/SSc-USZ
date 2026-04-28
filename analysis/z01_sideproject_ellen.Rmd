@@ -1,0 +1,290 @@
+---
+title: "Side Project - Ellen (Extreme Vascular Phenotypes)"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Introduction
+This is a side-project focused on comparing extreme vascular phenotypes (5 vs 5). It executes a covariate-free Differential Expression Analysis (DEA) due to the low sample size, and visualizes the top drivers from the full cohort alongside specific proteins of interest using Z-scored heatmaps.
+
+# Setup and Import
+`r what_this_does("Loaded standard analysis packages.", "Imported the pre-cleaned spine, the Olink matrix, and the full vascular DEA results from script 03b.")`
+
+```{r setup_and_import, message=FALSE, warning=FALSE}
+# Packages
+library(tidyverse)
+library(data.table)
+library(limma)
+library(ComplexHeatmap)
+library(circlize)
+library(here)
+library(kableExtra)
+library(msigdbr)
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file <- "z01_sideproject_ellen"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines
+source(here::here("code", "00_omics_engines.R"))
+
+# Data Import
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+
+full_dea_path <- here::here("output", "03b_proteomics_differential", "full_vascular_dea_results.rds")
+if(file.exists(full_dea_path)) {
+  full_vascular_dea <- readRDS(full_dea_path)
+} else {
+  warning("full_vascular_dea_results.rds not found! Run 03b first.")
+  full_vascular_dea <- NULL
+}
+
+# Fetch GO Biological Processes Database for GSEA (Engine requirement)
+go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
+```
+
+# Configuration
+`r what_this_does("Configured the specific Subject IDs for the extreme vascular phenotypes.", "Mapped human-readable protein names to standard Olink symbols.", "Defined the covariate-free DEA parameters with a shortened title to prevent heatmap rendering clipping.", "Dynamically overwrites the global color dictionary to fix the engine's hardcoded heatmap annotations.")`
+
+```{r configuration}
+# 1. Patient Selection (ACTION REQUIRED: Fill these in!)
+manual_patient_selection <- list(
+  vascular_active = c("Act_2", "Act_34", "Act_47", "Act_29", "Act_12"),   
+  vascular_inactive = c("Act_33", "Nonact_20", "Act_16", "Nonact_38", "Nonact_35") 
+)
+
+# 2. Proteins of Interest Translation Map
+proteins_of_interest <- c(
+  "ECE1",    # Endothelin-converting enzyme 1
+  "HIF1A",   # Hypoxia-inducible factor 1-alpha
+  "PGF",     # Placental growth factor
+  "FGF2",    # Fibroblast growth factor 2
+  "FGF21",   # Fibroblast growth factor 21
+  "TNF",     # Tumor necrosis factor
+  "VEGFA",   # Vascular endothelial growth factor A
+  "THBS1",   # Thrombospondin 1
+  "CXCL10"   # CXCL10
+)
+
+# 3. DEA Configs
+contrast_5v5 <- list(
+  title = "Vascular 5v5", # FIX: Shortened title prevents left-clipping over the narrow 10-patient heatmap
+  group_col = "phenotype_group",
+  target_groups = c("Vascular_Active"),
+  ref_groups = c("Vascular_Inactive"),
+  is_continuous = FALSE,
+  covariates = c(), # INTENTIONALLY EMPTY due to N=10
+  dea_p_cutoff = 0.05,
+  dea_fc_cutoff = 0.5
+)
+
+# 4. Engine Configs
+omics_config <- list(
+  gsea_p_cutoff  = 0.20, 
+  gsea_min_size  = 3    
+)
+
+heatmap_config <- list(
+  top_n = 30,
+  split_by_group = FALSE, 
+  row_font_size = 8
+)
+
+# 5. FIX: Global Color Override
+# By overwriting the function globally in this script, the internal engine is tricked 
+# into pulling our custom Red/Blue colors for the phenotype_group annotations!
+original_get_project_colors <- get_project_colors
+get_project_colors <- function(requested_levels) {
+  cols <- original_get_project_colors(requested_levels)
+  cols[names(cols) == "Vascular_Active"] <- "#e74c3c"   # Red
+  cols[names(cols) == "Vascular_Inactive"] <- "#3498db" # Blue
+  return(cols)
+}
+```
+
+# Data Preparation
+`r what_this_does("Subsets the massive clinical spine and proteomics matrix down to just the 10 selected patients.", "Decodes the binary 'Sex' variable back to 'Male'/'Female' to match the global config color dictionary.", "Creates a localized 'phenotype_group' variable strictly for this 5v5 contrast and intercepts the engine's hardcoded cohort annotations.")`
+```{r data_preparation}
+# Subset clinical spine
+clin_10 <- master_spine[Subject_ID %in% c(manual_patient_selection$vascular_active, manual_patient_selection$vascular_inactive)]
+
+if(nrow(clin_10) != 10) {
+  cat(sprintf("<b style='color:red;'>WARNING: Only found %d of the 10 specified patients in the spine! Please check your ID list.</b>\n\n", nrow(clin_10)))
+}
+
+# Decode Sex
+if ("Sex" %in% names(clin_10)) {
+  clin_10[, Sex := fcase(
+    Sex == 1 | Sex == "1", SEX_FEMALE,
+    Sex == 0 | Sex == "0", SEX_MALE,
+    default = NA_character_
+  )]
+}
+
+# Create strict 5v5 grouping column
+clin_10[, phenotype_group := fcase(
+  Subject_ID %in% manual_patient_selection$vascular_active, "Vascular_Active",
+  Subject_ID %in% manual_patient_selection$vascular_inactive, "Vascular_Inactive"
+)]
+clin_10[, phenotype_group := factor(phenotype_group, levels = c("Vascular_Active", "Vascular_Inactive"))]
+
+# FIX: Overwrite cohort_group so the engine draws the vascular names!
+clin_10[, cohort_group := phenotype_group]
+
+# Subset Omics Matrix
+omics_mat_10 <- omics_mat[, clin_10$Subject_ID, drop = FALSE]
+
+cat(sprintf("Successfully isolated %d patients (%d Active vs %d Inactive) and %d proteins.\n", 
+            nrow(clin_10), 
+            sum(clin_10$phenotype_group == "Vascular_Active"),
+            sum(clin_10$phenotype_group == "Vascular_Inactive"),
+            nrow(omics_mat_10)))
+```
+
+# 5v5 Differential Expression Analysis
+`r analysis_decision("Omitted clinical covariates from the DEA to preserve degrees of freedom given the N=10 constraint.")`
+
+`r what_this_does("Constructs a covariate-free linear model to compare the 5 Vascular Active vs 5 Vascular Inactive patients.", "Computes empirical Bayes moderated t-statistics (limma) to calculate Fold Changes and False Discovery Rates (FDR).","Generates a Volcano plot highlighting the top 20 most extreme proteins.","Ranks the entire proteome using the Pi-score formula (Pi = |logFC| * -log10(FDR)) to balance magnitude and significance.","Extracts the top 30 Pi-score proteins and renders an automated Z-scored heatmap to visualize the separation between the 10 patients.")`
+
+```{r 5v5_DEA, results='asis', fig.width=8, fig.height=8}
+# Run Engine
+res_5v5 <- wrap_dea_pipeline(
+  omics_mat           = omics_mat_10, 
+  clin_df             = clin_10, 
+  dea_conf            = contrast_5v5, 
+  dea_id              = "extreme_5v5", 
+  base_output_dir     = output_dir_data, 
+  go_db               = go_genesets, 
+  omics_config        = omics_config, 
+  heatmap_config      = heatmap_config, 
+  project_colors_func = get_project_colors# <--- CHANGED THIS LINE
+)
+
+if(res_5v5$status == "success") {
+  print(res_5v5$plots$volcano); cat("\n\n")
+  
+  if(nrow(res_5v5$tables$significant_proteins) > 0) {
+    cat(sprintf("##### Significant Proteins (%d total)\n\n", nrow(res_5v5$tables$significant_proteins)))
+    print(kbl(res_5v5$tables$significant_proteins, format = "html", digits = 4, align = "c") %>%
+          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
+    cat("\n\n")
+  } else {
+  }
+  
+  draw(res_5v5$plots$heatmap); cat("\n\n")
+} else {
+  cat(sprintf("**DEA Failed:** %s\n", res_5v5$error_msg))
+}
+```
+`r key_insight("No significantly differentially expressed proteins", "Despite this the heatmap separates the vascular and non-vascular patients in the clustering", "There is only a hint of a pattern in the heatmap", "The top left and bottom right tend to be up and the top right and bottom left tend to be downregulated")`
+
+# Full-cohort Heatmap
+`r analysis_decision("Extracted the Top 30 proteins from the FULL cohort vascular DEA ranked by lowest FDR.", "Z-scored these exact 30 proteins across just the 10 extreme patients to maximize visual contrast of the systemic signals.")`
+
+`r what_this_does("Subsets the 10-patient omics matrix to the top 30 proteins identified in the full-cohort DEA.", "Calculated row-wise Z-scores to normalize protein abundance.", "Rendered an annotated ComplexHeatmap clustering the patients based on these systemic drivers.")`
+
+```{r full_cohort_heatmap, results='asis', fig.width=8, fig.height=7}
+if (!is.null(full_vascular_dea)) {
+  
+  # Extract Top 30 by FDR (adj.P.Val)
+  top_30_features <- full_vascular_dea %>%
+    arrange(adj.P.Val) %>%
+    slice_head(n = 30) %>%
+    pull(Feature)
+  
+  # Subset 10-patient matrix to these 30 features
+  mat_top30 <- omics_mat_10[rownames(omics_mat_10) %in% top_30_features, , drop = FALSE]
+  
+  # Z-Score row-wise
+  mat_top30_z <- t(scale(t(mat_top30)))
+  
+  # Annotations & Colors
+  col_fun <- colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b"))
+  group_colors <- c("Vascular_Active" = "#e74c3c", "Vascular_Inactive" = "#3498db")
+  ha <- HeatmapAnnotation(Group = clin_10$phenotype_group, col = list(Group = group_colors))
+  
+  ht2 <- Heatmap(
+    mat_top30_z,
+    name = "Z-Score",
+    top_annotation = ha,
+    col = col_fun,
+    column_title = "Top 30 Full-Cohort Vascular Proteins (Subsetted to N=10)",
+    row_names_gp = gpar(fontsize = 8),
+    column_names_gp = gpar(fontsize = 10),
+    cluster_columns = TRUE, 
+    show_row_dend = FALSE
+  )
+  
+  cat("> **Note:** The proteins displayed below are the top 30 ranked by lowest FDR in the *full* cohort DEA. None of these proteins have passed the FDR < 0.05 threshold.\n\n")
+  
+  draw(ht2)
+  cat("\n\n")
+  
+} else {
+  cat("> Skipped: Full cohort DEA results not found.\n")
+}
+```
+`r key_insight("No visible pattern")`
+
+# Proteins of Interest Heatmap
+`r analysis_decision("Filtered the 10-patient matrix for the predefined list of human-translated proteins of interest.", "Applied Z-scoring to highlight relative abundance shifts strictly between the extreme phenotypes.")`
+
+`r what_this_does("Matched the predefined proteins of interest against the available Olink assays, generating a warning for any missing targets.", "Calculated row-wise Z-scores for the surviving proteins.", "Rendered an annotated ComplexHeatmap, intentionally preserving the custom row order defined in the configuration.")`
+
+```{r poi_heatmap, results='asis', fig.width=8, fig.height=4}
+# Find which proteins actually exist in the matrix
+available_poi <- intersect(proteins_of_interest, rownames(omics_mat_10))
+missing_poi <- setdiff(proteins_of_interest, rownames(omics_mat_10))
+
+if (length(missing_poi) > 0) {
+  cat(sprintf("<b style='color:#d35400;'>Note: The following proteins were not found in the Olink matrix and will be excluded: %s</b>\n\n", paste(missing_poi, collapse = ", ")))
+}
+
+if (length(available_poi) > 0) {
+  
+  # Subset and Z-Score
+  mat_poi <- omics_mat_10[available_poi, , drop = FALSE]
+  mat_poi_z <- t(scale(t(mat_poi)))
+  
+  ht3 <- Heatmap(
+    mat_poi_z,
+    name = "Z-Score",
+    top_annotation = ha, # Reuse annotation from Goal 2
+    col = col_fun,       # Reuse color scale from Goal 2
+    column_title = "Proteins of Interest (Z-Scored on Extreme N=10)",
+    row_names_gp = gpar(fontsize = 10, fontface = "bold"),
+    column_names_gp = gpar(fontsize = 10),
+    cluster_columns = TRUE,
+    cluster_rows = FALSE, # Keep user's predefined list order
+    show_row_dend = FALSE
+  )
+  
+  draw(ht3)
+  cat("\n\n")
+  
+} else {
+  cat("> Skipped: No proteins of interest found in the dataset.\n")
+}
+```
+`r key_insight("No visible pattern")`
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script z01 Complete! \n")
+```
