@@ -1,0 +1,249 @@
+---
+title: "Data Import and Sync"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Introduction
+This script represents Phase 1a of the pipeline. It strictly handles the ingestion of raw data files, resolution of patient identifiers, and technical quality control (missingness filtering and imputation). No biological feature engineering or statistical transformations are performed here.
+
+
+# Setup
+`r what_this_does("Loaded required utility packages (tidyverse, data.table, readxl, matrixStats).", "Established dynamic output directory paths to safely save synchronized data.", "Configured default knitr chunk options to suppress unnecessary warnings.")`
+
+```{r setup, message=FALSE, warning=FALSE}
+# Packages
+library(tidyverse)   # Data manipulation
+library(readxl)      # Reading messy Excel files
+library(data.table)  # High-performance data wrangling
+library(here)        # Safe file paths
+library(matrixStats) # Fast matrix math for QC and Imputation
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "01a_data_import_and_qc"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+```
+
+# Configuration
+
+`r what_this_does("Defined strict quality control missingness thresholds for proteomics filtering (5% max missingness).", "Set the clinical variable completeness threshold (variables must be 80% complete to survive).", "Listed protected raw variables to prevent the missingness filter from accidentally dropping foundational columns needed for downstream engineering in Script 01b.", "Parameterized all raw data file names to avoid hardcoding deep in the script.")`
+
+```{r config}
+# 1. Global File Paths ---------------------------------------------------------
+file_paths <- list(
+  clinical_raw  = "clinical_data.xlsx",
+  id_map        = "Samples for OLink submitted_final_0226.xlsx",
+  olink_raw     = "pre_quant.csv"
+)
+
+# 2. Global QC Thresholds & Protected Columns ----------------------------------
+qc_config <- list(
+  max_missing_pct_prot = 0.05,
+  max_missing_pct_pat  = 0.05,
+  selected_col         = "SELECTED", 
+  
+  max_missingness_clin_var = 0.20, 
+  
+  # Protect these from the 20% NA filter because Script 01b needs them to engineer features
+  protected_raw_vars = c(
+    "Subject_ID", "inCentraxx", "Geburtsdatum", "Geschlecht", "Entnahmedatum", 
+    "Visit Date", "Einlagerungsdatum"
+  )
+)
+```
+
+# Clinical Data
+`r analysis_decision("Dropped the follow-up sample 'Act_4_2' to strictly enforce a cross-sectional study design.", "Excluded patients who were missing from either the CentraXX output or the Biobank sample manifest.", "Converted explicit missing-data strings ('UN', 'Unknown', 'Not done') to true NAs to prevent phantom data from surviving the completeness filter.", "Dropped any raw clinical column with >20% missingness in SSc patients (excluding controls to prevent artificial NA inflation). Protected foundational variables were retained.")`
+
+`r what_this_does("Imported raw clinical and sample mapping Excel files and coalesced IDs.", "Standardized missing value strings into true NAs.", "Calculated missingness exclusively on patient samples (ignoring healthy controls) and applied the 20% missingness filter.", "Generated a scrollable HTML audit table detailing exactly which columns were dropped and their missingness percentages.")`
+```{r clin_import, results='asis'}
+audit_log <- c("### Clinical Import Log\n")
+
+# 1. Process Master Clinical File ----------------------------------------------
+raw_clin <- read_excel(here::here("data", file_paths$clinical_raw), sheet = 1)
+setDT(raw_clin) 
+
+# Force the clinical ID to be a character string for safe merging
+raw_clin <- raw_clin[, inCentraxx := as.character(inCentraxx)]
+
+# Strict Filter: Keep ONLY samples explicitly marked for this study
+raw_clin <- raw_clin[get(qc_config$selected_col) == 1 | get(qc_config$selected_col) == "1"]
+
+# 2. Process Mapping File & Coalesce IDs ---------------------------------------
+id_map <- read_excel(here::here("data", file_paths$id_map))
+setDT(id_map)
+
+# Explicitly drop the follow-up sample to enforce cross-sectional design
+id_map <- id_map[`Subject ID` != "Act_4_2"]
+id_map <- id_map[, `Subject-ID (EUSTAR)`      := as.character(`Subject-ID (EUSTAR)`)]
+id_map <- id_map[, `Subject-ID (Biobank RUZ)` := as.character(`Subject-ID (Biobank RUZ)`)]
+
+# COALESCE: Create a master 'Merge_ID'
+id_map <- id_map[, Merge_ID := fifelse(
+  is.na(`Subject-ID (EUSTAR)`) | `Subject-ID (EUSTAR)` == "", 
+  `Subject-ID (Biobank RUZ)`, 
+  `Subject-ID (EUSTAR)`
+)]
+
+id_map <- id_map[!is.na(Merge_ID) & Merge_ID != ""]
+
+# 3. Merge and Structure -------------------------------------------------------
+raw_spine <- merge(
+  raw_clin, 
+  id_map, 
+  by.x = "inCentraxx", 
+  by.y = "Merge_ID", 
+  all = FALSE
+)
+
+# Rename the final subject ID column for global consistency
+raw_spine <- setnames(raw_spine, old = "Subject ID", new = "Subject_ID", skip_absent = TRUE)
+
+audit_log <- c(audit_log, sprintf("- Inner join successful. Matched %d unique patients.", nrow(raw_spine)))
+
+# 3.5 Standardize Missing Values ("Phantom Data" Sweep) ------------------------
+# Convert case-insensitive "un", "unknown", and "not done" to true NA 
+raw_spine <- raw_spine %>%
+  mutate(across(where(is.character), ~ if_else(tolower(.x) %in% c("un", "unknown", "not done"), NA_character_, .x)))
+setDT(raw_spine) # Ensure it stays a high-performance data.table
+
+audit_log <- c(audit_log, "- Standardized phantom missing data ('UN', 'Unknown') to true NA.")
+
+# 4. Completeness Pruning (The Technical NA Filter) ----------------------------
+# CRITICAL: Exclude Healthy Controls from the calculation so their natural NAs don't inflate the missingness!
+missingness <- raw_spine[!str_detect(Subject_ID, "^Ctrl"), lapply(.SD, function(x) sum(is.na(x)) / .N)]
+
+# Convert 1-row data.table to a named numeric vector for safe logical filtering
+miss_vec <- unlist(missingness)
+
+cols_to_keep <- names(miss_vec)[miss_vec <= qc_config$max_missingness_clin_var | names(miss_vec) %in% qc_config$protected_raw_vars]
+cols_to_drop <- setdiff(names(miss_vec), cols_to_keep)
+
+n_dropped <- length(cols_to_drop)
+raw_spine <- raw_spine[, ..cols_to_keep]
+
+audit_log <- c(audit_log, sprintf("- Pruning: Dropped %d columns for having > %s%% missingness in the SSc cohort.", 
+            n_dropped, qc_config$max_missingness_clin_var * 100))
+audit_log <- c(audit_log, sprintf("- Clinical Spine Dimensions: %d rows x %d columns.", nrow(raw_spine), ncol(raw_spine)))
+
+# 5. Build the Dropped Variables Audit Table -----------------------------------
+dropped_html <- ""
+if (n_dropped > 0) {
+  dropped_df <- data.frame(
+    Variable = cols_to_drop,
+    Missingness = miss_vec[cols_to_drop]
+  ) %>% 
+    arrange(desc(Missingness)) %>% 
+    mutate(Missingness = sprintf("%.1f%%", Missingness * 100))
+  
+  dropped_tbl <- dropped_df %>%
+    kableExtra::kbl(format = "html", row.names = FALSE, 
+                    caption = sprintf("<b style='color:#c0392b;'>Excluded Clinical Variables (Missingness > %s%%)</b>", qc_config$max_missingness_clin_var * 100)) %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
+    kableExtra::scroll_box(width = "100%", height = "600px")
+  
+  if (interactive()) {
+    print(dropped_tbl)
+  } else {
+    dropped_html <- as.character(dropped_tbl)
+  }
+}
+
+# Cleanup Memory
+rm(raw_clin, id_map, missingness, miss_vec, cols_to_keep, cols_to_drop)
+if(exists("dropped_df")) rm(dropped_df)
+invisible(gc())
+
+# Print HTML output as a single block to prevent code fragmentation
+cat(paste(audit_log, collapse = "\n\n"))
+cat("\n\n<br>\n\n")
+if (dropped_html != "") cat(dropped_html)
+```
+
+# Proteomics Data
+`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold to ensure robust downstream imputation.", "NA values were imputed using a row-wise (protein-wise) median approach.")`
+
+`r what_this_does("Pivoted the Olink data to a wide matrix.", "Executed missingness filtering and median imputation.", "Cross-synchronized the clinical spine and the Olink matrix to guarantee identical sample inclusion and ordering.")`
+
+```{r proteomics_data}
+audit_log_olink <- c("Proteomics QC Log\n")
+
+# 1. Import and Pivot ----------------------------------------------------------
+raw_olink <- fread(here::here("data", file_paths$olink_raw))
+raw_olink <- raw_olink[SampleID %in% raw_spine$Subject_ID]
+
+wide_olink <- dcast(raw_olink, Assay ~ SampleID, value.var = "NPX")
+olink_mat <- as.matrix(wide_olink[, -1, with = FALSE])
+rownames(olink_mat) <- wide_olink$Assay
+
+audit_log_olink <- c(audit_log_olink, sprintf("- Initial Matrix: %d Proteins | %d Samples", nrow(olink_mat), ncol(olink_mat)))
+
+# 2. Missingness Filtering -----------------------------------------------------
+miss_prots <- rowMeans(is.na(olink_mat))
+miss_samps <- colMeans(is.na(olink_mat))
+
+valid_prots <- miss_prots < qc_config$max_missing_pct_prot
+valid_samps <- miss_samps < qc_config$max_missing_pct_pat
+
+failed_prots <- rownames(olink_mat)[!valid_prots]
+failed_samps <- colnames(olink_mat)[!valid_samps]
+
+if(length(failed_prots) > 0) {
+  audit_log_olink <- c(audit_log_olink, sprintf("- Dropped %d Proteins (>= %s%% missing).", length(failed_prots), qc_config$max_missing_pct_prot * 100))
+}
+if(length(failed_samps) > 0) {
+  audit_log_olink <- c(audit_log_olink, sprintf("- Dropped %d Patients (>= %s%% missing).", length(failed_samps), qc_config$max_missing_pct_pat * 100))
+}
+
+qc_mat <- olink_mat[valid_prots, valid_samps, drop = FALSE]
+
+# 3. Median Imputation ---------------------------------------------------------
+row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
+na_coords <- which(is.na(qc_mat), arr.ind = TRUE)
+qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
+
+audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete. Post-QC Matrix: %d Proteins | %d Samples", nrow(qc_mat), ncol(qc_mat)))
+
+# 4. Final Sync ----------------------------------------------------------------
+# Ensure the clinical spine perfectly matches the surviving omics samples
+raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat)]
+
+# Ensure exact column ordering in the matrix
+qc_mat <- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
+
+# Cleanup Memory
+rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, failed_prots, failed_samps, row_meds, na_coords)
+invisible(gc())
+
+# Print HTML output as a single block
+cat(paste(audit_log_olink, collapse = "\n"))
+```
+
+
+# Export 
+
+`r what_this_does("Exported the raw_filtered_spine.rds and clean_olink_matrix.rds for downstream engineering in Script 01b.")`
+
+```{r export}
+# Save the RAW but mathematically synced and filtered files
+saveRDS(raw_spine, file.path(output_dir_data, "raw_filtered_spine.rds"))
+saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
+
+cat("Script 01a Complete! Data is ready for analysis.")
+```
+
+
