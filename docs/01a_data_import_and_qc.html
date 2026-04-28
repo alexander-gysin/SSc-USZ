@@ -1,0 +1,3167 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>Data Import and Sync</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="01a_data_import_and_qc.html">Data</a>
+</li>
+<li>
+  <a href="02_cohort_characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Data Import and Sync</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">28 April, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-04-28
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd14bd1da747602e432fdd45dd7baab7413c1859targetblankdd14bd1a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd14bd1da747602e432fdd45dd7baab7413c1859" target="_blank">dd14bd1</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd14bd1da747602e432fdd45dd7baab7413c1859targetblankdd14bd1a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd14bd1da747602e432fdd45dd7baab7413c1859" target="_blank">dd14bd1</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/03c_proteomics_predictive/
+    Ignored:    output/randomizer/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/03c_proteomics_clustering.Rmd
+    Untracked:  analysis/03d_proteomics_correlations.Rmd
+    Untracked:  code/randomizer.R
+    Untracked:  core
+
+Unstaged changes:
+    Deleted:    analysis/01_data_import_and_qc.Rmd
+    Modified:   analysis/02_cohort_characterization.Rmd
+    Modified:   analysis/03a_proteomics_variance.Rmd
+    Modified:   analysis/03b_proteomics_differential.Rmd
+    Deleted:    analysis/03c_proteomics_predictive.Rmd
+    Modified:   analysis/_site.yml
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/style.css
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
+    Modified:   renv.lock
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/01a_data_import_and_qc.Rmd</code>) and HTML
+(<code>docs/01a_data_import_and_qc.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/dd14bd1da747602e432fdd45dd7baab7413c1859/analysis/01a_data_import_and_qc.Rmd" target="_blank">dd14bd1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-28
+</td>
+<td>
+converted 01 to 01a
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This script represents Phase 1a of the pipeline. It strictly handles
+the ingestion of raw data files, resolution of patient identifiers, and
+technical quality control (missingness filtering and imputation). No
+biological feature engineering or statistical transformations are
+performed here.</p>
+</div>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required utility packages (tidyverse, data.table, readxl,
+matrixStats).
+</li>
+<li>
+Established dynamic output directory paths to safely save synchronized
+data.
+</li>
+<li>
+Configured default knitr chunk options to suppress unnecessary warnings.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Packages
+library(tidyverse)   # Data manipulation
+library(readxl)      # Reading messy Excel files
+library(data.table)  # High-performance data wrangling
+library(here)        # Safe file paths
+library(matrixStats) # Fast matrix math for QC and Imputation
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file &lt;- &quot;01a_data_import_and_qc&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)</code></pre>
+</div>
+<div id="configuration" class="section level1">
+<h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined strict quality control missingness thresholds for proteomics
+filtering (5% max missingness).
+</li>
+<li>
+Set the clinical variable completeness threshold (variables must be 80%
+complete to survive).
+</li>
+<li>
+Listed protected raw variables to prevent the missingness filter from
+accidentally dropping foundational columns needed for downstream
+engineering in Script 01b.
+</li>
+<li>
+Parameterized all raw data file names to avoid hardcoding deep in the
+script.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Global File Paths ---------------------------------------------------------
+file_paths &lt;- list(
+  clinical_raw  = &quot;clinical_data.xlsx&quot;,
+  id_map        = &quot;Samples for OLink submitted_final_0226.xlsx&quot;,
+  olink_raw     = &quot;pre_quant.csv&quot;
+)
+
+# 2. Global QC Thresholds &amp; Protected Columns ----------------------------------
+qc_config &lt;- list(
+  max_missing_pct_prot = 0.05,
+  max_missing_pct_pat  = 0.05,
+  selected_col         = &quot;SELECTED&quot;, 
+  
+  max_missingness_clin_var = 0.20, 
+  
+  # Protect these from the 20% NA filter because Script 01b needs them to engineer features
+  protected_raw_vars = c(
+    &quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Geburtsdatum&quot;, &quot;Geschlecht&quot;, &quot;Entnahmedatum&quot;, 
+    &quot;Visit Date&quot;, &quot;Einlagerungsdatum&quot;
+  )
+)</code></pre>
+</div>
+<div id="clinical-data" class="section level1">
+<h1>Clinical Data</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Dropped the follow-up sample ‘Act_4_2’ to strictly enforce a
+cross-sectional study design.
+</li>
+<li>
+Excluded patients who were missing from either the CentraXX output or
+the Biobank sample manifest.
+</li>
+<li>
+Converted explicit missing-data strings (‘UN’, ‘Unknown’, ‘Not done’) to
+true NAs to prevent phantom data from surviving the completeness filter.
+</li>
+<li>
+Dropped any raw clinical column with &gt;20% missingness in SSc patients
+(excluding controls to prevent artificial NA inflation). Protected
+foundational variables were retained.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Imported raw clinical and sample mapping Excel files and coalesced IDs.
+</li>
+<li>
+Standardized missing value strings into true NAs.
+</li>
+<li>
+Calculated missingness exclusively on patient samples (ignoring healthy
+controls) and applied the 20% missingness filter.
+</li>
+<li>
+Generated a scrollable HTML audit table detailing exactly which columns
+were dropped and their missingness percentages.
+</li>
+</ul>
+</div>
+<pre class="r"><code>audit_log &lt;- c(&quot;### Clinical Import Log\n&quot;)
+
+# 1. Process Master Clinical File ----------------------------------------------
+raw_clin &lt;- read_excel(here::here(&quot;data&quot;, file_paths$clinical_raw), sheet = 1)
+setDT(raw_clin) 
+
+# Force the clinical ID to be a character string for safe merging
+raw_clin &lt;- raw_clin[, inCentraxx := as.character(inCentraxx)]
+
+# Strict Filter: Keep ONLY samples explicitly marked for this study
+raw_clin &lt;- raw_clin[get(qc_config$selected_col) == 1 | get(qc_config$selected_col) == &quot;1&quot;]
+
+# 2. Process Mapping File &amp; Coalesce IDs ---------------------------------------
+id_map &lt;- read_excel(here::here(&quot;data&quot;, file_paths$id_map))
+setDT(id_map)
+
+# Explicitly drop the follow-up sample to enforce cross-sectional design
+id_map &lt;- id_map[`Subject ID` != &quot;Act_4_2&quot;]
+id_map &lt;- id_map[, `Subject-ID (EUSTAR)`      := as.character(`Subject-ID (EUSTAR)`)]
+id_map &lt;- id_map[, `Subject-ID (Biobank RUZ)` := as.character(`Subject-ID (Biobank RUZ)`)]
+
+# COALESCE: Create a master &#39;Merge_ID&#39;
+id_map &lt;- id_map[, Merge_ID := fifelse(
+  is.na(`Subject-ID (EUSTAR)`) | `Subject-ID (EUSTAR)` == &quot;&quot;, 
+  `Subject-ID (Biobank RUZ)`, 
+  `Subject-ID (EUSTAR)`
+)]
+
+id_map &lt;- id_map[!is.na(Merge_ID) &amp; Merge_ID != &quot;&quot;]
+
+# 3. Merge and Structure -------------------------------------------------------
+raw_spine &lt;- merge(
+  raw_clin, 
+  id_map, 
+  by.x = &quot;inCentraxx&quot;, 
+  by.y = &quot;Merge_ID&quot;, 
+  all = FALSE
+)
+
+# Rename the final subject ID column for global consistency
+raw_spine &lt;- setnames(raw_spine, old = &quot;Subject ID&quot;, new = &quot;Subject_ID&quot;, skip_absent = TRUE)
+
+audit_log &lt;- c(audit_log, sprintf(&quot;- Inner join successful. Matched %d unique patients.&quot;, nrow(raw_spine)))
+
+# 3.5 Standardize Missing Values (&quot;Phantom Data&quot; Sweep) ------------------------
+# Convert case-insensitive &quot;un&quot;, &quot;unknown&quot;, and &quot;not done&quot; to true NA 
+raw_spine &lt;- raw_spine %&gt;%
+  mutate(across(where(is.character), ~ if_else(tolower(.x) %in% c(&quot;un&quot;, &quot;unknown&quot;, &quot;not done&quot;), NA_character_, .x)))
+setDT(raw_spine) # Ensure it stays a high-performance data.table
+
+audit_log &lt;- c(audit_log, &quot;- Standardized phantom missing data (&#39;UN&#39;, &#39;Unknown&#39;) to true NA.&quot;)
+
+# 4. Completeness Pruning (The Technical NA Filter) ----------------------------
+# CRITICAL: Exclude Healthy Controls from the calculation so their natural NAs don&#39;t inflate the missingness!
+missingness &lt;- raw_spine[!str_detect(Subject_ID, &quot;^Ctrl&quot;), lapply(.SD, function(x) sum(is.na(x)) / .N)]
+
+# Convert 1-row data.table to a named numeric vector for safe logical filtering
+miss_vec &lt;- unlist(missingness)
+
+cols_to_keep &lt;- names(miss_vec)[miss_vec &lt;= qc_config$max_missingness_clin_var | names(miss_vec) %in% qc_config$protected_raw_vars]
+cols_to_drop &lt;- setdiff(names(miss_vec), cols_to_keep)
+
+n_dropped &lt;- length(cols_to_drop)
+raw_spine &lt;- raw_spine[, ..cols_to_keep]
+
+audit_log &lt;- c(audit_log, sprintf(&quot;- Pruning: Dropped %d columns for having &gt; %s%% missingness in the SSc cohort.&quot;, 
+            n_dropped, qc_config$max_missingness_clin_var * 100))
+audit_log &lt;- c(audit_log, sprintf(&quot;- Clinical Spine Dimensions: %d rows x %d columns.&quot;, nrow(raw_spine), ncol(raw_spine)))
+
+# 5. Build the Dropped Variables Audit Table -----------------------------------
+dropped_html &lt;- &quot;&quot;
+if (n_dropped &gt; 0) {
+  dropped_df &lt;- data.frame(
+    Variable = cols_to_drop,
+    Missingness = miss_vec[cols_to_drop]
+  ) %&gt;% 
+    arrange(desc(Missingness)) %&gt;% 
+    mutate(Missingness = sprintf(&quot;%.1f%%&quot;, Missingness * 100))
+  
+  dropped_tbl &lt;- dropped_df %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, 
+                    caption = sprintf(&quot;&lt;b style=&#39;color:#c0392b;&#39;&gt;Excluded Clinical Variables (Missingness &gt; %s%%)&lt;/b&gt;&quot;, qc_config$max_missingness_clin_var * 100)) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;600px&quot;)
+  
+  if (interactive()) {
+    print(dropped_tbl)
+  } else {
+    dropped_html &lt;- as.character(dropped_tbl)
+  }
+}
+
+# Cleanup Memory
+rm(raw_clin, id_map, missingness, miss_vec, cols_to_keep, cols_to_drop)
+if(exists(&quot;dropped_df&quot;)) rm(dropped_df)
+invisible(gc())
+
+# Print HTML output as a single block to prevent code fragmentation
+cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
+<div id="clinical-import-log" class="section level3">
+<h3>Clinical Import Log</h3>
+<ul>
+<li><p>Inner join successful. Matched 131 unique patients.</p></li>
+<li><p>Standardized phantom missing data (‘UN’, ‘Unknown’) to true
+NA.</p></li>
+<li><p>Pruning: Dropped 224 columns for having &gt; 20% missingness in
+the SSc cohort.</p></li>
+<li><p>Clinical Spine Dimensions: 131 rows x 152 columns.</p></li>
+</ul>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<p><br></p>
+<pre class="r"><code>if (dropped_html != &quot;&quot;) cat(dropped_html)</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style="">
+<caption>
+<b style="color:#c0392b;">Excluded Clinical Variables (Missingness &gt;
+20%)</b>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Missingness
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Onset of Raynaud’s disease
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Onset of first non-Raynaud’s symptoms of the disease
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+If yes, date of Autologous stem cell transplantation
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DAS 28 (ESR) score
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DAS 28 (CRP) score
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-fibrillin
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Antibodies
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Antibodies Specify
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-CCP
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-dsDNA
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Sm
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Jo1
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Mi2
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-PL7
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-PL12
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-OJ
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-EJ
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-SRP
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-MDA5
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-NXP2
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BNP (pg/ml)
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO (% predicted)
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tricuspid regurgitation velocity (m/sec)
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oxygen Question 3. When I sleep, I most often use an oxygen flow rate
+of______ L/min.
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oxygen Question 4. When I perform a physical activity (such as getting
+dressed or walking), I most often use an oxygen flow rate of________
+L/min.
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oxygen Question 5. At rest, I most often use an oxygen flow rate
+of_______ L/min.
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…356
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…364
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subject-ID (Biobank RUZ)
+</td>
+<td style="text-align:left;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Treated with Autologous stem cell transplantation, ever
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-PM/Scl
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-U3 RNP/fibrillarin
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-RNA polymerase I
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Ku
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ANCA-MPO
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ANCA-PR3
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Myositis antibodies positivity
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+OR pulmonary resistance (mmHg·min/l)
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wedge pressure after fluid challenge?
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wedge pressure after fluid challenge (mmHg)
+</td>
+<td style="text-align:left;">
+99.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Th/To
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-La/SSB
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Serum creatinine (mg/dl)
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Conduction block grade
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tricuspid regurgitation velocity?
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular systolic pressure (mmHg)
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular tele diastolic pressure?
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular tele diastolic pressure (mmHg)
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAP mean (mmHg)
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary wedge pressure?
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cardiac index?
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Ro/SSA
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+If yes, Date of assessment for Catheterize
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular systolic pressure?
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAP mean?
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary resistance?
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary resistance (dyn*s/cm?)
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary wedge pressure (mmHg)
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cardiac index (l/min/m²)
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cardiac output?
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cardiac output (l/min)
+</td>
+<td style="text-align:left;">
+96.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other antibodies positivity
+</td>
+<td style="text-align:left;">
+95.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rheumatoid factor
+</td>
+<td style="text-align:left;">
+95.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TFR_a
+</td>
+<td style="text-align:left;">
+95.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSc-specific antibodies positivity
+</td>
+<td style="text-align:left;">
+94.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other anti-nuclear antibodies positivity
+</td>
+<td style="text-align:left;">
+94.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Size Measured during the end diastolic period
+</td>
+<td style="text-align:left;">
+94.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ANA positivity
+</td>
+<td style="text-align:left;">
+93.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not walk up a short, gradual incline in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+92.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not walk up one flight of stairs in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+91.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not bathe or shower in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+91.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not do light cleaning arod the house in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+91.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not lift or carry a light load a short distance in the last 24
+hours because:
+</td>
+<td style="text-align:left;">
+91.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oxygen Question 2. I use supplemental oxygen…..
+</td>
+<td style="text-align:left;">
+91.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2" style="list-style-type: decimal">
+<li>Did you walk up one flight of stairs in the last 24 hours?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="3" style="list-style-type: decimal">
+<li>Over the last 24 hours, how short of breath have you been while
+sitting down, relaxing, reading, or watching TV?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not perform a grooming activity in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="6" style="list-style-type: decimal">
+<li>Did you walk outside on a level surface (approximately 150 feet/45
+meters, or the distance of half a typical city block) in the last 24
+hours?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not walk outside on a level surface in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="7" style="list-style-type: decimal">
+<li>Did you walk from room to room inside your home in the last 24
+hours?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="8" style="list-style-type: decimal">
+<li>Did you leave your home in the last 24 hours?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not leave my home in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="9" style="list-style-type: decimal">
+<li>Did you bathe or shower in the last 24 hours?
+</td>
+<td style="text-align:left;">
+90.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not get dressed in the last 24 hours because:
+</td>
+<td style="text-align:left;">
+89.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+I did not walk from room to room inside my home in the last 24 hours
+because:
+</td>
+<td style="text-align:left;">
+89.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="10" style="list-style-type: decimal">
+<li>Did you do light cleaning arod the house in the last 24 hours?
+</td>
+<td style="text-align:left;">
+89.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="13" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did you cough? (If you choose “0”,
+please skip on item 18.)
+</td>
+<td style="text-align:left;">
+88.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oxygen Question 1. Do you ever use supplemental oxygen?
+</td>
+<td style="text-align:left;">
+88.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="5" style="list-style-type: decimal">
+<li>Did you perform a grooming activity (e.g., brush teeth, shave, fix
+hair) in the last 24 hours?
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="11" style="list-style-type: decimal">
+<li>Over the last 24 hours, how short of breath were you after eating a
+meal or snacks?
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="15" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did you cough when you were
+breathing hard or fast?
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="16" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did you cough when you
+over-exerted yourself?
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="17" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did coughing make you short of
+breath?
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CRP_a
+</td>
+<td style="text-align:left;">
+87.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="18" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did you feel an annoying tickle in
+your throat?
+</td>
+<td style="text-align:left;">
+86.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How long did it take you to recover when you became short of breath?
+</td>
+<td style="text-align:left;">
+86.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+worseskin_a
+</td>
+<td style="text-align:left;">
+86.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="5" style="list-style-type: decimal">
+<li>How frustrated were you by the speed it took you to complete a
+physical activity?
+</td>
+<td style="text-align:left;">
+84.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="14" style="list-style-type: decimal">
+<li>Over the last 24 hours, how often did you cough when you took a deep
+breath?
+</td>
+<td style="text-align:left;">
+84.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2" style="list-style-type: decimal">
+<li>How much did fear of becoming too short of breath limit your
+physical exertion?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="3" style="list-style-type: decimal">
+<li>How was your stamina when you exerted physically?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="4" style="list-style-type: decimal">
+<li>How frustrated were you by the time it took you to complete a
+physical activity?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="6" style="list-style-type: decimal">
+<li>How frustrated were you by your need to rest during or after
+completing a physical activity?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="7" style="list-style-type: decimal">
+<li>How much did coughing embarrass you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="8" style="list-style-type: decimal">
+<li>How much did coughing frustrate you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="9" style="list-style-type: decimal">
+<li>How much did coughing interrupt your conversations (in person or on
+the phone)?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="10" style="list-style-type: decimal">
+<li>How frightening was your coughing to you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="11" style="list-style-type: decimal">
+<li>How much was your cough a problem for you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="12" style="list-style-type: decimal">
+<li>How much hassle or inconvenience has pulmonary fibrosis caused you
+in your day-to-day life?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="13" style="list-style-type: decimal">
+<li>How much did you have to rest in the middle of doing a simple chore
+inside the house?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="14" style="list-style-type: decimal">
+<li>How much did you have to pace yourself to make it through the day?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="15" style="list-style-type: decimal">
+<li>How much did it take to get yourself ready to leave the house?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="16" style="list-style-type: decimal">
+<li>How much were you forced to depend on other people to do things for
+you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="17" style="list-style-type: decimal">
+<li>How has shortness of breath affected your quality of life?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="18" style="list-style-type: decimal">
+<li>How much has your cough affected your quality of life?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="19" style="list-style-type: decimal">
+<li>How much has your energy level affected your quality of life?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="20" style="list-style-type: decimal">
+<li>How have you felt in terms of physical health?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="21" style="list-style-type: decimal">
+<li>How has your quality of life been?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol style="list-style-type: decimal">
+<li>Did you get dressed in the last 24 hours?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did doing light cleaning arod the house make you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did lifting and carrying a light load a short
+distance make you?
+</td>
+<td style="text-align:left;">
+83.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did walking up a short, gradual incline make you?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did walking from room to room inside your home make
+you?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="12" style="list-style-type: decimal">
+<li>Did you lift and carry a light load (e.g., less than 10 lbs) a short
+distance (e.g., from one room to another) in the last 24 hours?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="19" style="list-style-type: decimal">
+<li>Over the last 24 hours, how was your energy level?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="20" style="list-style-type: decimal">
+<li>Over the last 24 hours, of all that you wanted to get done, how much
+did you actually get done?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="21" style="list-style-type: decimal">
+<li>Over the last 24 hours, how much energy did you have to do all the
+things you like to do?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="22" style="list-style-type: decimal">
+<li>Over the last 24 hours, how much did coughing have a negative effect
+on your energy?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="23" style="list-style-type: decimal">
+<li>Did you become short of breath in the last 24 hours?
+</td>
+<td style="text-align:left;">
+82.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did walking up one flight of stairs make you?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="4" style="list-style-type: decimal">
+<li>Did you walk up a short, gradual incline (like a wheelchair ramp
+into a building) in the last 24 hours?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did grooming make you?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did walking outside on a level surface make you?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did getting ready to leave your home (e.g., find
+keys, put on coat, lock doors) make you?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did bathing or showering make you?
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DU_a
+</td>
+<td style="text-align:left;">
+81.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How short of breath did getting dressed make you?
+</td>
+<td style="text-align:left;">
+80.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: Digital Tip Ulcers
+</td>
+<td style="text-align:left;">
+78.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total HAQ Score
+</td>
+<td style="text-align:left;">
+77.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: of the fingers as sclerodactyly (distal to the
+metacarpophalangeal joints but proximal to the proximal interphalangeal
+joints)
+</td>
+<td style="text-align:left;">
+76.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other, please specify
+</td>
+<td style="text-align:left;">
+75.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of tender joints
+</td>
+<td style="text-align:left;">
+70.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of swollen joints
+</td>
+<td style="text-align:left;">
+70.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+If yes, date of signs/symptoms of right-sided heart failure
+</td>
+<td style="text-align:left;">
+68.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…367
+</td>
+<td style="text-align:left;">
+68.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dressing and grooming
+</td>
+<td style="text-align:left;">
+66.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: of the fingers of both hands extending proximally to the
+metacarpophalangeal joints
+</td>
+<td style="text-align:left;">
+62.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol style="list-style-type: decimal">
+<li>How much did shortness of breath prevent you from doing things you
+wanted to do?
+</td>
+<td style="text-align:left;">
+60.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Reflux
+</td>
+<td style="text-align:left;">
+52.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Get on and off the toilet?
+</td>
+<td style="text-align:left;">
+52.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: Fingertip pitting scars
+</td>
+<td style="text-align:left;">
+51.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stand up from an armless straight chair?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Take a tub bath?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Open car doors?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Open jars that have been previously opened?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Turn faucets on and off?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IN THE PAST WEEK, how much has Raynaud’s interfered with your daily
+activities?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IN THE PAST WEEK, how much have your finger ulcers interfered with your
+daily activities?
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+onset_nonRP
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…370
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Shampoo your hair?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Open a new milk carton?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Climb up five stairs?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wash and dry your entire body?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Reach and get down a 5 pod object (such as a bag of sugar) from just
+over your head?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bend down and pick up clothing off the floor?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+R errands and shop?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Get in and out of a car?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Do chores such as vacuuming or yard work?
+</td>
+<td style="text-align:left;">
+49.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Get in and out of bed?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cut your meat?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lift a full glass to your mouth?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Walk outdoors on flat grod?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cane
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Overall, considering how much pain, discomfort, limitations in your
+daily life and other changes in your body and life, how severe would
+your rate your disease today?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IN THE PAST WEEK, how active was your arthritis?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IN THE PAST WEEK, how much have your intestinal problems interfered with
+your daily activities?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IN THE PAST WEEK, how much have your breathing problems interfered with
+your daily activities?
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Any bronchiectasis
+</td>
+<td style="text-align:left;">
+46.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAPsys (on echo)(mmhg)
+</td>
+<td style="text-align:left;">
+46.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD % involvement
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Any grod glass opacification
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Any honey combing
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Any reticular changes
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Any bullae
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dress yourself, including tying shoelaces and doing buttons?
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+We are also interested in learning whether or not you are affected by
+pain because of your illness. How much pain have you had because of your
+illness IN THE PAST WEEK?
+</td>
+<td style="text-align:left;">
+45.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Walker
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bathtub seat
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bathtub bar
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jar Opener
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Crutches
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wheelchair
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Devices for dressing (button hook, zipper pull, long-handled shoe horn,
+etc.)
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Built-up or special utensils
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Long-Handled Applicances for Reach
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Long-Handled Applicances for Bathroom
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raised Toilet Seat
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Special or built-up chair
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Eating
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arising
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Walking
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hygiene
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gripping and opening things
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Reach
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Errands and Chores
+</td>
+<td style="text-align:left;">
+44.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Worsening of cardiopulmonary manifestations within the last month
+</td>
+<td style="text-align:left;">
+42.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+<td style="text-align:left;">
+41.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO_a
+</td>
+<td style="text-align:left;">
+41.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO (% predicted) performed ?
+</td>
+<td style="text-align:left;">
+40.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: Telangiectasia
+</td>
+<td style="text-align:left;">
+39.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mouth inter-incisive distance (cm)
+</td>
+<td style="text-align:left;">
+38.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pattern profile
+</td>
+<td style="text-align:left;">
+38.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Was HAQ performed ?
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients included
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Physicians global assessment of disease activity VAS…283
+</td>
+<td style="text-align:left;">
+34.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dysphagia
+</td>
+<td style="text-align:left;">
+33.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score: of the fingers as puffy fingers
+</td>
+<td style="text-align:left;">
+31.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+6 minutes walking test performed?
+</td>
+<td style="text-align:left;">
+31.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Appearance of signs/symptoms of right-sided heart failure?
+</td>
+<td style="text-align:left;">
+30.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+How active was your arthritis during the past week?
+</td>
+<td style="text-align:left;">
+30.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAPsys (on echo)?
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients global assessment of disease activity VAS…281
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Erythrocyte sedimentation rate value (mm/hour)
+</td>
+<td style="text-align:left;">
+24.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
+<div id="proteomics-data" class="section level1">
+<h1>Proteomics Data</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Dropped proteins and samples exceeding the 5% missingness threshold to
+ensure robust downstream imputation.
+</li>
+<li>
+NA values were imputed using a row-wise (protein-wise) median approach.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Pivoted the Olink data to a wide matrix.
+</li>
+<li>
+Executed missingness filtering and median imputation.
+</li>
+<li>
+Cross-synchronized the clinical spine and the Olink matrix to guarantee
+identical sample inclusion and ordering.
+</li>
+</ul>
+</div>
+<pre class="r"><code>audit_log_olink &lt;- c(&quot;Proteomics QC Log\n&quot;)
+
+# 1. Import and Pivot ----------------------------------------------------------
+raw_olink &lt;- fread(here::here(&quot;data&quot;, file_paths$olink_raw))
+raw_olink &lt;- raw_olink[SampleID %in% raw_spine$Subject_ID]
+
+wide_olink &lt;- dcast(raw_olink, Assay ~ SampleID, value.var = &quot;NPX&quot;)
+olink_mat &lt;- as.matrix(wide_olink[, -1, with = FALSE])
+rownames(olink_mat) &lt;- wide_olink$Assay
+
+audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Initial Matrix: %d Proteins | %d Samples&quot;, nrow(olink_mat), ncol(olink_mat)))
+
+# 2. Missingness Filtering -----------------------------------------------------
+miss_prots &lt;- rowMeans(is.na(olink_mat))
+miss_samps &lt;- colMeans(is.na(olink_mat))
+
+valid_prots &lt;- miss_prots &lt; qc_config$max_missing_pct_prot
+valid_samps &lt;- miss_samps &lt; qc_config$max_missing_pct_pat
+
+failed_prots &lt;- rownames(olink_mat)[!valid_prots]
+failed_samps &lt;- colnames(olink_mat)[!valid_samps]
+
+if(length(failed_prots) &gt; 0) {
+  audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Dropped %d Proteins (&gt;= %s%% missing).&quot;, length(failed_prots), qc_config$max_missing_pct_prot * 100))
+}
+if(length(failed_samps) &gt; 0) {
+  audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Dropped %d Patients (&gt;= %s%% missing).&quot;, length(failed_samps), qc_config$max_missing_pct_pat * 100))
+}
+
+qc_mat &lt;- olink_mat[valid_prots, valid_samps, drop = FALSE]
+
+# 3. Median Imputation ---------------------------------------------------------
+row_meds &lt;- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
+na_coords &lt;- which(is.na(qc_mat), arr.ind = TRUE)
+qc_mat[na_coords] &lt;- row_meds[na_coords[, &quot;row&quot;]]
+
+audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Median Imputation Complete. Post-QC Matrix: %d Proteins | %d Samples&quot;, nrow(qc_mat), ncol(qc_mat)))
+
+# 4. Final Sync ----------------------------------------------------------------
+# Ensure the clinical spine perfectly matches the surviving omics samples
+raw_spine &lt;- raw_spine[Subject_ID %in% colnames(qc_mat)]
+
+# Ensure exact column ordering in the matrix
+qc_mat &lt;- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
+
+# Cleanup Memory
+rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, failed_prots, failed_samps, row_meds, na_coords)
+invisible(gc())
+
+# Print HTML output as a single block
+cat(paste(audit_log_olink, collapse = &quot;\n&quot;))</code></pre>
+<pre><code>Proteomics QC Log
+
+- Initial Matrix: 1034 Proteins | 131 Samples
+- Median Imputation Complete. Post-QC Matrix: 1034 Proteins | 131 Samples</code></pre>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Exported the raw_filtered_spine.rds and clean_olink_matrix.rds for
+downstream engineering in Script 01b.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Save the RAW but mathematically synced and filtered files
+saveRDS(raw_spine, file.path(output_dir_data, &quot;raw_filtered_spine.rds&quot;))
+saveRDS(qc_mat, file.path(output_dir_data, &quot;clean_olink_matrix.rds&quot;))
+
+cat(&quot;Script 01a Complete! Data is ready for analysis.&quot;)</code></pre>
+<pre><code>Script 01a Complete! Data is ready for analysis.</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] matrixStats_1.5.0   here_1.0.2          data.table_1.18.2.1
+ [4] readxl_1.4.5        lubridate_1.9.5     forcats_1.0.1      
+ [7] stringr_1.6.0       dplyr_1.2.1         purrr_1.2.1        
+[10] readr_2.2.0         tidyr_1.3.2         tibble_3.3.1       
+[13] tidyverse_2.0.0     ggplot2_4.0.2       workflowr_1.7.2    
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        xfun_0.57           bslib_0.10.0       
+ [4] processx_3.8.7      callr_3.7.6         tzdb_0.5.0         
+ [7] vctrs_0.7.2         tools_4.5.2         ps_1.9.2           
+[10] generics_0.1.4      pkgconfig_2.0.3     RColorBrewer_1.1-3 
+[13] S7_0.2.1            lifecycle_1.0.5     compiler_4.5.2     
+[16] farver_2.1.2        git2r_0.36.2        textshaping_1.0.5  
+[19] getPass_0.2-4       httpuv_1.6.16       htmltools_0.5.9    
+[22] sass_0.4.10         yaml_2.3.12         later_1.4.8        
+[25] pillar_1.11.1       jquerylib_0.1.4     whisker_0.4.1      
+[28] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+[31] stringi_1.8.7       rprojroot_2.1.1     fastmap_1.2.0      
+[34] grid_4.5.2          cli_3.6.5           magrittr_2.0.5     
+[37] withr_3.0.2         scales_1.4.0        promises_1.5.0     
+[40] timechange_0.4.0    rmarkdown_2.31      httr_1.4.8         
+[43] otel_0.2.0          cellranger_1.1.0    hms_1.1.4          
+[46] kableExtra_1.4.0    evaluate_1.0.5      knitr_1.51         
+[49] viridisLite_0.4.3   rlang_1.2.0         Rcpp_1.1.1         
+[52] glue_1.8.0          xml2_1.5.2          BiocManager_1.30.27
+[55] renv_1.1.5          svglite_2.2.2       rstudioapi_0.18.0  
+[58] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2  
+[61] fs_2.0.1           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
