@@ -97,6 +97,48 @@ ssc_clinical_parameters_continuous <- c("Modified rodnan skin score",
                                         "eustarAI"
 )
 
+clinical_domains <- list(
+  Demographics_and_Scores = c(
+    "Age", "Sex", "Sample_Age", "cohort_group", "Total Score",
+    "eustarAI", "ACTIVE_AI", "Active_our", "Inflamm_active", "fibrotic_active", "vascular_active"
+  ),
+  Cutaneous_and_Vascular = c(
+    "Subset_Diffuse", "Subset_Limited", "Subset_Sine",
+    "Modified rodnan skin score", "mRSS_a", "mRSS Worsening (1yr)",
+    "Raynaud phenomenon", "Score : Raynaud phenomenon", "Raynaud's present", "Raynaud VAS",
+    "Digital Tip Ulcers", "Digital ulcer", "Fingertip pitting scars", "Pitting scars on finger tips",
+    "Telangiectasia", "Telangiectasia (any)", "Abnormal Capillaroscopy", "Capillaroscopy Score",
+    "Capillaroscopy Pattern", "Giant capillaries", "Hemorrhages", "Capillary loss", "Ramified bushy capillaries",
+    "Puffy Fingers", "Sclerodactyly", "Skin Thickening (Ext. MCP)", "Skin Thickening (Prox. MCP)",
+    "Subcutaneous Calcinosis", "Gangrene"
+  ),
+  Musculoskeletal = c(
+    "Joint involvement", "Joint Contractures", "Tendon friction rubs",
+    "Proximal muscle weakness", "Myalgia", "Muscle atrophy", "Arthritis Activity (NA)"
+  ),
+  Pulmonary = c(
+    "PAH/ILD", "ILD diagnosed via HRCT", "FVC %pred", "Forced Vital Capacity (ml)",
+    "DLCO (SB) (% predicted)", "DLCO/VA (% predicted)", "TLC %pred",
+    "O2-saturation at rest (%)", "Min SpO2 (Exercise)",
+    "Dyspnea NYHA Stage", "Max Borg Dyspnea", "Distance in m", "New PAH"
+  ),
+  Cardiac = c(
+    "New Cardiac Manifest.", "Does the patient have pulmonary arterial hypertension since the last visit?",
+    "Right bundle branch block", "Right axis deviation", "Right ventricular hypertrophy",
+    "Ventricular arrhythmias", "Auricular arrhythmias", "Conduction blocks", "Arrhythmias requiring therapy",
+    "Right atrium area (cm2)", "Right ventricular area (cm2)", "TAPSE (cm)",
+    "Pericardial effusion on echo", "PAPsys (on echo)?", "Diastolic Dysf. (Echo)", "LVEF %"
+  ),
+  Gastrointestinal = c(
+    "Stomach Symptoms", "GAVE", "Intestinal Symptoms", "Malabsorption syndrome", "Proximal Dysphagia"
+  ),
+  Labs_and_Biomarkers = c(
+    "CRP", "Creatinine", "NT-proBNP (pg/ml)", "Uric Acid (mg/dl)",
+    "Hemoglobin (g/dl)", "CK value in serum (U/U/L)", "Proteinuria (>300mg/d)",
+    "SSc Antibodies", "SSc Antibody Score", "log_creatinine", "log_NT_ProBNP", "log_Distance_in_m"
+  )
+)
+
 # ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY
 # ------------------------------------------------------------------------------

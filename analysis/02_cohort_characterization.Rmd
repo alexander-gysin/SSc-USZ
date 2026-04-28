@@ -15,7 +15,7 @@ source(here::here("code", "00_config.R"))
 # Introduction
 This script describes the cohors by showing the distributions of technical and clinical parameters.
 
-# Setup and Data Import
+# Setup
 
 `r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the clinical spine generated previously.")`
 
@@ -81,50 +81,7 @@ candidate_vars <- list(
   set1 = c("Creatinine", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)")
 )
 
-# 2. Clinical Domains ----------------------------------------------------------
-clinical_domains <- list(
-  Demographics_and_Scores = c(
-    "Age", "Sex", "Sample_Age", "cohort_group", "Total Score",
-    "eustarAI", "ACTIVE_AI", "Active_our", "Inflamm_active", "fibrotic_active", "vascular_active"
-  ),
-  Cutaneous_and_Vascular = c(
-    "Subset_Diffuse", "Subset_Limited", "Subset_Sine",
-    "Modified rodnan skin score", "mRSS_a", "mRSS Worsening (1yr)",
-    "Raynaud phenomenon", "Score : Raynaud phenomenon", "Raynaud's present", "Raynaud VAS",
-    "Digital Tip Ulcers", "Digital ulcer", "Fingertip pitting scars", "Pitting scars on finger tips",
-    "Telangiectasia", "Telangiectasia (any)", "Abnormal Capillaroscopy", "Capillaroscopy Score",
-    "Capillaroscopy Pattern", "Giant capillaries", "Hemorrhages", "Capillary loss", "Ramified bushy capillaries",
-    "Puffy Fingers", "Sclerodactyly", "Skin Thickening (Ext. MCP)", "Skin Thickening (Prox. MCP)",
-    "Subcutaneous Calcinosis", "Gangrene"
-  ),
-  Musculoskeletal = c(
-    "Joint involvement", "Joint Contractures", "Tendon friction rubs",
-    "Proximal muscle weakness", "Myalgia", "Muscle atrophy", "Arthritis Activity (NA)"
-  ),
-  Pulmonary = c(
-    "PAH/ILD", "ILD diagnosed via HRCT", "FVC %pred", "Forced Vital Capacity (ml)",
-    "DLCO (SB) (% predicted)", "DLCO/VA (% predicted)", "TLC %pred",
-    "O2-saturation at rest (%)", "Min SpO2 (Exercise)",
-    "Dyspnea NYHA Stage", "Max Borg Dyspnea", "Distance in m", "New PAH"
-  ),
-  Cardiac = c(
-    "New Cardiac Manifest.", "Does the patient have pulmonary arterial hypertension since the last visit?",
-    "Right bundle branch block", "Right axis deviation", "Right ventricular hypertrophy",
-    "Ventricular arrhythmias", "Auricular arrhythmias", "Conduction blocks", "Arrhythmias requiring therapy",
-    "Right atrium area (cm2)", "Right ventricular area (cm2)", "TAPSE (cm)",
-    "Pericardial effusion on echo", "PAPsys (on echo)?", "Diastolic Dysf. (Echo)", "LVEF %"
-  ),
-  Gastrointestinal = c(
-    "Stomach Symptoms", "GAVE", "Intestinal Symptoms", "Malabsorption syndrome", "Proximal Dysphagia"
-  ),
-  Labs_and_Biomarkers = c(
-    "CRP", "Creatinine", "NT-proBNP (pg/ml)", "Uric Acid (mg/dl)", 
-    "Hemoglobin (g/dl)", "CK value in serum (U/U/L)", "Proteinuria (>300mg/d)",
-    "SSc Antibodies", "SSc Antibody Score"
-  )
-)
-
-# Helper function to determine parametric status (Kept local as requested)
+# Helper function to determine parametric status -------------------------------
 check_parametric <- function(df, var_col, group_col, config, transform = NULL) { 
   test_vec <- df[[var_col]][!is.na(df[[var_col]])]
   group_vec <- df[[group_col]][!is.na(df[[var_col]])]
@@ -223,12 +180,12 @@ figure_configs <- list(
         pairwise = TRUE
       ),
       plot_6 = list(
-        title = "Baseline DLCO (SB) (% predicted)", 
+        title = "Baseline Walk Distance", 
         type = "violin",
-        y_var = "DLCO (SB) (% predicted)",
+        y_var = "Distance in m",
         x_var = "cohort_group",
         y_transform = "log10", 
-        y_label = "Serum DLCO (SB) (% predicted)", 
+        y_label = "Walk Distance in m", 
         add_stat_test = TRUE,
         pairwise = TRUE
       )
@@ -453,7 +410,7 @@ for (p_name in names(individual_plots)) {
 
 `r what_this_does("Scanned all factor variables to identify their category distributions and assess variance.", "Filtered out cleanly binarized variables to reduce noise.", "Generated an audit table grouping remaining factors by level counts (>2 levels, exactly 2 non-standard levels, or 0 variance) to guide manual binarization.")`
 
-`r why_is_this_done("For the matrix correlation to work all variables must either be continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows which variables need some adjustment to fulfill these criteria.", "The table following this one will show you how these were binarized or converted to ordinal ranks.")`
+`r why_is_this_done("For the matrix correlation to work all variables must either be continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows which variables need some adjustment to fulfill these criteria.", "The table following this one shows you how these were binarized or converted to ordinal ranks.")`
 
 ```{r factor_exploration}
 get_level_pct <- function(vec) {
@@ -504,7 +461,7 @@ invisible(gc())
 
 ## Data Prep and Matrix Calculation
 
-`r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Standardized categorical data into ordinal ranks.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
+`r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Filtered out variables with zero variance", "Standardized categorical data into ordinal ranks.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
 
 `r what_this_does("Standardized clinical factors into ordinal ranks and calculated the master Spearman correlation matrix.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting numeric mapping and variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
 
@@ -743,7 +700,7 @@ invisible(gc())
 
 ## Intra Domain Correlation Matrix
 
-`r what_this_does("Visualized local correlations within clinical domains using hierarchical clustering.", "Optimized text scaling and margins for maximum legibility.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.", "Implemented HTML dropdowns to cleanly navigate the results.")`
+`r what_this_does("Visualized correlations within clinical domains using hierarchical clustering.", "Optimized text scaling and margins for maximum legibility.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.", "Implemented HTML dropdowns to cleanly navigate the results.")`
 
 <p>Select a clinical domain to visualize internal correlations:</p>
 <select id="intraSelector" onchange="switchIntraPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">

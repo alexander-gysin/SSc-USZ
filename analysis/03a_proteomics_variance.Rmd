@@ -118,16 +118,44 @@ manual_model_adjustments <- list(
   
   legacy_model = list(
     type = "custom",     
-    title = "Custom: Legacy Model",
+    title = "Legacy Model",
     group_col = "cohort_group",
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_NON_ACTIVE),
     covariates = c("Age", "Sex"),
     log  = "Legacy model, created to compare the new models to."
-  )
+  ),
   
-)
+  inflamm_vs_non_inflamm = list(
+    type = "custom",      
+    title = "Inflammatory Active vs Non-Inflammatory",
+    group_col = "Inflamm_active",
+    target_groups = c(1),
+    ref_groups = c(0),
+    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    log  = "Custom model contrasting inflammatory active (1) vs non-inflammatory (0) patients."
+  ),
 
+  vascular_vs_non_vascular = list(
+    type = "custom",      
+    title = "Vascular Active vs Non-Vascular",
+    group_col = "vascular_active",
+    target_groups = c(1),
+    ref_groups = c(0),
+    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    log  = "Custom model contrasting vascular active (1) vs non-vascular (0) patients."
+  ),
+
+  fibrotic_vs_non_fibrotic = list(
+    type = "custom",      
+    title = "Fibrotic Active vs Non-Fibrotic",
+    group_col = "fibrotic_active",
+    target_groups = c(1),
+    ref_groups = c(0),
+    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    log  = "Custom model contrasting fibrotic active (1) vs non-fibrotic (0) patients."
+  )
+)
 # 4. PCA Configs----------------------------------------------------------------
 pca_configs <- list(
   pca_global = list(
@@ -153,6 +181,14 @@ dea_validation_rules <- list(
   max_cor_rho           = 0.25, 
   max_cor_p             = 0.05  
 )
+
+# 6. Global Omics Filtering ----------------------------------------------------
+global_var_filter <- list(
+  title = "Protein Variance Distribution",
+  omics_type = "Protein",
+  top_n_features = 200
+)
+
 ```
 
 # Exploratory Variance Partition Analysis
@@ -385,7 +421,9 @@ invisible(gc())
 
 `r why_is_this_done("The multivariate VPA is used to validate the Variable Selector (which is based o the univariate VPA).", "The multivariate VPA shows a more accurate estimation of explained variance thatn the univariate", "If the explained variance of a variable drops markedly, this warrants variable exclusion")`
 
-```{r targeted_vpa_engine, results='asis', fig.height=10, fig.width=8}
+```{r targeted_vpa_engine, results='asis', fig.height=10, fig.width=8, warning=FALSE}
+targeted_vpa_results <- list() # <--- NEW: Initialize storage list
+
 for (id in names(final_locked_models)) {
   m <- final_locked_models[[id]]
   cat(sprintf("\n\n## Analysis: %s (Locked Model)\n\n", m$title))
@@ -394,6 +432,10 @@ for (id in names(final_locked_models)) {
   res <- wrap_vpa_pipeline(olink_mat, master_spine, dyn_conf, paste0("Locked_", id), output_dir_data)
   
   if(!is.null(res) && res$status == "success") {
+    
+    # NEW: Store the results for the scatterplots!
+    targeted_vpa_results[[id]] <- res 
+    
     print(res$plots$bar); cat("\n\n"); print(res$plots$violin)
   } else {
     cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n", res$error_msg))
@@ -405,6 +447,43 @@ rm(id, m, dyn_conf, res)
 invisible(gc())
 ```
 
+# Leverage & Diagnostics Scatterplots {.tabset}
+
+`r what_this_does("Extracted the Top 6 protein drivers for each individual covariate in the locked models.", "Generated individual 2x3 faceted scatterplots (or boxplots for categorical data) correlating the clinical variable against raw NPX values.", "Calculated and overlaid R-squared values for linear regression trends.")`
+
+`r why_is_this_done("Variance Partitioning is highly susceptible to statistical leverage. A single extreme clinical outlier coupled with a high protein expression can falsely trigger high 'explained variance'.", "These plots allow visual confirmation that the variance is driven by a true biological gradient rather than a single outlier artifact.")`
+
+```{r vpa_scatter_diagnostics, results='asis', fig.width=11, fig.height=7}
+for (id in names(final_locked_models)) {
+  m <- final_locked_models[[id]]
+  cat(sprintf("\n\n## %s\n\n", m$title))
+  
+  if (is.null(targeted_vpa_results[[id]])) {
+     cat("> **No VPA data available for this model.**\n\n")
+     next
+  }
+  
+  # Pull the raw variance dataframe saved from the previous chunk
+  vpa_res_df <- targeted_vpa_results[[id]]$data
+  
+  # Execute the scatterplot engine
+  diag_res <- wrap_vpa_scatter_diagnostics(olink_mat, master_spine, vpa_res_df, m$covariates, paste0("Locked_", id), m$title, output_dir_data)
+  
+  if (length(diag_res$plots) == 0) {
+     cat("> No diagnostic plots generated (variables may not exist in data).\n\n")
+  } else {
+     for (cov in names(diag_res$plots)) {
+        cat(sprintf("#### Driver: %s\n\n", cov))
+        print(diag_res$plots[[cov]])
+        cat("\n\n<br>\n\n")
+     }
+  }
+}
+
+# Clean memory
+rm(id, m, vpa_res_df, diag_res, cov)
+invisible(gc())
+```
 
 
 # Pre-DEA Design Validation
@@ -423,19 +502,35 @@ for (id in names(final_locked_models)) {
   res <- wrap_pre_dea_validation(master_spine, dyn_conf, dea_validation_rules, clinical_correlations)
   
   if (interactive()) {
+    # 1. Interactive Mode: Send table and formatted HTML box to the RStudio Viewer
     print(res$html_table)
+    print(htmltools::browsable(htmltools::HTML(res$meta_html)))
   } else {
+    # 2. Knitting Mode: Inject raw HTML natively into the final workflowr document
     cat(as.character(res$html_table))
+    cat("\n\n") 
+    cat(res$meta_html)
+    cat("\n<br><hr>\n\n") 
   }
-  cat("\n\n") 
-  
-  # Print the metadata box BELOW the table
-  cat(res$meta_html)
-  cat("\n<br><hr>\n\n") 
 }
 
 # Clean memory
 rm(id, m, dyn_conf, res)
+invisible(gc())
+```
+
+# Variance Filtering
+
+`r what_this_does("Calculated the variance of all measured features across the entire patient cohort.", "Generated a density histogram to visualize the global distribution of variance.", "Extracted and saved the highest-variance features to an RDS file to strip background noise for downstream unsupervised discovery scripts.")`
+
+`r why_is_this_done("Features that do not change across the cohort (low variance) are biological background noise. Removing them here, at the end of the script, prevents dilution of true signals in downstream algorithms like UMAP or hierarchical clustering, while ensuring we do not prematurely drop them from earlier targeted VPA or DEA steps.")`
+
+```{r global_variance_filter, warning=FALSE}
+var_res <- wrap_global_variance_filter(olink_mat, global_var_filter, output_dir_data)
+print(var_res$plot)
+
+# Clean memory
+rm(var_res)
 invisible(gc())
 ```
 

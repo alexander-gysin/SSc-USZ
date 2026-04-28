@@ -50,5 +50,13 @@ Key insights are highlighted with:
   </ul>
 </div>
 
+Explanations of why certain steps are needed are highlighted with:
+
+<div class="why-box">
+  <strong>Why is this done?</strong>
+   <ul>
+    <li>. . .</li>
+  </ul>
+</div>
 
 ---

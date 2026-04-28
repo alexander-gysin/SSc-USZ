@@ -59,7 +59,7 @@ omics_config <- list(
 # 3. Differential Expression Contrasts (Target vs Reference)
 
 candidate_vars <- list(
-  set1 = c("Creatinine", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)")
+  set1 = c()
 )
 
 contrast_configs <- list(
@@ -249,6 +249,20 @@ for (cross_name in names(cross_contrasts)) {
   cat("--- \n\n")
 }
 ```
+# Export
+`r what_this_does("Exported the full vascular DEA results to hand off to the subsetted side-project script.", "Finalized the script execution.")`
+```{r export_and_complete}
+# Check if the vascular contrast ran successfully and export it
+if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
+  saveRDS(
+    master_dea_results[["vascular_vs_nonvascular"]], 
+    file.path(output_dir_data, "full_vascular_dea_results.rds")
+  )
+} else {
+  cat("'vascular_vs_nonvascular' contrast was not found or failed. Export skipped.\n\n")
+}
+```
+
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`

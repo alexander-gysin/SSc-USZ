@@ -18,6 +18,7 @@ library(variancePartition)
 library(BiocParallel)
 library(future)
 library(future.apply)
+library(car)
 
 # PART 1: THE MASTER PIPELINE WRAPPERS (The "Managers") ------------------------
 
@@ -741,7 +742,6 @@ wrap_vpa_univariate_pipeline <- function(omics_mat, clin_df, vpa_conf, vpa_id, b
 #   A list containing the raw engine results and the compiled kableExtra HTML table.
 wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
 
-  # 1. Run the Mathematical Engine
   res <- validate_dea_design(
     clin_df               = clin_df,
     group_col             = conf$group_col,
@@ -755,7 +755,6 @@ wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
     max_cor_p             = rules$max_cor_p
   )
 
-  # 2. Format Global Metadata (HTML Footnote)
   status_color <- ifelse(res$Status == "Pass", "#27ae60", "#c0392b")
 
   spp_str <- case_when(
@@ -773,23 +772,21 @@ wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
     TRUE ~ "<span style='color:black; font-weight:bold;'>Full Rank (Independent)</span>"
   )
 
+  # FIX 4 & 1: Removed leading spaces so Markdown doesn't treat it as a code block
   meta_html <- sprintf(
-    "<div style='text-align: left; padding-top: 10px; font-size: 14px; color: #333;'>
-      <b>Cohort Survival:</b> Started with %d patients &rarr; <b>%d complete cases</b> survived.<br>
-      <b>Statistical Power:</b> <b>%s</b> samples per parameter (Total Parameters: %s).<br>
-      <b>Matrix Algebra:</b> %s<br><br>
-
-      <div style='margin-bottom: 5px;'><b>Verdict:</b> <span style='color:%s; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;'>%s</span></div>
-      <b>Reason(s):</b><br>%s<br><br>
-
-      <i>Thresholds: Min Samples/Param = %d | Min Group N = %d | Max Corr = |%.2f|</i>
-    </div>",
+    "<div style='text-align: left; padding: 15px; font-size: 14px; color: #333; background-color:#fcfcfc; border: 1px solid #ddd; margin-bottom: 15px;'>
+<b>Cohort Survival:</b> Started with %d patients &rarr; <b>%d complete cases</b> survived.<br>
+<b>Statistical Power:</b> <b>%s</b> samples per parameter (Total Parameters: %s).<br>
+<b>Matrix Algebra:</b> %s<br><br>
+<div style='margin-bottom: 5px;'><b>Verdict:</b> <span style='color:%s; font-size: 1.5em; font-weight: 900; letter-spacing: 1px;'>%s</span></div>
+<b>Reason(s):</b><br>%s<br><br>
+<i>Thresholds: Min Samples/Param = %d | Min Group N = %d | Max Corr = |%.2f|</i>
+</div>\n\n",
     res$N_Start, res$N_Final, spp_str, params_str, matrix_rank_str,
     status_color, toupper(res$Status), reasons_html,
     rules$min_samples_per_param, rules$min_group_n, rules$max_cor_rho
   )
 
-  # 3. Format the Variable-Level Data
   plot_df <- res$Var_Details %>%
     mutate(
       Variance_Levels = case_when(
@@ -804,7 +801,7 @@ wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
     ) %>%
     select(-Collinear)
 
-  # 4. Render the kableExtra Table
+  # FIX 4: Removed footnote from kable to render HTML separately
   tbl <- plot_df %>%
     kableExtra::kbl(
       format = "html",
@@ -814,19 +811,462 @@ wrap_pre_dea_validation <- function(clin_df, conf, rules, cor_matrices = NULL) {
       caption = sprintf("<div style='color:black; font-size:1.4em; font-weight:bold; text-align:left; padding-bottom:5px;'>%s</div>", conf$title)
     ) %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), full_width = TRUE, position = "left") %>%
-    kableExtra::column_spec(1, bold = TRUE) %>%
-    kableExtra::footnote(
-      general = meta_html,
-      escape = FALSE,
-      general_title = ""
+    kableExtra::column_spec(1, bold = TRUE)
+
+  # Passing meta_html as a separate object
+  return(list(raw_data = res, html_table = tbl, meta_html = meta_html))
+}
+
+# 7. Wrapper for DEA Selector -------------------------------------------------
+wrap_dea_selector <- function(clin_df, conf, vpa_df, cor_matrices) {
+
+  res <- run_dea_selector(clin_df, conf, vpa_df, cor_matrices)
+  if(res$status == "failed") return(list(status = "failed", msg = res$msg))
+
+  spp_str <- if(res$meta$SPP < conf$min_samples_per_param) sprintf("<span style='color:#c0392b; font-weight:bold;'>%.1f (Overfitting Risk)</span>", res$meta$SPP) else sprintf("%.1f", res$meta$SPP)
+  pct_cases <- (res$meta$N / res$meta$N_Start) * 100
+
+  # FIX 1: Stripped leading spaces
+  meta_html <- sprintf(
+    "<div style='text-align: left; padding-top: 10px; font-size: 14px; color: #333;'>
+<b>Final Complete Cases:</b> %d / %d (%.1f%%)<br>
+<b>Total Parameters:</b> %d (Contrast + %d Covariates)<br>
+<b>Statistical Power:</b> %s SPP (Threshold: %d)<br>
+<b>Matrix Algebra:</b> %s<br>
+<i>Algorithm Rules: Max Cor = %.2f, Max P = %.2f</i>
+</div>",
+    res$meta$N, res$meta$N_Start, pct_cases, res$meta$Params, length(res$selected_vars), spp_str, conf$min_samples_per_param, res$meta$Matrix, conf$max_cor_rho, conf$max_cor_p
+  )
+
+  formatted_tbl <- res$table %>%
+    mutate(
+      Recommendation = case_when(
+        grepl("✅", Recommendation) ~ sprintf("<span style='color:#27ae60; font-weight:bold;'>%s</span>", Recommendation),
+        TRUE ~ sprintf("<span style='color:#c0392b;'>%s</span>", Recommendation)
+      ),
+      Reason = ifelse(grepl("WARNING", Reason), sprintf("<span style='color:#e67e22; font-weight:bold;'>%s</span>", Reason), Reason)
+    ) %>%
+    kableExtra::kbl(format = "html", escape = FALSE, row.names = FALSE, caption = sprintf("<div style='color:black; font-size:1.4em; font-weight:bold;'>%s: Automated Selection</div>", conf$title)) %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "bordered"), full_width = TRUE) %>%
+    kableExtra::footnote(general = meta_html, escape = FALSE, general_title = "")
+
+  heatmap_vars <- c(conf$group_col, res$selected_vars)
+  if (length(heatmap_vars) >= 2) {
+    sub_cor <- cor_matrices$rho[heatmap_vars, heatmap_vars, drop = FALSE]
+    sub_p <- cor_matrices$p[heatmap_vars, heatmap_vars, drop = FALSE]
+
+    dist_mat <- as.dist(1 - sub_cor)
+    hc <- hclust(dist_mat, method = "ward.D2")
+    ordered_vars <- heatmap_vars[hc$order]
+
+    plot_df <- as.data.frame(sub_cor) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="Correlation") %>%
+      left_join(as.data.frame(sub_p) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="P_Value"), by=c("Var1", "Var2")) %>%
+      mutate(
+        idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars),
+        Var2 = factor(Var2, levels = ordered_vars), Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value < conf$max_cor_p,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      ) %>% filter(idx_2 > idx_1)
+
+    p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+      geom_tile(color = "white", linewidth = 0.5) +
+      scale_x_discrete(position = "top") + scale_y_discrete(position = "right") +
+      scale_fill_gradientn(colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH), limits = c(-1, 1), na.value = "gray93", name = "Spearman Rho\n") +
+      labs(title = sprintf("Correlation Heatmap: %s model", conf$title), x = NULL, y = NULL) +
+      theme_minimal(base_size = 14) +
+      theme(
+        axis.text.x.top = element_text(angle=45, hjust=0, vjust=0, margin=margin(b=5), face="bold"),
+        axis.text.y.right = element_text(hjust=0, face="bold"),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face="bold", hjust=0.5),
+        plot.title.position = "plot"
+      ) + coord_fixed()
+  } else {
+    p_heatmap <- NULL
+  }
+
+  return(list(
+    status = "success",
+    html_table = formatted_tbl,
+    heatmap = p_heatmap,
+    selected_vars = if(is.null(res$selected_vars)) character(0) else res$selected_vars
+  ))
+}
+
+# 8. VPA Quality Control Pipeline Wrapper -------------------------------------
+# Description:
+#   Generates a distribution grid for the top VPA hits and a symmetrical
+#   correlation heatmap sorted by VPA Rank to identify extreme skew and collinear blocks.
+# Args:
+#   vpa_df: The univariate VPA results dataframe.
+#   clin_df: Clinical metadata dataframe.
+#   cor_matrices: The loaded Spearman correlation matrices.
+#   conf: The specific VPA configuration list.
+#   vpa_id: String identifier for saving outputs.
+#   base_output_dir: Path for saving results.
+# Returns:
+#   Nested list with 'plots' and 'html_warnings'.
+wrap_vpa_qc_pipeline <- function(vpa_df, clin_df, cor_matrices, conf, vpa_id, base_output_dir) {
+  results <- list(plots = list(), html_warnings = c())
+
+  # Setup Directories
+  qc_dir <- file.path(base_output_dir, "VPA_Univariate", "QC_Plots", vpa_id)
+  if (!dir.exists(qc_dir)) dir.create(qc_dir, recursive = TRUE)
+
+  clin_sub <- clin_df
+  if (!is.null(conf$subset_to_groups)) {
+    clin_sub <- clin_sub %>% filter(cohort_group %in% conf$subset_to_groups)
+  }
+
+  # A. Distribution Grid -------------------------------------------------------
+  dist_vars <- head(vpa_df$Variable, conf$dist_plot_limit)
+  dist_plots <- list()
+
+  for (v in dist_vars) {
+    if (!(v %in% colnames(clin_sub))) next
+    vec <- clin_sub[[v]]
+
+    if (is.numeric(vec)) {
+      p <- ggplot(clin_sub, aes(x = .data[[v]])) +
+        geom_histogram(fill = "grey50", color = "white", bins = 20, alpha = 0.8) +
+        theme_project_base() + labs(title = v, x = NULL, y = "Count") +
+        theme(plot.title = element_text(size = 10, face = "bold"))
+    } else {
+      p <- ggplot(clin_sub %>% filter(!is.na(.data[[v]])), aes(x = as.factor(.data[[v]]))) +
+        geom_bar(fill = "grey70", color = "black", alpha = 0.8) +
+        theme_project_base() + labs(title = v, x = NULL, y = "Count") +
+        theme(plot.title = element_text(size = 10, face = "bold"), axis.text.x = element_text(angle = 45, hjust = 1))
+    }
+    dist_plots[[v]] <- p
+  }
+
+  if (length(dist_plots) > 0) {
+    grid_plot <- wrap_plots(dist_plots, ncol = 4) +
+      plot_annotation(title = sprintf("Distributions: Top %d VPA Hits (%s)", length(dist_plots), conf$title),
+                      theme = theme(plot.title = element_text(size=16, face="bold")))
+    results$plots[["distribution_grid"]] <- grid_plot
+
+    ggsave(file.path(qc_dir, paste0(vpa_id, "_Distribution_Grid.png")), grid_plot, width = 12, height = 8, dpi = 300, bg="white")
+  }
+
+  # B. Correlation Heatmap -----------------------------------------------------
+  # heat_vars_raw is naturally ordered by VPA Rank (highest first) + forced variables at the end
+  heat_vars_raw <- unique(c(head(vpa_df$Variable, conf$corr_plot_limit), conf$heatmap_add_vars))
+  available_vars <- colnames(cor_matrices$rho)
+
+  missing_vars <- setdiff(heat_vars_raw, available_vars)
+
+  # intersect() automatically preserves the order of the first argument (heat_vars_raw).
+  # Therefore, valid_vars is already perfectly sorted by VPA Rank!
+  valid_vars <- intersect(heat_vars_raw, available_vars)
+
+  if (length(missing_vars) > 0) {
+    results$html_warnings <- c(results$html_warnings, sprintf("> **WARNING:** Dropped from heatmap (Not strictly binarized/ordinal): *%s*", paste(missing_vars, collapse = ", ")))
+  }
+
+  if (length(valid_vars) >= 2) {
+    sub_cor <- cor_matrices$rho[valid_vars, valid_vars, drop = FALSE]
+    sub_p   <- cor_matrices$p[valid_vars, valid_vars, drop = FALSE]
+
+    # BYPASS HIERARCHICAL CLUSTERING: Lock the visual order strictly to the VPA Rank
+    ordered_vars <- valid_vars
+
+    # Parameterized Threshold Fallback
+    p_thresh <- if(exists("dea_validation_rules")) dea_validation_rules$max_cor_p else 0.05
+
+    plot_df <- as.data.frame(sub_cor) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="Correlation") %>%
+      left_join(as.data.frame(sub_p) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="P_Value"), by=c("Var1", "Var2")) %>%
+      mutate(
+        idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars),
+        Var2 = factor(Var2, levels = ordered_vars), Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value < p_thresh,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      ) %>% filter(idx_2 > idx_1)
+
+    p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+      geom_tile(color = "white", linewidth = 0.5) +
+      scale_x_discrete(position = "top") + scale_y_discrete(position = "right") +
+      scale_fill_gradientn(colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH), limits = c(-1, 1), na.value = "gray93", name = "Spearman Rho\n") +
+      # UI TWEAK: Update title to reflect the new sorting logic
+      labs(title = sprintf("Correlation Network: Top %d Valid Hits (Rank Sorted)", length(valid_vars)), subtitle = sprintf("Grey squares indicate non-significance (p >= %s)", p_thresh), x = NULL, y = NULL) +
+      theme_minimal(base_size = 14) +
+      theme(
+        axis.text.x.top = element_text(angle=45, hjust=0, vjust=0, margin=margin(b=5), face="bold", size=rel(0.85)),
+        axis.text.y.right = element_text(hjust=0, face="bold", size=rel(0.85)),
+        axis.title = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face="bold", hjust=0.5),
+        plot.subtitle = element_text(color="grey40", hjust=0.5),
+        plot.title.position = "plot"
+      ) + coord_fixed()
+
+    results$plots[["correlation_heatmap"]] <- p_heatmap
+
+    # Dynamic sizing based on variable count
+    dyn_dim <- max(6, length(valid_vars) * 0.4 + 2)
+    ggsave(file.path(qc_dir, paste0(vpa_id, "_Correlation_Heatmap.png")), p_heatmap, width = dyn_dim, height = dyn_dim, dpi = 300, bg="white")
+  }
+
+  return(results)
+}
+
+# 9. VPA Scatter Diagnostics Engine -------------------------------------------
+# Description:
+#   Extracts the Top 6 proteins driven by each covariate and plots their NPX
+#   distributions (scatter + regression for numeric, boxplots for factors) to
+#   visually check for leverage points and outliers.
+wrap_vpa_scatter_diagnostics <- function(omics_mat, clin_df, vpa_df, covariates, model_id, title_prefix, base_output_dir) {
+  results <- list(plots = list(), paths = list())
+
+  diag_dir <- file.path(base_output_dir, "VPA_Diagnostics", model_id)
+  if (!dir.exists(diag_dir)) dir.create(diag_dir, recursive = TRUE)
+
+  for (cov in covariates) {
+    if (!(cov %in% colnames(clin_df)) || !(cov %in% colnames(vpa_df))) next
+
+    # Get Top 6 Proteins for THIS specific covariate
+    top_feats <- vpa_df %>% arrange(desc(.data[[cov]])) %>% head(6) %>% pull(Feature)
+    if(length(top_feats) == 0) next
+
+    # Extract & Filter Clinical Data
+    plot_data <- clin_df %>% select(Subject_ID, cov_val = all_of(cov)) %>% drop_na()
+    valid_ids <- intersect(plot_data$Subject_ID, colnames(omics_mat))
+    plot_data <- plot_data %>% filter(Subject_ID %in% valid_ids)
+
+    # Extract & Melt Omics Data
+    omics_sub <- omics_mat[top_feats, valid_ids, drop = FALSE]
+    omics_long <- as.data.frame(t(omics_sub)) %>% rownames_to_column("Subject_ID") %>%
+      pivot_longer(-Subject_ID, names_to = "Protein", values_to = "NPX")
+
+    plot_df <- plot_data %>% left_join(omics_long, by = "Subject_ID") %>%
+      mutate(Protein = factor(Protein, levels = top_feats)) # Preserve VPA rank order
+
+    safe_cov_name <- gsub("[^A-Za-z0-9_.-]", "_", cov)
+
+    # Generate Plot based on Data Type
+    if (is.numeric(plot_df$cov_val)) {
+      p <- ggplot(plot_df, aes(x = cov_val, y = NPX, color = Protein)) +
+        geom_point(alpha = 0.7, size = 2) +
+        geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+        # Add R-Squared text to each facet
+        ggpubr::stat_cor(aes(label = after_stat(rr.label)), color = "black", size = 3.5, label.y.npc = "top") +
+        facet_wrap(~ Protein, scales = "free_y", ncol = 3) +
+        theme_project_base() +
+        theme(legend.position = "none") +
+        labs(title = sprintf("%s", title_prefix),
+             subtitle = sprintf("Top 6 Variance Drivers for '%s' (Free Y-Axis)", cov),
+             x = cov, y = "NPX Value")
+    } else {
+      p <- ggplot(plot_df, aes(x = as.factor(cov_val), y = NPX, fill = Protein)) +
+        geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+        geom_jitter(aes(color = Protein), width = 0.2, alpha = 0.7, size = 1.5) +
+        facet_wrap(~ Protein, scales = "free_y", ncol = 3) +
+        theme_project_base() +
+        theme(legend.position = "none") +
+        labs(title = sprintf("%s", title_prefix),
+             subtitle = sprintf("Top 6 Variance Drivers for '%s' (Free Y-Axis)", cov),
+             x = cov, y = "NPX Value")
+    }
+
+    plot_path <- file.path(diag_dir, paste0(model_id, "_", safe_cov_name, ".png"))
+    ggsave(plot_path, p, width = 11, height = 7, dpi = 300, bg = "white")
+
+    results$plots[[cov]] <- p
+    results$paths[[cov]] <- plot_path
+  }
+
+  return(results)
+}
+
+# 10. UMAP & Molecular Clustering Engine ---------------------------------------
+# Description:
+#   Performs non-linear dimensionality reduction (UMAP) followed by K-Means
+#   clustering to identify data-driven molecular endotypes. It then cross-references
+#   these new clusters against a strict whitelist of clinical data, dynamically
+#   filtering out highly skewed continuous and imbalanced categorical variables.
+wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
+  results <- list(status = "success", plots = list(), tables = list(), log = list())
+
+  clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
+  if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
+
+  # --- 1. Dynamic Omics Subsetting ---
+  if (!is.null(conf$include_features)) {
+    valid_features <- intersect(rownames(omics_mat), conf$include_features)
+    if(length(valid_features) == 0) return(list(status = "failed", error_msg = "None of the specified features found in matrix."))
+    omics_mat_sub <- omics_mat[valid_features, , drop = FALSE]
+  } else {
+    omics_mat_sub <- omics_mat
+  }
+
+  valid_ids <- intersect(colnames(omics_mat_sub), clin_df$Subject_ID)
+  mat_sub <- omics_mat_sub[, valid_ids]
+  clin_sub <- clin_df %>% filter(Subject_ID %in% valid_ids)
+
+  if (length(valid_ids) < conf$k) {
+    return(list(status = "failed", error_msg = "Not enough samples for the requested k clusters."))
+  }
+
+  # --- 2. Calculate UMAP & K-Means ---
+  set.seed(42)
+  custom_umap_config <- umap::umap.defaults
+  custom_umap_config$n_neighbors <- if(!is.null(conf$n_neighbors)) conf$n_neighbors else 15
+
+  umap_res <- umap::umap(t(mat_sub), config = custom_umap_config)
+  umap_df <- as.data.frame(umap_res$layout) %>%
+    rename(UMAP1 = V1, UMAP2 = V2) %>%
+    rownames_to_column("Subject_ID")
+
+  set.seed(42)
+  km_res <- kmeans(umap_res$layout, centers = conf$k, nstart = 25)
+  umap_df$Molecular_Cluster <- as.factor(paste("Cluster", km_res$cluster))
+  plot_df <- clin_sub %>% left_join(umap_df, by = "Subject_ID")
+
+  # --- 3. Build UMAP Plot ---
+  cluster_levels <- levels(plot_df$Molecular_Cluster)
+  safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
+  mapped_colors <- safe_pal[1:length(cluster_levels)]
+
+  p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
+    geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
+    stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
+    scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
+    theme_project_base() +
+    labs(title = sprintf("%s", conf$title),
+         subtitle = sprintf("UMAP (n_neighbors = %d) | Features = %d | K-Means (k = %d)", custom_umap_config$n_neighbors, nrow(mat_sub), conf$k),
+         fill = "Endotype", color = "Endotype")
+
+  results$plots[["umap"]] <- p_umap
+
+  # --- 4. Automated QA/QC Variable Filtering ---
+  if (!is.null(conf$include_clinical_vars)) {
+    candidate_vars <- intersect(conf$include_clinical_vars, colnames(plot_df))
+  } else {
+    candidate_vars <- setdiff(colnames(plot_df), c("Subject_ID", "UMAP1", "UMAP2", "Molecular_Cluster"))
+  }
+  if (!is.null(conf$exclude_clinical_vars)) candidate_vars <- setdiff(candidate_vars, conf$exclude_clinical_vars)
+
+  surviving_vars <- c()
+  dropped_cat <- c()
+  dropped_cont <- c()
+
+  # Helper to calculate skewness without needing extra packages
+  calc_skew <- function(x) {
+    x <- na.omit(x)
+    n <- length(x)
+    if (n < 3) return(999)
+    sum((x - mean(x))^3 / n) / (sd(x)^3)
+  }
+
+  for (v in candidate_vars) {
+    vec <- plot_df[[v]]
+    # Check if numeric and actually continuous (>5 unique values)
+    if (is.numeric(vec) && length(unique(na.omit(vec))) > 5) {
+      skew_val <- calc_skew(vec)
+      if (abs(skew_val) > 2.5) { # Threshold for severe skewness
+        dropped_cont <- c(dropped_cont, v)
+      } else {
+        surviving_vars <- c(surviving_vars, v)
+      }
+    } else {
+      # Treat as categorical: drop if minority class < 10%
+      props <- prop.table(table(vec))
+      if (length(props) > 0 && min(props) < 0.10) {
+        dropped_cat <- c(dropped_cat, v)
+      } else {
+        surviving_vars <- c(surviving_vars, v)
+      }
+    }
+  }
+
+  results$log$dropped_cat <- dropped_cat
+  results$log$dropped_cont <- dropped_cont
+
+  # --- 5. Generate Diagnostic Plot for Dropped Continuous Vars ---
+  if (length(dropped_cont) > 0) {
+    plot_data <- plot_df %>% select(all_of(dropped_cont)) %>% pivot_longer(everything(), names_to = "Variable", values_to = "Value")
+    p_hist <- ggplot(plot_data, aes(x = Value)) +
+      geom_histogram(bins = 30, fill = "#c0392b", color = "white", alpha = 0.8) +
+      facet_wrap(~ Variable, scales = "free") +
+      theme_project_base() +
+      labs(title = "Auto-Excluded Continuous Variables",
+           subtitle = "Variables removed due to extreme skewness (|Skew| > 2.5) or zero-inflation",
+           x = "Value", y = "Count")
+    results$plots[["excluded_hist"]] <- p_hist
+  }
+
+  # --- 6. Build Clinical Profiling Table ---
+  if (length(surviving_vars) > 0) {
+    tbl_data <- plot_df %>% select(Molecular_Cluster, all_of(surviving_vars))
+
+    suppressMessages(suppressWarnings({
+      tbl_clust <- tbl_data %>%
+        gtsummary::tbl_summary(by = Molecular_Cluster, missing = "no") %>%
+        gtsummary::add_p() %>%
+        gtsummary::add_overall() %>%
+        gtsummary::sort_p() %>%
+        gtsummary::modify_header(label = "**Clinical Variable**") %>%
+        gtsummary::bold_labels()
+    }))
+    results$tables[["clinical_profile"]] <- tbl_clust
+  }
+
+  return(results)
+}
+
+# 11. Global Omics Variance Filter Engine --------------------------------------
+# Description:
+#   Calculates global variance for all omics features, generates a density
+#   histogram, and extracts the top N highly variable features for downstream
+#   unsupervised discovery.
+wrap_global_variance_filter <- function(omics_mat, conf, base_output_dir) {
+
+  # Fallback to "Feature" if omics_type isn't specified
+  omics_type <- if(!is.null(conf$omics_type)) conf$omics_type else "Feature"
+
+  # 1. Calculate variance for every feature
+  feature_variances <- apply(omics_mat, 1, var, na.rm = TRUE)
+  var_df <- data.frame(
+    Feature = names(feature_variances),
+    Variance = as.numeric(feature_variances)
+  ) %>% arrange(desc(Variance))
+
+  # 2. Determine threshold safely
+  top_n <- min(conf$top_n_features, nrow(var_df))
+  cutoff_val <- var_df$Variance[top_n]
+  high_var_feats <- var_df$Feature[1:top_n]
+
+  # 3. Create Plot
+  p_var <- ggplot(var_df, aes(x = Variance)) +
+    geom_histogram(aes(y = after_stat(density)), bins = 50, fill = "grey70", color = "white", alpha = 0.8) +
+    geom_density(color = "#2980b9", linewidth = 1) +
+    geom_vline(xintercept = cutoff_val, color = "#c0392b", linetype = "dashed", linewidth = 1) +
+    annotate("text", x = cutoff_val, y = Inf,
+             label = sprintf(" Cutoff: Top %d %ss\n (Var > %.2f)", top_n, omics_type, cutoff_val),
+             hjust = -0.1, vjust = 1.5, color = "#c0392b", fontface = "bold") +
+    theme_project_base() +
+    labs(
+      title = conf$title,
+      subtitle = sprintf("Total %ss: %d | Selected: %d", omics_type, nrow(var_df), length(high_var_feats)),
+      x = sprintf("%s Variance", omics_type),
+      y = "Density"
     )
 
-  return(list(raw_data = res, html_table = tbl))
+  # 4. Save Data & Plot
+  safe_title <- gsub("[^A-Za-z0-9_.-]", "_", conf$title)
+  plot_path <- file.path(base_output_dir, paste0("Global_Variance_", safe_title, ".png"))
+  rds_path <- file.path(base_output_dir, "high_var_features.rds")
+
+  ggsave(plot_path, p_var, width = 8, height = 6, dpi = 300, bg = "white")
+  saveRDS(high_var_feats, rds_path)
+
+  return(list(status = "success", plot = p_var, features = high_var_feats))
 }
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
 
-# 7. Limma & Volcano Engine ----------------------------------------------------
+# 1. Limma & Volcano Engine ----------------------------------------------------
 # Description:
 #   The mathematical core for differential expression. Creates a design matrix
 #   (including any specified covariates), fits linear models using eBayes, and
@@ -903,7 +1343,7 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
   return(list(data = dea_res, volcano = p_volc))
 }
 
-# 8. GSEA Engine ---------------------------------------------------------------
+# 2. GSEA Engine ---------------------------------------------------------------
 # Description:
 #   Ranks the Limma features by t-statistic and performs Gene Set Enrichment
 #   Analysis. Automatically cleans pathway names and generates DotPlots and RidgePlots.
@@ -943,7 +1383,7 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge))
 }
 
-# 9. Heatmap Engine ------------------------------------------------------------
+# 3. Heatmap Engine ------------------------------------------------------------
 # Description:
 #   Selects the top N most significant features from a DEA result, converts them
 #   to Z-scores across the requested subjects, and renders an annotated heatmap
@@ -976,7 +1416,7 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
           col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
 }
 
-# 10. LASSO Engine --------------------------------------------------------------
+# 4. LASSO Engine --------------------------------------------------------------
 # Description:
 #   Runs a generalized linear model with L1 penalty (LASSO) using cross-validation.
 #   Extracts the coefficients at the optimal lambda ("lambda.min") to identify
@@ -1016,7 +1456,7 @@ run_lasso_engine <- function(mat, clin, target_col, target_groups, title) {
   return(list(cv_plot = cv_fit, coeff_plot = p_lasso, data = df_coeffs))
 }
 
-# 11. Cross-Contrast Engine ----------------------------------------------------
+# 5. Cross-Contrast Engine ----------------------------------------------------
 # Description:
 #   Joins two different Limma topTable dataframes on 'Feature'. Determines if
 #   features are significant in one, the other, or both. Maps them to a quadrant
@@ -1088,7 +1528,7 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, colo
     coord_fixed(ratio = 1)
 }
 
-# 12. Shared VPA Worker Engine -------------------------------------------------
+# 6. Shared VPA Worker Engine -------------------------------------------------
 # Description:
 #   The math core for Variance Partitioning. Uses linear mixed models via the
 #   variancePartition package. Calculates the mean variance and 95% CI explained
@@ -1147,7 +1587,7 @@ run_vpa_engine <- function(mat, clin, vpa_formula, title, top_n = 10) {
   return(list(data = varPart_df, plots = list(bar = p_bar, violin = p_violin)))
 }
 
-# 13. Pre-DEA Validation Engine (Variable-Level Profiler) ----------------------
+# 7. Pre-DEA Validation Engine (Variable-Level Profiler) ----------------------
 validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, covariates,
                                 min_samples_per_param = 10, min_group_n = 2,
                                 cor_matrices = NULL, max_cor_rho = 0.7, max_cor_p = 0.05) {
@@ -1312,3 +1752,147 @@ validate_dea_design <- function(clin_df, group_col, target_groups, ref_groups, c
 
   return(list(Status = status, Reasons = reasons, Var_Details = var_details, N_Start = n_start, N_Final = n_final, SPP = spp, Num_Params = num_params))
 }
+
+# 8. Automated DEA Variable Selector (Greedy Algorithm) -----------------------
+run_dea_selector <- function(clin_df, conf, vpa_df, cor_matrices) {
+
+  group_col <- conf$group_col
+  sub_df <- clin_df %>% filter(!!sym(group_col) %in% c(conf$target_groups, conf$ref_groups))
+  n_start <- nrow(sub_df)
+
+  if (n_start == 0) return(list(status = "failed", msg = "Target/Ref groups not found."))
+
+  # Ensure target column is numeric for correlation
+  sub_df[[group_col]] <- as.numeric(factor(sub_df[[group_col]], levels = c(conf$ref_groups[1], conf$target_groups[1]))) - 1
+
+  # Prep Candidate List: must_include first, then remaining sorted by VPA
+  candidates <- unique(c(conf$must_include, vpa_df$Variable))
+  candidates <- setdiff(candidates, c(group_col, conf$must_exclude))
+
+  results_tbl <- data.frame(
+    Variable = character(), VPA_Rank = character(), Distribution = character(),
+    Recommendation = character(), Reason = character(), VIF = character(),
+    stringsAsFactors = FALSE
+  )
+
+  selected_covariates <- c()
+  current_cc_n <- n_start
+
+  for (i in seq_along(candidates)) {
+    v <- candidates[i]
+    is_forced <- v %in% conf$must_include
+    vpa_rank <- ifelse(v %in% vpa_df$Variable, sprintf("#%d", which(vpa_df$Variable == v)), "-")
+
+    vec <- sub_df[[v]]
+
+    # UI Tweak: Hide massive factor distributions
+    dist_str <- if(is.numeric(vec)) {
+      sprintf("%.1f [%.1f - %.1f]", median(vec, na.rm=T), quantile(vec, 0.25, na.rm=T), quantile(vec, 0.75, na.rm=T))
+    } else {
+      tbl <- prop.table(table(vec)) * 100
+      if(length(tbl) > 4) {
+        "<span style='color:grey;'>Too many levels to display</span>"
+      } else {
+        paste0(names(tbl), ": ", sprintf("%.1f%%", tbl), collapse = "<br>")
+      }
+    }
+
+    # 1. Complete Case Check
+    temp_vars <- c(group_col, selected_covariates, v)
+    temp_n <- sub_df %>% select(Subject_ID, all_of(temp_vars)) %>% drop_na() %>% nrow()
+
+    # 2. Power Check (Rule of 10) - UI Tweak: General Early Stop Message
+    spp <- temp_n / length(temp_vars)
+    if (!is_forced && spp < conf$min_samples_per_param) {
+      results_tbl[nrow(results_tbl) + 1, ] <- c(
+        "<i>Remaining variables</i>",
+        "-", "-", "❌ Excluded",
+        sprintf("Power limit reached (SPP drops below %d)", conf$min_samples_per_param),
+        "-"
+      )
+      break # STOP THE LOOP!
+    }
+
+    # 3. Contrast Correlation Check (Signal Eraser)
+    rho_contrast <- cor_matrices$rho[v, group_col]
+    p_contrast <- cor_matrices$p[v, group_col]
+
+    if (!is.na(rho_contrast) && !is.na(p_contrast) && abs(rho_contrast) >= conf$max_cor_rho && p_contrast <= conf$max_cor_p) {
+      if (is_forced) {
+        rec <- "✅ Include"; reason <- sprintf("FORCED. WARNING: Confounder with contrast (rho=%.2f)", rho_contrast)
+        selected_covariates <- c(selected_covariates, v)
+      } else {
+        results_tbl[i, ] <- c(v, vpa_rank, dist_str, "❌ Exclude", sprintf("Confounder with contrast (rho=%.2f)", rho_contrast), "-")
+        next
+      }
+    } else {
+      # 4. Collinearity Check with Already Selected Variables
+      conflict_var <- NULL
+      for (sel_v in selected_covariates) {
+        rho_cov <- cor_matrices$rho[v, sel_v]
+        p_cov <- cor_matrices$p[v, sel_v]
+        if (!is.na(rho_cov) && !is.na(p_cov) && abs(rho_cov) >= conf$max_cor_rho && p_cov <= conf$max_cor_p) {
+          conflict_var <- sprintf("%s (rho=%.2f)", sel_v, rho_cov)
+          break
+        }
+      }
+
+      if (!is.null(conflict_var)) {
+        if (is_forced) {
+          rec <- "✅ Include"; reason <- sprintf("FORCED. WARNING: Redundant with %s", conflict_var)
+          selected_covariates <- c(selected_covariates, v)
+        } else {
+          results_tbl[i, ] <- c(v, vpa_rank, dist_str, "❌ Exclude", sprintf("Redundant with included variable %s", conflict_var), "-")
+          next
+        }
+      } else {
+        # Passed all checks!
+        rec <- "✅ Include"; reason <- if(is_forced) "Forced (Clean)" else "Top independent VPA hit"
+        selected_covariates <- c(selected_covariates, v)
+      }
+    }
+
+    current_cc_n <- temp_n
+    results_tbl[i, ] <- c(v, vpa_rank, dist_str, rec, reason, "-")
+  }
+
+  results_tbl <- results_tbl %>% drop_na(Variable)
+
+  # 5. Calculate VIF for Final Model
+  final_vars <- c(group_col, selected_covariates)
+  cc_df <- sub_df %>% select(Subject_ID, all_of(final_vars)) %>% drop_na()
+
+  matrix_status <- "Full Rank (Independent)"
+  if (length(selected_covariates) > 1) {
+    # Generate dummy variable to trick lm() into calculating VIF of covariates
+    cc_df$dummy_y <- rnorm(nrow(cc_df))
+    form_str <- paste("dummy_y ~", paste(sprintf("`%s`", selected_covariates), collapse = " + "))
+
+    vif_res <- tryCatch(car::vif(lm(as.formula(form_str), data = cc_df)), error = function(e) NULL)
+
+    if (!is.null(vif_res)) {
+      for (v in names(vif_res)) {
+        # BUG FIX: car::vif returns names with backticks. Strip them so they match the table!
+        v_clean <- gsub("`", "", v)
+
+        # car::vif returns matrix for factors, we just take the first column (GVIF)
+        v_val <- if(is.matrix(vif_res) || is.data.frame(vif_res)) vif_res[v, 1] else vif_res[v]
+        results_tbl$VIF[results_tbl$Variable == v_clean] <- sprintf("%.2f", v_val)
+      }
+    } else {
+      matrix_status <- "<span style='color:#c0392b; font-weight:bold;'>Rank Deficient (Aliased)</span>"
+    }
+  } else if (length(selected_covariates) == 1) {
+    results_tbl$VIF[results_tbl$Variable == selected_covariates[1]] <- "1.00 (Single Var)"
+  }
+
+  # Return Payload (Added N_Start so wrapper can calculate percentages)
+  return(list(
+    status = "success",
+    table = results_tbl,
+    selected_vars = selected_covariates,
+    meta = list(N = current_cc_n, N_Start = n_start, SPP = current_cc_n / length(final_vars), Params = length(final_vars), Matrix = matrix_status)
+  ))
+}
+
+
