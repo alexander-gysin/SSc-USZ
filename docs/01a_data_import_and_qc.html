@@ -12,7 +12,7 @@
 <meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
 
 
-<title>Data Import and Sync</title>
+<title>Data Import and QC</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -349,6 +349,9 @@ div.tocify {
   <a href="01a_data_import_and_qc.html">Data</a>
 </li>
 <li>
+  <a href="01b_clinical_features.html">Clinical</a>
+</li>
+<li>
   <a href="02_cohort_characterization.html">Cohort</a>
 </li>
 <li class="dropdown">
@@ -404,7 +407,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Data Import and Sync</h1>
+<h1 class="title toc-ignore">Data Import and QC</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
@@ -568,15 +571,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd14bd1da747602e432fdd45dd7baab7413c1859targetblankdd14bd1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6b76a8574d59b8fbac6513ffbfbf2ffe49a66613targetblank6b76a85a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd14bd1da747602e432fdd45dd7baab7413c1859" target="_blank">dd14bd1</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6b76a8574d59b8fbac6513ffbfbf2ffe49a66613" target="_blank">6b76a85</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedd14bd1da747602e432fdd45dd7baab7413c1859targetblankdd14bd1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6b76a8574d59b8fbac6513ffbfbf2ffe49a66613targetblank6b76a85a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -586,7 +589,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dd14bd1da747602e432fdd45dd7baab7413c1859" target="_blank">dd14bd1</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6b76a8574d59b8fbac6513ffbfbf2ffe49a66613" target="_blank">6b76a85</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -677,6 +680,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6b76a8574d59b8fbac6513ffbfbf2ffe49a66613/analysis/01a_data_import_and_qc.Rmd" target="_blank">6b76a85</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-28
+</td>
+<td>
+addes imputtion report, fixed html display
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/ddc38fa300a18a007621fc479a5b9a4f5c880789/docs/01a_data_import_and_qc.html" target="_blank">ddc38fa</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -834,7 +871,7 @@ were dropped and their missingness percentages.
 </li>
 </ul>
 </div>
-<pre class="r"><code>audit_log &lt;- c(&quot;### Clinical Import Log\n&quot;)
+<pre class="r"><code>audit_log &lt;- c(&quot;Clinical Import Log\n&quot;)
 
 # 1. Process Master Clinical File ----------------------------------------------
 raw_clin &lt;- read_excel(here::here(&quot;data&quot;, file_paths$clinical_raw), sheet = 1)
@@ -915,7 +952,7 @@ if (n_dropped &gt; 0) {
   
   dropped_tbl &lt;- dropped_df %&gt;%
     kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, 
-                    caption = sprintf(&quot;&lt;b style=&#39;color:#c0392b;&#39;&gt;Excluded Clinical Variables (Missingness &gt; %s%%)&lt;/b&gt;&quot;, qc_config$max_missingness_clin_var * 100)) %&gt;%
+                    caption = sprintf(&quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Excluded Clinical Variables (Missingness &gt; %s%%)&lt;/b&gt;&quot;, qc_config$max_missingness_clin_var * 100)) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
     kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;600px&quot;)
   
@@ -933,8 +970,7 @@ invisible(gc())
 
 # Print HTML output as a single block to prevent code fragmentation
 cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
-<div id="clinical-import-log" class="section level3">
-<h3>Clinical Import Log</h3>
+<p>Clinical Import Log</p>
 <ul>
 <li><p>Inner join successful. Matched 131 unique patients.</p></li>
 <li><p>Standardized phantom missing data (‘UN’, ‘Unknown’) to true
@@ -950,8 +986,8 @@ the SSc cohort.</p></li>
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="">
 <caption>
-<b style="color:#c0392b;">Excluded Clinical Variables (Missingness &gt;
-20%)</b>
+<b style="font-size:1.2em; color:#333;">Excluded Clinical Variables
+(Missingness &gt; 20%)</b>
 </caption>
 <thead>
 <tr>
@@ -2955,12 +2991,46 @@ if(length(failed_samps) &gt; 0) {
 
 qc_mat &lt;- olink_mat[valid_prots, valid_samps, drop = FALSE]
 
-# 3. Median Imputation ---------------------------------------------------------
-row_meds &lt;- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
+# 3. Median Imputation Tracking &amp; Execution ------------------------------------
 na_coords &lt;- which(is.na(qc_mat), arr.ind = TRUE)
-qc_mat[na_coords] &lt;- row_meds[na_coords[, &quot;row&quot;]]
+row_meds &lt;- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
 
-audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Median Imputation Complete. Post-QC Matrix: %d Proteins | %d Samples&quot;, nrow(qc_mat), ncol(qc_mat)))
+impute_html &lt;- &quot;&quot;
+if (nrow(na_coords) &gt; 0) {
+  # Count how many NAs belong to each protein row
+  na_counts &lt;- table(rownames(qc_mat)[na_coords[, &quot;row&quot;]])
+  
+  impute_df &lt;- data.frame(
+    Protein = names(na_counts),
+    Imputed_Values = as.integer(na_counts)
+  )
+  
+  # Append the median that was used
+  impute_df$Imputed_Median_NPX &lt;- row_meds[match(impute_df$Protein, rownames(qc_mat))]
+  
+  impute_df &lt;- impute_df %&gt;% 
+    arrange(desc(Imputed_Values)) %&gt;%
+    mutate(Imputed_Median_NPX = sprintf(&quot;%.4f&quot;, Imputed_Median_NPX))
+
+  impute_tbl &lt;- impute_df %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, 
+                    caption = &quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Proteomics Median Imputation Log&lt;/b&gt;&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
+  
+  if (interactive()) {
+    print(impute_tbl)
+  } else {
+    impute_html &lt;- as.character(impute_tbl)
+  }
+  
+  # Execute the actual imputation
+  qc_mat[na_coords] &lt;- row_meds[na_coords[, &quot;row&quot;]]
+  audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Median Imputation Complete: %d total values imputed. Post-QC Matrix: %d Proteins | %d Samples&quot;, nrow(na_coords), nrow(qc_mat), ncol(qc_mat)))
+
+} else {
+  audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Median Imputation Complete: 0 missing values found. No imputation required. Post-QC Matrix: %d Proteins | %d Samples&quot;, nrow(qc_mat), ncol(qc_mat)))
+}
 
 # 4. Final Sync ----------------------------------------------------------------
 # Ensure the clinical spine perfectly matches the surviving omics samples
@@ -2971,14 +3041,20 @@ qc_mat &lt;- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
 
 # Cleanup Memory
 rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, failed_prots, failed_samps, row_meds, na_coords)
+if(exists(&quot;impute_df&quot;)) rm(impute_df, na_counts)
 invisible(gc())
 
 # Print HTML output as a single block
-cat(paste(audit_log_olink, collapse = &quot;\n&quot;))</code></pre>
-<pre><code>Proteomics QC Log
-
-- Initial Matrix: 1034 Proteins | 131 Samples
-- Median Imputation Complete. Post-QC Matrix: 1034 Proteins | 131 Samples</code></pre>
+cat(paste(audit_log_olink, collapse = &quot;\n\n&quot;))</code></pre>
+<p>Proteomics QC Log</p>
+<ul>
+<li><p>Initial Matrix: 1034 Proteins | 131 Samples</p></li>
+<li><p>Median Imputation Complete: 0 missing values found. No imputation
+required. Post-QC Matrix: 1034 Proteins | 131 Samples</p></li>
+</ul>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<p><br></p>
+<pre class="r"><code>if (impute_html != &quot;&quot;) cat(impute_html)</code></pre>
 </div>
 <div id="export" class="section level1">
 <h1>Export</h1>
@@ -2987,7 +3063,7 @@ cat(paste(audit_log_olink, collapse = &quot;\n&quot;))</code></pre>
 <ul>
 <li>
 Exported the raw_filtered_spine.rds and clean_olink_matrix.rds for
-downstream engineering in Script 01b.
+downstream biological engineering in Script 01b.
 </li>
 </ul>
 </div>
@@ -2995,8 +3071,8 @@ downstream engineering in Script 01b.
 saveRDS(raw_spine, file.path(output_dir_data, &quot;raw_filtered_spine.rds&quot;))
 saveRDS(qc_mat, file.path(output_dir_data, &quot;clean_olink_matrix.rds&quot;))
 
-cat(&quot;Script 01a Complete! Data is ready for analysis.&quot;)</code></pre>
-<pre><code>Script 01a Complete! Data is ready for analysis.</code></pre>
+cat(&quot;Script 01a Complete!\n&quot;)</code></pre>
+<pre><code>Script 01a Complete!</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -3057,7 +3133,6 @@ loaded via a namespace (and not attached):
 [55] renv_1.1.5          svglite_2.2.2       rstudioapi_0.18.0  
 [58] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2  
 [61] fs_2.0.1           </code></pre>
-</div>
 </div>
 </div>
 </div>
