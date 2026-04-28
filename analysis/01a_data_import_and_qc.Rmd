@@ -1,5 +1,5 @@
 ---
-title: "Data Import and Sync"
+title: "Data Import and QC"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -71,7 +71,7 @@ qc_config <- list(
 
 `r what_this_does("Imported raw clinical and sample mapping Excel files and coalesced IDs.", "Standardized missing value strings into true NAs.", "Calculated missingness exclusively on patient samples (ignoring healthy controls) and applied the 20% missingness filter.", "Generated a scrollable HTML audit table detailing exactly which columns were dropped and their missingness percentages.")`
 ```{r clin_import, results='asis'}
-audit_log <- c("### Clinical Import Log\n")
+audit_log <- c("Clinical Import Log\n")
 
 # 1. Process Master Clinical File ----------------------------------------------
 raw_clin <- read_excel(here::here("data", file_paths$clinical_raw), sheet = 1)
@@ -152,7 +152,7 @@ if (n_dropped > 0) {
   
   dropped_tbl <- dropped_df %>%
     kableExtra::kbl(format = "html", row.names = FALSE, 
-                    caption = sprintf("<b style='color:#c0392b;'>Excluded Clinical Variables (Missingness > %s%%)</b>", qc_config$max_missingness_clin_var * 100)) %>%
+                    caption = sprintf("<b style='font-size:1.2em; color:#333;'>Excluded Clinical Variables (Missingness > %s%%)</b>", qc_config$max_missingness_clin_var * 100)) %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
     kableExtra::scroll_box(width = "100%", height = "600px")
   
@@ -178,8 +178,7 @@ if (dropped_html != "") cat(dropped_html)
 `r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold to ensure robust downstream imputation.", "NA values were imputed using a row-wise (protein-wise) median approach.")`
 
 `r what_this_does("Pivoted the Olink data to a wide matrix.", "Executed missingness filtering and median imputation.", "Cross-synchronized the clinical spine and the Olink matrix to guarantee identical sample inclusion and ordering.")`
-
-```{r proteomics_data}
+```{r proteomics_data, results='asis'}
 audit_log_olink <- c("Proteomics QC Log\n")
 
 # 1. Import and Pivot ----------------------------------------------------------
@@ -211,12 +210,46 @@ if(length(failed_samps) > 0) {
 
 qc_mat <- olink_mat[valid_prots, valid_samps, drop = FALSE]
 
-# 3. Median Imputation ---------------------------------------------------------
-row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
+# 3. Median Imputation Tracking & Execution ------------------------------------
 na_coords <- which(is.na(qc_mat), arr.ind = TRUE)
-qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
+row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
 
-audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete. Post-QC Matrix: %d Proteins | %d Samples", nrow(qc_mat), ncol(qc_mat)))
+impute_html <- ""
+if (nrow(na_coords) > 0) {
+  # Count how many NAs belong to each protein row
+  na_counts <- table(rownames(qc_mat)[na_coords[, "row"]])
+  
+  impute_df <- data.frame(
+    Protein = names(na_counts),
+    Imputed_Values = as.integer(na_counts)
+  )
+  
+  # Append the median that was used
+  impute_df$Imputed_Median_NPX <- row_meds[match(impute_df$Protein, rownames(qc_mat))]
+  
+  impute_df <- impute_df %>% 
+    arrange(desc(Imputed_Values)) %>%
+    mutate(Imputed_Median_NPX = sprintf("%.4f", Imputed_Median_NPX))
+
+  impute_tbl <- impute_df %>%
+    kableExtra::kbl(format = "html", row.names = FALSE, 
+                    caption = "<b style='font-size:1.2em; color:#333;'>Proteomics Median Imputation Log</b>") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
+    kableExtra::scroll_box(width = "100%", height = "300px")
+  
+  if (interactive()) {
+    print(impute_tbl)
+  } else {
+    impute_html <- as.character(impute_tbl)
+  }
+  
+  # Execute the actual imputation
+  qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
+  audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete: %d total values imputed. Post-QC Matrix: %d Proteins | %d Samples", nrow(na_coords), nrow(qc_mat), ncol(qc_mat)))
+
+} else {
+  audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete: 0 missing values found. No imputation required. Post-QC Matrix: %d Proteins | %d Samples", nrow(qc_mat), ncol(qc_mat)))
+}
 
 # 4. Final Sync ----------------------------------------------------------------
 # Ensure the clinical spine perfectly matches the surviving omics samples
@@ -227,23 +260,26 @@ qc_mat <- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
 
 # Cleanup Memory
 rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, failed_prots, failed_samps, row_meds, na_coords)
+if(exists("impute_df")) rm(impute_df, na_counts)
 invisible(gc())
 
 # Print HTML output as a single block
-cat(paste(audit_log_olink, collapse = "\n"))
+cat(paste(audit_log_olink, collapse = "\n\n"))
+cat("\n\n<br>\n\n")
+if (impute_html != "") cat(impute_html)
 ```
 
 
 # Export 
 
-`r what_this_does("Exported the raw_filtered_spine.rds and clean_olink_matrix.rds for downstream engineering in Script 01b.")`
+`r what_this_does("Exported the raw_filtered_spine.rds and clean_olink_matrix.rds for downstream biological engineering in Script 01b.")`
 
 ```{r export}
 # Save the RAW but mathematically synced and filtered files
 saveRDS(raw_spine, file.path(output_dir_data, "raw_filtered_spine.rds"))
 saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
 
-cat("Script 01a Complete! Data is ready for analysis.")
+cat("Script 01a Complete!\n")
 ```
 
 
