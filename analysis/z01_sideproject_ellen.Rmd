@@ -238,7 +238,7 @@ if (!is.null(full_vascular_dea)) {
 `r key_insight("No visible pattern")`
 
 # Proteins of Interest Heatmap
-`r analysis_decision("Filtered the 10-patient matrix for the predefined list of human-translated proteins of interest.", "Applied Z-scoring to highlight relative abundance shifts strictly between the extreme phenotypes.")`
+`r analysis_decision("Applied Z-scoring to highlight relative abundance shifts.")`
 
 `r what_this_does("Matched the predefined proteins of interest against the available Olink assays, generating a warning for any missing targets.", "Calculated row-wise Z-scores for the surviving proteins.", "Rendered an annotated ComplexHeatmap, intentionally preserving the custom row order defined in the configuration.")`
 
@@ -266,8 +266,8 @@ if (length(available_poi) > 0) {
     row_names_gp = gpar(fontsize = 10, fontface = "bold"),
     column_names_gp = gpar(fontsize = 10),
     cluster_columns = TRUE,
-    cluster_rows = FALSE, # Keep user's predefined list order
-    show_row_dend = FALSE
+    cluster_rows = TRUE, 
+    show_row_dend = TRUE
   )
   
   draw(ht3)
