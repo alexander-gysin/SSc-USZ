@@ -12,7 +12,7 @@
 <meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
 
 
-<title>Data Import and QC</title>
+<title>Data Import</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -345,11 +345,20 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="01a_data_import_and_qc.html">Data</a>
-</li>
-<li>
-  <a href="01b_clinical_features.html">Clinical</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="02_cohort_characterization.html">Cohort</a>
@@ -371,7 +380,25 @@ div.tocify {
       <a href="03c_proteomics_clustering.html">Clustering</a>
     </li>
     <li>
-      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
+      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_ellen_2.html">Vascular 2</a>
     </li>
   </ul>
 </li>
@@ -407,11 +434,11 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Data Import and QC</h1>
+<h1 class="title toc-ignore">Data Import</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">28 April, 2026</h4>
+<h4 class="date">01 May, 2026</h4>
 
 </div>
 
@@ -440,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-28
+<strong>Last updated:</strong> 2026-05-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -571,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6b76a8574d59b8fbac6513ffbfbf2ffe49a66613targetblank6b76a85a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6b76a8574d59b8fbac6513ffbfbf2ffe49a66613" target="_blank">6b76a85</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6b76a8574d59b8fbac6513ffbfbf2ffe49a66613targetblank6b76a85a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -589,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6b76a8574d59b8fbac6513ffbfbf2ffe49a66613" target="_blank">6b76a85</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -608,33 +635,26 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01b_clinical_feature_engineering/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_clustering/
-    Ignored:    output/03c_proteomics_predictive/
     Ignored:    output/randomizer/
+    Ignored:    output/z01_sideproject_ellen/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
 Untracked files:
     Untracked:  analysis/03c_proteomics_clustering.Rmd
-    Untracked:  analysis/03d_proteomics_correlations.Rmd
+    Untracked:  analysis/03d_proteomics_subgroups.Rmd
+    Untracked:  analysis/03e_proteomics_correlations.Rmd
+    Untracked:  analysis/z02_sideproject_ellen_2.Rmd
     Untracked:  code/randomizer.R
     Untracked:  core
 
 Unstaged changes:
-    Deleted:    analysis/01_data_import_and_qc.Rmd
-    Modified:   analysis/02_cohort_characterization.Rmd
-    Modified:   analysis/03a_proteomics_variance.Rmd
-    Modified:   analysis/03b_proteomics_differential.Rmd
-    Deleted:    analysis/03c_proteomics_predictive.Rmd
     Modified:   analysis/_site.yml
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/style.css
-    Modified:   code/00_config.R
-    Modified:   code/00_omics_engines.R
-    Modified:   renv.lock
 
 </code></pre>
 <p>
@@ -680,6 +700,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1115ac7726fa3c9b93e5bac4872668137a3362b0/analysis/01a_data_import_and_qc.Rmd" target="_blank">1115ac7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+after data dictionary and twin creation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2a6d01726b37a1f42ca61a9d18190481f45a9907/docs/01a_data_import_and_qc.html" target="_blank">2a6d017</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd

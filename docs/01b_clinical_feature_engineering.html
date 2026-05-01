@@ -1,0 +1,6318 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>Clinical Features</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="02_cohort_characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_ellen_2.html">Vascular 2</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Clinical Features</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">01 May, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-05-01
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01b_clinical_feature_engineering/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/randomizer/
+    Ignored:    output/z01_sideproject_ellen/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/03c_proteomics_clustering.Rmd
+    Untracked:  analysis/03d_proteomics_subgroups.Rmd
+    Untracked:  analysis/03e_proteomics_correlations.Rmd
+    Untracked:  analysis/z02_sideproject_ellen_2.Rmd
+    Untracked:  code/randomizer.R
+    Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/01b_clinical_feature_engineering.Rmd</code>) and HTML
+(<code>docs/01b_clinical_feature_engineering.html</code>) files. If
+you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1115ac7726fa3c9b93e5bac4872668137a3362b0/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">1115ac7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+after data dictionary and twin creation
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This script represents Phase 1b of the pipeline. It takes the
+technically synchronized data from Phase 1a and performs rigorous
+biological feature engineering, ordinal mapping, and statistical Quality
+Control (QA/QC). It addresses extreme skewness and class imbalance,
+generating a finalized curated_clinical_spine.rds and a
+clinical_data_dictionary.rds for all downstream omics scripts.</p>
+</div>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required utility packages (tidyverse, data.table).
+</li>
+<li>
+Established dynamic output directory paths to safely save curated data.
+</li>
+<li>
+Loaded the raw_filtered_spine generated by Script 01a.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Packages
+library(tidyverse)
+library(data.table)
+library(here)
+library(kableExtra)
+library(patchwork)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file &lt;- &quot;01b_clinical_feature_engineering&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Load Technically Synced Data from 01a
+raw_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;raw_filtered_spine.rds&quot;))</code></pre>
+</div>
+<div id="configuration" class="section level1">
+<h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Established a global renaming dictionary for long clinical variables.
+</li>
+<li>
+Defined regex patterns to globally purge procedural meta-variables
+(e.g., ‘measured?’).
+</li>
+<li>
+Set strict mathematical thresholds for QA/QC, including a parameterized
+IQR multiplier for outlier detection.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 0. Global File Paths ---------------------------------------------------------
+file_paths &lt;- list(
+  clinical_dict_txt = &quot;clinical_data_type_dictionary.txt&quot; 
+)
+
+# 1. QC Mathematical Thresholds ------------------------------------------------
+qc_config &lt;- list(
+  max_skewness = 2,        
+  min_minority_pct = 0.10, 
+  outlier_iqr_multiplier = 3.0, # &lt;-- NEW: Parameterized multiplier for Tukey&#39;s Fences
+  
+  # Manual Overrides
+  manual_drop_vars = c(&quot;...1&quot; ),    
+  manual_log_rejects = c(),  
+  #log_Modified_rodnan_skin_score&quot;, &quot;log_CRP&quot;, &quot;log_Min_SpO2__Exercise&quot;, &quot;log_Delta_PFT_Years&quot;, &quot;10g_Delta_ECG_Years&quot;, &quot;log_Delta_ECHO_Years&quot;
+  
+  meta_drop_patterns = c(&quot;performed&quot;, &quot;measured&quot;, &quot;done&quot;, &quot;velocity\\?&quot;, &quot;ratio\\?&quot;, &quot;area\\?&quot;, &quot;excursion\\?&quot;, &quot;fraction %\\?&quot;, &quot;done\\?&quot;),
+  olink_date = as.Date(&quot;2026-03-30&quot;),
+  date_cols = c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;, 
+                &quot;If yes, Date of HRCT&quot;, &quot;onset_nonRP&quot;, &quot;Date of PFT&quot;, 
+                &quot;If yes, Date of assessment for ECG&quot;, &quot;If yes, Date of assessment for ECHO&quot;,
+                &quot;If, yes Date of assessment for Walk test&quot;)
+)
+
+# 2. Variable Renaming Map -----------------------------------------------------
+clinical_rename_map &lt;- c(
+  &quot;Sclerodactyly&quot; = &quot;of the fingers as sclerodactyly (distal to the metacarpophalangeal joints but proximal to the proximal interphalangeal joints)&quot;,
+  &quot;SSc Antibody Score&quot; = &quot;Score: Scleroderma related antibodies (any of anti-centromere, Anti-topoisomerase I [ anti-SCL 70], anti-RNA polymerase III&quot;,
+  &quot;SSc Antibodies&quot; = &quot;Scleroderma related antibodies (any of anti-centromere, Anti-topoisomerase I [ anti-SCL 70], anti-RNA polymerase III&quot;,
+  &quot;Skin Thickening (Ext. MCP)&quot; = &quot;of the fingers of both hands extending proximally to the metacarpophalangeal joints&quot;,
+  &quot;Skin Thickening (Prox. MCP)&quot; = &quot;Skin thickening of the fingers of both hands extending proximal to the MCP joints&quot;,
+  &quot;New PAH&quot; = &quot;Does the patient have pulmonary arterial hypertension since the last visit?&quot;,
+  &quot;PAH/ILD&quot; = &quot;Pulmonary arterial hypertension and/or Interstitial lung Disease&quot;,
+  &quot;Max Borg Dyspnea&quot; = &quot;Worst modified Borg dyspnea score during the test (from 0 to 10)&quot;,
+  &quot;New Cardiac Manifest.&quot; = &quot;Does the patient have cardiac manifestation since last visit?&quot;,
+  &quot;Diastolic Dysf. (Echo)&quot; = &quot;Diastolic function abnormal(on echo, E/a less than 10cm/sec)&quot;,
+  &quot;MD Global Activity (NA)&quot; = &quot;Physicians global assessment of disease activity VAS Unknown&quot;,
+  &quot;Pt Global Activity (NA)&quot; = &quot;Patients global assessment of disease activity VAS Unknown&quot;,
+  &quot;mRSS Worsening (1yr)&quot; = &quot;Was there a worsening of mRSS over the last 12 months?&quot;,
+  &quot;Intestinal Symptoms&quot; = &quot;Intestinal symptoms (diarrhea, bloating, constipation)&quot;,
+  &quot;Arthritis Activity (NA)&quot; = &quot;Activity of arthritis during the past week Unknown&quot;,
+  &quot;EULAR/ACR 2013 Criteria&quot; = &quot;2013 EULAR/ACR classification criteria fulfilled&quot;,
+  &quot;TAPSE (cm)&quot; = &quot;Tricuspid annular plane systolic excursion (cm)&quot;,
+  &quot;Stomach Symptoms&quot; = &quot;Stomach symptoms (early satiety, vomiting)&quot;,
+  &quot;FVC %pred&quot; = &quot;Forced Vital Capacity (FVC- % predicted)&quot;,
+  &quot;Capillaroscopy Score&quot; = &quot;Score: Abnormal nailfold capillaroscopy&quot;,
+  &quot;TLC %pred&quot; = &quot;Total lung capacity (TLC- % predicted)&quot;,
+  &quot;GAVE&quot; = &quot;Gastric Antral Vascular Ectasia (GAVE)&quot;,
+  &quot;LVEF %&quot; = &quot;Left ventricular ejection fraction %&quot;,
+  &quot;Min SpO2 (Exercise)&quot; = &quot;Worst O2-saturation at exercise (%)&quot;,
+  &quot;Capillaroscopy Pattern&quot; = &quot;Capillaroscopy scleroderma pattern&quot;,
+  &quot;Joint Contractures&quot; = &quot;Joint contractures (at any joint)&quot;,
+  &quot;Abnormal Capillaroscopy&quot; = &quot;Abnormal nailfold capillaroscopy&quot;,
+  &quot;Non-Raynaud Symptom&quot; = &quot;Any non-Raynaud symptom present?&quot;,
+  &quot;Puffy Fingers&quot; = &quot;of the fingers as puffy fingers&quot;
+)</code></pre>
+</div>
+<div id="feature-engineering" class="section level1">
+<h1>Feature Engineering</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Engineered cohort groups strictly from Subject_ID prefixes.
+</li>
+<li>
+Calculated standard baseline demographics (Age, Sex, Sample_Age) and
+temporal deltas between clinical assessments and blood draws.
+</li>
+<li>
+Permanently encoded Subsets (Diffuse/Limited/Sine) as One-Hot binary
+variables.
+</li>
+<li>
+Generated a Twin ‘Numeric’ Spine where severity rankings were mapped
+into mathematical ordinal scales (0-3) for downstream correlation
+engines.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Enforced the strict Schema Dictionary via external text file to coerce
+datatypes (n=numeric, c=factor) and drop flags (x).
+</li>
+<li>
+Renamed verbose columns via the mapping dictionary.
+</li>
+<li>
+Safely parsed raw Excel date serials into standard R Date objects.
+</li>
+<li>
+Applied One-Hot Encoding to subsets.
+</li>
+<li>
+Generated curated_spine_numeric by tracking Ordinal mappings and
+coercing factors to numerics, accompanied by a visual report.
+</li>
+</ul>
+</div>
+<pre class="r"><code>audit_log &lt;- c(&quot;### Feature Engineering Log\n&quot;)
+curated_spine &lt;- copy(raw_spine)
+
+# 0. Schema Enforcement (clinical_data_type_dictionary.txt) --------------------
+regex_pattern &lt;- paste(tolower(qc_config$meta_drop_patterns), collapse = &quot;|&quot;)
+meta_drops &lt;- names(curated_spine)[str_detect(tolower(names(curated_spine)), regex_pattern)]
+dict_drops &lt;- c()
+
+ext_dict_path &lt;- here::here(&quot;data&quot;, file_paths$clinical_dict_txt)
+if (file.exists(ext_dict_path)) {
+  ext_dict &lt;- fread(ext_dict_path)
+  
+  if(all(c(&quot;Variable_Name&quot;, &quot;Type&quot;) %in% names(ext_dict))) {
+    vars_drop &lt;- ext_dict[tolower(Type) == &quot;x&quot;]$Variable_Name
+    vars_num  &lt;- ext_dict[tolower(Type) == &quot;n&quot;]$Variable_Name
+    vars_cat  &lt;- ext_dict[tolower(Type) == &quot;c&quot;]$Variable_Name
+    
+    dict_drops &lt;- vars_drop
+    
+    # A. Execute Type Enforcement
+    safe_numeric &lt;- function(x) { suppressWarnings(as.numeric(gsub(&quot;,&quot;, &quot;.&quot;, trimws(as.character(x))))) }
+
+    num_cols &lt;- intersect(vars_num, names(curated_spine))
+    if (length(num_cols) &gt; 0) curated_spine[, (num_cols) := lapply(.SD, safe_numeric), .SDcols = num_cols]
+
+    # FIX: Categoricals must be FACTORS to keep them human-readable but grouped!
+    cat_cols &lt;- intersect(vars_cat, names(curated_spine))
+    if (length(cat_cols) &gt; 0) curated_spine[, (cat_cols) := lapply(.SD, as.factor), .SDcols = cat_cols]
+
+    audit_log &lt;- c(audit_log, &quot;- Schema Enforcement: Forced explicit numeric (n) and factor (c) data types based on dictionary.&quot;)
+  } else {
+    audit_log &lt;- c(audit_log, &quot;- WARNING: Dictionary found but missing &#39;Variable_Name&#39; or &#39;Type&#39; columns.&quot;)
+  }
+} else {
+  audit_log &lt;- c(audit_log, &quot;- WARNING: clinical_data_type_dictionary.txt not found.&quot;)
+}
+
+# Execute Drops
+cols_to_drop &lt;- unique(c(meta_drops, qc_config$manual_drop_vars, dict_drops))
+valid_drops &lt;- intersect(cols_to_drop, names(curated_spine))
+
+meta_html &lt;- &quot;&quot;
+if (length(valid_drops) &gt; 0) {
+  curated_spine[, (valid_drops) := NULL]
+  drop_reasons &lt;- case_when(
+    valid_drops %in% dict_drops ~ &quot;Dictionary Flag (&#39;x&#39;)&quot;,
+    valid_drops %in% qc_config$manual_drop_vars ~ &quot;Manual Config Override&quot;,
+    TRUE ~ &quot;Regex Meta-Variable&quot;
+  )
+  
+  meta_tbl &lt;- data.frame(`Dropped Variable` = valid_drops, Reason = drop_reasons, check.names = FALSE) %&gt;%
+    arrange(Reason, `Dropped Variable`) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, caption = &quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Dropped Clinical Variables&lt;/b&gt;&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
+  
+  if (interactive()) print(meta_tbl) else meta_html &lt;- as.character(meta_tbl)
+  audit_log &lt;- c(audit_log, sprintf(&quot;- Schema Enforcement: Dropped %d variables.&quot;, length(valid_drops)))
+}
+
+# 1. Feature Engineering (Groups, Dates, Age, Sex) -----------------------------
+curated_spine[, cohort_group := fcase(
+  str_detect(Subject_ID, &quot;^Nonact&quot;), GRP_NON_ACTIVE,
+  str_detect(Subject_ID, &quot;^Act&quot;),    GRP_ACTIVE,
+  str_detect(Subject_ID, &quot;^Ctrl&quot;),   GRP_CONTROL,
+  default = NA_character_
+)]
+curated_spine[, cohort_group := factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))]
+
+safe_excel_date &lt;- function(x) { suppressWarnings(as.Date(as.numeric(as.character(x)), origin = &quot;1899-12-30&quot;)) }
+surviving_date_cols &lt;- intersect(qc_config$date_cols, names(curated_spine))
+if (length(surviving_date_cols) &gt; 0) {
+  curated_spine[, (surviving_date_cols) := lapply(.SD, safe_excel_date), .SDcols = surviving_date_cols]
+}
+
+curated_spine[, Entnahmedatum_Clean := Entnahmedatum]
+curated_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
+curated_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
+curated_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
+
+# FIX: Map Sex directly to the Global Config text strings and make it a factor!
+curated_spine[, Sex := fcase(
+  Geschlecht == &quot;weiblich&quot; | tolower(Geschlecht) == &quot;female&quot;, SEX_FEMALE, 
+  Geschlecht == &quot;männlich&quot; | tolower(Geschlecht) == &quot;male&quot;, SEX_MALE,   
+  default = NA_character_
+)]
+curated_spine[, Sex := factor(Sex, levels = c(SEX_MALE, SEX_FEMALE))]
+
+# 2. Date Deltas ---------------------------------------------------------------
+assessment_dates &lt;- setdiff(surviving_date_cols, c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;))
+for (d_col in assessment_dates) {
+  if (d_col %in% names(curated_spine)) {
+    clean_prefix &lt;- gsub(&quot;.*Date of assessment for |.*Date of &quot;, &quot;&quot;, d_col)
+    clean_name &lt;- paste0(&quot;Delta_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, clean_prefix), &quot;_Years&quot;)
+    curated_spine[, (clean_name) := as.numeric(difftime(get(d_col), Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
+  }
+}
+
+# 3. Variable Renaming &amp; One-Hot Encoding --------------------------------------
+setnames(curated_spine, old = as.character(clinical_rename_map), new = names(clinical_rename_map), skip_absent = TRUE)
+setnames(curated_spine, old = c(&quot;OR serum creatinine (micromoles/L)&quot;, &quot;CRP (mg/dl)&quot;, &quot;Right atrium area (cm²)&quot;, &quot;Right ventricular area (cm²)&quot;), 
+         new = c(&quot;Creatinine&quot;, &quot;CRP&quot;, &quot;Right atrium area (cm2)&quot;, &quot;Right ventricular area (cm2)&quot;), skip_absent = TRUE)
+
+if (&quot;Subset_diffuse&quot; %in% names(curated_spine)) {
+  curated_spine &lt;- curated_spine %&gt;%
+    mutate(
+      Subset_Diffuse = if_else(tolower(`Subset_diffuse`) == &quot;diffuse cutaneous&quot;, 1, 0),
+      Subset_Limited = if_else(tolower(`Subset_diffuse`) == &quot;limited cutaneous&quot;, 1, 0),
+      Subset_Sine    = if_else(tolower(`Subset_diffuse`) == &quot;sine scleroderma&quot;, 1, 0)
+    ) %&gt;% select(-`Subset_diffuse`)
+  audit_log &lt;- c(audit_log, &quot;- Applied One-Hot Encoding to SSc Disease Subsets.&quot;)
+}
+
+if(&quot;CRP&quot; %in% names(curated_spine)) curated_spine[CRP &lt;= 0, CRP := NA_real_]
+
+# 4. Active Ordinal Mapping &amp; Twin Spine Generation ----------------------------
+# Clone the human-readable spine to create the math spine
+curated_spine_numeric &lt;- copy(curated_spine)
+
+ordinal_map &lt;- list(
+  &quot;Binary (no=0, yes=1)&quot; = c(&quot;no&quot; = &quot;0&quot;, &quot;yes&quot; = &quot;1&quot;),
+  &quot;Temporal (never=0, prev=1, current=2)&quot; = c(&quot;never&quot; = &quot;0&quot;, &quot;previously&quot; = &quot;1&quot;, &quot;current&quot; = &quot;2&quot;),
+  &quot;Severity (none=0, rare=1, mod=2, ext=3)&quot; = c(&quot;none&quot; = &quot;0&quot;, &quot;rare&quot; = &quot;1&quot;, &quot;moderate&quot; = &quot;2&quot;, &quot;extensive&quot; = &quot;3&quot;),
+  &quot;Roman Numerals (I=1, II=2, III=3)&quot; = c(&quot;1&quot; = &quot;1&quot;, &quot;i&quot; = &quot;1&quot;, &quot;ii&quot; = &quot;2&quot;, &quot;iii&quot; = &quot;3&quot;)
+)
+
+ordinal_log_df &lt;- data.frame(Variable = character(), Mappings_Applied = character(), stringsAsFactors = FALSE)
+scan_cols &lt;- names(curated_spine)[sapply(curated_spine, function(x) is.character(x) || is.factor(x))]
+
+for (col in scan_cols) {
+  vec &lt;- tolower(as.character(curated_spine[[col]]))
+  changed &lt;- FALSE
+  map_applied &lt;- c()
+  
+  for (map_name in names(ordinal_map)) {
+    mapping &lt;- ordinal_map[[map_name]]
+    if (any(vec %in% names(mapping), na.rm = TRUE)) {
+      vec &lt;- unname(mapping[vec]) %&gt;% coalesce(vec)
+      changed &lt;- TRUE
+      map_applied &lt;- c(map_applied, map_name)
+    }
+  }
+  
+  if (changed) {
+    # Apply changes strictly to the NUMERIC spine
+    curated_spine_numeric[[col]] &lt;- as.numeric(vec)
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = paste(map_applied, collapse = &quot; | &quot;)))
+  } else if (col == &quot;Sex&quot;) {
+    # Explicit mapping for Sex into the math spine
+    curated_spine_numeric[[col]] &lt;- ifelse(curated_spine[[col]] == SEX_FEMALE, 1, 0)
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Binary (Male=0, Female=1)&quot;))
+  }
+}
+
+# Final Type Check for the Numeric Spine: Convert leftover text-numbers
+curated_spine_numeric &lt;- curated_spine_numeric %&gt;%
+  mutate(across(everything(), ~ {
+    if((is.character(.x) || is.factor(.x)) &amp;&amp; all(grepl(&quot;^[0-9.]+$&quot;, na.omit(as.character(.x))))) {
+      as.numeric(as.character(.x))
+    } else {
+      .x
+    }
+  }))
+setDT(curated_spine_numeric)
+
+audit_log &lt;- c(audit_log, sprintf(&quot;- Generated curated_spine_numeric: mapped %d categorical variables to algebra-ready numerics.&quot;, nrow(ordinal_log_df)))
+
+# 5. Output Render -------------------------------------------------------------
+cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
+<div id="feature-engineering-log" class="section level3">
+<h3>Feature Engineering Log</h3>
+<ul>
+<li><p>Schema Enforcement: Forced explicit numeric (n) and factor (c)
+data types based on dictionary.</p></li>
+<li><p>Schema Enforcement: Dropped 21 variables.</p></li>
+<li><p>Applied One-Hot Encoding to SSc Disease Subsets.</p></li>
+<li><p>Generated curated_spine_numeric: mapped 69 categorical variables
+to algebra-ready numerics.</p></li>
+</ul>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<p><br></p>
+<pre class="r"><code>if (meta_html != &quot;&quot;) cat(meta_html)</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<caption>
+<b style="font-size:1.2em; color:#333;">Dropped Clinical Variables</b>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Dropped Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Reason
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+…4
+</td>
+<td style="text-align:left;">
+Dictionary Flag (‘x’)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+O2-saturation at rest measured?
+</td>
+<td style="text-align:left;">
+Dictionary Flag (‘x’)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Worst O2-saturation at exercise measured?
+</td>
+<td style="text-align:left;">
+Dictionary Flag (‘x’)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Worst modified Borg dyspnea score during the test measured?
+</td>
+<td style="text-align:left;">
+Dictionary Flag (‘x’)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…1
+</td>
+<td style="text-align:left;">
+Manual Config Override
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Body weight measured?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO (SB) (% predicted) performed?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO/VA (% predicted) performed?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ECG test done?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Echo performed?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Forced Vital Capacity (FVC- % predicted) performed ?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HRCT performed?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left ventricular ejection fraction %?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mouth inter-incisive distance measured?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary Fction Tests performed ?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RV/LV ratio?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right Heart Catheterisation done?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right atrium area?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular area?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total lg capacity (TLC- % predicted) performed ?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tricuspid annular plane systolic excursion?
+</td>
+<td style="text-align:left;">
+Regex Meta-Variable
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<p><br></p>
+<pre class="r"><code>if(nrow(ordinal_log_df) &gt; 0) {
+  ord_tbl &lt;- ordinal_log_df %&gt;%
+    arrange(Mappings_Applied, Variable) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, caption = &quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Ordinalization Tracker (Applied to Math Spine Only)&lt;/b&gt;&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    kableExtra::collapse_rows(columns = 2, valign = &quot;top&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;400px&quot;)
+  if (interactive()) print(ord_tbl) else cat(as.character(ord_tbl))
+}</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<caption>
+<b style="font-size:1.2em; color:#333;">Ordinalization Tracker (Applied
+to Math Spine Only)</b>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Mappings_Applied
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Abnormal Capillaroscopy
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="57">
+Binary (no=0, yes=1) | Roman Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Activity of arthritis during the past week
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-RNA polymerase III
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arrhythmias requiring therapy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Auricular arrhythmias
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Buffy-coat
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillaroscopy Pattern
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Conduction blocks
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic fction abnormal(on echo, E/a less than 10cm/sec)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital Tip Ulcers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dyspnea NYHA Stage
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EULAR/ACR 2013 Criteria
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fingertip pitting scars
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAVE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Inflamm_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Intestinal Symptoms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint involvement
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Malabsorption syndrome
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Muscle atrophy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Myalgia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New Cardiac Manifest.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New PAH
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non-Raynaud Symptom
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients eligible
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients global assessment of disease activity VAS…282
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pericardial effusion on echo
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Physicians global assessment of disease activity VAS…284
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proteinuria (&gt;300mg/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal Dysphagia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal muscle weakness
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Puffy Fingers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Puffy fingers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud VAS…277
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud VAS…278
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud phenomenon
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud’s present
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right axis deviation
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right bdle branch block
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular hypertrophy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSc Antibodies
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sclerodactyly
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Ext. MCP)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subcutaneous Calcinosis
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia (any)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tendon friction rubs
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ventricular arrhythmias
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fibrotic_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mRSS Worsening (1yr)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vascular_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Prox. MCP)
+</td>
+<td style="text-align:left;">
+Binary (no=0, yes=1) | Temporal (never=0, prev=1, current=2) | Roman
+Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+Explicit Binary (Male=0, Female=1)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ACTIVE_AI
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Roman Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Active_our
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SELECTED
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillary loss
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Severity (none=0, rare=1, mod=2, ext=3) | Roman Numerals (I=1, II=2,
+III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Giant capillaries
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hemorrhages
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ramified bushy capillaries
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital ulcer
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Temporal (never=0, prev=1, current=2) | Roman Numerals (I=1, II=2,
+III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gangrene
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pitting scars on finger tips
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="automated-qc-data-dictionary" class="section level1">
+<h1>Automated QC &amp; Data Dictionary</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Continuous variables were evaluated for both skewness and extreme
+outliers simultaneously.
+</li>
+<li>
+Newly generated Log10 variables were forced through the same QC gauntlet
+to ensure the transformation successfully normalized the data and didn’t
+mask unit-entry errors.
+</li>
+<li>
+Categorical variables with a minority class &lt;10% were flagged as
+IMBALANCED.
+</li>
+<li>
+Character variables were deliberately bypassed from statistical QA/QC.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Iterated through every clinical feature routing by data type.
+</li>
+<li>
+Implemented an accumulating flag system (e.g., ‘SKEWED &amp; EXTREME
+OUTLIERS’).
+</li>
+<li>
+Calculated Skewness and Outliers for both raw and newly transformed log
+variables, using is.finite() to protect against NaN/Inf crashes.
+</li>
+<li>
+Generated the definitive Data Dictionary object detailing the compound
+QC status.
+</li>
+</ul>
+</div>
+<pre class="r"><code>calc_skew &lt;- function(x) {
+  x &lt;- x[is.finite(x)]
+  n &lt;- length(x)
+  if (n &lt; 3) return(NA_real_)
+  sum((x - mean(x))^3 / n) / (sd(x)^3)
+}
+
+calc_outliers &lt;- function(x) {
+  x &lt;- x[is.finite(x)]
+  if (length(x) &lt; 5) return(0)
+  q25 &lt;- quantile(x, 0.25)
+  q75 &lt;- quantile(x, 0.75)
+  iqr &lt;- q75 - q25
+  upper_bound &lt;- q75 + (qc_config$outlier_iqr_multiplier * iqr)
+  lower_bound &lt;- q25 - (qc_config$outlier_iqr_multiplier * iqr)
+  sum(x &gt; upper_bound | x &lt; lower_bound)
+}
+
+candidate_vars &lt;- setdiff(names(curated_spine), c(&quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Geburtsdatum&quot;, &quot;Geschlecht&quot;, &quot;Entnahmedatum&quot;, &quot;Entnahmedatum_Clean&quot;, &quot;Birth_Year&quot;, qc_config$date_cols))
+
+dict_list &lt;- list()
+qc_plots_skew &lt;- list()
+imb_log_list &lt;- list()
+
+for (v in candidate_vars) {
+  vec &lt;- curated_spine[[v]]
+  vec_patients &lt;- vec[!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+  miss_pct &lt;- sum(is.na(vec_patients)) / length(vec_patients)
+  
+  # A. CHARACTER / IDENTIFIER LOGIC
+  if (is.character(vec)) {
+    dict_list[[length(dict_list) + 1]] &lt;- data.frame(
+      Variable = v, Class = &quot;Identifier / Text&quot;, Missing_Pct = miss_pct, 
+      Distribution_Metric = &quot;N/A (Free Text)&quot;, 
+      QC_Flag = &quot;PASS&quot;, Action_Taken = &quot;Character bypassed QC&quot;
+    )
+    next
+    
+  # B. NUMERIC / CONTINUOUS LOGIC
+  } else if (is.numeric(vec)) {
+    if (length(unique(na.omit(vec))) &gt; 5) {
+      skew_val &lt;- calc_skew(vec_patients)
+      extreme_outliers &lt;- calc_outliers(vec_patients)
+      
+      # 1. Accumulate Flags for Raw Variable
+      flags &lt;- c()
+      if (extreme_outliers &gt; 0) flags &lt;- c(flags, &quot;EXTREME OUTLIERS&quot;)
+      if (!is.na(skew_val) &amp;&amp; abs(skew_val) &gt; qc_config$max_skewness) flags &lt;- c(flags, &quot;SKEWED&quot;)
+      
+      qc_flag &lt;- if (length(flags) &gt; 0) paste(flags, collapse = &quot; &amp; &quot;) else &quot;PASS&quot;
+      dist_metric &lt;- sprintf(&quot;Skew: %.2f | Outliers: %d&quot;, skew_val, extreme_outliers)
+      action &lt;- if (&quot;SKEWED&quot; %in% flags) &quot;Log10 Transformed&quot; else if (&quot;EXTREME OUTLIERS&quot; %in% flags) &quot;Flagged (Review for unit errors)&quot; else &quot;None&quot;
+      
+      # 2. Trigger Log Transformation if Skewed
+      if (&quot;SKEWED&quot; %in% flags) {
+        log_name &lt;- gsub(&quot;_+$&quot;, &quot;&quot;, paste0(&quot;log_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, v)))
+        
+        # Dynamically shift negative and zero variables to be strictly positive
+        min_val &lt;- min(vec_patients, na.rm = TRUE)
+        if (is.finite(min_val) &amp;&amp; min_val &lt;= 0) {
+          shift_val &lt;- abs(min_val) + 1
+          curated_spine[, (log_name) := log10(get(v) + shift_val)]
+          curated_spine_numeric[, (log_name) := log10(get(v) + shift_val)]
+        } else {
+          curated_spine[, (log_name) := log10(get(v))]
+          curated_spine_numeric[, (log_name) := log10(get(v))]
+        }
+        
+        # 3. Test the NEW log variable
+        log_patients &lt;- curated_spine[[log_name]][!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+        log_skew &lt;- calc_skew(log_patients)
+        log_outliers &lt;- calc_outliers(log_patients)
+        
+        log_flags &lt;- c()
+        if (log_name %in% qc_config$manual_log_rejects) {
+          log_flags &lt;- c(log_flags, &quot;LOG REJECTED&quot;)
+        } else {
+          if (log_outliers &gt; 0) log_flags &lt;- c(log_flags, &quot;EXTREME OUTLIERS&quot;)
+          if (!is.na(log_skew) &amp;&amp; abs(log_skew) &gt; qc_config$max_skewness) log_flags &lt;- c(log_flags, &quot;SKEWED&quot;)
+        }
+        
+        log_qc_flag &lt;- if (length(log_flags) &gt; 0) paste(log_flags, collapse = &quot; &amp; &quot;) else &quot;PASS&quot;
+        log_action  &lt;- if (&quot;LOG REJECTED&quot; %in% log_flags) &quot;Flagged by User&quot; else &quot;Engineered to fix skew&quot;
+        log_dist_metric &lt;- sprintf(&quot;Skew: %.2f | Outliers: %d&quot;, log_skew, log_outliers)
+
+        qc_plots_skew[[v]] &lt;- local({
+          plot_df &lt;- data.frame(Raw = vec_patients, Transformed = log_patients)
+          p_raw &lt;- ggplot(plot_df, aes(x = Raw)) + geom_histogram(fill = &quot;#c0392b&quot;, color = &quot;white&quot;, bins = 30) + theme_project_base(10) + labs(title = v, x = &quot;Raw Data&quot;)
+          p_log &lt;- ggplot(plot_df, aes(x = Transformed)) + geom_histogram(fill = &quot;#2980b9&quot;, color = &quot;white&quot;, bins = 30) + theme_project_base(10) + labs(title = log_name, x = &quot;Log10 Data&quot;)
+          p_raw | p_log
+        })
+
+        dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = log_name, Class = &quot;Continuous&quot;, Missing_Pct = miss_pct, Distribution_Metric = log_dist_metric, QC_Flag = log_qc_flag, Action_Taken = log_action)
+      }
+      
+      dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = &quot;Continuous&quot;, Missing_Pct = miss_pct, Distribution_Metric = dist_metric, QC_Flag = qc_flag, Action_Taken = action)
+    } else {
+      dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = &quot;Ordinal / Binary&quot;, Missing_Pct = miss_pct, Distribution_Metric = &quot;N/A (&lt;5 Levels)&quot;, QC_Flag = &quot;PASS&quot;, Action_Taken = &quot;None&quot;)
+    }
+    
+  # C. FACTOR / CATEGORICAL LOGIC
+  } else if (is.factor(vec) || is.logical(vec)) {
+    props &lt;- prop.table(table(vec_patients))
+    counts &lt;- table(vec_patients)
+    min_prop &lt;- if(length(props) &gt; 0) min(props) else 0
+    qc_flag &lt;- &quot;PASS&quot;
+    action &lt;- &quot;None&quot;
+    
+    if (length(props) &lt; 2) {
+      qc_flag &lt;- &quot;ZERO VARIANCE&quot;
+      action &lt;- &quot;Flagged&quot;
+    } else if (min_prop &lt; qc_config$min_minority_pct) {
+      qc_flag &lt;- &quot;IMBALANCED&quot;
+      action &lt;- &quot;Flagged&quot;
+      imb_log_list[[v]] &lt;- data.frame(Variable = v, Level = as.character(names(props)), Count = as.numeric(counts), Percentage = as.numeric(props))
+    }
+    
+    dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = &quot;Categorical&quot;, Missing_Pct = miss_pct, Distribution_Metric = sprintf(&quot;Minority: %.1f%%&quot;, min_prop * 100), QC_Flag = qc_flag, Action_Taken = action)
+  }
+}
+
+# Construct Dictionary
+data_dictionary &lt;- bind_rows(dict_list) %&gt;%
+  mutate(
+    Missing_Pct = sprintf(&quot;%.1f%%&quot;, Missing_Pct * 100), 
+    Sort_Order = case_when(
+      grepl(&quot;ZERO VARIANCE&quot;, QC_Flag) ~ 1, 
+      grepl(&quot;IMBALANCED&quot;, QC_Flag) ~ 2, 
+      grepl(&quot;OUTLIERS&quot;, QC_Flag) ~ 3, 
+      grepl(&quot;LOG REJECTED&quot;, QC_Flag) ~ 4, 
+      grepl(&quot;SKEWED&quot;, QC_Flag) ~ 5, 
+      QC_Flag == &quot;PASS&quot; ~ 6, 
+      TRUE ~ 7
+    )
+  ) %&gt;% 
+  arrange(Sort_Order, Variable) %&gt;% 
+  select(-Sort_Order)
+
+core_cols &lt;- intersect(c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;), names(curated_spine))
+setcolorder(curated_spine, core_cols)
+setcolorder(curated_spine_numeric, core_cols)</code></pre>
+<div id="data-dictionary" class="section level2">
+<h2>Data Dictionary</h2>
+<pre class="r"><code># Print Interactive Table
+dict_tbl &lt;- data_dictionary %&gt;%
+  mutate(
+    QC_Flag = case_when(
+      QC_Flag == &quot;PASS&quot; ~ sprintf(&quot;&lt;span style=&#39;color:#27ae60; font-weight:bold;&#39;&gt;%s&lt;/span&gt;&quot;, QC_Flag),
+      grepl(&quot;OUTLIERS|IMBALANCED|ZERO|REJECTED&quot;, QC_Flag) ~ sprintf(&quot;&lt;span style=&#39;color:#c0392b; font-weight:bold;&#39;&gt;%s&lt;/span&gt;&quot;, QC_Flag),
+      grepl(&quot;SKEWED&quot;, QC_Flag) ~ sprintf(&quot;&lt;span style=&#39;color:#2980b9; font-weight:bold;&#39;&gt;%s&lt;/span&gt;&quot;, QC_Flag),
+      TRUE ~ QC_Flag
+    )
+  ) %&gt;%
+  kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, row.names = FALSE) %&gt;%
+  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+  kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;600px&quot;)
+
+if (interactive()) print(dict_tbl) else cat(as.character(dict_tbl))</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Class
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Missing_Pct
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Distribution_Metric
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+QC_Flag
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Action_Taken
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Buffy-coat
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 100.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">ZERO VARIANCE</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients eligible
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 100.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">ZERO VARIANCE</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SELECTED
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 100.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">ZERO VARIANCE</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ACTIVE_AI
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 0.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-RNA polymerase III
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+7.3%
+</td>
+<td style="text-align:left;">
+Minority: 9.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arrhythmias requiring therapy
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 4.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Auricular arrhythmias
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 4.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillary loss
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Minority: 6.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Conduction blocks
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 2.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital ulcer
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 1.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dyspnea NYHA Stage
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+10.4%
+</td>
+<td style="text-align:left;">
+Minority: 3.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAVE
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 9.7%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gangrene
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 4.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Giant capillaries
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+Minority: 2.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hemorrhages
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+7.3%
+</td>
+<td style="text-align:left;">
+Minority: 5.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 1.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Muscle atrophy
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+Minority: 5.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Myalgia
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+Minority: 7.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New Cardiac Manifest.
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 6.4%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New PAH
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 6.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non-Raynaud Symptom
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:left;">
+Minority: 1.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pericardial effusion on echo
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Minority: 7.7%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pitting scars on finger tips
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 6.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proteinuria (&gt;300mg/d)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 5.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal muscle weakness
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+Minority: 2.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud phenomenon
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 2.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right axis deviation
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 4.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular hypertrophy
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Minority: 2.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SiteNumber
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 2.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Prox. MCP)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 1.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tendon friction rubs
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 4.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ventricular arrhythmias
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 2.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VisitNumber
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 1.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cohort_group
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 0.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">IMBALANCED</span>
+</td>
+<td style="text-align:left;">
+Flagged
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Body weight (kg)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: 1.43 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CK value in serum (U/L)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Skew: 2.57 | Outliers: 3
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CRP
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Skew: 3.65 | Outliers: 8
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Creatinine
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: 6.53 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_ECG_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: 7.48 | Outliers: 8
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_ECHO_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: -2.52 | Outliers: 30
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_HRCT_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: -0.62 | Outliers: 19
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_PFT_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: -6.35 | Outliers: 27
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Delta_Walk_test_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+<td style="text-align:left;">
+Skew: -0.62 | Outliers: 15
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Min SpO2 (Exercise)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+35.4%
+</td>
+<td style="text-align:left;">
+Skew: -2.37 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Modified rodnan skin score
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 2.62 | Outliers: 4
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NT-proBNP (pg/ml)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 4.61 | Outliers: 7
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+O2-saturation at rest (%)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+35.4%
+</td>
+<td style="text-align:left;">
+Skew: -1.71 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RV/LV ratio
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+19.8%
+</td>
+<td style="text-align:left;">
+Skew: 1.48 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TAPSE (cm)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:left;">
+Skew: 8.42 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Uric Acid (mg/dl)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Skew: 6.67 | Outliers: 2
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Log10 Transformed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Creatinine
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: 1.99 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Delta_ECG_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: 5.64 | Outliers: 8
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Delta_ECHO_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: -4.12 | Outliers: 30
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Delta_PFT_Years
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: -7.75 | Outliers: 27
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Min_SpO2__Exercise
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+35.4%
+</td>
+<td style="text-align:left;">
+Skew: -2.66 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_TAPSE__cm
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:left;">
+Skew: 3.92 | Outliers: 1
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Uric_Acid__mg_dl
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Skew: 4.55 | Outliers: 2
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS &amp;
+SKEWED</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mRSS_a
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 1.76 | Outliers: 4
+</td>
+<td style="text-align:left;">
+<span style="color:#c0392b; font-weight:bold;">EXTREME OUTLIERS</span>
+</td>
+<td style="text-align:left;">
+Flagged (Review for unit errors)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Abdomen
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Abnormal Capillaroscopy
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 13.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Active_our
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 50.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Activity of arthritis during the past week
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: -0.30 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 31.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 44.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillaroscopy Pattern
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+8.3%
+</td>
+<td style="text-align:left;">
+Minority: 29.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillaroscopy Score
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+15.6%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Chest
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO (SB) (% predicted)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Skew: -0.23 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DLCO/VA (% predicted)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: -0.54 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic fction abnormal(on echo, E/a less than 10cm/sec)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+15.6%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital Tip Ulcers
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 22.1%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Distance in m
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+Skew: 0.80 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EULAR/ACR 2013 Criteria
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 11.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Einlagergsdatum
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 48.4%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FVC %pred
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Skew: -0.23 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Face
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fingertip pitting scars
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 49.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Forced Vital Capacity (ml)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Skew: 0.28 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hemoglobin (g/dl)
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Skew: -0.00 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Inflamm_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 31.2%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Intestinal Symptoms
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 26.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Minority: 33.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint involvement
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 31.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LVEF %
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Skew: -0.46 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Feet
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Fingers
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Forearms
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Hands
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Legs
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Thighs
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Left_Upper Arms
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Malabsorption syndrome
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 16.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Borg Dyspnea
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+35.4%
+</td>
+<td style="text-align:left;">
+Skew: 0.54 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients global assessment of disease activity VAS…282
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+10.4%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Physicians global assessment of disease activity VAS…284
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+15.6%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal Dysphagia
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+Minority: 13.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Puffy Fingers
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 30.5%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Puffy fingers
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 34.4%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ramified bushy capillaries
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+Minority: 14.3%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud VAS…277
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+14.6%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud VAS…278
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud’s present
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+10.4%
+</td>
+<td style="text-align:left;">
+Minority: 12.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right atrium area (cm2)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+5.2%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right bdle branch block
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular area (cm2)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+6.2%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Feet
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Fingers
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Forearms
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Hands
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Legs
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Thighs
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right_Upper Arms
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSc Antibodies
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 11.6%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSc Antibody Score
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sample_Age
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: -0.26 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sclerodactyly
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+7.3%
+</td>
+<td style="text-align:left;">
+Minority: 25.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Score : Raynaud phenomenon
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+4.2%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 20.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Ext. MCP)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 37.9%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+Minority: 25.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subcutaneous Calcinosis
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 24.0%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subject-ID (EUSTAR)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SubjectNumber
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subset_Diffuse
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subset_Limited
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subset_Sine
+</td>
+<td style="text-align:left;">
+Ordinal / Binary
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (&lt;5 Levels)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Minority: 38.9%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia (any)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 43.8%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Score
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Skew: 0.11 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total lg capacity (TLC- % predicted)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+3.1%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Unique Sample ID (for letters standard A-Z only)
+</td>
+<td style="text-align:left;">
+Identifier / Text
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+N/A (Free Text)
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Character bypassed QC
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+eustarAI
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 0.65 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fibrotic_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 34.4%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_CK_value_in_serum__U_L
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+1.0%
+</td>
+<td style="text-align:left;">
+Skew: 0.69 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_CRP
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+2.1%
+</td>
+<td style="text-align:left;">
+Skew: 0.98 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_Modified_rodnan_skin_score
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 0.95 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+log_NT_proBNP__pg_ml
+</td>
+<td style="text-align:left;">
+Continuous
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Skew: 0.48 | Outliers: 0
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+Engineered to fix skew
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mRSS Worsening (1yr)
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+9.4%
+</td>
+<td style="text-align:left;">
+Minority: 14.9%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vascular_active
+</td>
+<td style="text-align:left;">
+Categorical
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+<td style="text-align:left;">
+Minority: 46.9%
+</td>
+<td style="text-align:left;">
+<span style="color:#27ae60; font-weight:bold;">PASS</span>
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="qc-diagnostics" class="section level2 tabset">
+<h2 class="tabset">QC Diagnostics</h2>
+<div id="skewness-corrections" class="section level3">
+<h3>Skewness Corrections</h3>
+<p>The following continuous variables violated the Skewness threshold
+(|Skew| &gt; 2.5). The algorithm automatically engineered a normalized
+log_ variant.</p>
+<pre class="r"><code>if (length(qc_plots_skew) &gt; 0) {
+  for (v in names(qc_plots_skew)) {
+    cat(sprintf(&quot;#### %s\n\n&quot;, v))
+    print(qc_plots_skew[[v]])
+    cat(&quot;\n\n&quot;)
+  }
+} else {
+  cat(&quot;&gt; No severe skewness detected.\n\n&quot;)
+}</code></pre>
+<div id="modified-rodnan-skin-score" class="section level4">
+<h4>Modified rodnan skin score</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="crp" class="section level4">
+<h4>CRP</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ck-value-in-serum-ul" class="section level4">
+<h4>CK value in serum (U/L)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="creatinine" class="section level4">
+<h4>Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="nt-probnp-pgml" class="section level4">
+<h4>NT-proBNP (pg/ml)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="uric-acid-mgdl" class="section level4">
+<h4>Uric Acid (mg/dl)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="tapse-cm" class="section level4">
+<h4>TAPSE (cm)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="min-spo2-exercise" class="section level4">
+<h4>Min SpO2 (Exercise)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_pft_years" class="section level4">
+<h4>Delta_PFT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_ecg_years" class="section level4">
+<h4>Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_echo_years" class="section level4">
+<h4>Delta_ECHO_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="extreme-outliers" class="section level3">
+<h3>Extreme Outliers</h3>
+<p>The following continuous variables contain extreme outliers (values
+exceeding the parameterized IQR multiplier). These have been flagged for
+manual review to ensure they are not data entry or unit errors.</p>
+<pre class="r"><code># Query the dictionary for variables containing the outlier flag (handles compound flags)
+outlier_vars &lt;- data_dictionary %&gt;% 
+  filter(grepl(&quot;EXTREME OUTLIERS&quot;, QC_Flag)) %&gt;% 
+  pull(Variable)
+
+if (length(outlier_vars) &gt; 0) {
+  for (v in outlier_vars) {
+    cat(sprintf(&quot;#### %s\n\n&quot;, v))
+    
+    vec_patients &lt;- curated_spine[[v]][!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+    
+    if (sum(!is.na(vec_patients)) &lt; 5) {
+      cat(&quot;&gt; Insufficient data to plot bounds.\n\n&quot;)
+      next
+    }
+    
+    plot_df &lt;- data.frame(Value = vec_patients)
+    
+    q25 &lt;- quantile(vec_patients, 0.25, na.rm = TRUE)
+    q75 &lt;- quantile(vec_patients, 0.75, na.rm = TRUE)
+    iqr &lt;- q75 - q25
+    upper_bound &lt;- q75 + (qc_config$outlier_iqr_multiplier * iqr)
+    lower_bound &lt;- q25 - (qc_config$outlier_iqr_multiplier * iqr)
+    
+    p &lt;- ggplot(plot_df, aes(x = Value)) + 
+      geom_histogram(fill = &quot;#e67e22&quot;, color = &quot;white&quot;, bins = 40) + 
+      geom_vline(xintercept = c(lower_bound, upper_bound), color = &quot;#c0392b&quot;, linetype = &quot;dashed&quot;, linewidth = 1) +
+      theme_project_base(10) + 
+      labs(title = v, 
+           subtitle = sprintf(&quot;Red dashed lines indicate %gx IQR thresholds [%.1f, %.1f]&quot;, qc_config$outlier_iqr_multiplier, lower_bound, upper_bound), 
+           x = &quot;Data Value&quot;, y = &quot;Count&quot;)
+    
+    print(p)
+    cat(&quot;\n\n&quot;)
+  }
+} else {
+  cat(&quot;&gt; No extreme outliers detected.\n\n&quot;)
+}</code></pre>
+<div id="body-weight-kg" class="section level4">
+<h4>Body weight (kg)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ck-value-in-serum-ul-1" class="section level4">
+<h4>CK value in serum (U/L)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="crp-1" class="section level4">
+<h4>CRP</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="creatinine-1" class="section level4">
+<h4>Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_ecg_years-1" class="section level4">
+<h4>Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_echo_years-1" class="section level4">
+<h4>Delta_ECHO_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_hrct_years" class="section level4">
+<h4>Delta_HRCT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_pft_years-1" class="section level4">
+<h4>Delta_PFT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta_walk_test_years" class="section level4">
+<h4>Delta_Walk_test_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="min-spo2-exercise-1" class="section level4">
+<h4>Min SpO2 (Exercise)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="modified-rodnan-skin-score-1" class="section level4">
+<h4>Modified rodnan skin score</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="nt-probnp-pgml-1" class="section level4">
+<h4>NT-proBNP (pg/ml)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="o2-saturation-at-rest" class="section level4">
+<h4>O2-saturation at rest (%)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="rvlv-ratio" class="section level4">
+<h4>RV/LV ratio</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="tapse-cm-1" class="section level4">
+<h4>TAPSE (cm)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="uric-acid-mgdl-1" class="section level4">
+<h4>Uric Acid (mg/dl)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_creatinine" class="section level4">
+<h4>log_Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_delta_ecg_years" class="section level4">
+<h4>log_Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_delta_echo_years" class="section level4">
+<h4>log_Delta_ECHO_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_delta_pft_years" class="section level4">
+<h4>log_Delta_PFT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_min_spo2__exercise" class="section level4">
+<h4>log_Min_SpO2__Exercise</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_tapse__cm" class="section level4">
+<h4>log_TAPSE__cm</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="log_uric_acid__mg_dl" class="section level4">
+<h4>log_Uric_Acid__mg_dl</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="mrss_a" class="section level4">
+<h4>mRSS_a</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="class-imbalances" class="section level3">
+<h3>Class Imbalances</h3>
+<p>The following categorical variables have a minority class of &lt;
+10%. They are retained in the dataset for Table 1 summaries, but flagged
+in the Dictionary to protect downstream omics models from zero-variance
+crashes.</p>
+<pre class="r"><code>if (length(imb_log_list) &gt; 0) {
+  
+  # Bind the list and calculate which specific rows triggered the flag
+  imb_df &lt;- bind_rows(imb_log_list) %&gt;%
+    mutate(
+      Is_Offender = Percentage &lt; qc_config$min_minority_pct,
+      Percentage = sprintf(&quot;%.1f%%&quot;, Percentage * 100)
+    ) %&gt;%
+    arrange(Variable, desc(Count)) # Sort levels by largest to smallest within each variable
+  
+  imb_tbl &lt;- imb_df %&gt;%
+    select(Variable, Level, Count, Percentage) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, row.names = FALSE) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    # Group the variable names so the table is extremely easy to read
+    kableExtra::collapse_rows(columns = 1, valign = &quot;top&quot;) %&gt;%
+    # Highlight the offending minority classes in bold red!
+    kableExtra::row_spec(which(imb_df$Is_Offender), bold = TRUE, color = &quot;#c0392b&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;)
+  
+  if (interactive()) {
+    print(imb_tbl)
+  } else {
+    cat(as.character(imb_tbl))
+    cat(&quot;\n\n&quot;)
+  }
+  
+} else {
+  cat(&quot;&gt; No severe class imbalances detected.\n\n&quot;)
+}</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Level
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Count
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Percentage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+ACTIVE_AI
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:left;">
+65.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:left;">
+34.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+-1
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Anti-RNA polymerase III
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+81
+</td>
+<td style="text-align:left;">
+91.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+8
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+9.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Arrhythmias requiring therapy
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Auricular arrhythmias
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Capillary loss
+</td>
+<td style="text-align:left;">
+Rare
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+38.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+None
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+29.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Moderate
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+25.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Extensive
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Conduction blocks
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Digital ulcer
+</td>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:left;">
+56.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Previously
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+24.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+18.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+never
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="5">
+Dyspnea NYHA Stage
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+41.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+II
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+20.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+19.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+14.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+III
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+3.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+GAVE
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+84
+</td>
+<td style="text-align:left;">
+90.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+9
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+9.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Gangrene
+</td>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Previously
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Giant capillaries
+</td>
+<td style="text-align:left;">
+Rare
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+None
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+41.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Moderate
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Extensive
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Hemorrhages
+</td>
+<td style="text-align:left;">
+Rare
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+53.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+None
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+40.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Moderate
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+ILD diagnosed via HRCT
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+53
+</td>
+<td style="text-align:left;">
+57.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:left;">
+41.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Muscle atrophy
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+85
+</td>
+<td style="text-align:left;">
+94.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Myalgia
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+83
+</td>
+<td style="text-align:left;">
+92.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+7
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+7.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+New Cardiac Manifest.
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+93.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+New PAH
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+86
+</td>
+<td style="text-align:left;">
+93.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Non-Raynaud Symptom
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:left;">
+78.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+20.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Pericardial effusion on echo
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+84
+</td>
+<td style="text-align:left;">
+92.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+7
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+7.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Pitting scars on finger tips
+</td>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+47.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:right;">
+44
+</td>
+<td style="text-align:left;">
+46.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Previously
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+6.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Proteinuria (&gt;300mg/d)
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+94.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+5.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Proximal muscle weakness
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Raynaud phenomenon
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+No
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Right axis deviation
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Right ventricular hypertrophy
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+SiteNumber
+</td>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+manual
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Skin Thickening (Prox. MCP)
+</td>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+66.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+23.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Previously
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+9
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+9.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Tendon friction rubs
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+95.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+4.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Ventricular arrhythmias
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+VisitNumber
+</td>
+<td style="text-align:left;">
+Follow Up Visit (1)
+</td>
+<td style="text-align:right;">
+69
+</td>
+<td style="text-align:left;">
+73.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Follow Up Visit (2)
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+25.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Visit 0
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+cohort_group
+</td>
+<td style="text-align:left;">
+Active
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non-Active
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+50.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+Control
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="clinical-domain-atlas" class="section level1 tabset">
+<h1 class="tabset">Clinical Domain Atlas</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Iterates through the global clinical domain lists to construct a
+comprehensive visual atlas.
+</li>
+<li>
+Dynamically routes continuous variables to histograms (annotated with
+Median and IQR) and categorical variables to bar charts.
+</li>
+<li>
+Implements smart categorical sorting: recognized ordinal variables are
+plotted low-to-high, while nominal variables are sorted by frequency
+(Pareto principle).
+</li>
+<li>
+Bypasses the gitignored output folder by saving images directly to
+docs/assets/ and generating raw HTML links for web publishing.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Point directly to the web-accessible docs folder
+atlas_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file)
+if(!dir.exists(atlas_dir)) dir.create(atlas_dir, recursive = TRUE)
+
+for (dom in names(clinical_domains)) {
+  
+  vars &lt;- intersect(clinical_domains[[dom]], names(curated_spine))
+  vars &lt;- setdiff(vars, c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;))
+  if(length(vars) == 0) next
+  
+  plot_list &lt;- list()
+  
+  for (v in vars) {
+    vec &lt;- curated_spine[[v]]
+    vec_clean &lt;- vec[!is.na(vec) &amp; !is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+    
+    qc_row &lt;- data_dictionary %&gt;% filter(Variable == v)
+    qc_flag &lt;- if(nrow(qc_row) &gt; 0) qc_row$QC_Flag[1] else &quot;UNKNOWN&quot;
+    miss_pct &lt;- if(nrow(qc_row) &gt; 0) qc_row$Missing_Pct[1] else &quot;UNKNOWN&quot;
+    
+    flag_color &lt;- case_when(
+      qc_flag == &quot;PASS&quot; ~ &quot;#27ae60&quot;,
+      grepl(&quot;OUTLIERS|IMBALANCED|ZERO|REJECTED&quot;, qc_flag) ~ &quot;#c0392b&quot;,
+      grepl(&quot;SKEWED&quot;, qc_flag) ~ &quot;#2980b9&quot;,
+      TRUE ~ &quot;black&quot;
+    )
+    
+    if (is.numeric(vec_clean)) {
+      med &lt;- median(vec_clean, na.rm=TRUE)
+      q25 &lt;- quantile(vec_clean, 0.25, na.rm=TRUE)
+      q75 &lt;- quantile(vec_clean, 0.75, na.rm=TRUE)
+      sub_txt &lt;- sprintf(&quot;QC: %s\nDist: Med %.1f [%.1f - %.1f]\nMissing: %s&quot;, qc_flag, med, q25, q75, miss_pct)
+      
+      p &lt;- ggplot(data.frame(x=vec_clean), aes(x)) +
+        geom_histogram(fill=&quot;grey70&quot;, color=&quot;white&quot;, bins=30) +
+        geom_vline(xintercept=med, color=&quot;#2c3e50&quot;, linetype=&quot;dashed&quot;, linewidth=1) +
+        theme_project_base(10) +
+        labs(title = v, subtitle = sub_txt, x=NULL, y=NULL) +
+        theme(plot.subtitle = element_text(color = flag_color, face=&quot;bold&quot;, size=rel(0.85)),
+              plot.title = element_text(size=rel(0.9), face=&quot;bold&quot;))
+              
+    } else {
+      val_lower &lt;- tolower(as.character(vec_clean))
+      
+      # SMART SORTING LOGIC: Ordinal vs Frequency
+      if (all(val_lower %in% c(&quot;none&quot;, &quot;rare&quot;, &quot;moderate&quot;, &quot;extensive&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;none&quot;, &quot;rare&quot;, &quot;moderate&quot;, &quot;extensive&quot;))
+      } else if (all(val_lower %in% c(&quot;never&quot;, &quot;previously&quot;, &quot;current&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;never&quot;, &quot;previously&quot;, &quot;current&quot;))
+      } else if (all(val_lower %in% c(&quot;no&quot;, &quot;yes&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;no&quot;, &quot;yes&quot;))
+      } else {
+        # Nominal Data: Sort by Frequency (Pareto)
+        plot_vec &lt;- forcats::fct_infreq(as.character(vec_clean))
+      }
+      
+      props &lt;- prop.table(table(plot_vec)) * 100
+      lvl_strs &lt;- paste0(names(props), &quot;: &quot;, sprintf(&quot;%.0f%%&quot;, props))
+      if(length(lvl_strs) &gt; 3) lvl_strs &lt;- c(lvl_strs[1:3], &quot;...&quot;)
+      
+      sub_txt &lt;- sprintf(&quot;QC: %s\nDist: %s\nMissing: %s&quot;, qc_flag, paste(lvl_strs, collapse=&quot;, &quot;), miss_pct)
+      
+      p &lt;- ggplot(data.frame(x=plot_vec), aes(x)) +
+        geom_bar(fill=&quot;grey70&quot;, color=&quot;black&quot;, alpha=0.8) +
+        theme_project_base(10) +
+        labs(title = v, subtitle = sub_txt, x=NULL, y=NULL) +
+        theme(plot.subtitle = element_text(color = flag_color, face=&quot;bold&quot;, size=rel(0.85)),
+              plot.title = element_text(size=rel(0.9), face=&quot;bold&quot;),
+              axis.text.x = element_text(angle=45, hjust=1))
+    }
+    
+    plot_list[[v]] &lt;- p
+  }
+  
+  grid_p &lt;- wrap_plots(plot_list, ncol = 3) +
+    plot_annotation(title = sprintf(&quot;Clinical Domain: %s&quot;, gsub(&quot;_&quot;, &quot; &quot;, dom)),
+                    theme = theme(plot.title = element_text(size=18, face=&quot;bold&quot;)))
+  
+  dyn_h &lt;- max(5, ceiling(length(plot_list) / 3) * 3 + 1)
+  
+  file_name &lt;- paste0(dom, &quot;_atlas.png&quot;)
+  file_path &lt;- file.path(atlas_dir, file_name)
+  ggsave(file_path, grid_p, width=14, height=dyn_h, dpi=150, bg=&quot;white&quot;)
+  
+  cat(sprintf(&quot;## %s\n\n&quot;, gsub(&quot;_&quot;, &quot; &quot;, dom)))
+  cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s&#39; style=&#39;width: 100%%;&#39;&gt;\n\n&quot;, current_file, file_name))
+}</code></pre>
+<div id="demographics-and-scores" class="section level2">
+<h2>Demographics and Scores</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Demographics_and_Scores_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="cutaneous-and-vascular" class="section level2">
+<h2>Cutaneous and Vascular</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Cutaneous_and_Vascular_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="musculoskeletal" class="section level2">
+<h2>Musculoskeletal</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Musculoskeletal_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="pulmonary" class="section level2">
+<h2>Pulmonary</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Pulmonary_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="cardiac" class="section level2">
+<h2>Cardiac</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Cardiac_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="gastrointestinal" class="section level2">
+<h2>Gastrointestinal</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Gastrointestinal_atlas.png' style='width: 100%;'></p>
+</div>
+<div id="labs-and-biomarkers" class="section level2">
+<h2>Labs and Biomarkers</h2>
+<p><img src='assets/01b_clinical_feature_engineering/Labs_and_Biomarkers_atlas.png' style='width: 100%;'></p>
+</div>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Exported the human-readable curated_clinical_spine.rds for visualization
+(Phase 2).
+</li>
+<li>
+Exported the binarized curated_clinical_spine_numeric.rds for machine
+learning and linear algebra (Phase 3).
+</li>
+<li>
+Exported the definitive clinical_data_dictionary.rds detailing the QC
+status.
+</li>
+</ul>
+</div>
+<pre class="r"><code>saveRDS(curated_spine, file.path(output_dir_data, &quot;curated_clinical_spine.rds&quot;))
+saveRDS(curated_spine_numeric, file.path(output_dir_data, &quot;curated_clinical_spine_numeric.rds&quot;))
+saveRDS(data_dictionary, file.path(output_dir_data, &quot;clinical_data_dictionary.rds&quot;))
+
+writexl::write_xlsx(curated_spine, file.path(output_dir_data, &quot;curated_clinical_spine.xlsx&quot;))
+
+cat(&quot;Script 01b Complete!\n&quot;)</code></pre>
+<pre><code>Script 01b Complete!</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] patchwork_1.3.2     kableExtra_1.4.0    here_1.0.2         
+ [4] data.table_1.18.2.1 lubridate_1.9.5     forcats_1.0.1      
+ [7] stringr_1.6.0       dplyr_1.2.1         purrr_1.2.1        
+[10] readr_2.2.0         tidyr_1.3.2         tibble_3.3.1       
+[13] tidyverse_2.0.0     ggplot2_4.0.2       workflowr_1.7.2    
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        xfun_0.57           bslib_0.10.0       
+ [4] processx_3.8.7      callr_3.7.6         tzdb_0.5.0         
+ [7] vctrs_0.7.2         tools_4.5.2         ps_1.9.2           
+[10] generics_0.1.4      pkgconfig_2.0.3     RColorBrewer_1.1-3 
+[13] S7_0.2.1            lifecycle_1.0.5     compiler_4.5.2     
+[16] farver_2.1.2        git2r_0.36.2        textshaping_1.0.5  
+[19] getPass_0.2-4       httpuv_1.6.16       htmltools_0.5.9    
+[22] sass_0.4.10         yaml_2.3.12         later_1.4.8        
+[25] pillar_1.11.1       jquerylib_0.1.4     whisker_0.4.1      
+[28] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+[31] stringi_1.8.7       labeling_0.4.3      rprojroot_2.1.1    
+[34] fastmap_1.2.0       grid_4.5.2          cli_3.6.5          
+[37] magrittr_2.0.5      withr_3.0.2         scales_1.4.0       
+[40] promises_1.5.0      writexl_1.5.4       timechange_0.4.0   
+[43] rmarkdown_2.31      httr_1.4.8          otel_0.2.0         
+[46] ragg_1.5.2          hms_1.1.4           evaluate_1.0.5     
+[49] knitr_1.51          viridisLite_0.4.3   rlang_1.2.0        
+[52] Rcpp_1.1.1          glue_1.8.0          BiocManager_1.30.27
+[55] xml2_1.5.2          renv_1.1.5          svglite_2.2.2      
+[58] rstudioapi_0.18.0   jsonlite_2.0.0      R6_2.6.1           
+[61] systemfonts_1.3.2   fs_2.0.1           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
