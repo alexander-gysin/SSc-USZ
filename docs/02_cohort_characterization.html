@@ -37,8 +37,6 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -347,11 +345,20 @@ div.tocify {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="01a_data_import_and_qc.html">Data</a>
-</li>
-<li>
-  <a href="01b_clinical_feature_engineering.html">Clinical</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="02_cohort_characterization.html">Cohort</a>
@@ -373,7 +380,10 @@ div.tocify {
       <a href="03c_proteomics_clustering.html">Clustering</a>
     </li>
     <li>
-      <a href="03d_proteomics_clinical_correlations.html">Linear</a>
+      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
     </li>
   </ul>
 </li>
@@ -386,6 +396,9 @@ div.tocify {
   <ul class="dropdown-menu" role="menu">
     <li>
       <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_ellen_2.html">Vascular 2</a>
     </li>
   </ul>
 </li>
@@ -425,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">28 April, 2026</h4>
+<h4 class="date">01 May, 2026</h4>
 
 </div>
 
@@ -454,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-04-28
+<strong>Last updated:</strong> 2026-05-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -585,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9f4e2d5a194d6b286824a97dd4e3ad55e4792c05targetblank9f4e2d5a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0e9bf631a1d232340767d3f4df2e029480be35cdtargetblank0e9bf63a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9f4e2d5a194d6b286824a97dd4e3ad55e4792c05" target="_blank">9f4e2d5</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0e9bf631a1d232340767d3f4df2e029480be35cd" target="_blank">0e9bf63</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9f4e2d5a194d6b286824a97dd4e3ad55e4792c05targetblank9f4e2d5a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0e9bf631a1d232340767d3f4df2e029480be35cdtargetblank0e9bf63a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -603,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9f4e2d5a194d6b286824a97dd4e3ad55e4792c05" target="_blank">9f4e2d5</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0e9bf631a1d232340767d3f4df2e029480be35cd" target="_blank">0e9bf63</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -633,11 +646,15 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  analysis/01b_clinical_feature_engineering.Rmd
     Untracked:  analysis/03c_proteomics_clustering.Rmd
-    Untracked:  analysis/03d_proteomics_correlations.Rmd
+    Untracked:  analysis/03d_proteomics_subgroups.Rmd
+    Untracked:  analysis/03e_proteomics_correlations.Rmd
+    Untracked:  analysis/z02_sideproject_ellen_2.Rmd
     Untracked:  code/randomizer.R
     Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -683,6 +700,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0e9bf631a1d232340767d3f4df2e029480be35cd/analysis/02_cohort_characterization.Rmd" target="_blank">0e9bf63</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+wflow_publish("analysis/02_cohort_characterization.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/e9897d3a7ebe4f6239bfce87e57a5a472ff42cf5/docs/02_cohort_characterization.html" target="_blank">e9897d3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-29
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1185,8 +1236,8 @@ Created dynamic output directories to safely store Script 02 results and
 figures.
 </li>
 <li>
-Sourced global configurations and loaded the clinical spine generated
-previously.
+Sourced global configurations and loaded the twin clinical spines
+generated in Phase 1b.
 </li>
 </ul>
 </div>
@@ -1214,18 +1265,21 @@ knitr::opts_chunk$set(
 current_file &lt;- &quot;02_cohort_characterization&quot;
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
 # Public Asset Paths (Pushed to GitHub for the Website)
 public_heatmap_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, &quot;02_cohort_characterization&quot;, &quot;heatmaps&quot;)
 if (!dir.exists(file.path(public_heatmap_dir, &quot;intra&quot;))) dir.create(file.path(public_heatmap_dir, &quot;intra&quot;), recursive = TRUE)
 if (!dir.exists(file.path(public_heatmap_dir, &quot;inter&quot;))) dir.create(file.path(public_heatmap_dir, &quot;inter&quot;), recursive = TRUE)
 
-# Input paths (Parameterized)
+# Input paths (Updated to 01b!)
 input_paths &lt;- list(
-  clinical_spine = here::here(&quot;output&quot;, &quot;01_data_import_and_qc&quot;, &quot;clinical_spine.rds&quot;)
+  clinical_spine = here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine.rds&quot;),
+  numeric_spine  = here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine_numeric.rds&quot;)
 )
 
-# Load the clinical spine from Script 01
-master_spine &lt;- readRDS(input_paths$clinical_spine)</code></pre>
+# Load the twin clinical spines from Script 01b
+master_spine &lt;- readRDS(input_paths$clinical_spine)
+numeric_spine &lt;- readRDS(input_paths$numeric_spine)</code></pre>
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
@@ -1237,8 +1291,8 @@ Defined statistical thresholds for normality (Shapiro-Wilk) and variance
 (Bartlett) testing.
 </li>
 <li>
-Configured correlation matrix parameters including sparsity filters,
-significance limits, and targeted anchor variables.
+Configured correlation matrix parameters including sparsity filters and
+targeted anchor variables.
 </li>
 <li>
 Constructed dynamic configuration lists to dictate Table 1 and Figure
@@ -1257,7 +1311,7 @@ corr_config &lt;- list(
   min_required_obs  = 10,   
   p_cutoff          = 0.05, 
   strong_rho_cutoff = 0.7,
-  label_font_size   = 0.7  # Parameterized heatmap label size
+  label_font_size   = 0.7 
 )
 
 candidate_vars &lt;- list(
@@ -1265,19 +1319,11 @@ candidate_vars &lt;- list(
 )
 
 # Helper function to determine parametric status -------------------------------
-check_parametric &lt;- function(df, var_col, group_col, config, transform = NULL) { 
+check_parametric &lt;- function(df, var_col, group_col, config) { 
   test_vec &lt;- df[[var_col]][!is.na(df[[var_col]])]
   group_vec &lt;- df[[group_col]][!is.na(df[[var_col]])]
   
   if (length(unique(group_vec)) &lt; 2 || length(test_vec) &lt; 3) return(FALSE)
-  
-  if (!is.null(transform) &amp;&amp; transform == &quot;log10&quot;) {
-    valid_idx &lt;- test_vec &gt; 0
-    test_vec &lt;- log10(test_vec[valid_idx])
-    group_vec &lt;- group_vec[valid_idx]
-    
-    if (length(unique(group_vec)) &lt; 2 || length(test_vec) &lt; 3) return(FALSE)
-  }
   
   shapiro_p &lt;- tryCatch(shapiro.test(test_vec)$p.value, error = function(e) 0)
   bartlett_p &lt;- tryCatch(bartlett.test(test_vec ~ group_vec)$p.value, error = function(e) 0)
@@ -1291,7 +1337,7 @@ table_configs &lt;- list(
     title = &quot;Demographic and Clinical Characteristics&quot;,
     group_by = &quot;cohort_group&quot;,
     pairwise = TRUE, 
-    variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;Sample_Age&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Age&quot;, &quot;DLCO (SB) (% predicted)&quot;),
+    variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;Sample_Age&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;DLCO (SB) (% predicted)&quot;),
     labels = list(
       Age = &quot;Patient Age (Years)&quot;,
       Sex = &quot;Biological Sex&quot;,
@@ -1321,7 +1367,6 @@ figure_configs &lt;- list(
         type = &quot;violin&quot;,
         y_var = &quot;Sample_Age&quot;,
         x_var = &quot;cohort_group&quot;,
-        y_transform = NULL,           
         y_label = &quot;Sample Storage Time (Years)&quot;, 
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -1335,9 +1380,8 @@ figure_configs &lt;- list(
       plot_3 = list(
         title = &quot;Baseline CRP&quot;, 
         type = &quot;violin&quot;,
-        y_var = &quot;CRP&quot;,
+        y_var = &quot;log_CRP&quot;, 
         x_var = &quot;cohort_group&quot;,
-        y_transform = &quot;log10&quot;,         
         y_label = &quot;CRP (mg/dl) [Log10 Scale]&quot;,  
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -1345,9 +1389,8 @@ figure_configs &lt;- list(
       plot_4 = list(
         title = &quot;Baseline Creatinine&quot;, 
         type = &quot;violin&quot;,
-        y_var = &quot;Creatinine&quot;,
+        y_var = &quot;log_Creatinine&quot;, 
         x_var = &quot;cohort_group&quot;,
-        y_transform = &quot;log10&quot;, 
         y_label = &quot;Serum Creatinine (µmol/L) [Log10 Scale]&quot;, 
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -1355,20 +1398,9 @@ figure_configs &lt;- list(
       plot_5 = list(
         title = &quot;Baseline NT-proBNP (pg/ml)&quot;, 
         type = &quot;violin&quot;,
-        y_var = &quot;NT-proBNP (pg/ml)&quot;,
+        y_var = &quot;log_NT_proBNP__pg_ml&quot;, 
         x_var = &quot;cohort_group&quot;,
-        y_transform = &quot;log10&quot;, 
-        y_label = &quot;Serum NT-proBNP (pg/ml)&quot;, 
-        add_stat_test = TRUE,
-        pairwise = TRUE
-      ),
-      plot_6 = list(
-        title = &quot;Baseline Walk Distance&quot;, 
-        type = &quot;violin&quot;,
-        y_var = &quot;Distance in m&quot;,
-        x_var = &quot;cohort_group&quot;,
-        y_transform = &quot;log10&quot;, 
-        y_label = &quot;Walk Distance in m&quot;, 
+        y_label = &quot;Serum NT-proBNP (pg/ml) [Log10 Scale]&quot;, 
         add_stat_test = TRUE,
         pairwise = TRUE
       )
@@ -1381,7 +1413,7 @@ custom_heatmap_configs &lt;- list(
   core_metadata = list(
     title = &quot;Core Metadata Correlations&quot;,
     y_vars = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, &quot;cohort_group&quot;, &quot;Creatinine&quot;, &quot;Inflamm_active&quot;, &quot;vascular_active&quot;, &quot;fibrotic_active&quot;, ssc_clinical_parameters),
-    x_vars = NULL # Leaving this NULL creates a symmetrical, upper-triangle heatmap
+    x_vars = NULL
   ),
   classification_vs_clinical = list(
     title = &quot;Classification vs. Clinical&quot;,
@@ -1400,7 +1432,6 @@ upset_configs &lt;- list(
   phenotype_overlap = list(
     title = &quot;Patient Overlap: Phenotypes vs Global Activity&quot;,
     variables = list(
-      # The &#39;target&#39; is the value that means the patient is &quot;IN&quot; this set
       &quot;Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_ACTIVE),
       &quot;Non-Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_NON_ACTIVE),
       &quot;Inflammatory&quot;  = list(col = &quot;Inflamm_active&quot;, target = 1),
@@ -1408,7 +1439,6 @@ upset_configs &lt;- list(
       &quot;Fibrotic&quot;      = list(col = &quot;fibrotic_active&quot;, target = 1)
     )
   )
-  # You can easily add more configs here (e.g., specific antibodies vs organ involvement)
 )</code></pre>
 </div>
 <div id="tables" class="section level1">
@@ -1446,7 +1476,8 @@ for (tbl_name in names(table_configs)) {
   gtsum_stats &lt;- list(); gtsum_global_tests &lt;- list(); gtsum_pairwise_tests &lt;- list() 
   for (var in conf$variables) {
     if (is.numeric(tbl_data[[var]])) {
-      is_parametric &lt;- check_parametric(tbl_data, var, conf$group_by, stat_config, transform = NULL) 
+      # FIX: Removed the obsolete &#39;transform = NULL&#39; argument!
+      is_parametric &lt;- check_parametric(tbl_data, var, conf$group_by, stat_config) 
       if (is_parametric) {
         gtsum_stats[[var]] &lt;- &quot;{mean} ({sd})&quot;; gtsum_global_tests[[var]] &lt;- &quot;aov&quot;; gtsum_pairwise_tests[[var]] &lt;- &quot;t.test&quot; 
       } else {
@@ -1565,16 +1596,16 @@ Non-Active vs Control
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Female
+Male
 </td>
 <td style="text-align:center;">
-38 (79%)
+10 (21%)
 </td>
 <td style="text-align:center;">
-38 (79%)
+10 (21%)
 </td>
 <td style="text-align:center;">
-28 (80%)
+7 (20%)
 </td>
 <td style="text-align:center;">
 </td>
@@ -1587,16 +1618,16 @@ Female
 </tr>
 <tr>
 <td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Male
+Female
 </td>
 <td style="text-align:center;">
-10 (21%)
+38 (79%)
 </td>
 <td style="text-align:center;">
-10 (21%)
+38 (79%)
 </td>
 <td style="text-align:center;">
-7 (20%)
+28 (80%)
 </td>
 <td style="text-align:center;">
 </td>
@@ -1893,16 +1924,11 @@ generate_base_plot &lt;- function(conf) {
       geom_boxplot(width = 0.2, fill = &quot;white&quot;, color = &quot;grey30&quot;, outlier.shape = NA) +
       geom_jitter(aes(color = .data[[conf$x_var]]), width = 0.15, alpha = 0.6) +
       scale_fill_manual(values = plot_colors) + scale_color_manual(values = plot_colors) +
-      labs(title = conf$title, x = &quot;Cohort Group&quot;, y = actual_y_label) + theme(legend.position = &quot;none&quot;)
-    
-    if (!is.null(conf$y_transform) &amp;&amp; conf$y_transform == &quot;log10&quot;) {
-      p &lt;- p + scale_y_log10(expand = expansion(mult = c(0.05, 0.40)))
-    } else {
-      p &lt;- p + scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
-    }
+      labs(title = conf$title, x = &quot;Cohort Group&quot;, y = actual_y_label) + theme(legend.position = &quot;none&quot;) +
+      scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
     
     if (isTRUE(conf$add_stat_test)) {
-      is_parametric &lt;- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config, transform = conf$y_transform) 
+      is_parametric &lt;- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config) 
       dyn_pairwise_method &lt;- if (is_parametric) &quot;t.test&quot; else &quot;wilcox.test&quot;
       dyn_global_method &lt;- if (is_parametric) &quot;anova&quot; else &quot;kruskal.test&quot;
       
@@ -1915,9 +1941,6 @@ generate_base_plot &lt;- function(conf) {
             g1 &lt;- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[1]]
             g2 &lt;- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[2]]
             if (length(g1) &gt;= 2 &amp;&amp; length(g2) &gt;= 2) {
-              if (!is.null(conf$y_transform) &amp;&amp; conf$y_transform == &quot;log10&quot;) {
-                g1 &lt;- log10(g1[g1 &gt; 0]); g2 &lt;- log10(g2[g2 &gt; 0])
-              }
               p_val &lt;- tryCatch({
                 if (dyn_pairwise_method == &quot;t.test&quot;) t.test(g1, g2)$p.value else wilcox.test(g1, g2, exact = FALSE)$p.value 
               }, error = function(e) 1) 
@@ -2054,6 +2077,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e9897d3a7ebe4f6239bfce87e57a5a472ff42cf5/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">e9897d3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-04-29
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_figures-2.png" target="_blank">2909df1</a>
@@ -2408,303 +2442,10 @@ alexander-gysin
 </div>
 </div>
 </div>
-<div id="baseline-walk-distance" class="section level3">
-<h3>Baseline Walk Distance</h3>
-<p><img src="figure/02_cohort_characterization.Rmd/print_individual_plots-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-6">
-Past versions of print_individual_plots-6.png
-</button>
-</p>
-<div id="fig-print_individual_plots-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2909df13c96f0adbf323c88879d6403c50cf5997/docs/figure/02_cohort_characterization.Rmd/print_individual_plots-6.png" target="_blank">2909df1</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-04-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
 </div>
 </div>
 <div id="matrix-correlation" class="section level1">
 <h1>Matrix Correlation</h1>
-<div id="factor-exploration" class="section level2">
-<h2>Factor Exploration</h2>
-<div class="info-box">
-<strong>What this code does:</strong>
-<ul>
-<li>
-Scanned all factor variables to identify their category distributions
-and assess variance.
-</li>
-<li>
-Filtered out cleanly binarized variables to reduce noise.
-</li>
-<li>
-Generated an audit table grouping remaining factors by level counts
-(&gt;2 levels, exactly 2 non-standard levels, or 0 variance) to guide
-manual binarization.
-</li>
-</ul>
-</div>
-<div class="why-box">
-<strong>Why is this done?</strong>
-<ul>
-<li>
-For the matrix correlation to work all variables must either be
-continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows
-which variables need some adjustment to fulfill these criteria.
-</li>
-<li>
-The table following this one shows you how these were binarized or
-converted to ordinal ranks.
-</li>
-</ul>
-</div>
-<pre class="r"><code>get_level_pct &lt;- function(vec) {
-  vec &lt;- vec[!is.na(vec)]
-  if(length(vec) == 0) return(&quot;All NA&quot;)
-  tbl &lt;- prop.table(table(vec)) * 100
-  level_strings &lt;- paste0(names(tbl), &quot;: &quot;, sprintf(&quot;%.1f%%&quot;, tbl))
-  return(paste(level_strings, collapse = &quot; &lt;br&gt; &quot;)) 
-}
-
-exploration_df &lt;- data.frame(Variable = character(), Category = character(), Distribution = character(), stringsAsFactors = FALSE)
-
-for (col in names(master_spine)) {
-  vec &lt;- master_spine[[col]]
-  if (is.factor(vec)) {
-    clean_vec &lt;- vec[!is.na(vec)]
-    unique_levels &lt;- unique(as.character(clean_vec))
-    n_levels &lt;- length(unique_levels)
-    dist_str &lt;- get_level_pct(vec)
-    cat_name &lt;- NA
-    
-    if (n_levels &lt;= 1) {
-      cat_name &lt;- &quot;3: Zero Variance (&lt;= 1 Level)&quot;
-    } else if (n_levels &gt; 2) {
-      cat_name &lt;- &quot;1: &gt; 2 Levels (Needs Bucketing/Exclusion)&quot;
-    } else if (n_levels == 2) {
-      lower_levels &lt;- tolower(unique_levels)
-      is_strict_binary &lt;- all(lower_levels %in% c(&quot;yes&quot;, &quot;no&quot;, &quot;1&quot;, &quot;0&quot;))
-      if (!is_strict_binary) cat_name &lt;- &quot;2: Exactly 2 Levels (Needs Manual 1/0 Mapping)&quot;
-    }
-    
-    if (!is.na(cat_name)) {
-      exploration_df &lt;- rbind(exploration_df, data.frame(Variable = col, Category = cat_name, Distribution = dist_str, stringsAsFactors = FALSE))
-    }
-  }
-}
-
-if(nrow(exploration_df) &gt; 0) {
-  exploration_df %&gt;% arrange(Category, Variable) %&gt;% kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, caption = &quot;Variables Requiring Binarization Attention&quot;) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;) %&gt;% kableExtra::column_spec(1, bold = TRUE) %&gt;% kableExtra::collapse_rows(columns = 2, valign = &quot;top&quot;) 
-} else {
-  cat(&quot;**Result:** All factor variables are cleanly binary (1/0) and ready for the correlation matrix!\n\n&quot;)
-}</code></pre>
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Variables Requiring Binarization Attention
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:left;">
-Category
-</th>
-<th style="text-align:left;">
-Distribution
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-ACTIVE_AI
-</td>
-<td style="text-align:left;vertical-align: top !important;" rowspan="11">
-1: &gt; 2 Levels (Needs Bucketing/Exclusion)
-</td>
-<td style="text-align:left;">
--1: 26.7% <br> 0: 48.1% <br> 1: 25.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Capillary loss
-</td>
-<td style="text-align:left;">
-Extensive: 6.6% <br> Moderate: 25.3% <br> None: 29.7% <br> Rare: 38.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Digital ulcer
-</td>
-<td style="text-align:left;">
-Current: 18.8% <br> never: 1.0% <br> Never: 56.2% <br> Previously: 24.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Dyspnea NYHA Stage
-</td>
-<td style="text-align:left;">
-0: 19.8% <br> 1: 14.0% <br> I: 41.9% <br> II: 20.9% <br> III: 3.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Giant capillaries
-</td>
-<td style="text-align:left;">
-Extensive: 2.2% <br> Moderate: 6.7% <br> None: 41.1% <br> Rare: 50.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Hemorrhages
-</td>
-<td style="text-align:left;">
-Moderate: 5.6% <br> None: 40.4% <br> Rare: 53.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Pitting scars on finger tips
-</td>
-<td style="text-align:left;">
-Current: 46.3% <br> Never: 47.4% <br> Previously: 6.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Ramified bushy capillaries
-</td>
-<td style="text-align:left;">
-Moderate: 14.3% <br> None: 22.0% <br> Rare: 63.7%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Skin Thickening (Prox. MCP)
-</td>
-<td style="text-align:left;">
-1: 1.1% <br> Current: 23.4% <br> Never: 66.0% <br> Previously: 9.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-VisitNumber
-</td>
-<td style="text-align:left;">
-Follow Up Visit (1): 73.4% <br> Follow Up Visit (2): 25.5% <br> Visit 0:
-1.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-cohort_group
-</td>
-<td style="text-align:left;">
-Active: 36.6% <br> Non-Active: 36.6% <br> Control: 26.7%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Gangrene
-</td>
-<td style="text-align:left;vertical-align: top !important;" rowspan="4">
-2: Exactly 2 Levels (Needs Manual 1/0 Mapping)
-</td>
-<td style="text-align:left;">
-Never: 95.7% <br> Previously: 4.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Geschlecht
-</td>
-<td style="text-align:left;">
-männlich: 20.6% <br> weiblich: 79.4%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Sex
-</td>
-<td style="text-align:left;">
-Female: 79.4% <br> Male: 20.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-SiteNumber
-</td>
-<td style="text-align:left;">
-6: 97.9% <br> manual: 2.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Buffy-coat
-</td>
-<td style="text-align:left;vertical-align: top !important;" rowspan="3">
-3: Zero Variance (&lt;= 1 Level)
-</td>
-<td style="text-align:left;">
-1: 100.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-Patients eligible
-</td>
-<td style="text-align:left;">
-1: 100.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-SELECTED
-</td>
-<td style="text-align:left;">
-1: 100.0%
-</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>
-# Clean Memory
-rm(exploration_df, vec, clean_vec, unique_levels, dist_str)
-invisible(gc())</code></pre>
-</div>
 <div id="data-prep-and-matrix-calculation" class="section level2">
 <h2>Data Prep and Matrix Calculation</h2>
 <div class="decision-box">
@@ -2715,10 +2456,8 @@ Filtered out sparse variables with &lt; 10 observations to ensure robust
 correlation metrics.
 </li>
 <li>
-Filtered out variables with zero variance
-</li>
-<li>
-Standardized categorical data into ordinal ranks.
+Standardized categorical data into ordinal ranks utilizing the
+pre-computed numeric spine.
 </li>
 <li>
 Applied a global NA-to-Zero fill on the correlation matrix to stabilize
@@ -2730,16 +2469,16 @@ hierarchical clustering.
 <strong>What this code does:</strong>
 <ul>
 <li>
-Standardized clinical factors into ordinal ranks and calculated the
-master Spearman correlation matrix.
+Injected the curated numeric spine directly into the matrix calculation
+engine.
 </li>
 <li>
 Implemented a global NA-to-Zero fill to ensure mathematical stability
 during hierarchical clustering.
 </li>
 <li>
-Generated transparent audit tables documenting numeric mapping and
-variable exclusion for clinical validation.
+Generated transparent audit tables documenting variable exclusion for
+clinical validation.
 </li>
 <li>
 Exported the finalized correlation matrix to CSV and cleared
@@ -2747,48 +2486,14 @@ intermediate variables from RAM.
 </li>
 </ul>
 </div>
-<pre class="r"><code># 1. Audit Table: Binarization &amp; Ordinal Mapping -------------------------------
-mapping_audit_df &lt;- data.frame(
-  Variable_Type = c(&quot;Sex&quot;, &quot;Cohort Group&quot;, &quot;Subset Features&quot;, &quot;Smoking/History&quot;, &quot;Severity Ranks&quot;, &quot;Clinical Visits&quot;, &quot;Standard Binary&quot;),
-  Original_Levels = c(&quot;Female / Male&quot;, &quot;Control / Non-Active / Active&quot;, &quot;Diffuse / Limited / Sine&quot;, &quot;Never / Previously / Current&quot;, &quot;None / Rare / Moderate / Extensive&quot;, &quot;I / II / III&quot;, &quot;1 / 0 (or Yes/No)&quot;),
-  Numeric_Mapping = c(&quot;Female = 1, Male = 0&quot;, 
-                      &quot;Control = 0, Non-Active = 1, Active = 2&quot;, 
-                      &quot;Present = 1, Absent = 0 (One-Hot Encoded)&quot;, 
-                      &quot;Never = 0, Previously = 1, Current = 2&quot;, 
-                      &quot;None = 0, Rare = 1, Moderate = 2, Extensive = 3&quot;, 
-                      &quot;I = 1, II = 2, III = 3&quot;, 
-                      &quot;1 = 1, 0 = 0&quot;),
-  stringsAsFactors = FALSE
-)
-
-# 2. Execution: Translation &amp; Filtering ----------------------------------------
-heatmap_dir &lt;- file.path(output_dir_data, &quot;heatmaps&quot;)
+<pre class="r"><code>heatmap_dir &lt;- file.path(output_dir_data, &quot;heatmaps&quot;)
 if (!dir.exists(heatmap_dir)) dir.create(heatmap_dir, recursive = TRUE)
 
-cor_data_prep &lt;- master_spine %&gt;%
-  mutate(
-    Subset_Diffuse = if_else(`Subset_diffuse` == &quot;diffuse cutaneous&quot;, 1, 0),
-    Subset_Limited = if_else(`Subset_diffuse` == &quot;limited cutaneous&quot;, 1, 0),
-    Subset_Sine    = if_else(`Subset_diffuse` == &quot;sine scleroderma&quot;, 1, 0)
-  ) %&gt;%
-  select(-`Subset_diffuse`) %&gt;%
-  mutate(across(where(is.factor), ~ {
-    val &lt;- tolower(as.character(.x))
-    case_when(
-      val == &quot;1&quot; ~ 1, val == &quot;0&quot; ~ 0,
-      val %in% c(&quot;weiblich&quot;, &quot;female&quot;) ~ 1, val %in% c(&quot;männlich&quot;, &quot;male&quot;) ~ 0,
-      val == tolower(GRP_CONTROL)     ~ 0, 
-      val == tolower(GRP_NON_ACTIVE)  ~ 1, 
-      val == tolower(GRP_ACTIVE)      ~ 2,
-      val == &quot;never&quot; ~ 0, val == &quot;previously&quot; ~ 1, val == &quot;current&quot; ~ 2,
-      val == &quot;none&quot; ~ 0, val == &quot;rare&quot; ~ 1, val == &quot;moderate&quot; ~ 2, val == &quot;extensive&quot; ~ 3,
-      val %in% c(&quot;1&quot;, &quot;i&quot;) ~ 1, val == &quot;ii&quot; ~ 2, val == &quot;iii&quot; ~ 3,
-      TRUE ~ NA_real_ 
-    )
-  })) %&gt;%
-  select(where(is.numeric))
+# 1. Direct Numeric Injection --------------------------------------------------
+# We simply extract all numeric columns from the pre-computed math spine
+cor_data_prep &lt;- numeric_spine %&gt;% select(where(is.numeric))
 
-# 3. Audit Table: Exclusions ---------------------------------------------------
+# 2. Audit Table: Exclusions ---------------------------------------------------
 valid_counts &lt;- colSums(!is.na(cor_data_prep))
 dropped_cols &lt;- names(valid_counts)[valid_counts &lt; corr_config$min_required_obs]
 
@@ -2807,7 +2512,7 @@ cor_mat_final &lt;- cor_data_prep %&gt;% select(all_of(names(valid_counts)[valid
 # SANITY CHECK: Ensure we have enough columns to run a correlation matrix
 stopifnot(&quot;FATAL: Insufficient columns remaining for correlation matrix.&quot; = ncol(cor_mat_final) &gt;= 2)
 
-# 4. Math Engine ---------------------------------------------------------------
+# 3. Math Engine ---------------------------------------------------------------
 cor_matrix &lt;- cor(cor_mat_final, use = &quot;pairwise.complete.obs&quot;, method = &quot;spearman&quot;)
 cor_matrix[is.na(cor_matrix)] &lt;- 0 
 
@@ -2822,7 +2527,7 @@ for (i in 1:(ncol(cor_mat_final) - 1)) {
   }
 }
 
-# 4.5 Export Matrices for Downstream Use (Script 03a/04) -----------------------
+# 4. Export Matrices for Downstream Use (Script 03a/04) -----------------------
 # Save CSV for human readability (preserving rownames as a column)
 write_csv(as.data.frame(cor_matrix) %&gt;% rownames_to_column(&quot;Variable&quot;), 
           file.path(output_dir_data, &quot;clinical_spearman_rho.csv&quot;))
@@ -2831,179 +2536,24 @@ write_csv(as.data.frame(cor_matrix) %&gt;% rownames_to_column(&quot;Variable&quo
 saveRDS(list(rho = cor_matrix, p = p_matrix), 
         file.path(output_dir_data, &quot;clinical_correlation_matrices.rds&quot;))
 
-# 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
-
-# Table 1: Mappings
-print(mapping_audit_df %&gt;% 
-  kableExtra::kbl(caption = &quot;1. Binarization and Ordinal Mapping Dictionary&quot;, format = &quot;html&quot;) %&gt;%
-  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;))</code></pre>
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-<ol style="list-style-type: decimal">
-<li>Binarization and Ordinal Mapping Dictionary
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable_Type
-</th>
-<th style="text-align:left;">
-Original_Levels
-</th>
-<th style="text-align:left;">
-Numeric_Mapping
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Sex
-</td>
-<td style="text-align:left;">
-Female / Male
-</td>
-<td style="text-align:left;">
-Female = 1, Male = 0
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Cohort Group
-</td>
-<td style="text-align:left;">
-Control / Non-Active / Active
-</td>
-<td style="text-align:left;">
-Control = 0, Non-Active = 1, Active = 2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Subset Features
-</td>
-<td style="text-align:left;">
-Diffuse / Limited / Sine
-</td>
-<td style="text-align:left;">
-Present = 1, Absent = 0 (One-Hot Encoded)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Smoking/History
-</td>
-<td style="text-align:left;">
-Never / Previously / Current
-</td>
-<td style="text-align:left;">
-Never = 0, Previously = 1, Current = 2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Severity Ranks
-</td>
-<td style="text-align:left;">
-None / Rare / Moderate / Extensive
-</td>
-<td style="text-align:left;">
-None = 0, Rare = 1, Moderate = 2, Extensive = 3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Clinical Visits
-</td>
-<td style="text-align:left;">
-I / II / III
-</td>
-<td style="text-align:left;">
-I = 1, II = 2, III = 3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Standard Binary
-</td>
-<td style="text-align:left;">
-1 / 0 (or Yes/No)
-</td>
-<td style="text-align:left;">
-1 = 1, 0 = 0
-</td>
-</tr>
-</tbody>
-</table></li>
-</ol>
-<pre class="r"><code>
-cat(&quot;\n\n&quot;)
-
-# Table 2: Exclusions
+# 5. Render Audit Tables -------------------------------------------------------
 if(nrow(exclusion_audit_df) &gt; 0) {
   print(exclusion_audit_df %&gt;% 
-    kableExtra::kbl(caption = &quot;2. Variable Exclusion Log (Sparsity Filter)&quot;, format = &quot;html&quot;) %&gt;%
+    kableExtra::kbl(caption = &quot;Variable Exclusion Log (Sparsity Filter)&quot;, format = &quot;html&quot;) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;))
 } else {
-  cat(&quot;#### 2. Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n&quot;)
+  cat(&quot;#### Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n&quot;)
 }</code></pre>
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-<ol start="2" style="list-style-type: decimal">
-<li>Variable Exclusion Log (Sparsity Filter)
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-Variable
-</th>
-<th style="text-align:right;">
-Observations
-</th>
-<th style="text-align:left;">
-Status
-</th>
-<th style="text-align:left;">
-Reason
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-SiteNumber
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:left;">
-DROPPED
-</td>
-<td style="text-align:left;">
-Sparse data (&lt; 10 obs)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-VisitNumber
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:left;">
-DROPPED
-</td>
-<td style="text-align:left;">
-Sparse data (&lt; 10 obs)
-</td>
-</tr>
-</tbody>
-</table></li>
-</ol>
+<div id="variable-exclusion-log" class="section level4">
+<h4>Variable Exclusion Log</h4>
+<ul>
+<li>No variables were dropped due to sparsity.</li>
+</ul>
 <pre class="r"><code>
 # Clear Memory
-rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_df)
+rm(cor_data_prep, valid_counts, dropped_cols, exclusion_audit_df)
 invisible(gc())</code></pre>
+</div>
 </div>
 <div id="custom-correlation-heatmaps" class="section level2 tabset">
 <h2 class="tabset">Custom Correlation Heatmaps</h2>
