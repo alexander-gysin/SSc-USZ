@@ -16,8 +16,7 @@ source(here::here("code", "00_config.R"))
 This script describes the cohors by showing the distributions of technical and clinical parameters.
 
 # Setup
-
-`r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the clinical spine generated previously.")`
+`r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the twin clinical spines generated in Phase 1b.")`
 
 ```{r setup_import, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -44,23 +43,26 @@ knitr::opts_chunk$set(
 current_file <- "02_cohort_characterization"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
 # Public Asset Paths (Pushed to GitHub for the Website)
 public_heatmap_dir <- here::here("docs", "assets", "02_cohort_characterization", "heatmaps")
 if (!dir.exists(file.path(public_heatmap_dir, "intra"))) dir.create(file.path(public_heatmap_dir, "intra"), recursive = TRUE)
 if (!dir.exists(file.path(public_heatmap_dir, "inter"))) dir.create(file.path(public_heatmap_dir, "inter"), recursive = TRUE)
 
-# Input paths (Parameterized)
+# Input paths (Updated to 01b!)
 input_paths <- list(
-  clinical_spine = here::here("output", "01_data_import_and_qc", "clinical_spine.rds")
+  clinical_spine = here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"),
+  numeric_spine  = here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds")
 )
 
-# Load the clinical spine from Script 01
+# Load the twin clinical spines from Script 01b
 master_spine <- readRDS(input_paths$clinical_spine)
+numeric_spine <- readRDS(input_paths$numeric_spine)
 ```
 
 # Configuration
 
-`r what_this_does("Defined statistical thresholds for normality (Shapiro-Wilk) and variance (Bartlett) testing.", "Configured correlation matrix parameters including sparsity filters, significance limits, and targeted anchor variables.", "Constructed dynamic configuration lists to dictate Table 1 and Figure layouts using the pre-engineered master_spine.")`
+`r what_this_does("Defined statistical thresholds for normality (Shapiro-Wilk) and variance (Bartlett) testing.", "Configured correlation matrix parameters including sparsity filters and targeted anchor variables.", "Constructed dynamic configuration lists to dictate Table 1 and Figure layouts using the pre-engineered master_spine.")`
 
 ```{r configuration}
 # 1. Global Variables & Feature Engineering ------------------------------------
@@ -74,7 +76,7 @@ corr_config <- list(
   min_required_obs  = 10,   
   p_cutoff          = 0.05, 
   strong_rho_cutoff = 0.7,
-  label_font_size   = 0.7  # Parameterized heatmap label size
+  label_font_size   = 0.7 
 )
 
 candidate_vars <- list(
@@ -82,19 +84,11 @@ candidate_vars <- list(
 )
 
 # Helper function to determine parametric status -------------------------------
-check_parametric <- function(df, var_col, group_col, config, transform = NULL) { 
+check_parametric <- function(df, var_col, group_col, config) { 
   test_vec <- df[[var_col]][!is.na(df[[var_col]])]
   group_vec <- df[[group_col]][!is.na(df[[var_col]])]
   
   if (length(unique(group_vec)) < 2 || length(test_vec) < 3) return(FALSE)
-  
-  if (!is.null(transform) && transform == "log10") {
-    valid_idx <- test_vec > 0
-    test_vec <- log10(test_vec[valid_idx])
-    group_vec <- group_vec[valid_idx]
-    
-    if (length(unique(group_vec)) < 2 || length(test_vec) < 3) return(FALSE)
-  }
   
   shapiro_p <- tryCatch(shapiro.test(test_vec)$p.value, error = function(e) 0)
   bartlett_p <- tryCatch(bartlett.test(test_vec ~ group_vec)$p.value, error = function(e) 0)
@@ -108,7 +102,7 @@ table_configs <- list(
     title = "Demographic and Clinical Characteristics",
     group_by = "cohort_group",
     pairwise = TRUE, 
-    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)"),
+    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age", "NT-proBNP (pg/ml)", "DLCO (SB) (% predicted)"),
     labels = list(
       Age = "Patient Age (Years)",
       Sex = "Biological Sex",
@@ -138,7 +132,6 @@ figure_configs <- list(
         type = "violin",
         y_var = "Sample_Age",
         x_var = "cohort_group",
-        y_transform = NULL,           
         y_label = "Sample Storage Time (Years)", 
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -152,9 +145,8 @@ figure_configs <- list(
       plot_3 = list(
         title = "Baseline CRP", 
         type = "violin",
-        y_var = "CRP",
+        y_var = "log_CRP", 
         x_var = "cohort_group",
-        y_transform = "log10",         
         y_label = "CRP (mg/dl) [Log10 Scale]",  
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -162,9 +154,8 @@ figure_configs <- list(
       plot_4 = list(
         title = "Baseline Creatinine", 
         type = "violin",
-        y_var = "Creatinine",
+        y_var = "log_Creatinine", 
         x_var = "cohort_group",
-        y_transform = "log10", 
         y_label = "Serum Creatinine (µmol/L) [Log10 Scale]", 
         add_stat_test = TRUE,
         pairwise = TRUE
@@ -172,20 +163,9 @@ figure_configs <- list(
       plot_5 = list(
         title = "Baseline NT-proBNP (pg/ml)", 
         type = "violin",
-        y_var = "NT-proBNP (pg/ml)",
+        y_var = "log_NT_proBNP__pg_ml", 
         x_var = "cohort_group",
-        y_transform = "log10", 
-        y_label = "Serum NT-proBNP (pg/ml)", 
-        add_stat_test = TRUE,
-        pairwise = TRUE
-      ),
-      plot_6 = list(
-        title = "Baseline Walk Distance", 
-        type = "violin",
-        y_var = "Distance in m",
-        x_var = "cohort_group",
-        y_transform = "log10", 
-        y_label = "Walk Distance in m", 
+        y_label = "Serum NT-proBNP (pg/ml) [Log10 Scale]", 
         add_stat_test = TRUE,
         pairwise = TRUE
       )
@@ -198,7 +178,7 @@ custom_heatmap_configs <- list(
   core_metadata = list(
     title = "Core Metadata Correlations",
     y_vars = c("Age", "Sex", "Sample_Age", "cohort_group", "Creatinine", "Inflamm_active", "vascular_active", "fibrotic_active", ssc_clinical_parameters),
-    x_vars = NULL # Leaving this NULL creates a symmetrical, upper-triangle heatmap
+    x_vars = NULL
   ),
   classification_vs_clinical = list(
     title = "Classification vs. Clinical",
@@ -217,7 +197,6 @@ upset_configs <- list(
   phenotype_overlap = list(
     title = "Patient Overlap: Phenotypes vs Global Activity",
     variables = list(
-      # The 'target' is the value that means the patient is "IN" this set
       "Active" = list(col = "cohort_group", target = GRP_ACTIVE),
       "Non-Active" = list(col = "cohort_group", target = GRP_NON_ACTIVE),
       "Inflammatory"  = list(col = "Inflamm_active", target = 1),
@@ -225,7 +204,6 @@ upset_configs <- list(
       "Fibrotic"      = list(col = "fibrotic_active", target = 1)
     )
   )
-  # You can easily add more configs here (e.g., specific antibodies vs organ involvement)
 )
 ```
 
@@ -233,7 +211,7 @@ upset_configs <- list(
 
 `r what_this_does("Dynamically evaluated each clinical variable to select appropriate parametric (ANOVA/t-test) or non-parametric (Kruskal-Wallis/Wilcoxon) statistical tests.", "Generated comprehensive baseline demographic tables using the gtsummary package.", "Calculated and appended both global and pairwise group comparison p-values.", "Exported standard tables as CSV files and rendered interactive HTML equivalents.")`
 
-```{r table_engine, results='asis'}
+```{r table_engine, results='asis', warning=FALSE}
 generated_tables <- list()
 
 for (tbl_name in names(table_configs)) {
@@ -245,7 +223,8 @@ for (tbl_name in names(table_configs)) {
   gtsum_stats <- list(); gtsum_global_tests <- list(); gtsum_pairwise_tests <- list() 
   for (var in conf$variables) {
     if (is.numeric(tbl_data[[var]])) {
-      is_parametric <- check_parametric(tbl_data, var, conf$group_by, stat_config, transform = NULL) 
+      # FIX: Removed the obsolete 'transform = NULL' argument!
+      is_parametric <- check_parametric(tbl_data, var, conf$group_by, stat_config) 
       if (is_parametric) {
         gtsum_stats[[var]] <- "{mean} ({sd})"; gtsum_global_tests[[var]] <- "aov"; gtsum_pairwise_tests[[var]] <- "t.test" 
       } else {
@@ -315,16 +294,11 @@ generate_base_plot <- function(conf) {
       geom_boxplot(width = 0.2, fill = "white", color = "grey30", outlier.shape = NA) +
       geom_jitter(aes(color = .data[[conf$x_var]]), width = 0.15, alpha = 0.6) +
       scale_fill_manual(values = plot_colors) + scale_color_manual(values = plot_colors) +
-      labs(title = conf$title, x = "Cohort Group", y = actual_y_label) + theme(legend.position = "none")
-    
-    if (!is.null(conf$y_transform) && conf$y_transform == "log10") {
-      p <- p + scale_y_log10(expand = expansion(mult = c(0.05, 0.40)))
-    } else {
-      p <- p + scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
-    }
+      labs(title = conf$title, x = "Cohort Group", y = actual_y_label) + theme(legend.position = "none") +
+      scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
     
     if (isTRUE(conf$add_stat_test)) {
-      is_parametric <- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config, transform = conf$y_transform) 
+      is_parametric <- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config) 
       dyn_pairwise_method <- if (is_parametric) "t.test" else "wilcox.test"
       dyn_global_method <- if (is_parametric) "anova" else "kruskal.test"
       
@@ -337,9 +311,6 @@ generate_base_plot <- function(conf) {
             g1 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[1]]
             g2 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[2]]
             if (length(g1) >= 2 && length(g2) >= 2) {
-              if (!is.null(conf$y_transform) && conf$y_transform == "log10") {
-                g1 <- log10(g1[g1 > 0]); g2 <- log10(g2[g2 > 0])
-              }
               p_val <- tryCatch({
                 if (dyn_pairwise_method == "t.test") t.test(g1, g2)$p.value else wilcox.test(g1, g2, exact = FALSE)$p.value 
               }, error = function(e) 1) 
@@ -405,109 +376,21 @@ for (p_name in names(individual_plots)) {
 ```
 
 # Matrix Correlation
-
-## Factor Exploration
-
-`r what_this_does("Scanned all factor variables to identify their category distributions and assess variance.", "Filtered out cleanly binarized variables to reduce noise.", "Generated an audit table grouping remaining factors by level counts (>2 levels, exactly 2 non-standard levels, or 0 variance) to guide manual binarization.")`
-
-`r why_is_this_done("For the matrix correlation to work all variables must either be continuous, binarized (1/0) or ordinal ranks (0,1,2,3). This table shows which variables need some adjustment to fulfill these criteria.", "The table following this one shows you how these were binarized or converted to ordinal ranks.")`
-
-```{r factor_exploration}
-get_level_pct <- function(vec) {
-  vec <- vec[!is.na(vec)]
-  if(length(vec) == 0) return("All NA")
-  tbl <- prop.table(table(vec)) * 100
-  level_strings <- paste0(names(tbl), ": ", sprintf("%.1f%%", tbl))
-  return(paste(level_strings, collapse = " <br> ")) 
-}
-
-exploration_df <- data.frame(Variable = character(), Category = character(), Distribution = character(), stringsAsFactors = FALSE)
-
-for (col in names(master_spine)) {
-  vec <- master_spine[[col]]
-  if (is.factor(vec)) {
-    clean_vec <- vec[!is.na(vec)]
-    unique_levels <- unique(as.character(clean_vec))
-    n_levels <- length(unique_levels)
-    dist_str <- get_level_pct(vec)
-    cat_name <- NA
-    
-    if (n_levels <= 1) {
-      cat_name <- "3: Zero Variance (<= 1 Level)"
-    } else if (n_levels > 2) {
-      cat_name <- "1: > 2 Levels (Needs Bucketing/Exclusion)"
-    } else if (n_levels == 2) {
-      lower_levels <- tolower(unique_levels)
-      is_strict_binary <- all(lower_levels %in% c("yes", "no", "1", "0"))
-      if (!is_strict_binary) cat_name <- "2: Exactly 2 Levels (Needs Manual 1/0 Mapping)"
-    }
-    
-    if (!is.na(cat_name)) {
-      exploration_df <- rbind(exploration_df, data.frame(Variable = col, Category = cat_name, Distribution = dist_str, stringsAsFactors = FALSE))
-    }
-  }
-}
-
-if(nrow(exploration_df) > 0) {
-  exploration_df %>% arrange(Category, Variable) %>% kableExtra::kbl(format = "html", escape = FALSE, caption = "Variables Requiring Binarization Attention") %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>% kableExtra::column_spec(1, bold = TRUE) %>% kableExtra::collapse_rows(columns = 2, valign = "top") 
-} else {
-  cat("**Result:** All factor variables are cleanly binary (1/0) and ready for the correlation matrix!\n\n")
-}
-
-# Clean Memory
-rm(exploration_df, vec, clean_vec, unique_levels, dist_str)
-invisible(gc())
-```
-
 ## Data Prep and Matrix Calculation
 
-`r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Filtered out variables with zero variance", "Standardized categorical data into ordinal ranks.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
+`r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Standardized categorical data into ordinal ranks utilizing the pre-computed numeric spine.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
 
-`r what_this_does("Standardized clinical factors into ordinal ranks and calculated the master Spearman correlation matrix.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting numeric mapping and variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
+`r what_this_does("Injected the curated numeric spine directly into the matrix calculation engine.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
 
 ```{r mat_corr_calc, warning=FALSE, results='asis'}
-# 1. Audit Table: Binarization & Ordinal Mapping -------------------------------
-mapping_audit_df <- data.frame(
-  Variable_Type = c("Sex", "Cohort Group", "Subset Features", "Smoking/History", "Severity Ranks", "Clinical Visits", "Standard Binary"),
-  Original_Levels = c("Female / Male", "Control / Non-Active / Active", "Diffuse / Limited / Sine", "Never / Previously / Current", "None / Rare / Moderate / Extensive", "I / II / III", "1 / 0 (or Yes/No)"),
-  Numeric_Mapping = c("Female = 1, Male = 0", 
-                      "Control = 0, Non-Active = 1, Active = 2", 
-                      "Present = 1, Absent = 0 (One-Hot Encoded)", 
-                      "Never = 0, Previously = 1, Current = 2", 
-                      "None = 0, Rare = 1, Moderate = 2, Extensive = 3", 
-                      "I = 1, II = 2, III = 3", 
-                      "1 = 1, 0 = 0"),
-  stringsAsFactors = FALSE
-)
-
-# 2. Execution: Translation & Filtering ----------------------------------------
 heatmap_dir <- file.path(output_dir_data, "heatmaps")
 if (!dir.exists(heatmap_dir)) dir.create(heatmap_dir, recursive = TRUE)
 
-cor_data_prep <- master_spine %>%
-  mutate(
-    Subset_Diffuse = if_else(`Subset_diffuse` == "diffuse cutaneous", 1, 0),
-    Subset_Limited = if_else(`Subset_diffuse` == "limited cutaneous", 1, 0),
-    Subset_Sine    = if_else(`Subset_diffuse` == "sine scleroderma", 1, 0)
-  ) %>%
-  select(-`Subset_diffuse`) %>%
-  mutate(across(where(is.factor), ~ {
-    val <- tolower(as.character(.x))
-    case_when(
-      val == "1" ~ 1, val == "0" ~ 0,
-      val %in% c("weiblich", "female") ~ 1, val %in% c("männlich", "male") ~ 0,
-      val == tolower(GRP_CONTROL)     ~ 0, 
-      val == tolower(GRP_NON_ACTIVE)  ~ 1, 
-      val == tolower(GRP_ACTIVE)      ~ 2,
-      val == "never" ~ 0, val == "previously" ~ 1, val == "current" ~ 2,
-      val == "none" ~ 0, val == "rare" ~ 1, val == "moderate" ~ 2, val == "extensive" ~ 3,
-      val %in% c("1", "i") ~ 1, val == "ii" ~ 2, val == "iii" ~ 3,
-      TRUE ~ NA_real_ 
-    )
-  })) %>%
-  select(where(is.numeric))
+# 1. Direct Numeric Injection --------------------------------------------------
+# We simply extract all numeric columns from the pre-computed math spine
+cor_data_prep <- numeric_spine %>% select(where(is.numeric))
 
-# 3. Audit Table: Exclusions ---------------------------------------------------
+# 2. Audit Table: Exclusions ---------------------------------------------------
 valid_counts <- colSums(!is.na(cor_data_prep))
 dropped_cols <- names(valid_counts)[valid_counts < corr_config$min_required_obs]
 
@@ -526,7 +409,7 @@ cor_mat_final <- cor_data_prep %>% select(all_of(names(valid_counts)[valid_count
 # SANITY CHECK: Ensure we have enough columns to run a correlation matrix
 stopifnot("FATAL: Insufficient columns remaining for correlation matrix." = ncol(cor_mat_final) >= 2)
 
-# 4. Math Engine ---------------------------------------------------------------
+# 3. Math Engine ---------------------------------------------------------------
 cor_matrix <- cor(cor_mat_final, use = "pairwise.complete.obs", method = "spearman")
 cor_matrix[is.na(cor_matrix)] <- 0 
 
@@ -541,7 +424,7 @@ for (i in 1:(ncol(cor_mat_final) - 1)) {
   }
 }
 
-# 4.5 Export Matrices for Downstream Use (Script 03a/04) -----------------------
+# 4. Export Matrices for Downstream Use (Script 03a/04) -----------------------
 # Save CSV for human readability (preserving rownames as a column)
 write_csv(as.data.frame(cor_matrix) %>% rownames_to_column("Variable"), 
           file.path(output_dir_data, "clinical_spearman_rho.csv"))
@@ -550,26 +433,17 @@ write_csv(as.data.frame(cor_matrix) %>% rownames_to_column("Variable"),
 saveRDS(list(rho = cor_matrix, p = p_matrix), 
         file.path(output_dir_data, "clinical_correlation_matrices.rds"))
 
-# 5. Render Audit Tables (Aggregated at end of chunk) --------------------------
-
-# Table 1: Mappings
-print(mapping_audit_df %>% 
-  kableExtra::kbl(caption = "1. Binarization and Ordinal Mapping Dictionary", format = "html") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
-
-cat("\n\n")
-
-# Table 2: Exclusions
+# 5. Render Audit Tables -------------------------------------------------------
 if(nrow(exclusion_audit_df) > 0) {
   print(exclusion_audit_df %>% 
-    kableExtra::kbl(caption = "2. Variable Exclusion Log (Sparsity Filter)", format = "html") %>%
+    kableExtra::kbl(caption = "Variable Exclusion Log (Sparsity Filter)", format = "html") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
 } else {
-  cat("#### 2. Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n")
+  cat("#### Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n")
 }
 
 # Clear Memory
-rm(cor_data_prep, valid_counts, dropped_cols, mapping_audit_df, exclusion_audit_df)
+rm(cor_data_prep, valid_counts, dropped_cols, exclusion_audit_df)
 invisible(gc())
 ```
 
