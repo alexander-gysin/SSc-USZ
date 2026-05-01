@@ -1,5 +1,5 @@
 ---
-title: "Data Import and QC"
+title: "Data Import"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
