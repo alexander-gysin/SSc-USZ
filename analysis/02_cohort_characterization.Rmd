@@ -939,10 +939,10 @@ if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
 for (u_id in names(upset_configs)) {
   conf <- upset_configs[[u_id]]
   
-  res <- generate_upset_plot(conf, master_spine)
+  # FIX: Feed the engine the numeric spine so 'target = 1' successfully matches!
+  res <- generate_upset_plot(conf, numeric_spine)
   
   if (res$status == "success") {
-    # Added \n\n to front!
     cat(sprintf("\n\n### %s\n\n", conf$title))
     
     # Print for HTML / Interactive Viewer
