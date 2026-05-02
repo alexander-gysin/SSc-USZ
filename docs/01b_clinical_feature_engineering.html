@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">01 May, 2026</h4>
+<h4 class="date">02 May, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-01
+<strong>Last updated:</strong> 2026-05-02
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec744b5e0899e1e82ec7ef76d4bce6ec2004f6d53targetblankc744b5ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c744b5e0899e1e82ec7ef76d4bce6ec2004f6d53" target="_blank">c744b5e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec744b5e0899e1e82ec7ef76d4bce6ec2004f6d53targetblankc744b5ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c744b5e0899e1e82ec7ef76d4bce6ec2004f6d53" target="_blank">c744b5e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -654,6 +654,7 @@ Untracked files:
     Untracked:  core
 
 Unstaged changes:
+    Modified:   analysis/03a_proteomics_variance.Rmd
     Modified:   analysis/_site.yml
 
 </code></pre>
@@ -700,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c744b5e0899e1e82ec7ef76d4bce6ec2004f6d53/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">c744b5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2bb3054d79ec891779fae3112632412b05fd000e/docs/01b_clinical_feature_engineering.html" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1041,6 +1076,16 @@ for (col in scan_cols) {
     # Explicit mapping for Sex into the math spine
     curated_spine_numeric[[col]] &lt;- ifelse(curated_spine[[col]] == SEX_FEMALE, 1, 0)
     ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Binary (Male=0, Female=1)&quot;))
+    
+  } else if (col == &quot;cohort_group&quot;) {
+    # FIX: Explicit mathematical mapping for Cohort Group!
+    curated_spine_numeric[[col]] &lt;- case_when(
+      curated_spine[[col]] == GRP_CONTROL ~ 0,
+      curated_spine[[col]] == GRP_NON_ACTIVE ~ 1,
+      curated_spine[[col]] == GRP_ACTIVE ~ 2,
+      TRUE ~ NA_real_
+    )
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Ordinal (Control=0, Non-Active=1, Active=2)&quot;))
   }
 }
 
@@ -1066,7 +1111,7 @@ cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
 data types based on dictionary.</p></li>
 <li><p>Schema Enforcement: Dropped 21 variables.</p></li>
 <li><p>Applied One-Hot Encoding to SSc Disease Subsets.</p></li>
-<li><p>Generated curated_spine_numeric: mapped 69 categorical variables
+<li><p>Generated curated_spine_numeric: mapped 70 categorical variables
 to algebra-ready numerics.</p></li>
 </ul>
 <pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
@@ -1592,6 +1637,14 @@ Sex
 </td>
 <td style="text-align:left;">
 Explicit Binary (Male=0, Female=1)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cohort_group
+</td>
+<td style="text-align:left;">
+Explicit Ordinal (Control=0, Non-Active=1, Active=2)
 </td>
 </tr>
 <tr>
@@ -4767,46 +4820,453 @@ log_ variant.</p>
 <div id="modified-rodnan-skin-score" class="section level4">
 <h4>Modified rodnan skin score</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-1">
+Past versions of QC_diagnostics-1.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="crp" class="section level4">
 <h4>CRP</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-2">
+Past versions of QC_diagnostics-2.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ck-value-in-serum-ul" class="section level4">
 <h4>CK value in serum (U/L)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-3">
+Past versions of QC_diagnostics-3.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="creatinine" class="section level4">
 <h4>Creatinine</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-4">
+Past versions of QC_diagnostics-4.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="nt-probnp-pgml" class="section level4">
 <h4>NT-proBNP (pg/ml)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-5">
+Past versions of QC_diagnostics-5.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="uric-acid-mgdl" class="section level4">
 <h4>Uric Acid (mg/dl)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-6">
+Past versions of QC_diagnostics-6.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="tapse-cm" class="section level4">
 <h4>TAPSE (cm)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-7">
+Past versions of QC_diagnostics-7.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="min-spo2-exercise" class="section level4">
 <h4>Min SpO2 (Exercise)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-8">
+Past versions of QC_diagnostics-8.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_pft_years" class="section level4">
 <h4>Delta_PFT_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-9">
+Past versions of QC_diagnostics-9.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_ecg_years" class="section level4">
 <h4>Delta_ECG_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-10">
+Past versions of QC_diagnostics-10.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_echo_years" class="section level4">
 <h4>Delta_ECHO_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-11">
+Past versions of QC_diagnostics-11.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-11.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="extreme-outliers" class="section level3">
@@ -4855,98 +5315,986 @@ if (length(outlier_vars) &gt; 0) {
 <div id="body-weight-kg" class="section level4">
 <h4>Body weight (kg)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-1">
+Past versions of qc_outliers-1.png
+</button>
+</p>
+<div id="fig-qc_outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ck-value-in-serum-ul-1" class="section level4">
 <h4>CK value in serum (U/L)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-2">
+Past versions of qc_outliers-2.png
+</button>
+</p>
+<div id="fig-qc_outliers-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="crp-1" class="section level4">
 <h4>CRP</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-3">
+Past versions of qc_outliers-3.png
+</button>
+</p>
+<div id="fig-qc_outliers-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="creatinine-1" class="section level4">
 <h4>Creatinine</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-4">
+Past versions of qc_outliers-4.png
+</button>
+</p>
+<div id="fig-qc_outliers-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_ecg_years-1" class="section level4">
 <h4>Delta_ECG_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-5">
+Past versions of qc_outliers-5.png
+</button>
+</p>
+<div id="fig-qc_outliers-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_echo_years-1" class="section level4">
 <h4>Delta_ECHO_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-6">
+Past versions of qc_outliers-6.png
+</button>
+</p>
+<div id="fig-qc_outliers-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_hrct_years" class="section level4">
 <h4>Delta_HRCT_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-7">
+Past versions of qc_outliers-7.png
+</button>
+</p>
+<div id="fig-qc_outliers-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_pft_years-1" class="section level4">
 <h4>Delta_PFT_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-8">
+Past versions of qc_outliers-8.png
+</button>
+</p>
+<div id="fig-qc_outliers-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="delta_walk_test_years" class="section level4">
 <h4>Delta_Walk_test_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-9">
+Past versions of qc_outliers-9.png
+</button>
+</p>
+<div id="fig-qc_outliers-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="min-spo2-exercise-1" class="section level4">
 <h4>Min SpO2 (Exercise)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-10">
+Past versions of qc_outliers-10.png
+</button>
+</p>
+<div id="fig-qc_outliers-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="modified-rodnan-skin-score-1" class="section level4">
 <h4>Modified rodnan skin score</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-11">
+Past versions of qc_outliers-11.png
+</button>
+</p>
+<div id="fig-qc_outliers-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="nt-probnp-pgml-1" class="section level4">
 <h4>NT-proBNP (pg/ml)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-12">
+Past versions of qc_outliers-12.png
+</button>
+</p>
+<div id="fig-qc_outliers-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="o2-saturation-at-rest" class="section level4">
 <h4>O2-saturation at rest (%)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-13">
+Past versions of qc_outliers-13.png
+</button>
+</p>
+<div id="fig-qc_outliers-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="rvlv-ratio" class="section level4">
 <h4>RV/LV ratio</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-14">
+Past versions of qc_outliers-14.png
+</button>
+</p>
+<div id="fig-qc_outliers-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="tapse-cm-1" class="section level4">
 <h4>TAPSE (cm)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-15">
+Past versions of qc_outliers-15.png
+</button>
+</p>
+<div id="fig-qc_outliers-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="uric-acid-mgdl-1" class="section level4">
 <h4>Uric Acid (mg/dl)</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-16">
+Past versions of qc_outliers-16.png
+</button>
+</p>
+<div id="fig-qc_outliers-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_creatinine" class="section level4">
 <h4>log_Creatinine</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-17">
+Past versions of qc_outliers-17.png
+</button>
+</p>
+<div id="fig-qc_outliers-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_delta_ecg_years" class="section level4">
 <h4>log_Delta_ECG_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-18">
+Past versions of qc_outliers-18.png
+</button>
+</p>
+<div id="fig-qc_outliers-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_delta_echo_years" class="section level4">
 <h4>log_Delta_ECHO_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-19">
+Past versions of qc_outliers-19.png
+</button>
+</p>
+<div id="fig-qc_outliers-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_delta_pft_years" class="section level4">
 <h4>log_Delta_PFT_Years</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-20">
+Past versions of qc_outliers-20.png
+</button>
+</p>
+<div id="fig-qc_outliers-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_min_spo2__exercise" class="section level4">
 <h4>log_Min_SpO2__Exercise</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-21">
+Past versions of qc_outliers-21.png
+</button>
+</p>
+<div id="fig-qc_outliers-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_tapse__cm" class="section level4">
 <h4>log_TAPSE__cm</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-22">
+Past versions of qc_outliers-22.png
+</button>
+</p>
+<div id="fig-qc_outliers-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="log_uric_acid__mg_dl" class="section level4">
 <h4>log_Uric_Acid__mg_dl</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-23">
+Past versions of qc_outliers-23.png
+</button>
+</p>
+<div id="fig-qc_outliers-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="mrss_a" class="section level4">
 <h4>mRSS_a</h4>
 <p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-24">
+Past versions of qc_outliers-24.png
+</button>
+</p>
+<div id="fig-qc_outliers-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="class-imbalances" class="section level3">
