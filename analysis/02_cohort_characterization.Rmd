@@ -197,11 +197,13 @@ upset_configs <- list(
   phenotype_overlap = list(
     title = "Patient Overlap: Phenotypes vs Global Activity",
     variables = list(
-      "Active" = list(col = "cohort_group", target = GRP_ACTIVE),
-      "Non-Active" = list(col = "cohort_group", target = GRP_NON_ACTIVE),
-      "Inflammatory"  = list(col = "Inflamm_active", target = 1),
-      "Vascular"      = list(col = "vascular_active", target = 1),
-      "Fibrotic"      = list(col = "fibrotic_active", target = 1)
+      # TYPE-AGNOSTIC TARGETS: It doesn't matter if the spine holds text, factors, or math. 
+      # If the patient has any of these values, they are securely counted.
+      "Active"       = list(col = "cohort_group", target = c(GRP_ACTIVE, "Active", 2, "2")),
+      "Non_Active"   = list(col = "cohort_group", target = c(GRP_NON_ACTIVE, "Non-Active", 1, "1")),
+      "Inflammatory" = list(col = "Inflamm_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
+      "Vascular"     = list(col = "vascular_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
+      "Fibrotic"     = list(col = "fibrotic_active", target = c(1, "1", "yes", "Yes", "active", "Active"))
     )
   )
 )
@@ -895,7 +897,9 @@ invisible(gc())
 ```{r upset_engine}
 generate_upset_plot <- function(conf, df) {
   set_names <- names(conf$variables)
-  upset_df <- data.frame(Subject_ID = df$Subject_ID)
+  
+  # Inject a Dummy_ID to act as a "metadata" column so UpSetR doesn't crash on an all-binary matrix
+  plot_df <- data.frame(Dummy_ID = 1:nrow(df))
   
   for (s in set_names) {
     col <- conf$variables[[s]]$col
@@ -905,42 +909,47 @@ generate_upset_plot <- function(conf, df) {
       return(list(status = "failed", msg = sprintf("Column '%s' not found in clinical spine.", col)))
     }
     
-    # Create binary membership (Treats NAs as 0 / Not in Set)
-    upset_df[[s]] <- ifelse(!is.na(df[[col]]) & df[[col]] == target, 1, 0)
+    # TYPE-AGNOSTIC FIX: Use %in% to catch any valid iteration of the target
+    plot_df[[s]] <- as.integer(ifelse(!is.na(df[[col]]) & (df[[col]] %in% target), 1, 0))
   }
   
-  # Drop the ID column to create the pure binary matrix required by UpSetR
-  plot_mat <- upset_df %>% select(-Subject_ID)
-  
-  if (sum(rowSums(plot_mat)) == 0) {
+  # Check if matrix is entirely empty (ignoring the Dummy_ID)
+  if (sum(rowSums(plot_df[, -1, drop = FALSE])) == 0) {
     return(list(status = "failed", msg = "No patients match any target criteria."))
   }
   
+  # Find the largest category
+  max_group_size <- max(colSums(plot_df[, -1, drop = FALSE]))
+  
   # Generate Plot
   p <- upset(
-    plot_mat, 
+    plot_df, 
     sets = set_names,
     keep.order = TRUE,
     order.by = "freq",
     mainbar.y.label = "Number of Patients in Intersection",
+    set_size.scale_max = max_group_size * 1.35,
     sets.x.label = "Total Patients per Category",
     text.scale = c(1.3, 1.3, 1, 1, 1.2, 1.2),
     set_size.show = TRUE
   )
   
-  return(list(status = "success", plot = p, data = plot_mat))
+  return(list(status = "success", plot = p, data = plot_df))
 }
 ```
 
-```{r upset_execution}
+```{r upset_execution, fig.width=9, fig.height=6}
 upset_dir <- file.path(output_dir_data, "upset-plots")
 if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
+
+# PRE-FILTER: Remove healthy controls so the UpSet totals match your Table 1 exactly
+ssc_only_spine <- master_spine %>% filter(cohort_group != GRP_CONTROL)
 
 for (u_id in names(upset_configs)) {
   conf <- upset_configs[[u_id]]
   
-  # FIX: Feed the engine the numeric spine so 'target = 1' successfully matches!
-  res <- generate_upset_plot(conf, numeric_spine)
+  # Feed the engine the filtered human-readable spine
+  res <- generate_upset_plot(conf, ssc_only_spine)
   
   if (res$status == "success") {
     cat(sprintf("\n\n### %s\n\n", conf$title))
@@ -962,7 +971,7 @@ for (u_id in names(upset_configs)) {
 }
 
 # Cleanup
-rm(u_id, conf, res, upset_dir, upset_configs, safe_name)
+rm(u_id, conf, res, upset_dir, safe_name, ssc_only_spine)
 invisible(gc())
 ```
 
