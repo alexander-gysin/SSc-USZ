@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeddf1bf94035532b8c1ab9a564884da2f6bcffe9btargetblankddf1bf9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreea219b64121056288737a3983c246d3089b6cab4dtargetblanka219b64a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/ddf1bf94035532b8c1ab9a564884da2f6bcffe9b" target="_blank">ddf1bf9</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/a219b64121056288737a3983c246d3089b6cab4d" target="_blank">a219b64</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeddf1bf94035532b8c1ab9a564884da2f6bcffe9btargetblankddf1bf9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreea219b64121056288737a3983c246d3089b6cab4dtargetblanka219b64a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/ddf1bf94035532b8c1ab9a564884da2f6bcffe9b" target="_blank">ddf1bf9</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/a219b64121056288737a3983c246d3089b6cab4d" target="_blank">a219b64</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -633,6 +633,7 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01_data_import_and_qc/
     Ignored:    output/01a_data_import_and_qc/
     Ignored:    output/01b_clinical_feature_engineering/
@@ -654,6 +655,7 @@ Untracked files:
     Untracked:  core
 
 Unstaged changes:
+    Modified:   analysis/03a_proteomics_variance.Rmd
     Modified:   analysis/_site.yml
 
 </code></pre>
@@ -700,6 +702,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a219b64121056288737a3983c246d3089b6cab4d/analysis/02_cohort_characterization.Rmd" target="_blank">a219b64</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+wflow_publish("analysis/02_cohort_characterization.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/64d694fffb835577a76c58ef791ef0c0b8114255/docs/02_cohort_characterization.html" target="_blank">64d694f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1466,11 +1502,13 @@ upset_configs &lt;- list(
   phenotype_overlap = list(
     title = &quot;Patient Overlap: Phenotypes vs Global Activity&quot;,
     variables = list(
-      &quot;Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_ACTIVE),
-      &quot;Non-Active&quot; = list(col = &quot;cohort_group&quot;, target = GRP_NON_ACTIVE),
-      &quot;Inflammatory&quot;  = list(col = &quot;Inflamm_active&quot;, target = 1),
-      &quot;Vascular&quot;      = list(col = &quot;vascular_active&quot;, target = 1),
-      &quot;Fibrotic&quot;      = list(col = &quot;fibrotic_active&quot;, target = 1)
+      # TYPE-AGNOSTIC TARGETS: It doesn&#39;t matter if the spine holds text, factors, or math. 
+      # If the patient has any of these values, they are securely counted.
+      &quot;Active&quot;       = list(col = &quot;cohort_group&quot;, target = c(GRP_ACTIVE, &quot;Active&quot;, 2, &quot;2&quot;)),
+      &quot;Non_Active&quot;   = list(col = &quot;cohort_group&quot;, target = c(GRP_NON_ACTIVE, &quot;Non-Active&quot;, 1, &quot;1&quot;)),
+      &quot;Inflammatory&quot; = list(col = &quot;Inflamm_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;)),
+      &quot;Vascular&quot;     = list(col = &quot;vascular_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;)),
+      &quot;Fibrotic&quot;     = list(col = &quot;fibrotic_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;))
     )
   )
 )</code></pre>
@@ -3314,7 +3352,9 @@ Creates the UpSet Plots specified in the configuration part
 </div>
 <pre class="r"><code>generate_upset_plot &lt;- function(conf, df) {
   set_names &lt;- names(conf$variables)
-  upset_df &lt;- data.frame(Subject_ID = df$Subject_ID)
+  
+  # Inject a Dummy_ID to act as a &quot;metadata&quot; column so UpSetR doesn&#39;t crash on an all-binary matrix
+  plot_df &lt;- data.frame(Dummy_ID = 1:nrow(df))
   
   for (s in set_names) {
     col &lt;- conf$variables[[s]]$col
@@ -3324,39 +3364,44 @@ Creates the UpSet Plots specified in the configuration part
       return(list(status = &quot;failed&quot;, msg = sprintf(&quot;Column &#39;%s&#39; not found in clinical spine.&quot;, col)))
     }
     
-    # Create binary membership (Treats NAs as 0 / Not in Set)
-    upset_df[[s]] &lt;- ifelse(!is.na(df[[col]]) &amp; df[[col]] == target, 1, 0)
+    # TYPE-AGNOSTIC FIX: Use %in% to catch any valid iteration of the target
+    plot_df[[s]] &lt;- as.integer(ifelse(!is.na(df[[col]]) &amp; (df[[col]] %in% target), 1, 0))
   }
   
-  # Drop the ID column to create the pure binary matrix required by UpSetR
-  plot_mat &lt;- upset_df %&gt;% select(-Subject_ID)
-  
-  if (sum(rowSums(plot_mat)) == 0) {
+  # Check if matrix is entirely empty (ignoring the Dummy_ID)
+  if (sum(rowSums(plot_df[, -1, drop = FALSE])) == 0) {
     return(list(status = &quot;failed&quot;, msg = &quot;No patients match any target criteria.&quot;))
   }
   
+  # Find the largest category
+  max_group_size &lt;- max(colSums(plot_df[, -1, drop = FALSE]))
+  
   # Generate Plot
   p &lt;- upset(
-    plot_mat, 
+    plot_df, 
     sets = set_names,
     keep.order = TRUE,
     order.by = &quot;freq&quot;,
     mainbar.y.label = &quot;Number of Patients in Intersection&quot;,
+    set_size.scale_max = max_group_size * 1.35,
     sets.x.label = &quot;Total Patients per Category&quot;,
     text.scale = c(1.3, 1.3, 1, 1, 1.2, 1.2),
     set_size.show = TRUE
   )
   
-  return(list(status = &quot;success&quot;, plot = p, data = plot_mat))
+  return(list(status = &quot;success&quot;, plot = p, data = plot_df))
 }</code></pre>
 <pre class="r"><code>upset_dir &lt;- file.path(output_dir_data, &quot;upset-plots&quot;)
 if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
 
+# PRE-FILTER: Remove healthy controls so the UpSet totals match your Table 1 exactly
+ssc_only_spine &lt;- master_spine %&gt;% filter(cohort_group != GRP_CONTROL)
+
 for (u_id in names(upset_configs)) {
   conf &lt;- upset_configs[[u_id]]
   
-  # FIX: Feed the engine the numeric spine so &#39;target = 1&#39; successfully matches!
-  res &lt;- generate_upset_plot(conf, numeric_spine)
+  # Feed the engine the filtered human-readable spine
+  res &lt;- generate_upset_plot(conf, ssc_only_spine)
   
   if (res$status == &quot;success&quot;) {
     cat(sprintf(&quot;\n\n### %s\n\n&quot;, conf$title))
@@ -3379,7 +3424,7 @@ for (u_id in names(upset_configs)) {
 
 
 ### Patient Overlap: Phenotypes vs Global Activity</code></pre>
-<p><img src="figure/02_cohort_characterization.Rmd/upset_execution-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/02_cohort_characterization.Rmd/upset_execution-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-upset_execution-1">
 Past versions of upset_execution-1.png
@@ -3402,6 +3447,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/64d694fffb835577a76c58ef791ef0c0b8114255/docs/figure/02_cohort_characterization.Rmd/upset_execution-1.png" target="_blank">64d694f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/6558d78c919a6766b93ae03105ac473addb15df4/docs/figure/02_cohort_characterization.Rmd/upset_execution-1.png" target="_blank">6558d78</a>
@@ -3430,7 +3486,7 @@ alexander-gysin
 </div>
 <pre class="r"><code>
 # Cleanup
-rm(u_id, conf, res, upset_dir, upset_configs, safe_name)
+rm(u_id, conf, res, upset_dir, safe_name, ssc_only_spine)
 invisible(gc())</code></pre>
 <div class="insight-box">
 <strong>Key Insight:</strong>
