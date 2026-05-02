@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree973cd52bcbe3a92e82f4cea64e352bc6e589b43ftargetblank973cd52a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreed9d8e63651bfc68aaa47c28f5a92457bcfb0af6btargetblankd9d8e63a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/973cd52bcbe3a92e82f4cea64e352bc6e589b43f" target="_blank">973cd52</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/d9d8e63651bfc68aaa47c28f5a92457bcfb0af6b" target="_blank">d9d8e63</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree973cd52bcbe3a92e82f4cea64e352bc6e589b43ftargetblank973cd52a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreed9d8e63651bfc68aaa47c28f5a92457bcfb0af6btargetblankd9d8e63a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/973cd52bcbe3a92e82f4cea64e352bc6e589b43f" target="_blank">973cd52</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/d9d8e63651bfc68aaa47c28f5a92457bcfb0af6b" target="_blank">d9d8e63</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -701,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d9d8e63651bfc68aaa47c28f5a92457bcfb0af6b/analysis/03b_proteomics_differential.Rmd" target="_blank">d9d8e63</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+wflow_publish("analysis/03b_proteomics_differential.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/91fe9ad82be0b6bf894cd76792ffae8d066bca0d/docs/03b_proteomics_differential.html" target="_blank">91fe9ad</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1078,13 +1112,14 @@ for (c_name in names(contrast_configs)) {
   print(res$plots$volcano)
   cat(&quot;\n\n&quot;)
   
-  # 3. Render Table (Fixed to inject raw HTML natively)
+  # 3. Render Table (Fixed to inject raw HTML natively with a Scroll Box!)
   if(nrow(res$tables$significant_proteins) &gt; 0) {
     cat(sprintf(&quot;### Significant Proteins (%d total)\n\n&quot;, nrow(res$tables$significant_proteins)))
     
     html_table &lt;- kbl(res$tables$significant_proteins, format = &quot;html&quot;, digits = 4, align = &quot;c&quot;, 
               caption = sprintf(&quot;Significant Results: %s&quot;, contrast_configs[[c_name]]$title)) %&gt;%
-          kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;)
+          kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;) %&gt;%
+          scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;) # &lt;-- NEW: Scrollable box added!
     
     cat(as.character(html_table))
     cat(&quot;\n\n&quot;)
@@ -1161,22 +1196,24 @@ alexander-gysin
 </div>
 <div id="significant-proteins-54-total" class="section level3">
 <h3>Significant Proteins (54 total)</h3>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
 <caption>
 Significant Results: SSc vs Control
 </caption>
 <thead>
 <tr>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Feature
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 logFC
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 adj.P.Val
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Significance
 </th>
 </tr>
@@ -1940,6 +1977,7 @@ Up-regulated
 </tr>
 </tbody>
 </table>
+</div>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-2">
@@ -2908,22 +2946,24 @@ alexander-gysin
 </div>
 <div id="significant-proteins-5-total" class="section level3">
 <h3>Significant Proteins (5 total)</h3>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
 <caption>
 Significant Results: Fibrotic vs Non-Fibrotic
 </caption>
 <thead>
 <tr>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Feature
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 logFC
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 adj.P.Val
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Significance
 </th>
 </tr>
@@ -3001,6 +3041,7 @@ Up-regulated
 </tr>
 </tbody>
 </table>
+</div>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-18.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-18">
