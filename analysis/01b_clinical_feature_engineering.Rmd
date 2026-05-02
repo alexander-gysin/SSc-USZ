@@ -256,6 +256,16 @@ for (col in scan_cols) {
     # Explicit mapping for Sex into the math spine
     curated_spine_numeric[[col]] <- ifelse(curated_spine[[col]] == SEX_FEMALE, 1, 0)
     ordinal_log_df <- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = "Explicit Binary (Male=0, Female=1)"))
+    
+  } else if (col == "cohort_group") {
+    # FIX: Explicit mathematical mapping for Cohort Group!
+    curated_spine_numeric[[col]] <- case_when(
+      curated_spine[[col]] == GRP_CONTROL ~ 0,
+      curated_spine[[col]] == GRP_NON_ACTIVE ~ 1,
+      curated_spine[[col]] == GRP_ACTIVE ~ 2,
+      TRUE ~ NA_real_
+    )
+    ordinal_log_df <- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = "Explicit Ordinal (Control=0, Non-Active=1, Active=2)"))
   }
 }
 
