@@ -31,7 +31,7 @@ Further criteria:
 
 # Setup and Import
 
-`r what_this_does("Loaded analytical packages (FactoMineR, factoextra) and parallel processing tools (future, progressr).", "Sourced custom omics engines to handle repetitive matrix operations.", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Initialized parallel processing to accelerate computationally intensive variance partition calculations.")`
+`r what_this_does("Loaded analytical packages (FactoMineR, factoextra) and parallel processing tools.", "Sourced custom omics engines to handle repetitive matrix operations.", "Imported the twin clinical spines, proteomics matrix, and the Data Dictionary.", "Initialized parallel processing to accelerate computationally intensive variance partition calculations.")`
 
 ```{r setup_import, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -56,9 +56,12 @@ if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 # Source Engines
 source(here::here("code", "00_omics_engines.R"))
 
-# Load Pre-Cleaned Data from Script 01
-master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
-olink_mat <- readRDS(here::here("output", "01_data_import_and_qc", "clean_olink_matrix.rds"))
+# Load Pre-Cleaned Data from Scripts 01a, 01b, and 02
+master_spine          <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+numeric_spine         <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds"))
+data_dictionary       <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
+
+olink_mat             <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
 clinical_correlations <- readRDS(here::here("output", "02_cohort_characterization", "clinical_correlation_matrices.rds"))
 
 # Initialize multi-core use
@@ -67,24 +70,40 @@ plan(multisession, workers = 4)
 
 # Configuration
 
-`r what_this_does("Defined mapping parameters for Principal Component Analysis (PCA) to overlay specific clinical metadata on global cohorts.", "Configured Exploratory VPA rules, setting exclusion patterns to prevent IDs and raw dates from skewing the variance scan.", "Established Targeted VPA models to evaluate the combined explanatory power of standard covariates versus newly discovered clinical hits.")`
+`r what_this_does("Dynamically engaged the Data Dictionary shield to automatically block zero-variance, heavily skewed, outlier-heavy, or highly imbalanced variables from crashing the models.", "Defined mapping parameters for Principal Component Analysis (PCA).", "Configured Exploratory VPA rules and automated DEA selection thresholds.", "Established Targeted VPA models to evaluate explanatory power.")`
 
 ```{r config}
+# 0. Data Dictionary Shield ----------------------------------------------------
+# Automatically identify variables that are mathematically unstable, skewed, or contain extreme outliers
+unstable_vars <- data_dictionary %>%
+  filter(grepl("ZERO VARIANCE|IMBALANCED|SKEWED|OUTLIER", toupper(QC_Flag))) %>%
+  pull(Variable)
+
+# Base administrative or redundant variables to exclude
+base_excludes <- c(
+  "inCentraxx", "SELECTED", "Subject_ID", "Birth_Year", "Raynaud VAS Unknown", 
+  "Face", "Chest", "Abdomen", "Left_Upper Arms", "Right_Upper Arms", 
+  "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", 
+  "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", 
+  "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Active_our",
+  "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean" # FIX: Restored the raw protected vars!
+)
+
 # 1. Exploratory  VPA ----------------------------------------------------------
 exploratory_vpa_configs <- list(
   discovery_scan_patients = list(
     title              = "Clinical Discovery: Patients Only",
     subset_to_groups   = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    exclude_vars       = c("inCentraxx", "SELECTED", "Subject-ID (EUSTAR)", "Geburtsdatum", "Raynaud VAS Unknown", "Birth_Year", "Face", "Chest", "Abdomen", "Left_Upper Arms", "Right_Upper Arms", "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Geschlecht", "Active_our"),
-    exclude_patterns   = c("Date", "?", "Datum"), 
+    exclude_vars       = unique(c(base_excludes, unstable_vars)), # <-- SHIELD EXPANDED!
+    exclude_patterns   = c("Date", "\\?", "Datum"), 
     include_vars       = c(), 
     missingness_cutoff = 0.10,
     top_n_plot         = 60,
     
     # QC Checkpoint Parameters -------------------------------------------------
-    dist_plot_limit    = 30, # Max variables to draw in the histogram grid
-    corr_plot_limit    = 30, # Max VPA hits to feed into the heatmap
-    heatmap_add_vars   = c("cohort_group", "Sex", "Age", "Inflamm_active", "fibrotic_active", "vascular_active") # Extra vars to force into heatmap
+    dist_plot_limit    = 30, 
+    corr_plot_limit    = 30, 
+    heatmap_add_vars   = c("cohort_group", "Sex", "Age", "Inflamm_active", "fibrotic_active", "vascular_active") 
   )
 )
 
@@ -97,25 +116,22 @@ dea_selector_configs <- list(
     ref_groups = c(GRP_NON_ACTIVE),
     vpa_source_id = "discovery_scan_patients", 
     must_include = c(),          
-    must_exclude = c("Creatinine", "NT-proBNP (pg/ml)", "Distance in m", "log_Distance_in_m", "Uric ACid (mg/dl)", "mRSS_a", "Modified rodnan skin score", "eustarAI", "SSc Antibodies", "Delta_ECHO_Years", "Deöta_ECG_Years"), # Excluded based on QC
+    must_exclude = c("log_Creatinine", "log_NT_proBNP__pg_ml", "Distance in m", "Uric ACid (mg/dl)", "mRSS_a", "Modified rodnan skin score", "eustarAI", "SSc Antibodies", "Delta_ECHO_Years", "Delta_ECG_Years"), 
     min_samples_per_param = 15,
     max_cor_rho           = 0.25, 
     max_cor_p             = 0.05,
-    # --- NEW: Pre-Selection Log ---
-    pre_selection_log     = "Some variables excluded due to non-normal distribution (mostly bimodal). eustar AI excluded due to high correlation with contrast. SSC Antibodies excluded due to skewed distribution (11% vs 89%)."
+    pre_selection_log     = "Some variables excluded due to non-normal distribution (mostly bimodal). eustar AI excluded due to high correlation with contrast. SSC Antibodies excluded due to skewed distribution."
   )
 )
 
 # 3. Manual Model Adjustment and Creations  ------------------------------------
 manual_model_adjustments <- list(
-  
   active_vs_nonactive_1 = list(
     type = "adjustment", 
     drop = c("Right ventricular area (cm2)","LVEF %"), 
     add  = c(), 
-    log  = "Removed cardiac parameters since theyx did not explain a large enough portion of variance in the multivariate VPA. Could not include Sex or Age due to correlation with log_creatinine"
+    log  = "Removed cardiac parameters since they did not explain a large enough portion of variance in the multivariate VPA. Could not include Sex or Age due to correlation with log_Creatinine."
   ),
-  
   legacy_model = list(
     type = "custom",     
     title = "Legacy Model",
@@ -125,37 +141,35 @@ manual_model_adjustments <- list(
     covariates = c("Age", "Sex"),
     log  = "Legacy model, created to compare the new models to."
   ),
-  
   inflamm_vs_non_inflamm = list(
     type = "custom",      
     title = "Inflammatory Active vs Non-Inflammatory",
     group_col = "Inflamm_active",
     target_groups = c(1),
     ref_groups = c(0),
-    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    covariates = c("log_Creatinine", "log_NT_proBNP__pg_ml"),
     log  = "Custom model contrasting inflammatory active (1) vs non-inflammatory (0) patients."
   ),
-
   vascular_vs_non_vascular = list(
     type = "custom",      
     title = "Vascular Active vs Non-Vascular",
     group_col = "vascular_active",
     target_groups = c(1),
     ref_groups = c(0),
-    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    covariates = c("log_Creatinine", "log_NT_proBNP__pg_ml"),
     log  = "Custom model contrasting vascular active (1) vs non-vascular (0) patients."
   ),
-
   fibrotic_vs_non_fibrotic = list(
     type = "custom",      
     title = "Fibrotic Active vs Non-Fibrotic",
     group_col = "fibrotic_active",
     target_groups = c(1),
     ref_groups = c(0),
-    covariates = c("log_creatinine", "log_NT_ProBNP"),
+    covariates = c("log_Creatinine", "log_NT_proBNP__pg_ml"),
     log  = "Custom model contrasting fibrotic active (1) vs non-fibrotic (0) patients."
   )
 )
+
 # 4. PCA Configs----------------------------------------------------------------
 pca_configs <- list(
   pca_global = list(
@@ -163,14 +177,13 @@ pca_configs <- list(
     subset_to_contrast = NULL, 
     color_vars = c("cohort_group", "Sex", "Age", "Sample_Age") 
   ),
-  
   pca_candidate_vars = list(
     title = "PCA: Candidate Variables",
     subset_to_contrast = list(
       group_col = "cohort_group",
       target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE)
     ), 
-    color_vars = c("cohort_group", "Sex", "Age", "log_NT_ProBNP", "log_creatinine") 
+    color_vars = c("cohort_group", "Sex", "Age", "log_NT_proBNP__pg_ml", "log_Creatinine") 
   )
 )
 
@@ -188,7 +201,6 @@ global_var_filter <- list(
   omics_type = "Protein",
   top_n_features = 200
 )
-
 ```
 
 # Exploratory Variance Partition Analysis
@@ -499,7 +511,9 @@ for (id in names(final_locked_models)) {
   m <- final_locked_models[[id]]
   
   dyn_conf <- list(title = sprintf("%s (Locked)", m$title), group_col = m$group_col, target_groups = m$target_groups, ref_groups = m$ref_groups, covariates = m$covariates)
-  res <- wrap_pre_dea_validation(master_spine, dyn_conf, dea_validation_rules, clinical_correlations)
+  
+  # FIX: Routing the 'numeric_spine' into the validation engine for linear algebra checks!
+  res <- wrap_pre_dea_validation(numeric_spine, dyn_conf, dea_validation_rules, clinical_correlations)
   
   if (interactive()) {
     # 1. Interactive Mode: Send table and formatted HTML box to the RStudio Viewer
