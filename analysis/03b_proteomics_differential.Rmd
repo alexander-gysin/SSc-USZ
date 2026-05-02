@@ -183,13 +183,14 @@ for (c_name in names(contrast_configs)) {
   print(res$plots$volcano)
   cat("\n\n")
   
-  # 3. Render Table (Fixed to inject raw HTML natively)
+  # 3. Render Table (Fixed to inject raw HTML natively with a Scroll Box!)
   if(nrow(res$tables$significant_proteins) > 0) {
     cat(sprintf("### Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
     
     html_table <- kbl(res$tables$significant_proteins, format = "html", digits = 4, align = "c", 
               caption = sprintf("Significant Results: %s", contrast_configs[[c_name]]$title)) %>%
-          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
+          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+          scroll_box(width = "100%", height = "500px") # <-- NEW: Scrollable box added!
     
     cat(as.character(html_table))
     cat("\n\n")
