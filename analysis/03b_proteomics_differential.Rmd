@@ -11,7 +11,7 @@ editor_options:
 source(here::here("code", "00_config.R"))
 ```
 
-# Setup and import
+# Setup and Import
 `r what_this_does("Loaded required bioinformatics packages (limma, clusterProfiler, msigdbr).", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Fetched the Human Gene Ontology (GO) Biological Processes database for downstream pathway enrichment analysis.")`
 ```{r setup_import, echo=FALSE}
 library(tidyverse)
@@ -38,9 +38,11 @@ if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 # Source Engines
 source(here::here("code", "00_omics_engines.R"))
 
-# Load Pre-Cleaned Data from Script 01
-master_spine <- readRDS(here::here("output", "01_data_import_and_qc", "clinical_spine.rds"))
-omics_mat <- readRDS(here::here("output", "01_data_import_and_qc", "clean_olink_matrix.rds"))
+# Load Pre-Cleaned Data from Script 01a and 01b (Twin Spine Architecture)
+# CRITICAL: We strictly load the master_spine (text/factors) because limma
+# requires categorical factors for group contrasts, not the numeric_spine!
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
 
 # Fetch GO Biological Processes Database for GSEA
 go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
@@ -58,8 +60,9 @@ omics_config <- list(
 
 # 3. Differential Expression Contrasts (Target vs Reference)
 
+# Manually define your covariates here based on the findings from Script 03a!
 candidate_vars <- list(
-  set1 = c()
+  set1 = c("log_Creatinine", "log_NT_proBNP__pg_ml")
 )
 
 contrast_configs <- list(
@@ -86,8 +89,8 @@ contrast_configs <- list(
   inflamm_vs_noninflamm = list(
     title = "Inflammatory vs Non-Inflammatory",
     group_col = "Inflamm_active",
-    target_groups = c(1),
-    ref_groups = c(0),
+    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
+    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -96,8 +99,8 @@ contrast_configs <- list(
   vascular_vs_nonvascular = list(
     title = "Vascular vs Non-Vascular",
     group_col = "vascular_active",
-    target_groups = c(1),
-    ref_groups = c(0),
+    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
+    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -106,8 +109,8 @@ contrast_configs <- list(
   fibrotic_vs_nonfibrotic = list(
     title = "Fibrotic vs Non-Fibrotic",
     group_col = "fibrotic_active",
-    target_groups = c(1),
-    ref_groups = c(0),
+    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
+    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -136,11 +139,8 @@ heatmap_config <- list(
 )
 
 # 6. Comparative Settings
-cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10      
+cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10       
 cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20   
-
-
-cat("Pipelines and Mathematical Engines fully configured.\n")
 ```
 
 # Execution Engines
