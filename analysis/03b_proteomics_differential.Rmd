@@ -13,7 +13,7 @@ source(here::here("code", "00_config.R"))
 
 # Setup and Import
 `r what_this_does("Loaded required bioinformatics packages (limma, clusterProfiler, msigdbr).", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Fetched the Human Gene Ontology (GO) Biological Processes database for downstream pathway enrichment analysis.")`
-```{r setup_import, echo=FALSE}
+```{r setup_import, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(FactoMineR)
 library(factoextra)
@@ -143,13 +143,11 @@ cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10
 cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20   
 ```
 
-# Execution Engines
 
-## Differential Expression Analysis & GSEA
+# Differential Expression Analysis & GSEA {.tabset}
 `r what_this_does("Executed linear modeling (limma) for each defined contrast to identify differentially expressed proteins while adjusting for covariates.", "Generated Volcano plots and static Heatmaps to visualize significant fold changes and expression clusters.", "Performed Gene Set Enrichment Analysis (GSEA) on full fold-change ranked lists and rendered Dot and Ridge plots for biological interpretation.")`
-```{r execution_engine_DEA_GSEA, fig.width=8,fig.height=8}
-cat("### Executing Differential Expression & Contrast-Specific Discovery...\n\n")
 
+```{r execution_engine_DEA_GSEA, fig.width=8, fig.height=8, results='asis'}
 master_dea_results <- list()
 master_gsea_results <- list() 
 
@@ -168,50 +166,50 @@ for (c_name in names(contrast_configs)) {
     project_colors_func = get_project_colors
   )
   
-  # Report Status
-  cat(sprintf("#### Contrast: %s\n", contrast_configs[[c_name]]$title))
+  # 1. Generate the Tab Header
+  cat(sprintf("\n\n## %s\n\n", contrast_configs[[c_name]]$title))
   cat(sprintf("*Diagnostic: Samples used: %d Target, %d Reference*\n\n", 
               res$diagnostics$n_target, res$diagnostics$n_ref))
   
   if(res$status == "failed") {
-    cat(sprintf("<span style='color:red;'>**SKIPPED:** %s</span>\n\n", res$error_msg))
+    cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n\n", res$error_msg))
     next
   }
   
   master_dea_results[[c_name]] <- res$data$dea
   master_gsea_results[[c_name]] <- res$data$gsea
 
-  # Rendering
-  print(res$plots$volcano); cat("\n\n")
+  # 2. Render Plots
+  print(res$plots$volcano)
+  cat("\n\n")
   
+  # 3. Render Table (Fixed to inject raw HTML natively)
   if(nrow(res$tables$significant_proteins) > 0) {
-    cat(sprintf("##### Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
-    print(kbl(res$tables$significant_proteins, format = "html", digits = 4, align = "c", 
+    cat(sprintf("### Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
+    
+    html_table <- kbl(res$tables$significant_proteins, format = "html", digits = 4, align = "c", 
               caption = sprintf("Significant Results: %s", contrast_configs[[c_name]]$title)) %>%
-          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
+          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
+    
+    cat(as.character(html_table))
     cat("\n\n")
   }
 
-  draw(res$plots$heatmap); cat("\n\n")
+  draw(res$plots$heatmap)
+  cat("\n\n")
 
-  if(!is.null(res$plots$gsea_dotplot)) print(res$plots$gsea_dotplot); cat("\n\n")
-  if(!is.null(res$plots$gsea_ridge)) print(res$plots$gsea_ridge); cat("\n\n")
-  
-  
-  cat("--- \n\n")
+  if(!is.null(res$plots$gsea_dotplot)) { print(res$plots$gsea_dotplot); cat("\n\n") }
+  if(!is.null(res$plots$gsea_ridge)) { print(res$plots$gsea_ridge); cat("\n\n") }
 }
 ```
 
-## Trajectory Mapping
+# Trajectory Mapping {.tabset}
 `r what_this_does("Mapped the fold changes of proteins across two distinct clinical contrasts to identify shared and diverging biological trajectories (Quadrant Plots).", "Generated Venn diagrams to visualize the intersection of significant features between contrasts.", "Calculated and plotted cross-contrast pathway trajectories to reveal higher-order biological mechanisms driving cohort differences.")`
-```{r execution_engine_trajectory, fig.width=8, fig.height=8}
-cat("### Executing Comparative Analysis (Trajectories)...\n\n")
-
+```{r execution_engine_trajectory, fig.width=8, fig.height=8, results='asis'}
 for (cross_name in names(cross_contrasts)) {
   conf <- cross_contrasts[[cross_name]]
   
   # CALL THE MASTER PIPELINE
-  # FIX: Added 'omics_config' to the arguments below
   traj_res <- wrap_trajectory_pipeline(
     cross_conf          = conf, 
     cross_id            = cross_name, 
@@ -221,32 +219,34 @@ for (cross_name in names(cross_contrasts)) {
     base_output_dir     = output_dir_data, 
     project_colors_func = get_project_colors, 
     highlight_color     = COLOR_HIGHLIGHT,
-    omics_config        = omics_config      # <--- ADD THIS LINE
+    omics_config        = omics_config      
   )
   
-  cat(sprintf("#### Comparison: %s\n", conf$title))
+  # 1. Generate the Tab Header
+  cat(sprintf("\n\n## %s\n\n", conf$title))
   
   if(traj_res$status == "failed") {
-    cat(sprintf("<span style='color:red;'>**SKIPPED:** %s</span>\n\n", traj_res$error_msg))
+    cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n\n", traj_res$error_msg))
     next
   }
 
-  # Inline HTML Rendering
+  # 2. Render Plots
   if(!is.null(traj_res$plots$protein_trajectory)) {
-    print(traj_res$plots$protein_trajectory); cat("\n\n")
+    print(traj_res$plots$protein_trajectory)
+    cat("\n\n")
   }
   
   if(!is.null(traj_res$plots$venn)) {
-    cat("##### Feature Intersection (Venn Diagram)\n")
-    print(traj_res$plots$venn); cat("\n\n")
+    cat("### Feature Intersection (Venn Diagram)\n\n")
+    print(traj_res$plots$venn)
+    cat("\n\n")
   }
 
   if(!is.null(traj_res$plots$pathway_trajectory)) {
-    cat("##### Pathway Trajectory\n")
-    print(traj_res$plots$pathway_trajectory); cat("\n\n")
+    cat("### Pathway Trajectory\n\n")
+    print(traj_res$plots$pathway_trajectory)
+    cat("\n\n")
   }
-  
-  cat("--- \n\n")
 }
 ```
 # Export
