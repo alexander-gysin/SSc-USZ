@@ -86,7 +86,7 @@ base_excludes <- c(
   "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", 
   "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", 
   "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Active_our",
-  "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean" # FIX: Restored the raw protected vars!
+  "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean", "Geburtsdatum" # FIX: Restored the raw protected vars!
 )
 
 # 1. Exploratory  VPA ----------------------------------------------------------

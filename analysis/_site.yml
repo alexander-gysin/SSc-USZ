@@ -6,9 +6,11 @@ navbar:
   - text: Home
     href: index.html
   - text: Data
-    href: 01a_data_import_and_qc.html
-  - text: Clinical
-    href: 01b_clinical_feature_engineering.html
+    menu:
+    - text: Import
+      href: 01a_data_import_and_qc.html
+    - text: Clinical Features
+      href: 01b_clinical_feature_engineering.html
   - text: Cohort
     href: 02_cohort_characterization.html
   - text: Proteomics
@@ -19,12 +21,16 @@ navbar:
       href: 03b_proteomics_differential.html
     - text: Clustering
       href: 03c_proteomics_clustering.html
-    - text: Linear
-      href: 03d_proteomics_clinical_correlations.html
+    - text: Subgroups
+      href: 03c_proteomics_subgroups.html
+    - text: Correlations
+      href: 03e_proteomics_clinical_correlations.html
   - text: Side Projects
     menu:
     - text: Vascular
       href: z01_sideproject_ellen.html
+    - text: Vascular 2
+      href: z02_sideproject_ellen_2.html
   - text: About
     href: about.html
   - text: License
