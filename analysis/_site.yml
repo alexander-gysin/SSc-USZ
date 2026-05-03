@@ -30,7 +30,7 @@ navbar:
     - text: Vascular
       href: z01_sideproject_ellen.html
     - text: Vascular 2
-      href: z02_sideproject_ellen_2.html
+      href: z02_sideproject_vascular_2.html
   - text: About
     href: about.html
   - text: License
