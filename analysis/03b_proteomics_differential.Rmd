@@ -185,7 +185,7 @@ for (c_name in names(contrast_configs)) {
   
   # 3. Render Table (Fixed to inject raw HTML natively with a Scroll Box!)
   if(nrow(res$tables$significant_proteins) > 0) {
-    cat(sprintf("### Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
+    cat(sprintf("Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
     
     html_table <- kbl(res$tables$significant_proteins, format = "html", digits = 4, align = "c", 
               caption = sprintf("Significant Results: %s", contrast_configs[[c_name]]$title)) %>%
