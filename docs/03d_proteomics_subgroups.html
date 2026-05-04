@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree86ca81a957557ffdd89d195602423f16e0a741e7targetblank86ca81aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree237f030aa976ea8529d215b0cb5e5f41fe21c1f9targetblank237f030a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/86ca81a957557ffdd89d195602423f16e0a741e7" target="_blank">86ca81a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/237f030aa976ea8529d215b0cb5e5f41fe21c1f9" target="_blank">237f030</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree86ca81a957557ffdd89d195602423f16e0a741e7targetblank86ca81aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree237f030aa976ea8529d215b0cb5e5f41fe21c1f9targetblank237f030a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/86ca81a957557ffdd89d195602423f16e0a741e7" target="_blank">86ca81a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/237f030aa976ea8529d215b0cb5e5f41fe21c1f9" target="_blank">237f030</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -702,6 +702,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/237f030aa976ea8529d215b0cb5e5f41fe21c1f9/analysis/03d_proteomics_subgroups.Rmd" target="_blank">237f030</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+wflow_publish("analysis/03d_proteomics_subgroups.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/d7ad04b3fdd5e8dd340995a52d58eb601633b4b0/docs/03d_proteomics_subgroups.html" target="_blank">d7ad04b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -828,6 +862,26 @@ avc_dea &lt;- readRDS(here::here(&quot;output&quot;, &quot;03b_proteomics_differ
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined the exact clinical subgroup labels to target the Non-Active
+cohort.
+</li>
+<li>
+Parameterised the biological axis definition to use the top 260 Active
+vs Control proteins across 5 Principal Components.
+</li>
+<li>
+Configured strict FDR and Rho thresholds independently for the
+proteomics and clinical discovery engines.
+</li>
+<li>
+Set global plotting aesthetics.
+</li>
+</ul>
+</div>
 <pre class="r"><code># 1. Subgroup Definitions
 groups &lt;- list(
   active = GRP_ACTIVE,
@@ -1164,26 +1218,6 @@ if (mean_active &lt; mean_control) {
 hm_final &lt;- hm_df %&gt;% filter(cohort_group == groups$target) %&gt;% select(Subject_ID, HM_Active_Score)</code></pre>
 </div>
 <div id="score-characterization" class="section level2">
-<h2>Score Characterization</h2>
-<div class="info-box">
-<strong>What this code does:</strong>
-<ul>
-<li>
-Merged the three scores into a master Non-Active index.
-</li>
-<li>
-Plotted density histograms to visually evaluate if the Non-Active cohort
-is continuous (bell curve) or comprised of two distinct subgroups
-(bimodal).
-</li>
-<li>
-Plotted the pairwise correlations between the three independent
-mathematical approaches.
-</li>
-</ul>
-</div>
-</div>
-<div id="score-characterization-1" class="section level2">
 <h2>Score Characterization</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
@@ -4012,6 +4046,11 @@ Wilcoxon
 </div>
 <pre class="r"><code># Cleanup RAM
 rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out)</code></pre>
+</div>
+</div>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -6093,8 +6132,6 @@ loaded via a namespace (and not attached):
 [169] viridisLite_0.4.3       lmerTest_3.2-1          aplot_0.2.9            
 [172] memoise_2.0.1           AnnotationDbi_1.72.0    IRanges_2.44.0         
 [175] cluster_2.1.8.2         globals_0.19.1          timechange_0.4.0       </code></pre>
-</div>
-</div>
 </div>
 </div>
 </div>
