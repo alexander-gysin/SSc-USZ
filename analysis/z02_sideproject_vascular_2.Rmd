@@ -94,7 +94,7 @@ cor_config <- list(
 ```
 
 # Scores
-`r analysis_decision("Dual-Metric Stringency: The Magnitude Score captures total biological intensity, while the Count Score captures systemic breadth (preventing a single massive outlier protein from hijacking the selection).", "Patients are ranked in both metrics.", "Ranks are sumed and highest and lowest concordance ranks are selected.")`
+`r analysis_decision("Dual-Metric Stringency: The Magnitude Score captures total biological intensity, while the Count Score captures systemic breadth (preventing a single massive outlier protein from hijacking the selection).", "Patients are ranked in both metrics.", "Ranks are summed and highest and lowest concordance ranks are selected.")`
 
 ## Vascular Signature Scoring
 `r what_this_does("Calculated two independent vascular metrics.", "Magnitude Score: The sum of aligned Z-scores (Downregulated proteins are inverted so positive always means pro-disease).", "Direction Count Score: Assigns +1 if a protein crosses the biological threshold in the 'disease' direction, and -1 if it crosses in the 'healthy' direction.")`
