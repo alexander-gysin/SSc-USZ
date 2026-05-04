@@ -45,7 +45,8 @@ high_var_prots <- if(file.exists(high_var_path)) readRDS(high_var_path) else NUL
 ```
 
 # Configurations
-`r what_this_does("Defined configuration parameters for unsupervised molecular clustering.", "Set K-means centers (k) to test different numbers of potential endotypes.", "Selected specific clinical variables to automatically profile against the newly discovered clusters.")`
+`r what_this_does("Defined configuration parameters for unsupervised molecular clustering.", "Calculated a Non-Active specific high-variance protein subset using the global variance engine.", "Set K-means centers (k) to test different numbers of potential endotypes.", "Selected specific clinical variables to automatically profile against the newly discovered clusters.")`
+
 ```{r config}
 # 0. Data Dictionary Shield & Base Excludes ------------------------------------
 # Automatically identify variables that are mathematically unstable, skewed, or contain outliers
@@ -65,27 +66,52 @@ base_excludes <- c(
 
 final_excludes <- unique(c(base_excludes, unstable_vars))
 
-# 1. Molecular Clustering Configs ----------------------------------------------
+# 1. Non-Active Specific High Variance Proteins --------------------------------
+na_clin <- master_spine %>% filter(cohort_group == GRP_NON_ACTIVE)
+na_mat <- olink_mat[, intersect(colnames(olink_mat), na_clin$Subject_ID)]
+
+na_var_conf <- list(
+  title = "Non-Active Variance Filter", 
+  top_n_features = 260, 
+  omics_type = "Protein"
+)
+
+# Run the variance filter engine specifically on the Non-Active matrix
+na_var_res <- wrap_global_variance_filter(na_mat, na_var_conf, output_dir_data)
+na_high_var_prots <- na_var_res$features
+
+# 2. Molecular Clustering Configs ----------------------------------------------
 clustering_configs <- list(
   
-  # Test a 2-cluster split (Filtered for Signal)
+  # Test a 2-cluster split (Full Cohort)
   k2_split_filtered = list(
-    title = "Molecular Endotypes (k=2) | High Variance Only",
+    title = "Molecular Endotypes (k=2) | Full Cohort High Variance",
     k = 2,
     n_neighbors = 15, 
     include_features = high_var_prots, 
     include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes # <-- SHIELD ENGAGED!
+    exclude_clinical_vars = final_excludes 
   ),
   
-  # Test a 3-cluster split (Filtered for Signal)
+  # Test a 3-cluster split (Full Cohort)
   k3_split_filtered = list(
-    title = "Molecular Endotypes (k=3) | High Variance Only",
+    title = "Molecular Endotypes (k=3) | Full Cohort High Variance",
     k = 3,
     n_neighbors = 15, 
     include_features = high_var_prots, 
     include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes # <-- SHIELD ENGAGED!
+    exclude_clinical_vars = final_excludes 
+  ),
+  
+  # Non-Active Sub-Clustering
+  nonactive_only_k2 = list(
+    title = "Non-Active Sub-Clustering (k=2) | Internal High Variance",
+    subset_groups = c(GRP_NON_ACTIVE), # Focus only on Non-Actives
+    k = 2,
+    n_neighbors = 5, # Lowered due to much smaller N-size of this subset
+    include_features = na_high_var_prots, # Using the internally filtered top 260
+    include_clinical_vars = unname(unlist(clinical_domains)),
+    exclude_clinical_vars = final_excludes
   )
 )
 ```
