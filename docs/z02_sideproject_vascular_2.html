@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>Sideproject: Vascular 2</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="02_cohort_characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_vascular_2.html">Vascular 2</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Sideproject: Vascular 2</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">04 May, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-05-04
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2e5fe328edd215b5946c7a8af17c26bc904be688targetblank2e5fe32a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2e5fe328edd215b5946c7a8af17c26bc904be688" target="_blank">2e5fe32</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2e5fe328edd215b5946c7a8af17c26bc904be688targetblank2e5fe32a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2e5fe328edd215b5946c7a8af17c26bc904be688" target="_blank">2e5fe32</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01b_clinical_feature_engineering/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/randomizer/
+    Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/03d_proteomics_subgroups.Rmd
+    Untracked:  analysis/03e_proteomics_correlations.Rmd
+    Untracked:  code/randomizer.R
+    Untracked:  core
+
+Unstaged changes:
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/z02_sideproject_vascular_2.Rmd</code>) and HTML
+(<code>docs/z02_sideproject_vascular_2.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e5fe328edd215b5946c7a8af17c26bc904be688/analysis/z02_sideproject_vascular_2.Rmd" target="_blank">2e5fe32</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+wflow_publish("analysis/z02_sideproject_vascular_2.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Goal: To identify SSc patients with the most extreme “vascular
+disease” proteomic signatures to select their serum for functional in
+vitro organoid stimulation.</p>
+<div
+style="border: 2px solid #e74c3c; padding: 15px; border-radius: 5px; background-color: #fdf2e9; margin-bottom: 20px;">
+<h4 style="margin-top: 0; color: #c0392b;">
+⚠️ NOTE: Medication Confounders
+</h4>
+<p>The computational pipeline currently lacks patient medication
+histories (e.g., Rituximab, Mycophenolate, Calcium Channel Blockers). If
+organoids exhibit divergent behavior, consider that they may be
+responding to circulating pharmaceutical agents in the serum rather than
+the endogenous vascular disease signature. A clinical audit of
+autoantibodies and renal function (Creatinine) is provided below to
+check for extreme uremia or other major toxic confounders.</p>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded analytical packages for scoring, correlation, and clinical
+profiling.
+</li>
+<li>
+Imported the pre-cleaned clinical master spine, numeric spine, data
+dictionary, and Olink proteomics matrix.
+</li>
+<li>
+Sourced the master omics engines for downstream DEA and Heatmap
+rendering.
+</li>
+</ul>
+</div>
+<pre class="r"><code>library(tidyverse)
+library(patchwork)
+library(here)
+library(gtsummary)
+library(kableExtra)
+library(ComplexHeatmap)
+library(circlize)
+library(writexl)
+library(ggrepel) # Added for non-overlapping scatterplot labels
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file &lt;- &quot;z02_sideproject_vascular_2&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines
+source(here::here(&quot;code&quot;, &quot;00_omics_engines.R&quot;))
+
+# Load Pre-Cleaned Data &amp; Global DEA Results
+master_spine  &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine.rds&quot;))
+numeric_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine_numeric.rds&quot;))
+data_dict     &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;clinical_data_dictionary.rds&quot;)) # Adjust to .csv and read_csv() if your dict is a csv!
+olink_mat     &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;clean_olink_matrix.rds&quot;))
+
+# Load Global Vascular DEA (from Script 03b)
+global_vascular_dea &lt;- readRDS(here::here(&quot;output&quot;, &quot;03b_proteomics_differential&quot;, &quot;full_vascular_dea_results.rds&quot;))</code></pre>
+</div>
+<div id="configurations" class="section level1">
+<h1>Configurations</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Defined the exact sets of proteins that comprise the Vascular Scoring
+system.
+</li>
+<li>
+Set mathematical thresholds for the Direction Count Score (+1/-1 logic).
+</li>
+<li>
+Parameterised the sample sizes for the Differential Expresion Analysis
+(Extreme N) and the Biobank Shopping List.
+</li>
+<li>
+Configured strict FDR and Rho thresholds for the Proteomic and Clinical
+correlation discovery engines.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Protein Signatures
+vascular_up_proteins   &lt;- c(&quot;VEGFA&quot;, &quot;PGF&quot;, &quot;CCL2&quot;, &quot;CXCL10&quot;, &quot;EDNRB&quot;) 
+vascular_down_proteins &lt;- c(&quot;NOS3&quot;, &quot;CALCA&quot;, &quot;ACE2&quot;, &quot;HGF&quot;)
+
+# Proteins of Interest for Endothelial/Myocardial specific heatmaps
+proteins_of_interest   &lt;- unique(c(vascular_up_proteins, vascular_down_proteins, &quot;VWF&quot;, &quot;TIE1&quot;, &quot;TNNT2&quot;))
+
+# 2. Scoring Parameters
+score_config &lt;- list(
+  z_thresh   = 1.0,  # Threshold for Direction Count Score (+1 or -1)
+  extreme_n  = 5,    # Number of patients to select for Top and Bottom groups (for DEA)
+  shopping_n = 10    # Number of patients to export for Biobank retrieval
+)
+
+# 3. Clinical Audit &amp; Visualization Parameters
+plot_color_vars &lt;- c(&quot;vascular_active&quot;, &quot;Inflamm_active&quot;, &quot;cohort_group&quot;)
+audit_vars      &lt;- c(&quot;Age&quot;, &quot;Sex&quot;, &quot;log_Creatinine&quot;, &quot;SSc Antibodies&quot;, &quot;disease_duration&quot;)
+
+# 4. Global Omics Thresholds (Required for DEA wrapper)
+omics_config &lt;- list(gsea_p_cutoff = 0.20, gsea_min_size = 3)
+heatmap_config &lt;- list(top_n = 30, split_by_group = TRUE, row_font_size = 8)
+
+# 5. NEW: Correlation Discovery Thresholds
+cor_config &lt;- list(
+  max_table_rows = 30, # How many top hits to display in the HTML tables
+  proteomics = list(
+    fdr_thresh = 0.05,
+    rho_thresh = 0.4
+  ),
+  clinical = list(
+    fdr_thresh = 0.10, # Slightly looser FDR for clinical traits due to lower N and higher variance
+    rho_thresh = 0.3
+  )
+)</code></pre>
+</div>
+<div id="vascular-signature-scoring" class="section level1">
+<h1>Vascular Signature Scoring</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Calculated two independent vascular metrics.
+</li>
+<li>
+<ol style="list-style-type: decimal">
+<li>Magnitude Score: The sum of aligned Z-scores (Downregulated proteins
+are inverted so positive always means pro-disease).
+</li>
+<li>
+<ol start="2" style="list-style-type: decimal">
+<li>Direction Count Score: Assigns +1 if a protein crosses the
+biological threshold in the ‘disease’ direction, and -1 if it crosses in
+the ‘healthy’ direction.
+</li>
+</ul>
+</div></li>
+</ol></li>
+</ol>
+<pre class="r"><code># Clean lists to only include available proteins
+valid_up   &lt;- intersect(vascular_up_proteins, rownames(olink_mat))
+valid_down &lt;- intersect(vascular_down_proteins, rownames(olink_mat))
+
+# Restrict to SSc patients only
+ssc_patients &lt;- master_spine %&gt;% filter(cohort_group %in% c(GRP_ACTIVE, GRP_NON_ACTIVE)) %&gt;% pull(Subject_ID)
+valid_ssc_ids &lt;- intersect(ssc_patients, colnames(olink_mat))
+
+# 1. Z-Score Scaling (Scaled across SSc patients only)
+z_mat &lt;- t(scale(t(olink_mat[, valid_ssc_ids])))
+
+# 2. Magnitude Score Calculation (Aligned: Up - Down)
+mag_up   &lt;- colSums(z_mat[valid_up, , drop=FALSE], na.rm=TRUE)
+mag_down &lt;- colSums(z_mat[valid_down, , drop=FALSE], na.rm=TRUE)
+mag_score &lt;- mag_up - mag_down
+
+# 3. Direction Count Score (+1/-1 logic)
+# UP list logic
+up_plus  &lt;- colSums(z_mat[valid_up, , drop=FALSE] &gt; score_config$z_thresh, na.rm=TRUE)
+up_minus &lt;- colSums(z_mat[valid_up, , drop=FALSE] &lt; -score_config$z_thresh, na.rm=TRUE)
+
+# DOWN list logic (Inverted biologically)
+down_plus  &lt;- colSums(z_mat[valid_down, , drop=FALSE] &lt; -score_config$z_thresh, na.rm=TRUE) # Low is bad
+down_minus &lt;- colSums(z_mat[valid_down, , drop=FALSE] &gt; score_config$z_thresh, na.rm=TRUE)  # High is good
+
+count_score &lt;- (up_plus - up_minus) + (down_plus - down_minus)
+
+# 4. Master Score DataFrame
+score_df &lt;- data.frame(
+  Subject_ID = valid_ssc_ids,
+  Magnitude_Score = mag_score,
+  Count_Score = count_score
+) %&gt;%
+  mutate(
+    # Concordance Ranking (Lower rank = more extreme disease)
+    Rank_Mag   = rank(-Magnitude_Score),
+    Rank_Count = rank(-Count_Score),
+    Concordance_Rank = Rank_Mag + Rank_Count
+  ) %&gt;%
+  arrange(Concordance_Rank)
+
+# Merge back with clinical data for plotting
+plot_spine &lt;- master_spine %&gt;% inner_join(score_df, by = &quot;Subject_ID&quot;)</code></pre>
+<div id="score-characterization" class="section level1">
+<h1>Score Characterization</h1>
+<div id="score-distribution" class="section level2 tabset">
+<h2 class="tabset">Score Distribution</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Plotted the density distributions of the newly calculated Vascular
+Scores across the entire cohort.
+</li>
+<li>
+Color-coded the histograms by clinical metadata to visually confirm if
+the proteomic score maps to real-world clinical status.
+</li>
+</ul>
+</div>
+<pre class="r"><code>for (c_var in plot_color_vars) {
+  if (!(c_var %in% colnames(plot_spine))) next
+  
+  cat(sprintf(&quot;\n\n### Colored by: %s\n\n&quot;, c_var))
+  
+  p_mag &lt;- ggplot(plot_spine %&gt;% filter(!is.na(!!sym(c_var))), aes(x = Magnitude_Score, fill = !!sym(c_var))) +
+    geom_density(alpha = 0.5) +
+    theme_project_base() +
+    labs(title = &quot;Magnitude Score&quot;, x = &quot;Magnitude (Sum of aligned Z-scores)&quot;) +
+    theme(plot.title = element_text(size = 11, face = &quot;italic&quot;))
+  
+  p_cnt &lt;- ggplot(plot_spine %&gt;% filter(!is.na(!!sym(c_var))), aes(x = Count_Score, fill = !!sym(c_var))) +
+    geom_histogram(alpha = 1, position = &quot;stack&quot;, bins = 15, color = &quot;black&quot;) +
+    theme_project_base() +
+    labs(title = &quot;Direction Count Score&quot;, x = &quot;Count Score&quot;) +
+    theme(plot.title = element_text(size = 11, face = &quot;italic&quot;))
+  
+  # Use patchwork&#39;s plot_annotation to create a master title for the whole figure
+  master_plot &lt;- (p_mag | p_cnt) + 
+    plot_annotation(
+      title = sprintf(&quot;Vascular Score Distributions (Colored by: %s)&quot;, c_var),
+      theme = theme(plot.title = element_text(size = 15, face = &quot;bold&quot;))
+    )
+  
+  print(master_plot)
+  cat(&quot;\n\n&quot;)
+}</code></pre>
+<div id="colored-by-vascular_active" class="section level3">
+<h3>Colored by: vascular_active</h3>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="colored-by-inflamm_active" class="section level3">
+<h3>Colored by: Inflamm_active</h3>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="colored-by-cohort_group" class="section level3">
+<h3>Colored by: cohort_group</h3>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="score-drivers" class="section level2">
+<h2>Score Drivers</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Calculated the Spearman correlation between each scoring protein’s raw
+NPX and both the final derived Magnitude Score and Count Score.
+</li>
+<li>
+Identifies which specific proteins are contributing the strongest
+biological signal to the overall patient ranking across both
+methodologies.
+</li>
+</ul>
+</div>
+<pre class="r"><code>all_scoring_prots &lt;- unique(c(valid_up, valid_down))
+
+# Helper function to extract Rho, P-value, and assign significance stars
+get_cor_stats &lt;- function(p, score_col) {
+  res &lt;- cor.test(olink_mat[p, plot_spine$Subject_ID], plot_spine[[score_col]], method = &quot;spearman&quot;, exact = FALSE)
+  stars &lt;- case_when(
+    res$p.value &lt; 0.001 ~ &quot;***&quot;,
+    res$p.value &lt; 0.01  ~ &quot;**&quot;,
+    res$p.value &lt; 0.05  ~ &quot;*&quot;,
+    TRUE ~ &quot;ns&quot;
+  )
+  return(data.frame(Rho = res$estimate, P_Val = res$p.value, Stars = stars))
+}
+
+# Calculate for both scores
+mag_res &lt;- lapply(all_scoring_prots, function(p) get_cor_stats(p, &quot;Magnitude_Score&quot;)) %&gt;% bind_rows() %&gt;% mutate(Protein = all_scoring_prots, Score_Type = &quot;Magnitude Score&quot;)
+cnt_res &lt;- lapply(all_scoring_prots, function(p) get_cor_stats(p, &quot;Count_Score&quot;)) %&gt;% bind_rows() %&gt;% mutate(Protein = all_scoring_prots, Score_Type = &quot;Count Score&quot;)
+
+driver_df &lt;- bind_rows(mag_res, cnt_res) %&gt;%
+  mutate(Direction = ifelse(Protein %in% valid_up, &quot;Upregulated List&quot;, &quot;Downregulated List&quot;))
+
+order_prots &lt;- driver_df %&gt;% filter(Score_Type == &quot;Magnitude Score&quot;) %&gt;% arrange(Rho) %&gt;% pull(Protein)
+driver_df$Protein &lt;- factor(driver_df$Protein, levels = order_prots)
+driver_df$Score_Type &lt;- factor(driver_df$Score_Type, levels = c(&quot;Magnitude Score&quot;, &quot;Count Score&quot;))
+
+ggplot(driver_df, aes(x = Protein, y = Rho, fill = Direction)) +
+  geom_bar(stat = &quot;identity&quot;, color = &quot;black&quot;) +
+  geom_text(aes(label = Stars, y = Rho + sign(Rho)*0.05), size = 4, vjust = 0.75) +
+  coord_flip() +
+  facet_wrap(~ Score_Type) +
+  scale_fill_manual(values = c(&quot;Upregulated List&quot; = &quot;#c0392b&quot;, &quot;Downregulated List&quot; = &quot;#2980b9&quot;)) +
+  theme_project_base() +
+  labs(title = &quot;Primary Score Drivers&quot;, subtitle = &quot;Spearman Correlation: Individual Protein NPX vs Final Scores&quot;, x = NULL, y = &quot;Spearman Rho&quot;)</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/primary_score_drivers-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="score-correlations" class="section level2">
+<h2>Score Correlations</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Extracted continuous clinical variables labeled ‘PASS’ from the data
+dictionary.
+</li>
+<li>
+Computed Spearman correlations mapping every valid protein and clinical
+trait against the Magnitude Score, Count Score, and Inverted Rank.
+</li>
+<li>
+Applied Benjamini-Hochberg FDR correction.
+</li>
+<li>
+Generated scrollable HTML tables of the top drivers and exported full
+results to CSV.
+</li>
+</ul>
+</div>
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+Because the sickest patients have the lowest numerical Concordance Rank
+(e.g., #1), disease-promoting proteins would normally show a negative
+mathematical correlation. By computationally inverting the rank
+(multiplying by -1), a positive Rho uniformly signifies an association
+with worse vascular disease across all three metrics.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Prepare Data Matrices -----------------------------------------------------
+valid_ssc_ids &lt;- plot_spine$Subject_ID
+
+# Prepare the Score DataFrame with the Inverted Rank
+score_df_sub &lt;- plot_spine %&gt;% 
+  select(Subject_ID, Magnitude_Score, Count_Score, Concordance_Rank) %&gt;%
+  mutate(Inverted_Rank = -1 * Concordance_Rank)
+
+# Prepare Clinical Matrix (Filtered by Dictionary &#39;PASS&#39;)
+pass_vars &lt;- data_dict %&gt;% filter(QC_Flag == &quot;PASS&quot;) %&gt;% pull(Variable)
+clin_vars &lt;- intersect(colnames(numeric_spine), pass_vars)
+clin_vars &lt;- setdiff(clin_vars, &quot;Subject_ID&quot;)
+
+clin_df &lt;- numeric_spine %&gt;% filter(Subject_ID %in% valid_ssc_ids) %&gt;% select(Subject_ID, all_of(clin_vars))
+
+# FIX: Safely move ID to row names, then purge any accidental text columns before transposing
+clin_mat &lt;- t(clin_df %&gt;% 
+                column_to_rownames(&quot;Subject_ID&quot;) %&gt;% 
+                select(where(is.numeric)))
+
+# Prepare Proteomics Matrix
+prot_mat &lt;- olink_mat[, valid_ssc_ids]
+
+# 2. Correlation Engine --------------------------------------------------------
+run_mass_cor &lt;- function(data_mat, score_vec) {
+  res &lt;- apply(data_mat, 1, function(x) {
+    if(sum(!is.na(x)) &lt; 10) return(c(Rho=NA, P_Val=NA)) # Skip features with &lt; 10 valid data points
+    ct &lt;- cor.test(x, score_vec, method=&quot;spearman&quot;, exact=FALSE)
+    # unname() strips the hidden &#39;rho&#39; label so dplyr can find the columns
+    c(Rho=unname(ct$estimate), P_Val=unname(ct$p.value))
+  })
+  
+  df &lt;- as.data.frame(t(res)) %&gt;%
+    rownames_to_column(&quot;Feature&quot;) %&gt;%
+    filter(!is.na(Rho)) %&gt;%
+    mutate(FDR = p.adjust(P_Val, method=&quot;BH&quot;)) %&gt;%
+    arrange(desc(abs(Rho)))
+  return(df)
+}
+
+# 3. Execution &amp; HTML Construction Loop ----------------------------------------
+# We store results in a master list for the next chunk
+cor_results &lt;- list(proteomics = list(), clinical = list())
+score_targets &lt;- c(&quot;Magnitude_Score&quot;, &quot;Count_Score&quot;, &quot;Inverted_Rank&quot;)
+modalities &lt;- list(proteomics = prot_mat, clinical = clin_mat)
+
+# HTML string accumulator to prevent fragmenting the output box (Knitting only)
+html_out &lt;- &quot;&quot;
+
+for (mod_name in names(modalities)) {
+  if (!interactive()) {
+    html_out &lt;- paste0(html_out, sprintf(&quot;\n\n### %s {.tabset}\n\n&quot;, tools::toTitleCase(mod_name)))
+  }
+  mod_conf &lt;- cor_config[[mod_name]]
+  
+  for (score_name in score_targets) {
+    clean_score_name &lt;- gsub(&quot;_&quot;, &quot; &quot;, score_name)
+    if (!interactive()) {
+      html_out &lt;- paste0(html_out, sprintf(&quot;\n\n#### %s\n\n&quot;, clean_score_name))
+    }
+    
+    # Calculate
+    score_vec &lt;- setNames(score_df_sub[[score_name]], score_df_sub$Subject_ID)
+    res_df &lt;- run_mass_cor(modalities[[mod_name]], score_vec)
+    cor_results[[mod_name]][[score_name]] &lt;- res_df
+    
+    # Export full dataset
+    export_name &lt;- sprintf(&quot;Correlations_%s_vs_%s.csv&quot;, tools::toTitleCase(mod_name), score_name)
+    write_csv(res_df, file.path(output_dir_data, export_name))
+    
+    # Filter for Significant Top Hits for Display
+    sig_df &lt;- res_df %&gt;% filter(FDR &lt; mod_conf$fdr_thresh &amp; abs(Rho) &gt;= mod_conf$rho_thresh)
+    
+    caption_text &lt;- sprintf(&quot;&lt;br&gt;&lt;i&gt;Showing top %d significant hits (FDR &lt; %s, |Rho| &gt;= %s). Full list exported to output folder.&lt;/i&gt;\n\n&quot;, 
+                            min(nrow(sig_df), cor_config$max_table_rows), mod_conf$fdr_thresh, mod_conf$rho_thresh)
+    
+    if (nrow(sig_df) &gt; 0) {
+      tbl_html &lt;- sig_df %&gt;%
+        head(cor_config$max_table_rows) %&gt;%
+        kbl(format = &quot;html&quot;, digits = 3, align = &quot;c&quot;) %&gt;%
+        kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE) %&gt;%
+        scroll_box(height = &quot;400px&quot;)
+      
+      # The Dual-Path Rendering Engine
+      if (interactive()) {
+        cat(sprintf(&quot;\n=== %s vs %s ===\n&quot;, tools::toTitleCase(mod_name), clean_score_name))
+        print(tbl_html) # Forces RStudio Viewer to render
+        cat(caption_text, &quot;\n&quot;)
+      } else {
+        html_out &lt;- paste0(html_out, tbl_html, &quot;\n\n&quot;, caption_text)
+      }
+      
+    } else {
+      empty_msg &lt;- &quot;&gt; No features passed the significance thresholds.\n\n&quot;
+      
+      if (interactive()) {
+        cat(sprintf(&quot;\n=== %s vs %s ===\n&quot;, tools::toTitleCase(mod_name), clean_score_name))
+        cat(empty_msg)
+      } else {
+        html_out &lt;- paste0(html_out, empty_msg)
+      }
+    }
+  }
+}
+
+# Print the entire compiled HTML structure at once (Knitting only)
+if (!interactive()) {
+  cat(html_out)
+}</code></pre>
+<div id="proteomics" class="section level3 tabset">
+<h3 class="tabset">Proteomics</h3>
+<div id="magnitude-score" class="section level4">
+<h4>Magnitude Score</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+CCL8
+</td>
+<td style="text-align:center;">
+0.484
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CCL2
+</td>
+<td style="text-align:center;">
+0.447
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+PTK7
+</td>
+<td style="text-align:center;">
+0.424
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CXCL10
+</td>
+<td style="text-align:center;">
+0.418
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CXCL8
+</td>
+<td style="text-align:center;">
+0.404
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.009
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 5 significant hits (FDR &lt; 0.05, |Rho| &gt;=
+0.4). Full list exported to output folder.</i></p>
+</div>
+<div id="count-score" class="section level4">
+<h4>Count Score</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+ACE2
+</td>
+<td style="text-align:center;">
+-0.431
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.012
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 1 significant hits (FDR &lt; 0.05, |Rho| &gt;=
+0.4). Full list exported to output folder.</i></p>
+</div>
+<div id="inverted-rank" class="section level4">
+<h4>Inverted Rank</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+ACE2
+</td>
+<td style="text-align:center;">
+-0.410
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.019
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CSF3R
+</td>
+<td style="text-align:center;">
+-0.401
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.019
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 2 significant hits (FDR &lt; 0.05, |Rho| &gt;=
+0.4). Full list exported to output folder.</i></p>
+</div>
+</div>
+<div id="clinical" class="section level3 tabset">
+<h3 class="tabset">Clinical</h3>
+<div id="magnitude-score-1" class="section level4">
+<h4>Magnitude Score</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+0.397
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+0.005
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Hemoglobin (g/dl)
+</td>
+<td style="text-align:center;">
+-0.312
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+0.080
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 2 significant hits (FDR &lt; 0.1, |Rho| &gt;=
+0.3). Full list exported to output folder.</i></p>
+</div>
+<div id="count-score-1" class="section level4">
+<h4>Count Score</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+0.477
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 1 significant hits (FDR &lt; 0.1, |Rho| &gt;=
+0.3). Full list exported to output folder.</i></p>
+</div>
+<div id="inverted-rank-1" class="section level4">
+<h4>Inverted Rank</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Rho
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+0.455
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><i>Showing top 1 significant hits (FDR &lt; 0.1, |Rho| &gt;=
+0.3). Full list exported to output folder.</i></p>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Cross-referenced the Magnitude and Count score correlation profiles for
+both omics modalities.
+</li>
+<li>
+Categorized drivers as ‘Common’ (significant in both), ‘Unique to
+Magnitude’, or ‘Unique to Count’ based on configuration thresholds.
+</li>
+<li>
+Generated labeled quadrant scatterplots to visualize the core biological
+signals shared across the scoring architectures.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Quadrant Plotting Engine --------------------------------------------------
+plot_quadrant &lt;- function(mag_df, count_df, conf, title_prefix) {
+  
+  # Join dataframes safely
+  df &lt;- mag_df %&gt;%
+    inner_join(count_df, by = &quot;Feature&quot;, suffix = c(&quot;_Mag&quot;, &quot;_Count&quot;)) %&gt;%
+    mutate(
+      Sig_Mag = FDR_Mag &lt; conf$fdr_thresh &amp; abs(Rho_Mag) &gt;= conf$rho_thresh,
+      Sig_Count = FDR_Count &lt; conf$fdr_thresh &amp; abs(Rho_Count) &gt;= conf$rho_thresh,
+      Category = case_when(
+        Sig_Mag &amp; Sig_Count ~ &quot;Common Driver&quot;,
+        Sig_Mag ~ &quot;Unique to Magnitude&quot;,
+        Sig_Count ~ &quot;Unique to Count&quot;,
+        TRUE ~ &quot;Not Significant&quot;
+      ),
+      Label = ifelse(Category != &quot;Not Significant&quot;, Feature, &quot;&quot;)
+    )
+  
+  cat_colors &lt;- setNames(
+    c(&quot;#c0392b&quot;, &quot;#E69F00&quot;, &quot;#0072B2&quot;, &quot;grey80&quot;),
+    c(&quot;Common Driver&quot;, &quot;Unique to Magnitude&quot;, &quot;Unique to Count&quot;, &quot;Not Significant&quot;)
+  )
+  
+  p &lt;- ggplot(df, aes(x = Rho_Mag, y = Rho_Count, fill = Category, label = Label)) +
+    geom_hline(yintercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey50&quot;) +
+    geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey50&quot;) +
+    geom_point(shape = 21, size = 3, alpha = 0.8, color = &quot;black&quot;) +
+    geom_text_repel(size = 3, max.overlaps = 15, box.padding = 0.5, segment.color = &quot;grey50&quot;) +
+    scale_fill_manual(values = cat_colors) +
+    theme_project_base() +
+    labs(
+      title = sprintf(&quot;%s: Driver Concordance&quot;, title_prefix),
+      subtitle = sprintf(&quot;Thresholds: FDR &lt; %s, |Rho| &gt;= %s&quot;, conf$fdr_thresh, conf$rho_thresh),
+      x = &quot;Magnitude Score (Spearman Rho)&quot;,
+      y = &quot;Direction Count Score (Spearman Rho)&quot;
+    )
+  
+  return(p)
+}
+
+# 2. Generate and Save Plots ---------------------------------------------------
+p_prot &lt;- plot_quadrant(
+  mag_df = cor_results$proteomics$Magnitude_Score, 
+  count_df = cor_results$proteomics$Count_Score, 
+  conf = cor_config$proteomics, 
+  title_prefix = &quot;Proteomics&quot;
+)
+
+p_clin &lt;- plot_quadrant(
+  mag_df = cor_results$clinical$Magnitude_Score, 
+  count_df = cor_results$clinical$Count_Score, 
+  conf = cor_config$clinical, 
+  title_prefix = &quot;Clinical Parameters&quot;
+)
+
+# Print side-by-side
+print(p_prot | p_clin)</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/score_correlations_scatter-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save to disk
+ggsave(file.path(output_dir_data, &quot;Quadrant_Proteomics.png&quot;), p_prot, width = 8, height = 7, bg = &quot;white&quot;)
+ggsave(file.path(output_dir_data, &quot;Quadrant_Clinical.png&quot;), p_clin, width = 8, height = 7, bg = &quot;white&quot;)
+
+# Memory Cleanup (Delete variables no longer needed outside these chunks)
+rm(clin_mat, prot_mat, score_df_sub, clin_df, cor_results, html_out)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="patient-concordance-selection" class="section level1">
+<h1>Patient Concordance &amp; Selection</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Ranked patients based on their aggregate performance across both the
+Magnitude and Direction Count scoring systems.
+</li>
+<li>
+Designated the Top N and Bottom N patients as the extreme vascular
+phenotypes.
+</li>
+<li>
+Generated a scatterplot with overlaid linear regression to visually
+highlight the selected patients in the extreme corners of the
+concordance distribution.
+</li>
+</ul>
+</div>
+<div class="why-box">
+<strong>Why is this done?</strong>
+<ul>
+<li>
+To ensure the organoid experiment uses undeniable vascular serum, we
+plotted the Magnitude Score against the Count Score. Patients selected
+for the experiment MUST sit at the absolute extremes of both approaches.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Define the Extreme Groups based on Concordance Rank
+top_patients &lt;- plot_spine %&gt;% slice_min(Concordance_Rank, n = score_config$extreme_n) %&gt;% pull(Subject_ID)
+bot_patients &lt;- plot_spine %&gt;% slice_max(Concordance_Rank, n = score_config$extreme_n) %&gt;% pull(Subject_ID)
+
+lbl_unselected &lt;- &quot;Unselected&quot;
+lbl_top &lt;- sprintf(&quot;Top %d (Vascular High)&quot;, score_config$extreme_n)
+lbl_bot &lt;- sprintf(&quot;Bottom %d (Vascular Low)&quot;, score_config$extreme_n)
+
+plot_spine &lt;- plot_spine %&gt;%
+  mutate(Selection = case_when(
+    Subject_ID %in% top_patients ~ lbl_top,
+    Subject_ID %in% bot_patients ~ lbl_bot,
+    TRUE ~ lbl_unselected
+  ))
+
+selection_colors &lt;- setNames(c(&quot;grey80&quot;, &quot;#c0392b&quot;, &quot;#2980b9&quot;), c(lbl_unselected, lbl_top, lbl_bot))
+
+p_scatter &lt;- ggplot(plot_spine, aes(x = Magnitude_Score, y = Count_Score, fill = Selection)) +
+  geom_point(shape = 21, size = 3, alpha = 0.8, color = &quot;black&quot;) +
+  scale_fill_manual(values = selection_colors) + 
+  theme_project_base() +
+  labs(title = &quot;Score Concordance &amp; Sera Selection&quot;, 
+       subtitle = sprintf(&quot;Selecting top and bottom %d patients based on combined ranking&quot;, score_config$extreme_n),
+       x = &quot;Magnitude Score (Z-Score Sum)&quot;, y = &quot;Count Score (+1/-1)&quot;)
+
+print(p_scatter)</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/patient_concordance_and_selection-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggsave(file.path(output_dir_data, &quot;Patient_Selection_Concordance.png&quot;), p_scatter, width=8, height=6, bg=&quot;white&quot;)
+
+
+tbl_data &lt;- plot_spine %&gt;% 
+  filter(Selection != lbl_unselected) %&gt;%
+  select(Subject_ID, Selection, Magnitude_Score, Count_Score, Concordance_Rank) %&gt;%
+  arrange(Concordance_Rank)
+
+# Print cleanly for both inline RStudio and Knitted HTML
+tbl_data %&gt;% 
+  kbl(format = &quot;html&quot;, digits = 2, align = &quot;c&quot;) %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;) %&gt;%
+  row_spec(0, bold = TRUE)</code></pre>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;">
+Subject_ID
+</th>
+<th style="text-align:center;font-weight: bold;">
+Selection
+</th>
+<th style="text-align:center;font-weight: bold;">
+Magnitude_Score
+</th>
+<th style="text-align:center;font-weight: bold;">
+Count_Score
+</th>
+<th style="text-align:center;font-weight: bold;">
+Concordance_Rank
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Act_37
+</td>
+<td style="text-align:center;">
+Top 5 (Vascular High)
+</td>
+<td style="text-align:center;">
+6.25
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+3.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Nonact_10
+</td>
+<td style="text-align:center;">
+Top 5 (Vascular High)
+</td>
+<td style="text-align:center;">
+3.35
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+12.5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Nonact_29
+</td>
+<td style="text-align:center;">
+Top 5 (Vascular High)
+</td>
+<td style="text-align:center;">
+2.83
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+16.5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Act_46
+</td>
+<td style="text-align:center;">
+Top 5 (Vascular High)
+</td>
+<td style="text-align:center;">
+6.62
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+21.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Act_8
+</td>
+<td style="text-align:center;">
+Top 5 (Vascular High)
+</td>
+<td style="text-align:center;">
+5.58
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+23.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Act_28
+</td>
+<td style="text-align:center;">
+Bottom 5 (Vascular Low)
+</td>
+<td style="text-align:center;">
+-4.86
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+181.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Act_4
+</td>
+<td style="text-align:center;">
+Bottom 5 (Vascular Low)
+</td>
+<td style="text-align:center;">
+-6.88
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+182.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Nonact_25
+</td>
+<td style="text-align:center;">
+Bottom 5 (Vascular Low)
+</td>
+<td style="text-align:center;">
+-4.17
+</td>
+<td style="text-align:center;">
+-3
+</td>
+<td style="text-align:center;">
+184.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Nonact_11
+</td>
+<td style="text-align:center;">
+Bottom 5 (Vascular Low)
+</td>
+<td style="text-align:center;">
+-7.38
+</td>
+<td style="text-align:center;">
+-4
+</td>
+<td style="text-align:center;">
+190.5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Act_14
+</td>
+<td style="text-align:center;">
+Bottom 5 (Vascular Low)
+</td>
+<td style="text-align:center;">
+-9.41
+</td>
+<td style="text-align:center;">
+-4
+</td>
+<td style="text-align:center;">
+191.5
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="clinical-confounder-audit" class="section level1">
+<h1>Clinical Confounder Audit</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generates a cross-reference table of the selected extreme patients.
+</li>
+<li>
+Allows wet-lab experimenters to check if the ‘High Vascular’ serum
+happens to be systematically older, uremic (Creatinine), or tied to a
+specific autoantibody, which could artificially influence the organoids.
+</li>
+</ul>
+</div>
+<pre class="r"><code>audit_cols &lt;- intersect(audit_vars, colnames(plot_spine))
+
+audit_df &lt;- plot_spine %&gt;%
+  filter(Selection != &quot;Unselected&quot;) %&gt;%
+  select(Selection, all_of(audit_cols))
+
+continuous_force_vars &lt;- intersect(c(&quot;Age&quot;, &quot;log_Creatinine&quot;, &quot;disease_duration&quot;), colnames(audit_df))
+
+suppressMessages(suppressWarnings({
+  tbl_audit &lt;- audit_df %&gt;%
+    tbl_summary(
+      by = Selection, 
+      missing = &quot;no&quot;,
+      type = list(any_of(continuous_force_vars) ~ &quot;continuous&quot;)
+    ) %&gt;%
+    add_p() %&gt;%
+    bold_labels() %&gt;%
+    modify_header(label = &quot;**Clinical Confounder**&quot;)
+}))
+
+tbl_audit %&gt;% as_kable_extra(format = &quot;html&quot;) %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;)</code></pre>
+<table style="NAborder-bottom: 0; width: auto !important; " class="table table-striped table-hover table-condensed">
+<thead>
+<tr>
+<th style="text-align:left;">
+Clinical Confounder
+</th>
+<th style="text-align:center;">
+Bottom 5 (Vascular Low) <br>N = 5
+</th>
+<th style="text-align:center;">
+Top 5 (Vascular High) <br>N = 5
+</th>
+<th style="text-align:center;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Age</span>
+</td>
+<td style="text-align:center;">
+47 (44, 66)
+</td>
+<td style="text-align:center;">
+70 (38, 70)
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sex</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.048
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Male
+</td>
+<td style="text-align:center;">
+4 (80%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Female
+</td>
+<td style="text-align:center;">
+1 (20%)
+</td>
+<td style="text-align:center;">
+5 (100%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">log_Creatinine</span>
+</td>
+<td style="text-align:center;">
+1.95 (1.94, 1.96)
+</td>
+<td style="text-align:center;">
+1.85 (1.80, 1.86)
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">SSc Antibodies</span>
+</td>
+<td style="text-align:center;">
+3 (60%)
+</td>
+<td style="text-align:center;">
+5 (100%)
+</td>
+<td style="text-align:center;">
+0.4
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>1</sup> Median (Q1, Q3); n (%)
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>2</sup> Wilcoxon rank sum test; Fisher’s exact test
+</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div id="differential-expression-analysis"
+class="section level1 tabset">
+<h1 class="tabset">Differential Expression Analysis</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Runs the master Limma Differential Expression Analysis specifically on
+the Top N vs Bottom N selected patients.
+</li>
+<li>
+Generates standard Volcano plots and heatmaps to visually validate the
+biological extreme phenotype of the chosen sera.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Setup Custom DEA Config for the Wrapper
+extreme_dea_conf &lt;- list(
+  title = sprintf(&quot;Organoid Candidates: Top %d vs Bottom %d&quot;, score_config$extreme_n, score_config$extreme_n),
+  group_col = &quot;Selection&quot;,
+  target_groups = c(sprintf(&quot;Top %d (Vascular High)&quot;, score_config$extreme_n)),
+  ref_groups = c(sprintf(&quot;Bottom %d (Vascular Low)&quot;, score_config$extreme_n)),
+  is_continuous = FALSE,
+  covariates = c(),
+  dea_p_cutoff = 0.05,
+  dea_fc_cutoff = 0.5,
+  custom_color_map = selection_colors # &lt;--- Pass custom colors safely
+)
+
+# 2. Run DEA Engine
+dea_res &lt;- wrap_dea_pipeline(
+    omics_mat           = olink_mat, 
+    clin_df             = plot_spine, 
+    dea_conf            = extreme_dea_conf, 
+    dea_id              = &quot;extreme_vascular&quot;, 
+    base_output_dir     = output_dir_data, 
+    go_db               = NULL, 
+    omics_config        = omics_config, 
+    heatmap_config      = heatmap_config, 
+    project_colors_func = get_project_colors
+)
+
+clin_extreme &lt;- plot_spine %&gt;% filter(Selection != &quot;Unselected&quot;)
+
+# HEATMAP 1: Local DEA (Extreme Phenotype)
+cat(&quot;## Local DEA Heatmap\n\n&quot;)</code></pre>
+<div id="local-dea-heatmap" class="section level2">
+<h2>Local DEA Heatmap</h2>
+<pre class="r"><code>if (dea_res$status == &quot;success&quot;) {
+  print(dea_res$plots$volcano)
+  cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
+  
+  hm_local &lt;- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = dea_res$data$dea,
+    title = &quot;Local DEA (5v5)&quot;,
+    n_top = 30, 
+    split_by_group = FALSE, # Unsupervised clustering
+    split_col = &quot;Selection&quot;,
+    custom_color_map = selection_colors
+  )
+  draw(hm_local)
+  cat(&quot;\n\n&quot;)
+} else {
+  cat(sprintf(&quot;&gt; &lt;span style=&#39;color:red;&#39;&gt;**DEA Failed:** %s&lt;/span&gt;\n\n&quot;, dea_res$error_msg))
+}</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p><br></p>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># HEATMAP 2: Global DEA Signature
+cat(&quot;## Global DEA Heatmap\n\n&quot;)</code></pre>
+</div>
+<div id="global-dea-heatmap" class="section level2">
+<h2>Global DEA Heatmap</h2>
+<pre class="r"><code>if (exists(&quot;global_vascular_dea&quot;) &amp;&amp; !is.null(global_vascular_dea)) {
+  hm_global &lt;- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = global_vascular_dea,
+    title = &quot;Global DEA (full cohort)&quot;,
+    n_top = 30, 
+    split_by_group = FALSE,
+    split_col = &quot;Selection&quot;,
+    custom_color_map = selection_colors
+  )
+  draw(hm_global)
+  cat(&quot;\n\n&quot;)
+} else {
+  cat(&quot;&gt; Global DEA results not found. Skipping Global Heatmap.\n\n&quot;)
+}</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># HEATMAP 3: Custom Proteins of Interest
+cat(&quot;## Custom POI Heatmap\n\n&quot;)</code></pre>
+</div>
+<div id="custom-poi-heatmap" class="section level2">
+<h2>Custom POI Heatmap</h2>
+<pre class="r"><code>valid_poi &lt;- intersect(proteins_of_interest, rownames(olink_mat))
+if (length(valid_poi) &gt; 1 &amp;&amp; dea_res$status == &quot;success&quot;) {
+  
+  poi_limma_df &lt;- dea_res$data$dea %&gt;% filter(Feature %in% valid_poi)
+  
+  poi_heatmap &lt;- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = poi_limma_df,
+    title = &quot;Selected Proteins of Interest&quot;,
+    n_top = length(valid_poi), 
+    split_by_group = FALSE,
+    split_col = &quot;Selection&quot;,
+    show_top_n_title = FALSE, # Suppress the &quot;Top 9&quot; text
+    custom_color_map = selection_colors
+  )
+  draw(poi_heatmap)
+  cat(&quot;\n\n&quot;)
+} else {
+  cat(&quot;&gt; Insufficient Valid POIs to generate targeted heatmap.\n\n&quot;)
+}</code></pre>
+<p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="biobank-shopping-list-export" class="section level1">
+<h1>Biobank Shopping List Export</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Exports an extended priority list of extreme patients to CSV, providing
+the biobank with backup options in case primary aliquots are depleted.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Select only the needed columns FIRST to prevent duplicate column warnings
+shopping_top &lt;- plot_spine %&gt;% 
+  slice_min(Concordance_Rank, n = score_config$shopping_n) %&gt;% 
+  mutate(Target_Group = &quot;High Vascular Serum&quot;) %&gt;%
+  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
+
+shopping_bot &lt;- plot_spine %&gt;% 
+  slice_max(Concordance_Rank, n = score_config$shopping_n) %&gt;% 
+  mutate(Target_Group = &quot;Low Vascular Serum&quot;) %&gt;%
+  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
+
+# Bind clean rows
+shopping_list &lt;- bind_rows(shopping_top, shopping_bot) %&gt;%
+  arrange(Target_Group, Concordance_Rank)
+
+export_path &lt;- file.path(output_dir_data, &quot;Biobank_Organoid_Shopping_List.xlsx&quot;)
+write_xlsx(shopping_list, export_path)</code></pre>
+<pre class="r"><code>cat(&quot;Script z02 Complete! \n&quot;)</code></pre>
+<pre><code>Script z02 Complete! </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] grid      stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] car_3.1-5                carData_3.0-6            future.apply_1.20.2     
+ [4] future_1.70.0            variancePartition_1.40.2 BiocParallel_1.44.0     
+ [7] ggVennDiagram_1.5.7      glmnet_4.1-10            Matrix_1.7-5            
+[10] UpSetR_1.4.0             ggridges_0.5.7           pheatmap_1.0.13         
+[13] enrichplot_1.30.5        clusterProfiler_4.18.4   factoextra_2.0.0        
+[16] FactoMineR_2.13          limma_3.66.0             ggrepel_0.9.8           
+[19] writexl_1.5.4            circlize_0.4.18          ComplexHeatmap_2.26.1   
+[22] kableExtra_1.4.0         gtsummary_2.5.0          here_1.0.2              
+[25] patchwork_1.3.2          lubridate_1.9.5          forcats_1.0.1           
+[28] stringr_1.6.0            dplyr_1.2.1              purrr_1.2.1             
+[31] readr_2.2.0              tidyr_1.3.2              tibble_3.3.1            
+[34] tidyverse_2.0.0          ggplot2_4.0.2            workflowr_1.7.2         
+
+loaded via a namespace (and not attached):
+  [1] fs_2.0.1                matrixStats_1.5.0       bitops_1.0-9           
+  [4] httr_1.4.8              RColorBrewer_1.1-3      doParallel_1.0.17      
+  [7] numDeriv_2016.8-1.1     tools_4.5.2             backports_1.5.1        
+ [10] R6_2.6.1                DT_0.34.0               lazyeval_0.2.2         
+ [13] GetoptLong_1.1.0        withr_3.0.2             gridExtra_2.3          
+ [16] cli_3.6.5               Biobase_2.70.0          textshaping_1.0.5      
+ [19] flashClust_1.1-4        scatterpie_0.2.6        labeling_0.4.3         
+ [22] sass_0.4.10             mvtnorm_1.3-6           S7_0.2.1               
+ [25] systemfonts_1.3.2       yulab.utils_0.2.4       gson_0.1.0             
+ [28] DOSE_4.4.0              svglite_2.2.2           R.utils_2.13.0         
+ [31] parallelly_1.46.1       rstudioapi_0.18.0       RSQLite_2.4.6          
+ [34] generics_0.1.4          gridGraphics_0.5-1      shape_1.4.6.1          
+ [37] vroom_1.7.1             gtools_3.9.5            GO.db_3.22.0           
+ [40] leaps_3.2               S4Vectors_0.48.1        abind_1.4-8            
+ [43] R.methodsS3_1.8.2       lifecycle_1.0.5         whisker_0.4.1          
+ [46] scatterplot3d_0.3-45    yaml_2.3.12             gplots_3.3.0           
+ [49] qvalue_2.42.0           blob_1.3.0              promises_1.5.0         
+ [52] crayon_1.5.3            ggtangle_0.1.1          lattice_0.22-9         
+ [55] cowplot_1.2.0           KEGGREST_1.50.0         pillar_1.11.1          
+ [58] knitr_1.51              fgsea_1.36.2            rjson_0.2.23           
+ [61] boot_1.3-32             estimability_1.5.1      corpcor_1.6.10         
+ [64] codetools_0.2-20        fastmatch_1.1-8         glue_1.8.0             
+ [67] ggiraph_0.9.6           getPass_0.2-4           ggfun_0.2.0            
+ [70] fontLiberation_0.1.0    data.table_1.18.2.1     vctrs_0.7.2            
+ [73] png_0.1-9               treeio_1.34.0           Rdpack_2.6.6           
+ [76] gtable_0.3.6            cachem_1.1.0            xfun_0.57              
+ [79] rbibutils_2.4.1         Seqinfo_1.0.0           reformulas_0.4.4       
+ [82] survival_3.8-6          iterators_1.0.14        statmod_1.5.1          
+ [85] nlme_3.1-169            pbkrtest_0.5.5          ggtree_4.0.5           
+ [88] bit64_4.6.0-1           fontquiver_0.2.1        EnvStats_3.1.0         
+ [91] rprojroot_2.1.1         bslib_0.10.0            KernSmooth_2.23-26     
+ [94] otel_0.2.0              colorspace_2.1-2        BiocGenerics_0.56.0    
+ [97] DBI_1.3.0               tidyselect_1.2.1        processx_3.8.7         
+[100] emmeans_2.0.2           bit_4.6.0               compiler_4.5.2         
+[103] git2r_0.36.2            xml2_1.5.2              fontBitstreamVera_0.1.1
+[106] scales_1.4.0            caTools_1.18.3          remaCor_0.0.20         
+[109] callr_3.7.6             multcompView_0.1-11     rappdirs_0.3.4         
+[112] digest_0.6.39           minqa_1.2.8             rmarkdown_2.31         
+[115] aod_1.3.3               XVector_0.50.0          RhpcBLASctl_0.23-42    
+[118] htmltools_0.5.9         pkgconfig_2.0.3         lme4_2.0-1             
+[121] fastmap_1.2.0           rlang_1.2.0             GlobalOptions_0.1.3    
+[124] htmlwidgets_1.6.4       farver_2.1.2            jquerylib_0.1.4        
+[127] jsonlite_2.0.0          GOSemSim_2.36.0         R.oo_1.27.1            
+[130] magrittr_2.0.5          Formula_1.2-5           ggplotify_0.1.3        
+[133] Rcpp_1.1.1              ape_5.8-1               ggnewscale_0.5.2       
+[136] gdtools_0.5.0           stringi_1.8.7           MASS_7.3-65            
+[139] plyr_1.8.9              listenv_0.10.1          parallel_4.5.2         
+[142] Biostrings_2.78.0       splines_4.5.2           hms_1.1.4              
+[145] ps_1.9.2                igraph_2.2.2            reshape2_1.4.5         
+[148] stats4_4.5.2            evaluate_1.0.5          renv_1.1.5             
+[151] BiocManager_1.30.27     nloptr_2.2.1            tzdb_0.5.0             
+[154] foreach_1.5.2           tweenr_2.0.3            httpuv_1.6.16          
+[157] cards_0.7.1             polyclip_1.10-7         clue_0.3-68            
+[160] ggforce_0.5.0           cardx_0.3.2             broom_1.0.12           
+[163] fANCOVA_0.6-1           tidytree_0.4.7          tidydr_0.0.6           
+[166] later_1.4.8             ragg_1.5.2              viridisLite_0.4.3      
+[169] lmerTest_3.2-1          aplot_0.2.9             memoise_2.0.1          
+[172] AnnotationDbi_1.72.0    IRanges_2.44.0          cluster_2.1.8.2        
+[175] globals_0.19.1          timechange_0.4.0       </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
