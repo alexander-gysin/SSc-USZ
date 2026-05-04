@@ -94,6 +94,8 @@ cor_config <- list(
 ```
 
 # Scores
+`r analysis_decision("Dual-Metric Stringency: The Magnitude Score captures total biological intensity, while the Count Score captures systemic breadth (preventing a single massive outlier protein from hijacking the selection).", "Patients are ranked in both metrics.", "Ranks are sumed and highest and lowest concordance ranks are selected.")`
+
 ## Vascular Signature Scoring
 `r what_this_does("Calculated two independent vascular metrics.", "Magnitude Score: The sum of aligned Z-scores (Downregulated proteins are inverted so positive always means pro-disease).", "Direction Count Score: Assigns +1 if a protein crosses the biological threshold in the 'disease' direction, and -1 if it crosses in the 'healthy' direction.")`
 
@@ -332,9 +334,7 @@ if (!interactive()) {
 }
 ```
 
-## Driver Concordance (Scatterplots)
-`r what_this_does("Cross-referenced the Magnitude and Count score correlation profiles for both omics modalities.", "Categorized drivers as 'Common' (significant in both), 'Unique to Magnitude', or 'Unique to Count' based on configuration thresholds.", "Generated labeled quadrant scatterplots to visualize the core biological signals shared across the scoring architectures.")`
-
+## Driver Concordance
 `r what_this_does("Cross-referenced the Magnitude and Count score correlation profiles for both omics modalities.", "Categorized drivers as 'Common' (significant in both), 'Unique to Magnitude', or 'Unique to Count' based on configuration thresholds.", "Generated labeled quadrant scatterplots to visualize the core biological signals shared across the scoring architectures.")`
 
 ```{r score_correlations_scatter, fig.width=14, fig.height=7}
