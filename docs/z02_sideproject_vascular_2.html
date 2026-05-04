@@ -600,15 +600,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2e5fe328edd215b5946c7a8af17c26bc904be688targetblank2e5fe32a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0c48eba4c0f248449c9ca152f16c47170caa12b2targetblank0c48ebaa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2e5fe328edd215b5946c7a8af17c26bc904be688" target="_blank">2e5fe32</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0c48eba4c0f248449c9ca152f16c47170caa12b2" target="_blank">0c48eba</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree2e5fe328edd215b5946c7a8af17c26bc904be688targetblank2e5fe32a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0c48eba4c0f248449c9ca152f16c47170caa12b2targetblank0c48ebaa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -618,7 +618,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/2e5fe328edd215b5946c7a8af17c26bc904be688" target="_blank">2e5fe32</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0c48eba4c0f248449c9ca152f16c47170caa12b2" target="_blank">0c48eba</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -707,6 +707,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0c48eba4c0f248449c9ca152f16c47170caa12b2/analysis/z02_sideproject_vascular_2.Rmd" target="_blank">0c48eba</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+wflow_publish("analysis/z02_sideproject_vascular_2.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/z02_sideproject_vascular_2.html" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2e5fe328edd215b5946c7a8af17c26bc904be688/analysis/z02_sideproject_vascular_2.Rmd" target="_blank">2e5fe32</a>
 </td>
 <td>
@@ -737,12 +771,9 @@ style="border: 2px solid #e74c3c; padding: 15px; border-radius: 5px; background-
 ⚠️ NOTE: Medication Confounders
 </h4>
 <p>The computational pipeline currently lacks patient medication
-histories (e.g., Rituximab, Mycophenolate, Calcium Channel Blockers). If
-organoids exhibit divergent behavior, consider that they may be
-responding to circulating pharmaceutical agents in the serum rather than
-the endogenous vascular disease signature. A clinical audit of
-autoantibodies and renal function (Creatinine) is provided below to
-check for extreme uremia or other major toxic confounders.</p>
+histories . If organoids exhibit divergent behavior, consider that they
+may be responding to circulating pharmaceutical agents in the serum
+rather than the endogenous vascular disease signature.</p>
 </div>
 <div class="info-box">
 <strong>What this code does:</strong>
@@ -848,8 +879,10 @@ cor_config &lt;- list(
   )
 )</code></pre>
 </div>
-<div id="vascular-signature-scoring" class="section level1">
-<h1>Vascular Signature Scoring</h1>
+<div id="scores" class="section level1">
+<h1>Scores</h1>
+<div id="vascular-signature-scoring" class="section level2">
+<h2>Vascular Signature Scoring</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -857,20 +890,16 @@ cor_config &lt;- list(
 Calculated two independent vascular metrics.
 </li>
 <li>
-<ol style="list-style-type: decimal">
-<li>Magnitude Score: The sum of aligned Z-scores (Downregulated proteins
-are inverted so positive always means pro-disease).
+Magnitude Score: The sum of aligned Z-scores (Downregulated proteins are
+inverted so positive always means pro-disease).
 </li>
 <li>
-<ol start="2" style="list-style-type: decimal">
-<li>Direction Count Score: Assigns +1 if a protein crosses the
-biological threshold in the ‘disease’ direction, and -1 if it crosses in
-the ‘healthy’ direction.
+Direction Count Score: Assigns +1 if a protein crosses the biological
+threshold in the ‘disease’ direction, and -1 if it crosses in the
+‘healthy’ direction.
 </li>
 </ul>
-</div></li>
-</ol></li>
-</ol>
+</div>
 <pre class="r"><code># Clean lists to only include available proteins
 valid_up   &lt;- intersect(vascular_up_proteins, rownames(olink_mat))
 valid_down &lt;- intersect(vascular_down_proteins, rownames(olink_mat))
@@ -914,8 +943,7 @@ score_df &lt;- data.frame(
 
 # Merge back with clinical data for plotting
 plot_spine &lt;- master_spine %&gt;% inner_join(score_df, by = &quot;Subject_ID&quot;)</code></pre>
-<div id="score-characterization" class="section level1">
-<h1>Score Characterization</h1>
+</div>
 <div id="score-distribution" class="section level2 tabset">
 <h2 class="tabset">Score Distribution</h2>
 <div class="info-box">
@@ -961,14 +989,125 @@ the proteomic score maps to real-world clinical status.
 <div id="colored-by-vascular_active" class="section level3">
 <h3>Colored by: vascular_active</h3>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-score_dist_and_val-1">
+Past versions of score_dist_and_val-1.png
+</button>
+</p>
+<div id="fig-score_dist_and_val-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-1.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="colored-by-inflamm_active" class="section level3">
 <h3>Colored by: Inflamm_active</h3>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-score_dist_and_val-2">
+Past versions of score_dist_and_val-2.png
+</button>
+</p>
+<div id="fig-score_dist_and_val-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-2.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="colored-by-cohort_group" class="section level3">
 <h3>Colored by: cohort_group</h3>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-score_dist_and_val-3">
+Past versions of score_dist_and_val-3.png
+</button>
+</p>
+<div id="fig-score_dist_and_val-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/score_dist_and_val-3.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="score-drivers" class="section level2">
@@ -1021,6 +1160,43 @@ ggplot(driver_df, aes(x = Protein, y = Rho, fill = Direction)) +
   theme_project_base() +
   labs(title = &quot;Primary Score Drivers&quot;, subtitle = &quot;Spearman Correlation: Individual Protein NPX vs Final Scores&quot;, x = NULL, y = &quot;Spearman Rho&quot;)</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/primary_score_drivers-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-primary_score_drivers-1">
+Past versions of primary_score_drivers-1.png
+</button>
+</p>
+<div id="fig-primary_score_drivers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/primary_score_drivers-1.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="score-correlations" class="section level2">
 <h2>Score Correlations</h2>
@@ -1028,8 +1204,7 @@ ggplot(driver_df, aes(x = Protein, y = Rho, fill = Direction)) +
 <strong>What this code does:</strong>
 <ul>
 <li>
-Extracted continuous clinical variables labeled ‘PASS’ from the data
-dictionary.
+Extracted clinical variables labeled ‘PASS’ from the data dictionary.
 </li>
 <li>
 Computed Spearman correlations mapping every valid protein and clinical
@@ -1136,7 +1311,7 @@ for (mod_name in names(modalities)) {
       tbl_html &lt;- sig_df %&gt;%
         head(cor_config$max_table_rows) %&gt;%
         kbl(format = &quot;html&quot;, digits = 3, align = &quot;c&quot;) %&gt;%
-        kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE) %&gt;%
+        kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;% # FIX: Set full_width to TRUE
         scroll_box(height = &quot;400px&quot;)
       
       # The Dual-Path Rendering Engine
@@ -1171,7 +1346,7 @@ if (!interactive()) {
 <h4>Magnitude Score</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1269,7 +1444,7 @@ CXCL8
 <h4>Count Score</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1311,7 +1486,7 @@ ACE2
 <h4>Inverted Rank</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1370,7 +1545,7 @@ CSF3R
 <h4>Magnitude Score</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1426,7 +1601,7 @@ Hemoglobin (g/dl)
 <h4>Count Score</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1468,7 +1643,7 @@ Sex
 <h4>Inverted Rank</h4>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
@@ -1505,6 +1680,28 @@ Sex
 </div>
 <p><br><i>Showing top 1 significant hits (FDR &lt; 0.1, |Rho| &gt;=
 0.3). Full list exported to output folder.</i></p>
+</div>
+</div>
+</div>
+<div id="driver-concordance-scatterplots" class="section level2">
+<h2>Driver Concordance (Scatterplots)</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Cross-referenced the Magnitude and Count score correlation profiles for
+both omics modalities.
+</li>
+<li>
+Categorized drivers as ‘Common’ (significant in both), ‘Unique to
+Magnitude’, or ‘Unique to Count’ based on configuration thresholds.
+</li>
+<li>
+Generated labeled quadrant scatterplots to visualize the core biological
+signals shared across the scoring architectures.
+</li>
+</ul>
+</div>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -1580,6 +1777,43 @@ p_clin &lt;- plot_quadrant(
 # Print side-by-side
 print(p_prot | p_clin)</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/score_correlations_scatter-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-score_correlations_scatter-1">
+Past versions of score_correlations_scatter-1.png
+</button>
+</p>
+<div id="fig-score_correlations_scatter-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/score_correlations_scatter-1.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Save to disk
 ggsave(file.path(output_dir_data, &quot;Quadrant_Proteomics.png&quot;), p_prot, width = 8, height = 7, bg = &quot;white&quot;)
 ggsave(file.path(output_dir_data, &quot;Quadrant_Clinical.png&quot;), p_clin, width = 8, height = 7, bg = &quot;white&quot;)
@@ -1588,10 +1822,10 @@ ggsave(file.path(output_dir_data, &quot;Quadrant_Clinical.png&quot;), p_clin, wi
 rm(clin_mat, prot_mat, score_df_sub, clin_df, cor_results, html_out)</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div id="patient-concordance-selection" class="section level1">
-<h1>Patient Concordance &amp; Selection</h1>
+<div id="patients" class="section level1">
+<h1>Patients</h1>
+<div id="patient-concordance-selection" class="section level2">
+<h2>Patient Concordance &amp; Selection</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -1607,16 +1841,6 @@ phenotypes.
 Generated a scatterplot with overlaid linear regression to visually
 highlight the selected patients in the extreme corners of the
 concordance distribution.
-</li>
-</ul>
-</div>
-<div class="why-box">
-<strong>Why is this done?</strong>
-<ul>
-<li>
-To ensure the organoid experiment uses undeniable vascular serum, we
-plotted the Magnitude Score against the Count Score. Patients selected
-for the experiment MUST sit at the absolute extremes of both approaches.
 </li>
 </ul>
 </div>
@@ -1647,6 +1871,43 @@ p_scatter &lt;- ggplot(plot_spine, aes(x = Magnitude_Score, y = Count_Score, fil
 
 print(p_scatter)</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/patient_concordance_and_selection-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-patient_concordance_and_selection-1">
+Past versions of patient_concordance_and_selection-1.png
+</button>
+</p>
+<div id="fig-patient_concordance_and_selection-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/patient_concordance_and_selection-1.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggsave(file.path(output_dir_data, &quot;Patient_Selection_Concordance.png&quot;), p_scatter, width=8, height=6, bg=&quot;white&quot;)
 
 
@@ -1854,8 +2115,8 @@ Bottom 5 (Vascular Low)
 </tbody>
 </table>
 </div>
-<div id="clinical-confounder-audit" class="section level1">
-<h1>Clinical Confounder Audit</h1>
+<div id="clinical-confounder-audit" class="section level2">
+<h2>Clinical Confounder Audit</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2005,8 +2266,8 @@ Female
 </table>
 </div>
 <div id="differential-expression-analysis"
-class="section level1 tabset">
-<h1 class="tabset">Differential Expression Analysis</h1>
+class="section level2 tabset">
+<h2 class="tabset">Differential Expression Analysis</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2050,6 +2311,7 @@ clin_extreme &lt;- plot_spine %&gt;% filter(Selection != &quot;Unselected&quot;)
 
 # HEATMAP 1: Local DEA (Extreme Phenotype)
 cat(&quot;## Local DEA Heatmap\n\n&quot;)</code></pre>
+</div>
 <div id="local-dea-heatmap" class="section level2">
 <h2>Local DEA Heatmap</h2>
 <pre class="r"><code>if (dea_res$status == &quot;success&quot;) {
@@ -2072,8 +2334,82 @@ cat(&quot;## Local DEA Heatmap\n\n&quot;)</code></pre>
   cat(sprintf(&quot;&gt; &lt;span style=&#39;color:red;&#39;&gt;**DEA Failed:** %s&lt;/span&gt;\n\n&quot;, dea_res$error_msg))
 }</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-DEA-1">
+Past versions of DEA-1.png
+</button>
+</p>
+<div id="fig-DEA-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/DEA-1.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><br></p>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-DEA-2">
+Past versions of DEA-2.png
+</button>
+</p>
+<div id="fig-DEA-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/DEA-2.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># HEATMAP 2: Global DEA Signature
 cat(&quot;## Global DEA Heatmap\n\n&quot;)</code></pre>
 </div>
@@ -2096,6 +2432,43 @@ cat(&quot;## Global DEA Heatmap\n\n&quot;)</code></pre>
   cat(&quot;&gt; Global DEA results not found. Skipping Global Heatmap.\n\n&quot;)
 }</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-DEA-3">
+Past versions of DEA-3.png
+</button>
+</p>
+<div id="fig-DEA-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/DEA-3.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># HEATMAP 3: Custom Proteins of Interest
 cat(&quot;## Custom POI Heatmap\n\n&quot;)</code></pre>
 </div>
@@ -2110,7 +2483,7 @@ if (length(valid_poi) &gt; 1 &amp;&amp; dea_res$status == &quot;success&quot;) {
     mat = olink_mat, 
     clin = clin_extreme, 
     dea_res = poi_limma_df,
-    title = &quot;Selected Proteins of Interest&quot;,
+    title = &quot;Selected Proteins of Interest (5v5 DEA)&quot;,
     n_top = length(valid_poi), 
     split_by_group = FALSE,
     split_col = &quot;Selection&quot;,
@@ -2123,16 +2496,55 @@ if (length(valid_poi) &gt; 1 &amp;&amp; dea_res$status == &quot;success&quot;) {
   cat(&quot;&gt; Insufficient Valid POIs to generate targeted heatmap.\n\n&quot;)
 }</code></pre>
 <p><img src="figure/z02_sideproject_vascular_2.Rmd/DEA-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-DEA-4">
+Past versions of DEA-4.png
+</button>
+</p>
+<div id="fig-DEA-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/442d5a17cf1fe118fd8e0f04b6e8e456bce423ce/docs/figure/z02_sideproject_vascular_2.Rmd/DEA-4.png" target="_blank">442d5a1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="biobank-shopping-list-export" class="section level1">
-<h1>Biobank Shopping List Export</h1>
+</div>
+<div id="biobank-shopping-list-export" class="section level2">
+<h2>Biobank Shopping List Export</h2>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
 <li>
 Exports an extended priority list of extreme patients to CSV, providing
 the biobank with backup options in case primary aliquots are depleted.
+</li>
+<li>
+Prints the shopping list to the HTML report for quick reference.
 </li>
 </ul>
 </div>
@@ -2152,7 +2564,376 @@ shopping_list &lt;- bind_rows(shopping_top, shopping_bot) %&gt;%
   arrange(Target_Group, Concordance_Rank)
 
 export_path &lt;- file.path(output_dir_data, &quot;Biobank_Organoid_Shopping_List.xlsx&quot;)
-write_xlsx(shopping_list, export_path)</code></pre>
+write_xlsx(shopping_list, export_path)
+
+# Print the Table to HTML
+shopping_list %&gt;% 
+  kbl(format = &quot;html&quot;, digits = 2, align = &quot;c&quot;) %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
+  row_spec(0, bold = TRUE)</code></pre>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;font-weight: bold;">
+Target_Group
+</th>
+<th style="text-align:center;font-weight: bold;">
+Subject_ID
+</th>
+<th style="text-align:center;font-weight: bold;">
+Concordance_Rank
+</th>
+<th style="text-align:center;font-weight: bold;">
+Magnitude_Score
+</th>
+<th style="text-align:center;font-weight: bold;">
+Count_Score
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_37
+</td>
+<td style="text-align:center;">
+3.0
+</td>
+<td style="text-align:center;">
+6.25
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_10
+</td>
+<td style="text-align:center;">
+12.5
+</td>
+<td style="text-align:center;">
+3.35
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_29
+</td>
+<td style="text-align:center;">
+16.5
+</td>
+<td style="text-align:center;">
+2.83
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_46
+</td>
+<td style="text-align:center;">
+21.0
+</td>
+<td style="text-align:center;">
+6.62
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_8
+</td>
+<td style="text-align:center;">
+23.0
+</td>
+<td style="text-align:center;">
+5.58
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_12
+</td>
+<td style="text-align:center;">
+25.0
+</td>
+<td style="text-align:center;">
+1.92
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_6
+</td>
+<td style="text-align:center;">
+26.0
+</td>
+<td style="text-align:center;">
+3.71
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_42
+</td>
+<td style="text-align:center;">
+27.5
+</td>
+<td style="text-align:center;">
+1.96
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_47
+</td>
+<td style="text-align:center;">
+29.0
+</td>
+<td style="text-align:center;">
+2.88
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+High Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_40
+</td>
+<td style="text-align:center;">
+30.0
+</td>
+<td style="text-align:center;">
+2.83
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_5
+</td>
+<td style="text-align:center;">
+170.0
+</td>
+<td style="text-align:center;">
+-2.71
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_29
+</td>
+<td style="text-align:center;">
+173.0
+</td>
+<td style="text-align:center;">
+-3.37
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_31
+</td>
+<td style="text-align:center;">
+175.0
+</td>
+<td style="text-align:center;">
+-3.51
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_14
+</td>
+<td style="text-align:center;">
+176.0
+</td>
+<td style="text-align:center;">
+-3.74
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_13
+</td>
+<td style="text-align:center;">
+179.0
+</td>
+<td style="text-align:center;">
+-4.47
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_28
+</td>
+<td style="text-align:center;">
+181.0
+</td>
+<td style="text-align:center;">
+-4.86
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_4
+</td>
+<td style="text-align:center;">
+182.0
+</td>
+<td style="text-align:center;">
+-6.88
+</td>
+<td style="text-align:center;">
+-2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_25
+</td>
+<td style="text-align:center;">
+184.0
+</td>
+<td style="text-align:center;">
+-4.17
+</td>
+<td style="text-align:center;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Nonact_11
+</td>
+<td style="text-align:center;">
+190.5
+</td>
+<td style="text-align:center;">
+-7.38
+</td>
+<td style="text-align:center;">
+-4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Low Vascular Serum
+</td>
+<td style="text-align:center;">
+Act_14
+</td>
+<td style="text-align:center;">
+191.5
+</td>
+<td style="text-align:center;">
+-9.41
+</td>
+<td style="text-align:center;">
+-4
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>cat(&quot;Script z02 Complete! \n&quot;)</code></pre>
 <pre><code>Script z02 Complete! </code></pre>
 <br>
@@ -2261,7 +3042,6 @@ loaded via a namespace (and not attached):
 [169] lmerTest_3.2-1          aplot_0.2.9             memoise_2.0.1          
 [172] AnnotationDbi_1.72.0    IRanges_2.44.0          cluster_2.1.8.2        
 [175] globals_0.19.1          timechange_0.4.0       </code></pre>
-</div>
 </div>
 </div>
 </div>
