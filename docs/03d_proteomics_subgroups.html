@@ -1,0 +1,3982 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>Non-Active Subgroup Analysis</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="02_cohort_characterization.html">Cohort</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_vascular_2.html">Vascular 2</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Non-Active Subgroup Analysis</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">04 May, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-05-04
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef95df407430af43c62e407d6b41ba1f8191f0e4btargetblankf95df40a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f95df407430af43c62e407d6b41ba1f8191f0e4b" target="_blank">f95df40</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef95df407430af43c62e407d6b41ba1f8191f0e4btargetblankf95df40a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f95df407430af43c62e407d6b41ba1f8191f0e4b" target="_blank">f95df40</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01_data_import_and_qc/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01b_clinical_feature_engineering/
+    Ignored:    output/02_cohort_characterization/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/03d_proteomics_subgroups/
+    Ignored:    output/randomizer/
+    Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/03e_proteomics_correlations.Rmd
+    Untracked:  code/randomizer.R
+    Untracked:  core
+
+Unstaged changes:
+    Modified:   analysis/01b_clinical_feature_engineering.Rmd
+    Modified:   analysis/03b_proteomics_differential.Rmd
+    Modified:   analysis/z02_sideproject_vascular_2.Rmd
+    Modified:   code/00_omics_engines.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/03d_proteomics_subgroups.Rmd</code>) and HTML
+(<code>docs/03d_proteomics_subgroups.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f95df407430af43c62e407d6b41ba1f8191f0e4b/analysis/03d_proteomics_subgroups.Rmd" target="_blank">f95df40</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+wflow_publish("analysis/03d_proteomics_subgroups.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Goal: To mathematically triangulate the molecular phenotype of
+“Non-Active” SSc patients. Because they exhibit extreme clinical
+heterogeneity, we hypothesize this group contains distinct molecular
+sub-populations (Active-like vs Control-like).</p>
+<p>We will derive three independent, continuous scores aligning
+Non-Active patients along the Control-to-Active molecular axis.</p>
+<div
+style="border: 2px solid #e74c3c; padding: 15px; border-radius: 5px; background-color: #fdf2e9; margin-bottom: 20px;">
+<h4 style="margin-top: 0 !important; color: #c0392b;">
+⚠️ NOTE: Medication Confounders
+</h4>
+<p>The computational pipeline currently lacks patient medication
+histories. If a Non-Active patient presents with a highly “Control-like”
+molecular signature, consider that this may represent successful
+pharmacological immunosuppression rather than a naturally benign disease
+state.</p>
+</div>
+</div>
+<div id="setup-and-import" class="section level1">
+<h1>Setup and Import</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Imported the clinical spine, numeric spine, data dictionary, and
+proteomics matrix.
+</li>
+<li>
+Loaded the pre-calculated Active vs Control DEA results to extract the
+master disease signature.
+</li>
+<li>
+Sourced the updated omics engines, including the Smart Correlation
+Engine.
+</li>
+</ul>
+</div>
+<pre class="r"><code>library(tidyverse)
+library(patchwork)
+library(here)
+library(ComplexHeatmap)
+library(circlize)
+library(kableExtra)
+library(ggpubr)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Paths
+current_file &lt;- &quot;03d_proteomics_subgroups&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines
+source(here::here(&quot;code&quot;, &quot;00_omics_engines.R&quot;))
+
+# Load Data
+master_spine  &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine.rds&quot;))
+numeric_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine_numeric.rds&quot;))
+data_dict     &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;clinical_data_dictionary.rds&quot;)) 
+olink_mat     &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;clean_olink_matrix.rds&quot;))
+
+# Load DEA Signature (Active vs Control)
+avc_dea &lt;- readRDS(here::here(&quot;output&quot;, &quot;03b_proteomics_differential&quot;, &quot;dea_active_vs_control.rds&quot;))</code></pre>
+</div>
+<div id="configuration" class="section level1">
+<h1>Configuration</h1>
+<pre class="r"><code># 1. Subgroup Definitions
+groups &lt;- list(
+  active = GRP_ACTIVE,
+  control = GRP_CONTROL,
+  target = GRP_NON_ACTIVE
+)
+
+# 2. Score Generation Configurations
+score_conf &lt;- list(
+  top_n_proteins = 260, # Number of highly variable/significant proteins to define the axis
+  pca_dimensions = 5    # Compute centroid distances across PC1-PC5
+)
+
+# 3. Discovery Correlation Thresholds
+cor_conf &lt;- list(
+  max_rows = 30,
+  prot_fdr = 0.05,
+  prot_rho = 0.40,
+  clin_fdr = 0.10,
+  clin_rho = 0.30
+)
+
+# 4. Plot Configurations
+plot_conf &lt;- list(
+  dist_bins = 20,
+  hm_font = 8
+)</code></pre>
+</div>
+<div id="scores" class="section level1">
+<h1>Scores</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Signature Definition: We defined the molecular axis using the Top 260
+most significant proteins from the Active vs Control DEA. This
+guarantees all three scores measure specifically where the Non-Active
+patient falls on the SSc disease spectrum.
+</li>
+<li>
+Polarity Alignment: All scores are mathematically aligned so that 100 =
+Maximally Active-Like, and 0 = Maximally Control-Like.
+</li>
+</ul>
+</div>
+<div id="d-pca-centroid-ratio" class="section level2">
+<h2>5D PCA Centroid Ratio</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Ran a Principal Component Analysis on the signature proteins.
+</li>
+<li>
+Calculated the exact geometric centroid (average coordinate) of the true
+Active patients and true Control patients across PC1-PC5.
+</li>
+<li>
+Calculated the Euclidean distance of each Non-Active patient to both
+centroids.
+</li>
+<li>
+Computed a ratio (Control Distance / Total Distance) scaled 0-100.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Extract Top 260 Proteins
+sig_prots &lt;- avc_dea %&gt;% slice_min(adj.P.Val, n = score_conf$top_n_proteins) %&gt;% pull(Feature)
+valid_sig &lt;- intersect(sig_prots, rownames(olink_mat))
+
+# Restrict Matrix and deal with any NAs for PCA
+sub_mat &lt;- olink_mat[valid_sig, ]
+sub_mat[is.na(sub_mat)] &lt;- 0 
+pca_mat &lt;- t(scale(t(sub_mat)))
+
+# Run PCA
+pca_res &lt;- prcomp(t(pca_mat), center = FALSE, scale. = FALSE)
+pca_df &lt;- as.data.frame(pca_res$x[, 1:score_conf$pca_dimensions]) %&gt;% rownames_to_column(&quot;Subject_ID&quot;)
+pca_df &lt;- pca_df %&gt;% inner_join(master_spine %&gt;% select(Subject_ID, cohort_group), by=&quot;Subject_ID&quot;)
+
+# Calculate Centroids
+cent_active &lt;- pca_df %&gt;% filter(cohort_group == groups$active) %&gt;% select(starts_with(&quot;PC&quot;)) %&gt;% colMeans()
+cent_control &lt;- pca_df %&gt;% filter(cohort_group == groups$control) %&gt;% select(starts_with(&quot;PC&quot;)) %&gt;% colMeans()
+
+# Calculate Euclidean Distances for Non-Actives
+na_pca &lt;- pca_df %&gt;% filter(cohort_group == groups$target)
+dist_df &lt;- data.frame(Subject_ID = na_pca$Subject_ID)
+
+dist_df$Dist_Active &lt;- apply(na_pca %&gt;% select(starts_with(&quot;PC&quot;)), 1, function(x) sqrt(sum((x - cent_active)^2)))
+dist_df$Dist_Control &lt;- apply(na_pca %&gt;% select(starts_with(&quot;PC&quot;)), 1, function(x) sqrt(sum((x - cent_control)^2)))
+
+# Score: Ratio of distances (100 = sits exactly on Active Centroid)
+dist_df &lt;- dist_df %&gt;% mutate(PCA_Active_Score = (Dist_Control / (Dist_Active + Dist_Control)) * 100)
+
+# Plots: Scree
+var_exp &lt;- (pca_res$sdev^2 / sum(pca_res$sdev^2)) * 100
+plot_df_scree &lt;- data.frame(PC = 1:10, Var = var_exp[1:10])
+
+p_scree &lt;- ggplot(plot_df_scree, aes(x=factor(PC), y=Var)) +
+  geom_bar(stat=&quot;identity&quot;, fill=&quot;steelblue&quot;, color=&quot;black&quot;) +
+  geom_text(aes(label = sprintf(&quot;%.1f%%&quot;, Var)), vjust = -0.5, size = 5, fontface = &quot;bold&quot;) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) + # Expands Y-axis so text fits
+  theme_project_base() + 
+  labs(title=&quot;PCA Scree Plot&quot;, x=&quot;Principal Component&quot;, y=&quot;% Variance&quot;)
+
+print(p_scree)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_1_pca-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<pre><code>
+
+&lt;br&gt;</code></pre>
+<pre class="r"><code># Plots: PC1-PC5 Drivers
+pc_plots &lt;- list()
+for(i in 1:5) {
+  pc_name &lt;- paste0(&quot;PC&quot;, i)
+  pc_loads &lt;- as.data.frame(pca_res$rotation) %&gt;% select(all_of(pc_name)) %&gt;% 
+    arrange(desc(abs(.data[[pc_name]]))) %&gt;% head(10) %&gt;% rownames_to_column(&quot;Protein&quot;)
+  
+  pc_plots[[i]] &lt;- ggplot(pc_loads, aes(x=reorder(Protein, .data[[pc_name]]), y=.data[[pc_name]], fill=.data[[pc_name]]&gt;0)) +
+    geom_bar(stat=&quot;identity&quot;, color=&quot;black&quot;) + coord_flip() + theme_project_base(10) + 
+    scale_fill_manual(values = c(&quot;TRUE&quot; = &quot;#c0392b&quot;, &quot;FALSE&quot; = &quot;#2980b9&quot;)) +
+    theme(legend.position=&quot;none&quot;, plot.title = element_text(size = 12)) + 
+    labs(title=sprintf(&quot;%s Drivers&quot;, pc_name), x=NULL, y=&quot;Loading&quot;)
+}
+
+p_load_grid &lt;- wrap_plots(pc_plots, ncol=5)
+print(p_load_grid)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_1_pca-2.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+</div>
+<div id="signature-correlation" class="section level2">
+<h2>Signature Correlation</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Extracted the log2 Fold-Change vector from the Active vs Control DEA.
+</li>
+<li>
+Ran a Spearman correlation between this master signature vector and the
+raw protein vector of each individual Non-Active patient.
+</li>
+<li>
+Normalized the Spearman Rho to a 0-100 scale.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Extract logFC Signature
+logfc_sig &lt;- avc_dea %&gt;% filter(Feature %in% valid_sig) %&gt;% select(Feature, logFC) %&gt;% deframe()
+
+# Calculate Spearman for each Non-Active Patient
+cor_scores &lt;- sapply(dist_df$Subject_ID, function(id) {
+  pt_vec &lt;- olink_mat[valid_sig, id]
+  cor(pt_vec, logfc_sig[names(pt_vec)], method=&quot;spearman&quot;, use=&quot;complete.obs&quot;)
+})
+
+sig_df &lt;- data.frame(
+  Subject_ID = names(cor_scores),
+  Raw_Rho = cor_scores
+) %&gt;%
+  # Min-Max Scale to 0-100
+  mutate(Sig_Active_Score = ((Raw_Rho - min(Raw_Rho)) / (max(Raw_Rho) - min(Raw_Rho))) * 100)</code></pre>
+</div>
+<div id="heatmap-based-score" class="section level2">
+<h2>Heatmap based Score</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generated a complete hierarchical clustering dendrogram of all patients
+using the signature proteins.
+</li>
+<li>
+Extracted the strict left-to-right physical ordering of the leaves.
+</li>
+<li>
+Aligned the polarity (ensuring the side where Actives cluster is 100)
+and assigned continuous percentile scores to the Non-Active patients
+based on their physical placement.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Build Heatmap Data
+hm_clin &lt;- master_spine %&gt;% 
+  filter(Subject_ID %in% pca_df$Subject_ID, !is.na(cohort_group)) %&gt;%
+  droplevels()
+
+hm_mat &lt;- t(scale(t(olink_mat[valid_sig, hm_clin$Subject_ID])))
+
+# 2. Fetch proper colors using the actual levels
+group_colors &lt;- get_project_colors(levels(hm_clin$cohort_group))
+
+# 3. Build Heatmap
+hm &lt;- Heatmap(hm_mat, 
+              name = &quot;Z-Score&quot;,
+              show_row_names = FALSE,
+              show_column_names = FALSE,
+              top_annotation = HeatmapAnnotation(Group = hm_clin$cohort_group, col = list(Group = group_colors)),
+              clustering_distance_columns = &quot;euclidean&quot;,
+              clustering_method_columns = &quot;complete&quot;)
+
+# 4. Draw directly to the HTML
+hm_drawn &lt;- draw(hm)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_3_heatmap-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Extract order
+order_idx &lt;- column_order(hm_drawn)
+ordered_ids &lt;- colnames(hm_mat)[order_idx]
+
+# 5. Map Order to 0-100 Percentile
+hm_df &lt;- data.frame(
+  Subject_ID = ordered_ids,
+  HM_Rank = 1:length(ordered_ids)
+) %&gt;%
+  mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %&gt;%
+  inner_join(hm_clin %&gt;% select(Subject_ID, cohort_group), by=&quot;Subject_ID&quot;)
+
+# Check Polarity (Are Actives on the Left (0) or Right (100)?)
+mean_active &lt;- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$active])
+mean_control &lt;- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$control])
+
+if (mean_active &lt; mean_control) {
+  hm_df$HM_Active_Score &lt;- 100 - hm_df$HM_Percentile
+} else {
+  hm_df$HM_Active_Score &lt;- hm_df$HM_Percentile
+}
+
+hm_final &lt;- hm_df %&gt;% filter(cohort_group == groups$target) %&gt;% select(Subject_ID, HM_Active_Score)</code></pre>
+</div>
+<div id="score-characterization" class="section level2">
+<h2>Score Characterization</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Merged the three scores into a master Non-Active index.
+</li>
+<li>
+Plotted density histograms to visually evaluate if the Non-Active cohort
+is continuous (bell curve) or comprised of two distinct subgroups
+(bimodal).
+</li>
+<li>
+Plotted the pairwise correlations between the three independent
+mathematical approaches.
+</li>
+</ul>
+</div>
+</div>
+<div id="score-characterization-1" class="section level2">
+<h2>Score Characterization</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Merged the three scores into a master Non-Active index.
+</li>
+<li>
+Plotted density histograms to visually evaluate if the Non-Active cohort
+is continuous (bell curve) or comprised of two distinct subgroups
+(bimodal).
+</li>
+<li>
+Rendered a standalone overlaid density plot to compare the distributions
+of the three scoring methods.
+</li>
+<li>
+Plotted the pairwise correlations between the three independent
+mathematical approaches.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Merge Master Score Dataframe
+score_master &lt;- dist_df %&gt;% select(Subject_ID, PCA_Active_Score) %&gt;%
+  inner_join(sig_df %&gt;% select(Subject_ID, Sig_Active_Score), by=&quot;Subject_ID&quot;) %&gt;%
+  inner_join(hm_final, by=&quot;Subject_ID&quot;)
+
+# 1. Density Distributions (Faceted)
+score_long &lt;- score_master %&gt;% pivot_longer(-Subject_ID, names_to=&quot;Score_Type&quot;, values_to=&quot;Score&quot;)
+
+p_dens_facet &lt;- ggplot(score_long, aes(x=Score, fill=Score_Type)) +
+  geom_density(alpha=0.6) +
+  facet_wrap(~Score_Type, scales=&quot;free_y&quot;) +
+  theme_project_base() + theme(legend.position=&quot;none&quot;) +
+  labs(title=&quot;Faceted Score Distributions&quot;, x=&quot;Score (100 = Active-Like, 0 = Control-Like)&quot;, y=&quot;Density&quot;)
+
+print(p_dens_facet)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_characterization-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<pre><code>
+
+&lt;br&gt;</code></pre>
+<pre class="r"><code># 2. Density Distributions (Overlaid Standalone)
+p_dens_overlay &lt;- ggplot(score_long, aes(x=Score, fill=Score_Type, color=Score_Type)) +
+  geom_density(alpha=0.4, linewidth=1) +
+  theme_project_base() + theme(legend.position=&quot;bottom&quot;, legend.title=element_blank()) +
+  labs(title=&quot;Overlaid Score Distributions&quot;, x=&quot;Score (100 = Active-Like, 0 = Control-Like)&quot;, y=&quot;Density&quot;) +
+  theme(plot.margin = margin(t = 10, r = 150, b = 10, l = 150, unit = &quot;pt&quot;))
+ 
+
+print(p_dens_overlay)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_characterization-2.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
+<pre><code>
+
+&lt;br&gt;</code></pre>
+<pre class="r"><code># 3. Pairwise Correlations with ggpubr Stats
+p1 &lt;- ggplot(score_master, aes(x=PCA_Active_Score, y=Sig_Active_Score)) + 
+  geom_point(alpha=0.7) + geom_smooth(method=&quot;lm&quot;, color=&quot;red&quot;) + 
+  stat_cor(label.y.npc = &quot;top&quot;) + stat_regline_equation(label.y.npc = 0.9) +
+  theme_project_base()
+
+p2 &lt;- ggplot(score_master, aes(x=PCA_Active_Score, y=HM_Active_Score)) + 
+  geom_point(alpha=0.7) + geom_smooth(method=&quot;lm&quot;, color=&quot;red&quot;) + 
+  stat_cor(label.y.npc = &quot;top&quot;) + stat_regline_equation(label.y.npc = 0.9) +
+  theme_project_base()
+
+p3 &lt;- ggplot(score_master, aes(x=Sig_Active_Score, y=HM_Active_Score)) + 
+  geom_point(alpha=0.7) + geom_smooth(method=&quot;lm&quot;, color=&quot;red&quot;) + 
+  stat_cor(label.y.npc = &quot;top&quot;) + stat_regline_equation(label.y.npc = 0.9) +
+  theme_project_base()
+
+p_corrs &lt;- (p1 | p2 | p3) + plot_annotation(title=&quot;Pairwise Agreement of Mathematical Scoring Methods&quot;)
+print(p_corrs)</code></pre>
+<p><img src="figure/03d_proteomics_subgroups.Rmd/score_characterization-3.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="subgrouping" class="section level1">
+<h1>Subgrouping</h1>
+<div id="subgroup-drivers" class="section level2 tabset">
+<h2 class="tabset">Subgroup Drivers</h2>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Deployed the Smart Correlation Engine.
+</li>
+<li>
+Correlated all 3,000 proteins against the three scores to find the exact
+biological drivers pulling Non-Actives toward the Active phenotype.
+</li>
+<li>
+Mapped the numeric clinical spine (using Data Type logic) to find the
+physiological markers of ‘Active-like’ Non-Active patients.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Prepare Matrices (Non-Actives Only)
+na_ids &lt;- score_master$Subject_ID
+prot_mat_na &lt;- olink_mat[, na_ids]
+
+clin_df_na &lt;- numeric_spine %&gt;% filter(Subject_ID %in% na_ids)
+clin_mat_na &lt;- t(clin_df_na %&gt;% column_to_rownames(&quot;Subject_ID&quot;) %&gt;% select(where(is.numeric)))
+
+score_targets &lt;- c(&quot;PCA_Active_Score&quot;, &quot;Sig_Active_Score&quot;, &quot;HM_Active_Score&quot;)
+modalities &lt;- list(proteomics = prot_mat_na, clinical = clin_mat_na)
+
+html_out &lt;- &quot;&quot;
+
+for (mod_name in names(modalities)) {
+  if (!interactive()) html_out &lt;- paste0(html_out, sprintf(&quot;\n\n## %s {.tabset}\n\n&quot;, tools::toTitleCase(mod_name)))
+  
+  for (score_name in score_targets) {
+    clean_score &lt;- gsub(&quot;_&quot;, &quot; &quot;, score_name)
+    if (!interactive()) html_out &lt;- paste0(html_out, sprintf(&quot;\n\n### %s\n\n&quot;, clean_score))
+    
+    # Calculate using Smart Engine
+    score_vec &lt;- setNames(score_master[[score_name]], score_master$Subject_ID)
+    res_df &lt;- run_smart_mass_cor(modalities[[mod_name]], score_vec, dict_df = data_dict)
+    
+    # Export full dataset
+    export_name &lt;- sprintf(&quot;Drivers_%s_vs_%s.csv&quot;, tools::toTitleCase(mod_name), score_name)
+    write_csv(res_df, file.path(output_dir_data, export_name))
+    
+    # Filter
+    thresh_fdr &lt;- if(mod_name == &quot;proteomics&quot;) cor_conf$prot_fdr else cor_conf$clin_fdr
+    thresh_rho &lt;- if(mod_name == &quot;proteomics&quot;) cor_conf$prot_rho else cor_conf$clin_rho
+    
+    sig_df &lt;- res_df %&gt;% filter(FDR &lt; thresh_fdr &amp; abs(Effect) &gt;= thresh_rho)
+    
+    # Comprehensive Descriptive Header
+    caption &lt;- sprintf(&quot;
+&lt;div style=&#39;background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;&#39;&gt;
+  &lt;b&gt;Statistical Overview&lt;/b&gt;&lt;br&gt;
+  &lt;i&gt;Cohort Size:&lt;/i&gt; %d Non-Active patients&lt;br&gt;
+  &lt;i&gt;Thresholds:&lt;/i&gt; FDR &lt; %s, |Effect| &gt;= %s&lt;br&gt;
+  &lt;i&gt;Note:&lt;/i&gt; &#39;Effect&#39; represents Spearman&#39;s Rho for continuous variables, and Wilcoxon Effect Size (r) for binary categoricals. Displaying top %d.
+&lt;/div&gt;&quot;, length(na_ids), thresh_fdr, thresh_rho, min(nrow(sig_df), cor_conf$max_rows))
+    
+    if (nrow(sig_df) &gt; 0) {
+      tbl_html &lt;- sig_df %&gt;% head(cor_conf$max_rows) %&gt;%
+        kbl(format = &quot;html&quot;, digits = 3, align = &quot;c&quot;) %&gt;%
+        kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
+        scroll_box(height = &quot;500px&quot;)
+      
+      if (interactive()) {
+        cat(sprintf(&quot;\n=== %s vs %s ===\n&quot;, tools::toTitleCase(mod_name), clean_score))
+        cat(caption, &quot;\n&quot;)
+        print(tbl_html)
+      } else {
+        html_out &lt;- paste0(html_out, caption, &quot;\n&quot;, tbl_html, &quot;\n\n&quot;)
+      }
+    } else {
+      empty_msg &lt;- &quot;&gt; No features passed the significance thresholds.\n\n&quot;
+      if (interactive()) {
+        cat(sprintf(&quot;\n=== %s vs %s ===\n&quot;, tools::toTitleCase(mod_name), clean_score))
+        cat(caption, &quot;\n&quot;, empty_msg)
+      } else {
+        html_out &lt;- paste0(html_out, caption, &quot;\n&quot;, empty_msg)
+      }
+    }
+  }
+}
+
+if (!interactive()) cat(html_out)</code></pre>
+</div>
+<div id="proteomics" class="section level2 tabset">
+<h2 class="tabset">Proteomics</h2>
+<div id="pca-active-score" class="section level3">
+<h3>PCA Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.05, |Effect| &gt;= 0.4<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 30.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+POLR2F
+</td>
+<td style="text-align:center;">
+0.793
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF10B
+</td>
+<td style="text-align:center;">
+0.770
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+MAD1L1
+</td>
+<td style="text-align:center;">
+0.764
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SCARB2
+</td>
+<td style="text-align:center;">
+0.761
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CKAP4
+</td>
+<td style="text-align:center;">
+0.753
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+NT5C1A
+</td>
+<td style="text-align:center;">
+0.731
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TIGAR
+</td>
+<td style="text-align:center;">
+0.724
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EPHA2
+</td>
+<td style="text-align:center;">
+0.716
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD300E
+</td>
+<td style="text-align:center;">
+0.710
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TGFA
+</td>
+<td style="text-align:center;">
+0.709
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+JTB
+</td>
+<td style="text-align:center;">
+0.707
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+S100A11
+</td>
+<td style="text-align:center;">
+0.706
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF11A
+</td>
+<td style="text-align:center;">
+0.703
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+PGF
+</td>
+<td style="text-align:center;">
+0.701
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+BTN3A2
+</td>
+<td style="text-align:center;">
+0.700
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+GFRA1
+</td>
+<td style="text-align:center;">
+0.696
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+LILRB4
+</td>
+<td style="text-align:center;">
+0.695
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EFNA4
+</td>
+<td style="text-align:center;">
+0.690
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CDCP1
+</td>
+<td style="text-align:center;">
+0.689
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+HSPB6
+</td>
+<td style="text-align:center;">
+0.689
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IFI30
+</td>
+<td style="text-align:center;">
+0.686
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF19
+</td>
+<td style="text-align:center;">
+0.686
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+RBFOX3
+</td>
+<td style="text-align:center;">
+0.683
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+NUCB2
+</td>
+<td style="text-align:center;">
+0.682
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+HGF
+</td>
+<td style="text-align:center;">
+0.682
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFSF13
+</td>
+<td style="text-align:center;">
+0.682
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CAPG
+</td>
+<td style="text-align:center;">
+0.678
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+NAGK
+</td>
+<td style="text-align:center;">
+0.676
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IL12RB1
+</td>
+<td style="text-align:center;">
+0.669
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DTNB
+</td>
+<td style="text-align:center;">
+0.669
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="sig-active-score" class="section level3">
+<h3>Sig Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.05, |Effect| &gt;= 0.4<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 30.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+TNFRSF10B
+</td>
+<td style="text-align:center;">
+0.870
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+POLR2F
+</td>
+<td style="text-align:center;">
+0.818
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+MAD1L1
+</td>
+<td style="text-align:center;">
+0.813
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IFI30
+</td>
+<td style="text-align:center;">
+0.781
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+S100A11
+</td>
+<td style="text-align:center;">
+0.757
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+HGF
+</td>
+<td style="text-align:center;">
+0.751
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+OCLN
+</td>
+<td style="text-align:center;">
+0.751
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+NT5C1A
+</td>
+<td style="text-align:center;">
+0.749
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CAPG
+</td>
+<td style="text-align:center;">
+0.743
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CDCP1
+</td>
+<td style="text-align:center;">
+0.731
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+LMNB2
+</td>
+<td style="text-align:center;">
+0.731
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+RBFOX3
+</td>
+<td style="text-align:center;">
+0.726
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+PGF
+</td>
+<td style="text-align:center;">
+0.723
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EPHA2
+</td>
+<td style="text-align:center;">
+0.720
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IL12RB1
+</td>
+<td style="text-align:center;">
+0.707
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CKAP4
+</td>
+<td style="text-align:center;">
+0.703
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SWAP70
+</td>
+<td style="text-align:center;">
+0.702
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TIGAR
+</td>
+<td style="text-align:center;">
+0.696
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+HNRNPUL1
+</td>
+<td style="text-align:center;">
+0.694
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TGFA
+</td>
+<td style="text-align:center;">
+0.694
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SCARB2
+</td>
+<td style="text-align:center;">
+0.689
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TPR
+</td>
+<td style="text-align:center;">
+0.689
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+LILRB4
+</td>
+<td style="text-align:center;">
+0.688
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CXCL17
+</td>
+<td style="text-align:center;">
+0.687
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SERPINB8
+</td>
+<td style="text-align:center;">
+0.671
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFSF13
+</td>
+<td style="text-align:center;">
+0.667
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+GFRA1
+</td>
+<td style="text-align:center;">
+0.664
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+VEGFA
+</td>
+<td style="text-align:center;">
+0.663
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD300E
+</td>
+<td style="text-align:center;">
+0.660
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EGLN1
+</td>
+<td style="text-align:center;">
+0.660
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="hm-active-score" class="section level3">
+<h3>HM Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.05, |Effect| &gt;= 0.4<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 30.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+CD300E
+</td>
+<td style="text-align:center;">
+0.826
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+POLR2F
+</td>
+<td style="text-align:center;">
+0.816
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IL12RB1
+</td>
+<td style="text-align:center;">
+0.804
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IFI30
+</td>
+<td style="text-align:center;">
+0.795
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TIGAR
+</td>
+<td style="text-align:center;">
+0.781
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SCARB2
+</td>
+<td style="text-align:center;">
+0.763
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EFNA4
+</td>
+<td style="text-align:center;">
+0.753
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+MAD1L1
+</td>
+<td style="text-align:center;">
+0.752
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CKAP4
+</td>
+<td style="text-align:center;">
+0.752
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CLEC7A
+</td>
+<td style="text-align:center;">
+0.751
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF10B
+</td>
+<td style="text-align:center;">
+0.745
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF11A
+</td>
+<td style="text-align:center;">
+0.743
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CDCP1
+</td>
+<td style="text-align:center;">
+0.734
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TGFA
+</td>
+<td style="text-align:center;">
+0.719
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+BTN3A2
+</td>
+<td style="text-align:center;">
+0.705
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+EPHA2
+</td>
+<td style="text-align:center;">
+0.694
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+S100A11
+</td>
+<td style="text-align:center;">
+0.692
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFSF13
+</td>
+<td style="text-align:center;">
+0.691
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD274
+</td>
+<td style="text-align:center;">
+0.686
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+GCNT1
+</td>
+<td style="text-align:center;">
+0.672
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+LILRB4
+</td>
+<td style="text-align:center;">
+0.671
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+IL15RA
+</td>
+<td style="text-align:center;">
+0.668
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD300LB
+</td>
+<td style="text-align:center;">
+0.667
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ZBTB17
+</td>
+<td style="text-align:center;">
+0.664
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+NUCB2
+</td>
+<td style="text-align:center;">
+0.663
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD83
+</td>
+<td style="text-align:center;">
+0.663
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CD4
+</td>
+<td style="text-align:center;">
+0.662
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ATRAID
+</td>
+<td style="text-align:center;">
+0.661
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TNFRSF19
+</td>
+<td style="text-align:center;">
+0.661
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+MATN3
+</td>
+<td style="text-align:center;">
+0.656
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="clinical" class="section level2 tabset">
+<h2 class="tabset">Clinical</h2>
+<div id="pca-active-score-1" class="section level3">
+<h3>PCA Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.1, |Effect| &gt;= 0.3<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 9.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Max Borg Dyspnea
+</td>
+<td style="text-align:center;">
+0.707
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Age
+</td>
+<td style="text-align:center;">
+0.567
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Birth_Year
+</td>
+<td style="text-align:center;">
+-0.558
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Uric Acid (mg/dl)
+</td>
+<td style="text-align:center;">
+0.560
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Uric_Acid__mg_dl
+</td>
+<td style="text-align:center;">
+0.560
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DLCO (SB) (% predicted)
+</td>
+<td style="text-align:center;">
+-0.472
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Creatinine
+</td>
+<td style="text-align:center;">
+0.417
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Creatinine
+</td>
+<td style="text-align:center;">
+0.417
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+<td style="text-align:center;">
+0.390
+</td>
+<td style="text-align:center;">
+0.006
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.076
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="sig-active-score-1" class="section level3">
+<h3>Sig Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.1, |Effect| &gt;= 0.3<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 26.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Max Borg Dyspnea
+</td>
+<td style="text-align:center;">
+0.712
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DLCO (SB) (% predicted)
+</td>
+<td style="text-align:center;">
+-0.583
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Uric Acid (mg/dl)
+</td>
+<td style="text-align:center;">
+0.578
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Uric_Acid__mg_dl
+</td>
+<td style="text-align:center;">
+0.578
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+<td style="text-align:center;">
+0.558
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Age
+</td>
+<td style="text-align:center;">
+0.527
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+eustarAI
+</td>
+<td style="text-align:center;">
+0.527
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Creatinine
+</td>
+<td style="text-align:center;">
+0.536
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Creatinine
+</td>
+<td style="text-align:center;">
+0.536
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Birth_Year
+</td>
+<td style="text-align:center;">
+-0.523
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TAPSE (cm)
+</td>
+<td style="text-align:center;">
+-0.497
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.005
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_TAPSE__cm
+</td>
+<td style="text-align:center;">
+-0.497
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.005
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Auricular arrhythmias
+</td>
+<td style="text-align:center;">
+0.449
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Wilcoxon
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Right atrium area (cm2)
+</td>
+<td style="text-align:center;">
+0.448
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Modified rodnan skin score
+</td>
+<td style="text-align:center;">
+0.428
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Modified_rodnan_skin_score
+</td>
+<td style="text-align:center;">
+0.428
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+mRSS_a
+</td>
+<td style="text-align:center;">
+0.427
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DLCO/VA (% predicted)
+</td>
+<td style="text-align:center;">
+-0.414
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.026
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+New Cardiac Manifest.
+</td>
+<td style="text-align:center;">
+0.381
+</td>
+<td style="text-align:center;">
+0.008
+</td>
+<td style="text-align:center;">
+Wilcoxon
+</td>
+<td style="text-align:center;">
+0.048
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Right_Fingers
+</td>
+<td style="text-align:center;">
+0.370
+</td>
+<td style="text-align:center;">
+0.010
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.053
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Total Score
+</td>
+<td style="text-align:center;">
+0.354
+</td>
+<td style="text-align:center;">
+0.014
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.072
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+LVEF %
+</td>
+<td style="text-align:center;">
+-0.361
+</td>
+<td style="text-align:center;">
+0.015
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.074
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+New PAH
+</td>
+<td style="text-align:center;">
+0.343
+</td>
+<td style="text-align:center;">
+0.017
+</td>
+<td style="text-align:center;">
+Wilcoxon
+</td>
+<td style="text-align:center;">
+0.084
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Telangiectasia
+</td>
+<td style="text-align:center;">
+0.336
+</td>
+<td style="text-align:center;">
+0.020
+</td>
+<td style="text-align:center;">
+Wilcoxon
+</td>
+<td style="text-align:center;">
+0.092
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Min SpO2 (Exercise)
+</td>
+<td style="text-align:center;">
+-0.405
+</td>
+<td style="text-align:center;">
+0.021
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.092
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Min_SpO2__Exercise
+</td>
+<td style="text-align:center;">
+-0.405
+</td>
+<td style="text-align:center;">
+0.021
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.092
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="hm-active-score-1" class="section level3">
+<h3>HM Active Score</h3>
+<div
+style="background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;">
+<p><b>Statistical Overview</b><br> <i>Cohort Size:</i> 48 Non-Active
+patients<br> <i>Thresholds:</i> FDR &lt; 0.1, |Effect| &gt;= 0.3<br>
+<i>Note:</i> ‘Effect’ represents Spearman’s Rho for continuous
+variables, and Wilcoxon Effect Size (r) for binary categoricals.
+Displaying top 12.</p>
+</div>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Effect
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+P_Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Method
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+FDR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Max Borg Dyspnea
+</td>
+<td style="text-align:center;">
+0.680
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Uric Acid (mg/dl)
+</td>
+<td style="text-align:center;">
+0.554
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_Uric_Acid__mg_dl
+</td>
+<td style="text-align:center;">
+0.554
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DLCO (SB) (% predicted)
+</td>
+<td style="text-align:center;">
+-0.504
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.009
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Pulmonary arterial hypertension and/or Interstitial lg Disease
+</td>
+<td style="text-align:center;">
+0.489
+</td>
+<td style="text-align:center;">
+0.000
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.009
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Age
+</td>
+<td style="text-align:center;">
+0.469
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.011
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TAPSE (cm)
+</td>
+<td style="text-align:center;">
+-0.483
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.011
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+log_TAPSE__cm
+</td>
+<td style="text-align:center;">
+-0.483
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.011
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Birth_Year
+</td>
+<td style="text-align:center;">
+-0.464
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.011
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+eustarAI
+</td>
+<td style="text-align:center;">
+0.429
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.026
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+DLCO/VA (% predicted)
+</td>
+<td style="text-align:center;">
+-0.389
+</td>
+<td style="text-align:center;">
+0.007
+</td>
+<td style="text-align:center;">
+Spearman
+</td>
+<td style="text-align:center;">
+0.071
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+New PAH
+</td>
+<td style="text-align:center;">
+0.384
+</td>
+<td style="text-align:center;">
+0.008
+</td>
+<td style="text-align:center;">
+Wilcoxon
+</td>
+<td style="text-align:center;">
+0.071
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code># Cleanup RAM
+rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out)</code></pre>
+<pre class="r"><code>cat(&quot;Script 03d Complete! \n&quot;)</code></pre>
+<pre><code>Script 03d Complete! </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] grid      stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] car_3.1-5                carData_3.0-6            future.apply_1.20.2     
+ [4] future_1.70.0            variancePartition_1.40.2 BiocParallel_1.44.0     
+ [7] ggVennDiagram_1.5.7      glmnet_4.1-10            Matrix_1.7-5            
+[10] UpSetR_1.4.0             ggridges_0.5.7           ggrepel_0.9.8           
+[13] pheatmap_1.0.13          enrichplot_1.30.5        clusterProfiler_4.18.4  
+[16] factoextra_2.0.0         FactoMineR_2.13          limma_3.66.0            
+[19] ggpubr_0.6.3             kableExtra_1.4.0         circlize_0.4.18         
+[22] ComplexHeatmap_2.26.1    here_1.0.2               patchwork_1.3.2         
+[25] lubridate_1.9.5          forcats_1.0.1            stringr_1.6.0           
+[28] dplyr_1.2.1              purrr_1.2.1              readr_2.2.0             
+[31] tidyr_1.3.2              tibble_3.3.1             tidyverse_2.0.0         
+[34] ggplot2_4.0.2            workflowr_1.7.2         
+
+loaded via a namespace (and not attached):
+  [1] fs_2.0.1                matrixStats_1.5.0       bitops_1.0-9           
+  [4] httr_1.4.8              RColorBrewer_1.1-3      doParallel_1.0.17      
+  [7] numDeriv_2016.8-1.1     tools_4.5.2             backports_1.5.1        
+ [10] R6_2.6.1                DT_0.34.0               mgcv_1.9-4             
+ [13] lazyeval_0.2.2          GetoptLong_1.1.0        withr_3.0.2            
+ [16] gridExtra_2.3           cli_3.6.5               Biobase_2.70.0         
+ [19] textshaping_1.0.5       flashClust_1.1-4        scatterpie_0.2.6       
+ [22] labeling_0.4.3          sass_0.4.10             mvtnorm_1.3-6          
+ [25] S7_0.2.1                systemfonts_1.3.2       yulab.utils_0.2.4      
+ [28] gson_0.1.0              DOSE_4.4.0              svglite_2.2.2          
+ [31] R.utils_2.13.0          parallelly_1.46.1       rstudioapi_0.18.0      
+ [34] RSQLite_2.4.6           generics_0.1.4          gridGraphics_0.5-1     
+ [37] shape_1.4.6.1           vroom_1.7.1             gtools_3.9.5           
+ [40] GO.db_3.22.0            leaps_3.2               S4Vectors_0.48.1       
+ [43] abind_1.4-8             R.methodsS3_1.8.2       lifecycle_1.0.5        
+ [46] whisker_0.4.1           scatterplot3d_0.3-45    yaml_2.3.12            
+ [49] gplots_3.3.0            qvalue_2.42.0           blob_1.3.0             
+ [52] promises_1.5.0          crayon_1.5.3            ggtangle_0.1.1         
+ [55] lattice_0.22-9          cowplot_1.2.0           KEGGREST_1.50.0        
+ [58] pillar_1.11.1           knitr_1.51              fgsea_1.36.2           
+ [61] boot_1.3-32             rjson_0.2.23            estimability_1.5.1     
+ [64] corpcor_1.6.10          codetools_0.2-20        fastmatch_1.1-8        
+ [67] glue_1.8.0              ggiraph_0.9.6           getPass_0.2-4          
+ [70] ggfun_0.2.0             fontLiberation_0.1.0    data.table_1.18.2.1    
+ [73] vctrs_0.7.2             png_0.1-9               treeio_1.34.0          
+ [76] Rdpack_2.6.6            gtable_0.3.6            cachem_1.1.0           
+ [79] xfun_0.57               rbibutils_2.4.1         Seqinfo_1.0.0          
+ [82] reformulas_0.4.4        survival_3.8-6          iterators_1.0.14       
+ [85] statmod_1.5.1           nlme_3.1-169            pbkrtest_0.5.5         
+ [88] ggtree_4.0.5            bit64_4.6.0-1           fontquiver_0.2.1       
+ [91] EnvStats_3.1.0          rprojroot_2.1.1         bslib_0.10.0           
+ [94] KernSmooth_2.23-26      otel_0.2.0              colorspace_2.1-2       
+ [97] BiocGenerics_0.56.0     DBI_1.3.0               tidyselect_1.2.1       
+[100] processx_3.8.7          emmeans_2.0.2           bit_4.6.0              
+[103] compiler_4.5.2          git2r_0.36.2            xml2_1.5.2             
+[106] fontBitstreamVera_0.1.1 scales_1.4.0            caTools_1.18.3         
+[109] remaCor_0.0.20          callr_3.7.6             multcompView_0.1-11    
+[112] rappdirs_0.3.4          digest_0.6.39           minqa_1.2.8            
+[115] rmarkdown_2.31          aod_1.3.3               XVector_0.50.0         
+[118] RhpcBLASctl_0.23-42     htmltools_0.5.9         pkgconfig_2.0.3        
+[121] lme4_2.0-1              fastmap_1.2.0           rlang_1.2.0            
+[124] GlobalOptions_0.1.3     htmlwidgets_1.6.4       farver_2.1.2           
+[127] jquerylib_0.1.4         jsonlite_2.0.0          GOSemSim_2.36.0        
+[130] R.oo_1.27.1             magrittr_2.0.5          polynom_1.4-1          
+[133] Formula_1.2-5           ggplotify_0.1.3         Rcpp_1.1.1             
+[136] ape_5.8-1               ggnewscale_0.5.2        gdtools_0.5.0          
+[139] stringi_1.8.7           MASS_7.3-65             plyr_1.8.9             
+[142] listenv_0.10.1          parallel_4.5.2          Biostrings_2.78.0      
+[145] splines_4.5.2           hms_1.1.4               ps_1.9.2               
+[148] igraph_2.2.2            ggsignif_0.6.4          reshape2_1.4.5         
+[151] stats4_4.5.2            evaluate_1.0.5          renv_1.1.5             
+[154] BiocManager_1.30.27     nloptr_2.2.1            tzdb_0.5.0             
+[157] foreach_1.5.2           tweenr_2.0.3            httpuv_1.6.16          
+[160] polyclip_1.10-7         clue_0.3-68             ggforce_0.5.0          
+[163] broom_1.0.12            fANCOVA_0.6-1           tidytree_0.4.7         
+[166] tidydr_0.0.6            rstatix_0.7.3           later_1.4.8            
+[169] viridisLite_0.4.3       lmerTest_3.2-1          aplot_0.2.9            
+[172] memoise_2.0.1           AnnotationDbi_1.72.0    IRanges_2.44.0         
+[175] cluster_2.1.8.2         globals_0.19.1          timechange_0.4.0       </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
