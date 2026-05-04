@@ -54,6 +54,8 @@ avc_dea <- readRDS(here::here("output", "03b_proteomics_differential", "dea_acti
 ```
 
 # Configuration
+`r what_this_does("Defined the exact clinical subgroup labels to target the Non-Active cohort.", "Parameterised the biological axis definition to use the top 260 Active vs Control proteins across 5 Principal Components.", "Configured strict FDR and Rho thresholds independently for the proteomics and clinical discovery engines.", "Set global plotting aesthetics.")`
+
 ```{r configuration}
 # 1. Subgroup Definitions
 groups <- list(
@@ -222,8 +224,6 @@ if (mean_active < mean_control) {
 hm_final <- hm_df %>% filter(cohort_group == groups$target) %>% select(Subject_ID, HM_Active_Score)
 ```
 
-## Score Characterization
-`r what_this_does("Merged the three scores into a master Non-Active index.", "Plotted density histograms to visually evaluate if the Non-Active cohort is continuous (bell curve) or comprised of two distinct subgroups (bimodal).", "Plotted the pairwise correlations between the three independent mathematical approaches.")`
 
 ## Score Characterization
 `r what_this_does("Merged the three scores into a master Non-Active index.", "Plotted density histograms to visually evaluate if the Non-Active cohort is continuous (bell curve) or comprised of two distinct subgroups (bimodal).", "Rendered a standalone overlaid density plot to compare the distributions of the three scoring methods.", "Plotted the pairwise correlations between the three independent mathematical approaches.")`
@@ -354,7 +354,7 @@ if (!interactive()) cat(html_out)
 # Cleanup RAM
 rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out)
 ```
-
+# Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
 ```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
