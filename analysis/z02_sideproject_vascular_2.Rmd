@@ -597,7 +597,7 @@ shopping_bot <- plot_spine %>%
 shopping_list <- bind_rows(shopping_top, shopping_bot) %>%
   arrange(Target_Group, Concordance_Rank)
 
-export_path <- file.path(output_dir_data, "Biobank_Organoid_Shopping_List.xlsx")
+export_path <- file.path(output_dir_data, "Biobank_Serum_Shopping_List.xlsx")
 write_xlsx(shopping_list, export_path)
 
 # Print the Table to HTML

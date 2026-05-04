@@ -1095,6 +1095,12 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
   clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
   if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
 
+  # --- NEW: Dynamic Cohort Subsetting ---
+  # If subset_groups is specified, filter the clinical spine BEFORE any matrix matching
+  if (!is.null(conf$subset_groups)) {
+    clin_df <- clin_df %>% filter(cohort_group %in% conf$subset_groups) %>% droplevels()
+  }
+
   # --- 1. Dynamic Omics Subsetting ---
   if (!is.null(conf$include_features)) {
     valid_features <- intersect(rownames(omics_mat), conf$include_features)
@@ -1155,7 +1161,6 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
   dropped_cat <- c()
   dropped_cont <- c()
 
-  # Helper to calculate skewness without needing extra packages
   calc_skew <- function(x) {
     x <- na.omit(x)
     n <- length(x)
@@ -1165,16 +1170,14 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
 
   for (v in candidate_vars) {
     vec <- plot_df[[v]]
-    # Check if numeric and actually continuous (>5 unique values)
     if (is.numeric(vec) && length(unique(na.omit(vec))) > 5) {
       skew_val <- calc_skew(vec)
-      if (abs(skew_val) > 2.5) { # Threshold for severe skewness
+      if (abs(skew_val) > 2.5) {
         dropped_cont <- c(dropped_cont, v)
       } else {
         surviving_vars <- c(surviving_vars, v)
       }
     } else {
-      # Treat as categorical: drop if minority class < 10%
       props <- prop.table(table(vec))
       if (length(props) > 0 && min(props) < 0.10) {
         dropped_cat <- c(dropped_cat, v)
@@ -1905,4 +1908,59 @@ run_dea_selector <- function(clin_df, conf, vpa_df, cor_matrices) {
   ))
 }
 
+# 9.Smart Mass Correlation (Supports Continuous & Categorical) -----------------
+run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
+  # data_mat: variables in rows, patients in columns
+  # score_vec: named vector of the continuous score
 
+  res_list <- list()
+
+  for (feat in rownames(data_mat)) {
+    x <- data_mat[feat, names(score_vec)]
+
+    # 1. Skip if too much missing data
+    if(sum(!is.na(x)) < 10) next
+
+    # 2. Determine Data Type
+    d_type <- "Continuous" # Default for proteomics
+    if (!is.null(dict_df) && feat %in% dict_df$Variable) {
+      d_type <- dict_df$Data_Type[dict_df$Variable == feat]
+    }
+
+    # 3. Route to the correct statistical test
+    if (d_type == "Categorical_Binary") {
+      # Wilcoxon Rank-Sum (Returns effect size r instead of Rho)
+      # Note: requires numeric 0/1 encoding
+      groups <- factor(x)
+      if (length(levels(groups)) == 2) {
+        wt <- wilcox.test(score_vec ~ groups)
+        # Approximate effect size r = Z / sqrt(N)
+        z <- qnorm(wt$p.value / 2)
+        eff_size <- abs(z) / sqrt(length(x))
+        res_list[[feat]] <- c(Feature=feat, Effect=eff_size, P_Val=wt$p.value, Method="Wilcoxon")
+      }
+    } else if (d_type == "Categorical_Nominal") {
+      # Kruskal-Wallis for multi-level factors
+      groups <- factor(x)
+      if (length(levels(groups)) > 2) {
+        kw <- kruskal.test(score_vec ~ groups)
+        res_list[[feat]] <- c(Feature=feat, Effect=NA, P_Val=kw$p.value, Method="Kruskal-Wallis")
+      }
+    } else {
+      # Standard Spearman for Continuous
+      ct <- cor.test(x, score_vec, method="spearman", exact=FALSE)
+      res_list[[feat]] <- c(Feature=feat, Effect=unname(ct$estimate), P_Val=unname(ct$p.value), Method="Spearman")
+    }
+  }
+
+  # 4. Compile and FDR correct
+  df <- bind_rows(lapply(res_list, function(x) as.data.frame(t(x)))) %>%
+    mutate(
+      Effect = as.numeric(Effect),
+      P_Val = as.numeric(P_Val),
+      FDR = p.adjust(P_Val, method="BH")
+    ) %>%
+    arrange(P_Val)
+
+  return(df)
+}

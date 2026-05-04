@@ -62,10 +62,32 @@ omics_config <- list(
 
 # Manually define your covariates here based on the findings from Script 03a!
 candidate_vars <- list(
-  set1 = c("log_Creatinine", "log_NT_proBNP__pg_ml")
+  set1 = c()
 )
 
 contrast_configs <- list(
+  # <-- NEW: Added for 03d and Trajectory Plots
+  active_vs_control = list(
+    title = "Active vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex"),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
+  # <-- NEW: Added for Trajectory Plots
+  nonactive_vs_control = list(
+    title = "Non-Active vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_NON_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex"),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
   ssc_vs_control = list(
     title = "SSc vs Control",
     group_col = "cohort_group",
@@ -73,7 +95,7 @@ contrast_configs <- list(
     ref_groups = c(GRP_CONTROL),
     is_continuous = FALSE,
     covariates = c("Age", "Sex"),
-    dea_p_cutoff = 0.05,  # <-- INDIVIDUAL CUTOFFS
+    dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   ),
   active_vs_nonactive = list(
@@ -89,8 +111,8 @@ contrast_configs <- list(
   inflamm_vs_noninflamm = list(
     title = "Inflammatory vs Non-Inflammatory",
     group_col = "Inflamm_active",
-    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
-    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
+    target_groups = c("yes"), 
+    ref_groups = c("No"),     
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -99,8 +121,8 @@ contrast_configs <- list(
   vascular_vs_nonvascular = list(
     title = "Vascular vs Non-Vascular",
     group_col = "vascular_active",
-    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
-    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
+    target_groups = c("yes"), 
+    ref_groups = c("No"),     
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -109,8 +131,8 @@ contrast_configs <- list(
   fibrotic_vs_nonfibrotic = list(
     title = "Fibrotic vs Non-Fibrotic",
     group_col = "fibrotic_active",
-    target_groups = c("yes"), # FIX: Updated to match text spine (lowercase 'y')
-    ref_groups = c("No"),     # FIX: Updated to match text spine (capital 'N')
+    target_groups = c("yes"), 
+    ref_groups = c("No"),     
     is_continuous = FALSE,
     covariates = candidate_vars$set1, 
     dea_p_cutoff = 0.05,
@@ -140,7 +162,7 @@ heatmap_config <- list(
 
 # 6. Comparative Settings
 cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10       
-cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20   
+cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20
 ```
 
 
@@ -252,8 +274,8 @@ for (cross_name in names(cross_contrasts)) {
 ```
 # Export
 `r what_this_does("Exported the full vascular DEA results to hand off to the subsetted side-project script.", "Finalized the script execution.")`
-```{r export_and_complete}
-# Check if the vascular contrast ran successfully and export it
+```{r export}
+# Export Vascular DEA
 if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
   saveRDS(
     master_dea_results[["vascular_vs_nonvascular"]], 
@@ -261,6 +283,15 @@ if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
   )
 } else {
   cat("'vascular_vs_nonvascular' contrast was not found or failed. Export skipped.\n\n")
+}
+
+# <-- NEW: Export Active vs Control DEA for 03d
+if ("active_vs_control" %in% names(master_dea_results)) {
+  # Save to the root differential output folder so other scripts easily find it
+  saveRDS(
+    master_dea_results[["active_vs_control"]], 
+    file.path(output_dir_data, "dea_active_vs_control.rds")
+  )
 }
 ```
 
