@@ -1,0 +1,609 @@
+---
+title: "Sideproject: Vascular 2"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Introduction
+Goal: To identify SSc patients with the most extreme "vascular disease" proteomic signatures to select their serum for functional in vitro organoid stimulation.
+
+<div style='border: 2px solid #e74c3c; padding: 15px; border-radius: 5px; background-color: #fdf2e9; margin-bottom: 20px;'>
+<h4 style='margin-top: 0; color: #c0392b;'>⚠️ NOTE: Medication Confounders</h4>
+The computational pipeline currently lacks patient medication histories (e.g., Rituximab, Mycophenolate, Calcium Channel Blockers). If organoids exhibit divergent behavior, consider that they may be responding to circulating pharmaceutical agents in the serum rather than the endogenous vascular disease signature. A clinical audit of autoantibodies and renal function (Creatinine) is provided below to check for extreme uremia or other major toxic confounders.
+</div>
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+`r what_this_does("Loaded analytical packages for scoring, correlation, and clinical profiling.", "Imported the pre-cleaned clinical master spine, numeric spine, data dictionary, and Olink proteomics matrix.", "Sourced the master omics engines for downstream DEA and Heatmap rendering.")`
+
+```{r setup_and_import, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(gtsummary)
+library(kableExtra)
+library(ComplexHeatmap)
+library(circlize)
+library(writexl)
+library(ggrepel) # Added for non-overlapping scatterplot labels
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file <- "z02_sideproject_vascular_2"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines
+source(here::here("code", "00_omics_engines.R"))
+
+# Load Pre-Cleaned Data & Global DEA Results
+master_spine  <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+numeric_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds"))
+data_dict     <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds")) # Adjust to .csv and read_csv() if your dict is a csv!
+olink_mat     <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+
+# Load Global Vascular DEA (from Script 03b)
+global_vascular_dea <- readRDS(here::here("output", "03b_proteomics_differential", "full_vascular_dea_results.rds"))
+```
+
+# Configurations
+`r what_this_does("Defined the exact sets of proteins that comprise the Vascular Scoring system.", "Set mathematical thresholds for the Direction Count Score (+1/-1 logic).", "Parameterised the sample sizes for the Differential Expresion Analysis (Extreme N) and the Biobank Shopping List.", "Configured strict FDR and Rho thresholds for the Proteomic and Clinical correlation discovery engines.")`
+
+```{r configurations}
+# 1. Protein Signatures
+vascular_up_proteins   <- c("VEGFA", "PGF", "CCL2", "CXCL10", "EDNRB") 
+vascular_down_proteins <- c("NOS3", "CALCA", "ACE2", "HGF")
+
+# Proteins of Interest for Endothelial/Myocardial specific heatmaps
+proteins_of_interest   <- unique(c(vascular_up_proteins, vascular_down_proteins, "VWF", "TIE1", "TNNT2"))
+
+# 2. Scoring Parameters
+score_config <- list(
+  z_thresh   = 1.0,  # Threshold for Direction Count Score (+1 or -1)
+  extreme_n  = 5,    # Number of patients to select for Top and Bottom groups (for DEA)
+  shopping_n = 10    # Number of patients to export for Biobank retrieval
+)
+
+# 3. Clinical Audit & Visualization Parameters
+plot_color_vars <- c("vascular_active", "Inflamm_active", "cohort_group")
+audit_vars      <- c("Age", "Sex", "log_Creatinine", "SSc Antibodies", "disease_duration")
+
+# 4. Global Omics Thresholds (Required for DEA wrapper)
+omics_config <- list(gsea_p_cutoff = 0.20, gsea_min_size = 3)
+heatmap_config <- list(top_n = 30, split_by_group = TRUE, row_font_size = 8)
+
+# 5. NEW: Correlation Discovery Thresholds
+cor_config <- list(
+  max_table_rows = 30, # How many top hits to display in the HTML tables
+  proteomics = list(
+    fdr_thresh = 0.05,
+    rho_thresh = 0.4
+  ),
+  clinical = list(
+    fdr_thresh = 0.10, # Slightly looser FDR for clinical traits due to lower N and higher variance
+    rho_thresh = 0.3
+  )
+)
+```
+
+
+# Vascular Signature Scoring
+`r what_this_does("Calculated two independent vascular metrics.", "1. Magnitude Score: The sum of aligned Z-scores (Downregulated proteins are inverted so positive always means pro-disease).", "2. Direction Count Score: Assigns +1 if a protein crosses the biological threshold in the 'disease' direction, and -1 if it crosses in the 'healthy' direction.")`
+
+```{r scoring}
+# Clean lists to only include available proteins
+valid_up   <- intersect(vascular_up_proteins, rownames(olink_mat))
+valid_down <- intersect(vascular_down_proteins, rownames(olink_mat))
+
+# Restrict to SSc patients only
+ssc_patients <- master_spine %>% filter(cohort_group %in% c(GRP_ACTIVE, GRP_NON_ACTIVE)) %>% pull(Subject_ID)
+valid_ssc_ids <- intersect(ssc_patients, colnames(olink_mat))
+
+# 1. Z-Score Scaling (Scaled across SSc patients only)
+z_mat <- t(scale(t(olink_mat[, valid_ssc_ids])))
+
+# 2. Magnitude Score Calculation (Aligned: Up - Down)
+mag_up   <- colSums(z_mat[valid_up, , drop=FALSE], na.rm=TRUE)
+mag_down <- colSums(z_mat[valid_down, , drop=FALSE], na.rm=TRUE)
+mag_score <- mag_up - mag_down
+
+# 3. Direction Count Score (+1/-1 logic)
+# UP list logic
+up_plus  <- colSums(z_mat[valid_up, , drop=FALSE] > score_config$z_thresh, na.rm=TRUE)
+up_minus <- colSums(z_mat[valid_up, , drop=FALSE] < -score_config$z_thresh, na.rm=TRUE)
+
+# DOWN list logic (Inverted biologically)
+down_plus  <- colSums(z_mat[valid_down, , drop=FALSE] < -score_config$z_thresh, na.rm=TRUE) # Low is bad
+down_minus <- colSums(z_mat[valid_down, , drop=FALSE] > score_config$z_thresh, na.rm=TRUE)  # High is good
+
+count_score <- (up_plus - up_minus) + (down_plus - down_minus)
+
+# 4. Master Score DataFrame
+score_df <- data.frame(
+  Subject_ID = valid_ssc_ids,
+  Magnitude_Score = mag_score,
+  Count_Score = count_score
+) %>%
+  mutate(
+    # Concordance Ranking (Lower rank = more extreme disease)
+    Rank_Mag   = rank(-Magnitude_Score),
+    Rank_Count = rank(-Count_Score),
+    Concordance_Rank = Rank_Mag + Rank_Count
+  ) %>%
+  arrange(Concordance_Rank)
+
+# Merge back with clinical data for plotting
+plot_spine <- master_spine %>% inner_join(score_df, by = "Subject_ID")
+```
+
+# Score Characterization
+## Score Distribution {.tabset}
+`r what_this_does("Plotted the density distributions of the newly calculated Vascular Scores across the entire cohort.", "Color-coded the histograms by clinical metadata to visually confirm if the proteomic score maps to real-world clinical status.")`
+
+```{r score_dist_and_val, results='asis'}
+for (c_var in plot_color_vars) {
+  if (!(c_var %in% colnames(plot_spine))) next
+  
+  cat(sprintf("\n\n### Colored by: %s\n\n", c_var))
+  
+  p_mag <- ggplot(plot_spine %>% filter(!is.na(!!sym(c_var))), aes(x = Magnitude_Score, fill = !!sym(c_var))) +
+    geom_density(alpha = 0.5) +
+    theme_project_base() +
+    labs(title = "Magnitude Score", x = "Magnitude (Sum of aligned Z-scores)") +
+    theme(plot.title = element_text(size = 11, face = "italic"))
+  
+  p_cnt <- ggplot(plot_spine %>% filter(!is.na(!!sym(c_var))), aes(x = Count_Score, fill = !!sym(c_var))) +
+    geom_histogram(alpha = 1, position = "stack", bins = 15, color = "black") +
+    theme_project_base() +
+    labs(title = "Direction Count Score", x = "Count Score") +
+    theme(plot.title = element_text(size = 11, face = "italic"))
+  
+  # Use patchwork's plot_annotation to create a master title for the whole figure
+  master_plot <- (p_mag | p_cnt) + 
+    plot_annotation(
+      title = sprintf("Vascular Score Distributions (Colored by: %s)", c_var),
+      theme = theme(plot.title = element_text(size = 15, face = "bold"))
+    )
+  
+  print(master_plot)
+  cat("\n\n")
+}
+```
+
+## Score Drivers
+`r what_this_does("Calculated the Spearman correlation between each scoring protein's raw NPX and both the final derived Magnitude Score and Count Score.", "Identifies which specific proteins are contributing the strongest biological signal to the overall patient ranking across both methodologies.")`
+
+```{r primary_score_drivers}
+all_scoring_prots <- unique(c(valid_up, valid_down))
+
+# Helper function to extract Rho, P-value, and assign significance stars
+get_cor_stats <- function(p, score_col) {
+  res <- cor.test(olink_mat[p, plot_spine$Subject_ID], plot_spine[[score_col]], method = "spearman", exact = FALSE)
+  stars <- case_when(
+    res$p.value < 0.001 ~ "***",
+    res$p.value < 0.01  ~ "**",
+    res$p.value < 0.05  ~ "*",
+    TRUE ~ "ns"
+  )
+  return(data.frame(Rho = res$estimate, P_Val = res$p.value, Stars = stars))
+}
+
+# Calculate for both scores
+mag_res <- lapply(all_scoring_prots, function(p) get_cor_stats(p, "Magnitude_Score")) %>% bind_rows() %>% mutate(Protein = all_scoring_prots, Score_Type = "Magnitude Score")
+cnt_res <- lapply(all_scoring_prots, function(p) get_cor_stats(p, "Count_Score")) %>% bind_rows() %>% mutate(Protein = all_scoring_prots, Score_Type = "Count Score")
+
+driver_df <- bind_rows(mag_res, cnt_res) %>%
+  mutate(Direction = ifelse(Protein %in% valid_up, "Upregulated List", "Downregulated List"))
+
+order_prots <- driver_df %>% filter(Score_Type == "Magnitude Score") %>% arrange(Rho) %>% pull(Protein)
+driver_df$Protein <- factor(driver_df$Protein, levels = order_prots)
+driver_df$Score_Type <- factor(driver_df$Score_Type, levels = c("Magnitude Score", "Count Score"))
+
+ggplot(driver_df, aes(x = Protein, y = Rho, fill = Direction)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = Stars, y = Rho + sign(Rho)*0.05), size = 4, vjust = 0.75) +
+  coord_flip() +
+  facet_wrap(~ Score_Type) +
+  scale_fill_manual(values = c("Upregulated List" = "#c0392b", "Downregulated List" = "#2980b9")) +
+  theme_project_base() +
+  labs(title = "Primary Score Drivers", subtitle = "Spearman Correlation: Individual Protein NPX vs Final Scores", x = NULL, y = "Spearman Rho")
+```
+
+## Score Correlations
+`r what_this_does("Extracted continuous clinical variables labeled 'PASS' from the data dictionary.", "Computed Spearman correlations mapping every valid protein and clinical trait against the Magnitude Score, Count Score, and Inverted Rank.", "Applied Benjamini-Hochberg FDR correction.", "Generated scrollable HTML tables of the top drivers and exported full results to CSV.")`
+
+`r why_is_this_done("Because the sickest patients have the lowest numerical Concordance Rank (e.g., #1), disease-promoting proteins would normally show a negative mathematical correlation. By computationally inverting the rank (multiplying by -1), a positive Rho uniformly signifies an association with worse vascular disease across all three metrics.")`
+
+```{r score_correlations_tables, results='asis', warning=FALSE}
+# 1. Prepare Data Matrices -----------------------------------------------------
+valid_ssc_ids <- plot_spine$Subject_ID
+
+# Prepare the Score DataFrame with the Inverted Rank
+score_df_sub <- plot_spine %>% 
+  select(Subject_ID, Magnitude_Score, Count_Score, Concordance_Rank) %>%
+  mutate(Inverted_Rank = -1 * Concordance_Rank)
+
+# Prepare Clinical Matrix (Filtered by Dictionary 'PASS')
+pass_vars <- data_dict %>% filter(QC_Flag == "PASS") %>% pull(Variable)
+clin_vars <- intersect(colnames(numeric_spine), pass_vars)
+clin_vars <- setdiff(clin_vars, "Subject_ID")
+
+clin_df <- numeric_spine %>% filter(Subject_ID %in% valid_ssc_ids) %>% select(Subject_ID, all_of(clin_vars))
+
+# FIX: Safely move ID to row names, then purge any accidental text columns before transposing
+clin_mat <- t(clin_df %>% 
+                column_to_rownames("Subject_ID") %>% 
+                select(where(is.numeric)))
+
+# Prepare Proteomics Matrix
+prot_mat <- olink_mat[, valid_ssc_ids]
+
+# 2. Correlation Engine --------------------------------------------------------
+run_mass_cor <- function(data_mat, score_vec) {
+  res <- apply(data_mat, 1, function(x) {
+    if(sum(!is.na(x)) < 10) return(c(Rho=NA, P_Val=NA)) # Skip features with < 10 valid data points
+    ct <- cor.test(x, score_vec, method="spearman", exact=FALSE)
+    # unname() strips the hidden 'rho' label so dplyr can find the columns
+    c(Rho=unname(ct$estimate), P_Val=unname(ct$p.value))
+  })
+  
+  df <- as.data.frame(t(res)) %>%
+    rownames_to_column("Feature") %>%
+    filter(!is.na(Rho)) %>%
+    mutate(FDR = p.adjust(P_Val, method="BH")) %>%
+    arrange(desc(abs(Rho)))
+  return(df)
+}
+
+# 3. Execution & HTML Construction Loop ----------------------------------------
+# We store results in a master list for the next chunk
+cor_results <- list(proteomics = list(), clinical = list())
+score_targets <- c("Magnitude_Score", "Count_Score", "Inverted_Rank")
+modalities <- list(proteomics = prot_mat, clinical = clin_mat)
+
+# HTML string accumulator to prevent fragmenting the output box (Knitting only)
+html_out <- ""
+
+for (mod_name in names(modalities)) {
+  if (!interactive()) {
+    html_out <- paste0(html_out, sprintf("\n\n### %s {.tabset}\n\n", tools::toTitleCase(mod_name)))
+  }
+  mod_conf <- cor_config[[mod_name]]
+  
+  for (score_name in score_targets) {
+    clean_score_name <- gsub("_", " ", score_name)
+    if (!interactive()) {
+      html_out <- paste0(html_out, sprintf("\n\n#### %s\n\n", clean_score_name))
+    }
+    
+    # Calculate
+    score_vec <- setNames(score_df_sub[[score_name]], score_df_sub$Subject_ID)
+    res_df <- run_mass_cor(modalities[[mod_name]], score_vec)
+    cor_results[[mod_name]][[score_name]] <- res_df
+    
+    # Export full dataset
+    export_name <- sprintf("Correlations_%s_vs_%s.csv", tools::toTitleCase(mod_name), score_name)
+    write_csv(res_df, file.path(output_dir_data, export_name))
+    
+    # Filter for Significant Top Hits for Display
+    sig_df <- res_df %>% filter(FDR < mod_conf$fdr_thresh & abs(Rho) >= mod_conf$rho_thresh)
+    
+    caption_text <- sprintf("<br><i>Showing top %d significant hits (FDR < %s, |Rho| >= %s). Full list exported to output folder.</i>\n\n", 
+                            min(nrow(sig_df), cor_config$max_table_rows), mod_conf$fdr_thresh, mod_conf$rho_thresh)
+    
+    if (nrow(sig_df) > 0) {
+      tbl_html <- sig_df %>%
+        head(cor_config$max_table_rows) %>%
+        kbl(format = "html", digits = 3, align = "c") %>%
+        kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+        scroll_box(height = "400px")
+      
+      # The Dual-Path Rendering Engine
+      if (interactive()) {
+        cat(sprintf("\n=== %s vs %s ===\n", tools::toTitleCase(mod_name), clean_score_name))
+        print(tbl_html) # Forces RStudio Viewer to render
+        cat(caption_text, "\n")
+      } else {
+        html_out <- paste0(html_out, tbl_html, "\n\n", caption_text)
+      }
+      
+    } else {
+      empty_msg <- "> No features passed the significance thresholds.\n\n"
+      
+      if (interactive()) {
+        cat(sprintf("\n=== %s vs %s ===\n", tools::toTitleCase(mod_name), clean_score_name))
+        cat(empty_msg)
+      } else {
+        html_out <- paste0(html_out, empty_msg)
+      }
+    }
+  }
+}
+
+# Print the entire compiled HTML structure at once (Knitting only)
+if (!interactive()) {
+  cat(html_out)
+}
+```
+
+
+`r what_this_does("Cross-referenced the Magnitude and Count score correlation profiles for both omics modalities.", "Categorized drivers as 'Common' (significant in both), 'Unique to Magnitude', or 'Unique to Count' based on configuration thresholds.", "Generated labeled quadrant scatterplots to visualize the core biological signals shared across the scoring architectures.")`
+
+```{r score_correlations_scatter, fig.width=14, fig.height=7}
+# 1. Quadrant Plotting Engine --------------------------------------------------
+plot_quadrant <- function(mag_df, count_df, conf, title_prefix) {
+  
+  # Join dataframes safely
+  df <- mag_df %>%
+    inner_join(count_df, by = "Feature", suffix = c("_Mag", "_Count")) %>%
+    mutate(
+      Sig_Mag = FDR_Mag < conf$fdr_thresh & abs(Rho_Mag) >= conf$rho_thresh,
+      Sig_Count = FDR_Count < conf$fdr_thresh & abs(Rho_Count) >= conf$rho_thresh,
+      Category = case_when(
+        Sig_Mag & Sig_Count ~ "Common Driver",
+        Sig_Mag ~ "Unique to Magnitude",
+        Sig_Count ~ "Unique to Count",
+        TRUE ~ "Not Significant"
+      ),
+      Label = ifelse(Category != "Not Significant", Feature, "")
+    )
+  
+  cat_colors <- setNames(
+    c("#c0392b", "#E69F00", "#0072B2", "grey80"),
+    c("Common Driver", "Unique to Magnitude", "Unique to Count", "Not Significant")
+  )
+  
+  p <- ggplot(df, aes(x = Rho_Mag, y = Rho_Count, fill = Category, label = Label)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "grey50") +
+    geom_point(shape = 21, size = 3, alpha = 0.8, color = "black") +
+    geom_text_repel(size = 3, max.overlaps = 15, box.padding = 0.5, segment.color = "grey50") +
+    scale_fill_manual(values = cat_colors) +
+    theme_project_base() +
+    labs(
+      title = sprintf("%s: Driver Concordance", title_prefix),
+      subtitle = sprintf("Thresholds: FDR < %s, |Rho| >= %s", conf$fdr_thresh, conf$rho_thresh),
+      x = "Magnitude Score (Spearman Rho)",
+      y = "Direction Count Score (Spearman Rho)"
+    )
+  
+  return(p)
+}
+
+# 2. Generate and Save Plots ---------------------------------------------------
+p_prot <- plot_quadrant(
+  mag_df = cor_results$proteomics$Magnitude_Score, 
+  count_df = cor_results$proteomics$Count_Score, 
+  conf = cor_config$proteomics, 
+  title_prefix = "Proteomics"
+)
+
+p_clin <- plot_quadrant(
+  mag_df = cor_results$clinical$Magnitude_Score, 
+  count_df = cor_results$clinical$Count_Score, 
+  conf = cor_config$clinical, 
+  title_prefix = "Clinical Parameters"
+)
+
+# Print side-by-side
+print(p_prot | p_clin)
+
+# Save to disk
+ggsave(file.path(output_dir_data, "Quadrant_Proteomics.png"), p_prot, width = 8, height = 7, bg = "white")
+ggsave(file.path(output_dir_data, "Quadrant_Clinical.png"), p_clin, width = 8, height = 7, bg = "white")
+
+# Memory Cleanup (Delete variables no longer needed outside these chunks)
+rm(clin_mat, prot_mat, score_df_sub, clin_df, cor_results, html_out)
+```
+
+# Patient Concordance & Selection
+`r what_this_does("Ranked patients based on their aggregate performance across both the Magnitude and Direction Count scoring systems.", "Designated the Top N and Bottom N patients as the extreme vascular phenotypes.", "Generated a scatterplot with overlaid linear regression to visually highlight the selected patients in the extreme corners of the concordance distribution.")`
+
+`r why_is_this_done("To ensure the organoid experiment uses undeniable vascular serum, we plotted the Magnitude Score against the Count Score. Patients selected for the experiment MUST sit at the absolute extremes of both approaches.")`
+
+```{r patient_concordance_and_selection, results='asis'}
+# Define the Extreme Groups based on Concordance Rank
+top_patients <- plot_spine %>% slice_min(Concordance_Rank, n = score_config$extreme_n) %>% pull(Subject_ID)
+bot_patients <- plot_spine %>% slice_max(Concordance_Rank, n = score_config$extreme_n) %>% pull(Subject_ID)
+
+lbl_unselected <- "Unselected"
+lbl_top <- sprintf("Top %d (Vascular High)", score_config$extreme_n)
+lbl_bot <- sprintf("Bottom %d (Vascular Low)", score_config$extreme_n)
+
+plot_spine <- plot_spine %>%
+  mutate(Selection = case_when(
+    Subject_ID %in% top_patients ~ lbl_top,
+    Subject_ID %in% bot_patients ~ lbl_bot,
+    TRUE ~ lbl_unselected
+  ))
+
+selection_colors <- setNames(c("grey80", "#c0392b", "#2980b9"), c(lbl_unselected, lbl_top, lbl_bot))
+
+p_scatter <- ggplot(plot_spine, aes(x = Magnitude_Score, y = Count_Score, fill = Selection)) +
+  geom_point(shape = 21, size = 3, alpha = 0.8, color = "black") +
+  scale_fill_manual(values = selection_colors) + 
+  theme_project_base() +
+  labs(title = "Score Concordance & Sera Selection", 
+       subtitle = sprintf("Selecting top and bottom %d patients based on combined ranking", score_config$extreme_n),
+       x = "Magnitude Score (Z-Score Sum)", y = "Count Score (+1/-1)")
+
+print(p_scatter)
+ggsave(file.path(output_dir_data, "Patient_Selection_Concordance.png"), p_scatter, width=8, height=6, bg="white")
+
+
+tbl_data <- plot_spine %>% 
+  filter(Selection != lbl_unselected) %>%
+  select(Subject_ID, Selection, Magnitude_Score, Count_Score, Concordance_Rank) %>%
+  arrange(Concordance_Rank)
+
+# Print cleanly for both inline RStudio and Knitted HTML
+tbl_data %>% 
+  kbl(format = "html", digits = 2, align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+  row_spec(0, bold = TRUE)
+```
+
+
+# Clinical Confounder Audit
+`r what_this_does("Generates a cross-reference table of the selected extreme patients.", "Allows wet-lab experimenters to check if the 'High Vascular' serum happens to be systematically older, uremic (Creatinine), or tied to a specific autoantibody, which could artificially influence the organoids.")`
+
+```{r clinical_confounder_audit}
+audit_cols <- intersect(audit_vars, colnames(plot_spine))
+
+audit_df <- plot_spine %>%
+  filter(Selection != "Unselected") %>%
+  select(Selection, all_of(audit_cols))
+
+continuous_force_vars <- intersect(c("Age", "log_Creatinine", "disease_duration"), colnames(audit_df))
+
+suppressMessages(suppressWarnings({
+  tbl_audit <- audit_df %>%
+    tbl_summary(
+      by = Selection, 
+      missing = "no",
+      type = list(any_of(continuous_force_vars) ~ "continuous")
+    ) %>%
+    add_p() %>%
+    bold_labels() %>%
+    modify_header(label = "**Clinical Confounder**")
+}))
+
+tbl_audit %>% as_kable_extra(format = "html") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
+```
+
+
+# Differential Expression Analysis {.tabset}
+`r what_this_does("Runs the master Limma Differential Expression Analysis specifically on the Top N vs Bottom N selected patients.", "Generates standard Volcano plots and heatmaps to visually validate the biological extreme phenotype of the chosen sera.")`
+
+```{r DEA, fig.height=8, fig.width=10, results='asis'}
+# 1. Setup Custom DEA Config for the Wrapper
+extreme_dea_conf <- list(
+  title = sprintf("Organoid Candidates: Top %d vs Bottom %d", score_config$extreme_n, score_config$extreme_n),
+  group_col = "Selection",
+  target_groups = c(sprintf("Top %d (Vascular High)", score_config$extreme_n)),
+  ref_groups = c(sprintf("Bottom %d (Vascular Low)", score_config$extreme_n)),
+  is_continuous = FALSE,
+  covariates = c(),
+  dea_p_cutoff = 0.05,
+  dea_fc_cutoff = 0.5,
+  custom_color_map = selection_colors # <--- Pass custom colors safely
+)
+
+# 2. Run DEA Engine
+dea_res <- wrap_dea_pipeline(
+    omics_mat           = olink_mat, 
+    clin_df             = plot_spine, 
+    dea_conf            = extreme_dea_conf, 
+    dea_id              = "extreme_vascular", 
+    base_output_dir     = output_dir_data, 
+    go_db               = NULL, 
+    omics_config        = omics_config, 
+    heatmap_config      = heatmap_config, 
+    project_colors_func = get_project_colors
+)
+
+clin_extreme <- plot_spine %>% filter(Selection != "Unselected")
+
+# HEATMAP 1: Local DEA (Extreme Phenotype)
+cat("## Local DEA Heatmap\n\n")
+if (dea_res$status == "success") {
+  print(dea_res$plots$volcano)
+  cat("\n\n<br>\n\n")
+  
+  hm_local <- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = dea_res$data$dea,
+    title = "Local DEA (5v5)",
+    n_top = 30, 
+    split_by_group = FALSE, # Unsupervised clustering
+    split_col = "Selection",
+    custom_color_map = selection_colors
+  )
+  draw(hm_local)
+  cat("\n\n")
+} else {
+  cat(sprintf("> <span style='color:red;'>**DEA Failed:** %s</span>\n\n", dea_res$error_msg))
+}
+
+# HEATMAP 2: Global DEA Signature
+cat("## Global DEA Heatmap\n\n")
+if (exists("global_vascular_dea") && !is.null(global_vascular_dea)) {
+  hm_global <- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = global_vascular_dea,
+    title = "Global DEA (full cohort)",
+    n_top = 30, 
+    split_by_group = FALSE,
+    split_col = "Selection",
+    custom_color_map = selection_colors
+  )
+  draw(hm_global)
+  cat("\n\n")
+} else {
+  cat("> Global DEA results not found. Skipping Global Heatmap.\n\n")
+}
+
+# HEATMAP 3: Custom Proteins of Interest
+cat("## Custom POI Heatmap\n\n")
+valid_poi <- intersect(proteins_of_interest, rownames(olink_mat))
+if (length(valid_poi) > 1 && dea_res$status == "success") {
+  
+  poi_limma_df <- dea_res$data$dea %>% filter(Feature %in% valid_poi)
+  
+  poi_heatmap <- run_heatmap_engine(
+    mat = olink_mat, 
+    clin = clin_extreme, 
+    dea_res = poi_limma_df,
+    title = "Selected Proteins of Interest",
+    n_top = length(valid_poi), 
+    split_by_group = FALSE,
+    split_col = "Selection",
+    show_top_n_title = FALSE, # Suppress the "Top 9" text
+    custom_color_map = selection_colors
+  )
+  draw(poi_heatmap)
+  cat("\n\n")
+} else {
+  cat("> Insufficient Valid POIs to generate targeted heatmap.\n\n")
+}
+```
+
+# Biobank Shopping List Export
+`r what_this_does("Exports an extended priority list of extreme patients to CSV, providing the biobank with backup options in case primary aliquots are depleted.")`
+
+```{r biobank_shopping_list_export}
+# Select only the needed columns FIRST to prevent duplicate column warnings
+shopping_top <- plot_spine %>% 
+  slice_min(Concordance_Rank, n = score_config$shopping_n) %>% 
+  mutate(Target_Group = "High Vascular Serum") %>%
+  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
+
+shopping_bot <- plot_spine %>% 
+  slice_max(Concordance_Rank, n = score_config$shopping_n) %>% 
+  mutate(Target_Group = "Low Vascular Serum") %>%
+  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
+
+# Bind clean rows
+shopping_list <- bind_rows(shopping_top, shopping_bot) %>%
+  arrange(Target_Group, Concordance_Rank)
+
+export_path <- file.path(output_dir_data, "Biobank_Organoid_Shopping_List.xlsx")
+write_xlsx(shopping_list, export_path)
+
+```
+
+
+```{r complete}
+cat("Script z02 Complete! \n")
+```
+
