@@ -143,22 +143,33 @@ clinical_domains <- list(
 # NEW: MASTER COLOR DICTIONARY
 # ------------------------------------------------------------------------------
 # A single, unified function that can map colors for any variable in the project
-get_project_colors <- function(requested_levels) {
-
-  # FIX: Force everything to text to prevent index-0 crashes!
+get_project_colors <- function(requested_levels, custom_map = NULL) {
   requested_levels <- as.character(requested_levels)
 
-  color_map <- setNames(
+  base_map <- setNames(
     c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE),
     c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE)
   )
 
-  out_colors <- color_map[requested_levels]
+  # Combine with custom overrides (custom takes precedence)
+  if (!is.null(custom_map)) {
+    full_map <- c(custom_map, base_map)
+    full_map <- full_map[!duplicated(names(full_map))]
+  } else {
+    full_map <- base_map
+  }
 
-  # Fallback for unexpected names
-  out_colors[is.na(out_colors)] <- "#333333"
+  out_colors <- full_map[requested_levels]
+
+  # Smart Fallback for completely unknown levels (prevents dark grey blobs)
+  unknown_idx <- is.na(out_colors)
+  if (any(unknown_idx)) {
+    num_unknown <- sum(unknown_idx)
+    safe_pal <- if(exists("FALLBACK_CAT_PALETTE")) FALLBACK_CAT_PALETTE else c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7")
+    out_colors[unknown_idx] <- rep(safe_pal, length.out = num_unknown)
+  }
+
   names(out_colors) <- requested_levels
-
   return(out_colors)
 }
 

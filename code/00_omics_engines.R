@@ -242,10 +242,14 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
   write_csv(sig_table, file.path(dea_sub_dir, paste0(dea_id, "_Significant_Proteins.csv")))
 
   # C. Heatmap
+  custom_map <- if(!is.null(dea_conf$custom_color_map)) dea_conf$custom_color_map else NULL
+
   results$plots$heatmap <- run_heatmap_engine(omics_mat, clin_sub, limma_res$data,
                                               title = dea_conf$title,
                                               n_top = heatmap_config$top_n,
-                                              split_by_group = heatmap_config$split_by_group)
+                                              split_by_group = heatmap_config$split_by_group,
+                                              split_col = dea_conf$group_col,
+                                              custom_color_map = custom_map)
 
   png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
       width=10, height=12, units="in", res=300)
@@ -1355,6 +1359,9 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
 # Returns:
 #   Dataframe of pathways, a dotplot ggplot, and a ridgeplot ggplot.
 run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
+
+  if (is.null(go_db)) return(NULL)
+
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
   set.seed(42)
   gsea_res <- GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
@@ -1397,22 +1404,25 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
 #   split_by_group: Boolean dictating if the columns should be visually clustered by cohort.
 # Returns:
 #   A ComplexHeatmap object (must be drawn with draw()).
-run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_group = FALSE) {
+run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_group = FALSE, split_col = "cohort_group", show_top_n_title = TRUE, custom_color_map = NULL) {
   valid_ids <- intersect(clin$Subject_ID, colnames(mat))
   clin_sub <- clin %>% filter(Subject_ID %in% valid_ids)
 
   top_feats <- dea_res %>% mutate(pi = abs(logFC) * -log10(adj.P.Val)) %>% slice_max(pi, n = n_top) %>% pull(Feature)
   plot_mat <- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
 
-  grp_cols <- get_project_colors(as.character(unique(clin_sub$cohort_group)))
+  # Use the dynamic column and pass the custom color map to the core function
+  grp_cols <- get_project_colors(as.character(unique(clin_sub[[split_col]])), custom_map = custom_color_map)
   sex_cols <- setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male"))
   age_fun  <- colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
 
-  ha <- HeatmapAnnotation(Group = clin_sub$cohort_group, Sex = clin_sub$Sex, Age = clin_sub$Age,
+  ha <- HeatmapAnnotation(Group = clin_sub[[split_col]], Sex = clin_sub$Sex, Age = clin_sub$Age,
                           col = list(Group = grp_cols, Sex = sex_cols, Age = age_fun))
 
-  Heatmap(plot_mat, name = "Z-Score", column_title = sprintf("%s: Top %d Proteins", title, n_top),
-          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub$cohort_group else NULL,
+  final_title <- if(show_top_n_title) sprintf("%s: Top %d Proteins", title, n_top) else title
+
+  Heatmap(plot_mat, name = "Z-Score", column_title = final_title,
+          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub[[split_col]] else NULL,
           col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
 }
 
