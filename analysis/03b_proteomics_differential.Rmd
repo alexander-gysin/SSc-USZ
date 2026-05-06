@@ -1,5 +1,5 @@
 ---
-title: "03b_proteomics_differential"
+title: "Differential"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -66,7 +66,6 @@ candidate_vars <- list(
 )
 
 contrast_configs <- list(
-  # <-- NEW: Added for 03d and Trajectory Plots
   active_vs_control = list(
     title = "Active vs Control",
     group_col = "cohort_group",
@@ -77,7 +76,6 @@ contrast_configs <- list(
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   ),
-  # <-- NEW: Added for Trajectory Plots
   nonactive_vs_control = list(
     title = "Non-Active vs Control",
     group_col = "cohort_group",
