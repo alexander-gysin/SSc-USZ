@@ -258,7 +258,7 @@ for (cross_name in names(cross_contrasts)) {
   }
   
   if(!is.null(traj_res$plots$venn)) {
-    cat("### Feature Intersection (Venn Diagram)\n\n")
+    cat("### Feature Intersection\n\n")
     print(traj_res$plots$venn)
     cat("\n\n")
   }

@@ -436,17 +436,32 @@ for (v in candidate_vars) {
 }
 
 # Construct Dictionary
-data_dictionary <- bind_rows(dict_list) %>%
+base_dict <- bind_rows(dict_list) %>% mutate(Exclusion_Reason = "None")
+
+# Capture the manually excluded variables from the all_drops object
+drops_dict <- data.frame(
+  Variable = all_drops$Dropped_Variable,
+  Class = "Excluded",
+  Data_Type = "Unknown",
+  Missing_Pct = 1, 
+  Distribution_Metric = "N/A",
+  QC_Flag = "EXCLUDED",
+  Action_Taken = "Dropped via Config",
+  Exclusion_Reason = all_drops$Reason
+)
+
+data_dictionary <- bind_rows(base_dict, drops_dict) %>%
   mutate(
-    Missing_Pct = sprintf("%.1f%%", Missing_Pct * 100), 
+    Missing_Pct = sprintf("%.1f%%", as.numeric(Missing_Pct) * 100), 
     Sort_Order = case_when(
-      grepl("ZERO VARIANCE", QC_Flag) ~ 1, 
-      grepl("IMBALANCED", QC_Flag) ~ 2, 
-      grepl("OUTLIERS", QC_Flag) ~ 3, 
-      grepl("LOG REJECTED", QC_Flag) ~ 4, 
-      grepl("SKEWED", QC_Flag) ~ 5, 
-      QC_Flag == "PASS" ~ 6, 
-      TRUE ~ 7
+      QC_Flag == "EXCLUDED" ~ 1,
+      grepl("ZERO VARIANCE", QC_Flag) ~ 2, 
+      grepl("IMBALANCED", QC_Flag) ~ 3, 
+      grepl("OUTLIERS", QC_Flag) ~ 4, 
+      grepl("LOG REJECTED", QC_Flag) ~ 5, 
+      grepl("SKEWED", QC_Flag) ~ 6, 
+      QC_Flag == "PASS" ~ 7, 
+      TRUE ~ 8
     )
   ) %>% 
   arrange(Sort_Order, Variable) %>% 
