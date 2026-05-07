@@ -84,6 +84,12 @@ plot_conf <- list(
   dist_bins = 20,
   hm_font = 8
 )
+
+# Heatmaps
+
+hm_conf <- list(
+  top_n_prot = 30
+)
 ```
 
 # Scores
@@ -354,6 +360,122 @@ if (!interactive()) cat(html_out)
 # Cleanup RAM
 rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out)
 ```
+
+## Phenotypic Alignment Heatmaps {.tabset}
+`r analysis_decision("Fixed Ordering: For these heatmaps, hierarchical clustering of columns was disabled. Patients are ordered strictly from 0 (Control-like) to 100 (Active-like) based on the specific score in each tab.", "Clinical Splitting: To maintain mathematical integrity, categorical clinical variables (e.g., ACA, Subsets) were moved to the top annotation, while only continuous variables were Z-scored and plotted in the heatmap body.")`
+
+`r what_this_does("Visualized the molecular and clinical 'Active-like' gradient by fixing the patient order strictly according to the mathematical scores.", "Generated a Proteomic Heatmap using the Top 30 proteins from the global SSc vs Control signature.", "Generated a Clinical Heatmap using the pre-defined SSc clinical parameters, splitting continuous data (Z-scored) into the body and categorical data into the annotations.", "Annotated Age and Sex at the top to anchor demographic trends.")`
+
+```{r alignment_heatmaps, results='asis', fig.width=12, fig.height=14}
+# 1. Setup Data for Non-Active Cohort
+na_ids <- score_master$Subject_ID
+prot_mat_na <- olink_mat[, na_ids]
+
+# 2. Extract Top 30 Protein Signature
+top_hm_prots <- avc_dea %>% slice_min(adj.P.Val, n = hm_conf$top_n_prot) %>% pull(Feature)
+valid_top_hm_prot <- intersect(top_hm_prots, rownames(prot_mat_na))
+
+# 3. Setup Clinical Variables
+# Filter out anything that was excluded in the dictionary, and remove Age/Sex to prevent duplication
+valid_clin_vars <- data_dict %>% 
+  filter(Variable %in% ssc_clinical_parameters & QC_Flag == "PASS") %>% 
+  pull(Variable)
+valid_clin_vars <- setdiff(valid_clin_vars, c("Age", "Sex"))
+
+clin_df_na <- master_spine %>% filter(Subject_ID %in% na_ids)
+
+# 4. Loop through the three scores
+score_targets <- c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score")
+
+for (s_name in score_targets) {
+  cat(sprintf("\n\n### %s Alignment\n\n", gsub("_", " ", s_name)))
+  
+  # Determine patient order for this score
+  score_vec <- setNames(score_master[[s_name]], score_master$Subject_ID)
+  ordered_ids <- names(sort(score_vec)) # Order from 0 to 100
+  
+  # Prepare Clinical Subset FIRST so we can use Age/Sex in the top annotation
+  sub_clin <- clin_df_na %>% 
+    filter(Subject_ID %in% ordered_ids) %>% 
+    arrange(match(Subject_ID, ordered_ids)) %>%
+    as.data.frame()
+  
+  # --- A. PROTEIN HEATMAP (Top 30 Signature) ---
+  p_mat <- t(scale(t(prot_mat_na[valid_top_hm_prot, ordered_ids])))
+  
+  # Score, Age, and Sex annotation for the top
+  ha_top <- HeatmapAnnotation(
+    Score = anno_barplot(score_vec[ordered_ids], gp = gpar(fill = "grey40", col = "grey40"), height = unit(1.5, "cm")),
+    Sex = sub_clin$Sex,
+    Age = sub_clin$Age,
+    col = list(
+      Sex = setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male")),
+      Age = colorRamp2(c(min(sub_clin$Age, na.rm=TRUE), max(sub_clin$Age, na.rm=TRUE)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+    ),
+    na_col = "gray90"
+  )
+
+  hp <- Heatmap(p_mat, 
+                name = "Protein Z-Score",
+                column_title = sprintf("Proteomic Signature Alignment (%s)", gsub("_", " ", s_name)),
+                top_annotation = ha_top,
+                cluster_columns = FALSE, 
+                cluster_rows = TRUE,
+                show_column_names = FALSE,
+                col = colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b")))
+
+  # --- B. CLINICAL HEATMAP (SSC Parameters) ---
+  # 1. Identify variables by type
+  all_numeric_vars <- valid_clin_vars[sapply(sub_clin[valid_clin_vars], is.numeric)]
+  cat_vars <- setdiff(valid_clin_vars, all_numeric_vars)
+  
+  # 2. DYNAMIC VARIANCE FILTER: Keep only numeric variables with variance > 0 in THIS subset
+  cont_vars <- all_numeric_vars[sapply(sub_clin[all_numeric_vars], function(x) sd(x, na.rm=TRUE) > 0)]
+  
+  # Optional: Log dropped variables to the console for transparency
+  dropped_vars <- setdiff(all_numeric_vars, cont_vars)
+  if(length(dropped_vars) > 0) {
+    message(sprintf("Note: Dropped '%s' from %s heatmap due to zero variance in subset.", 
+                    paste(dropped_vars, collapse = ", "), s_name))
+  }
+
+  # 3. Build Categorical Annotation
+  anno_df <- sub_clin %>% select(all_of(cat_vars))
+  col_list <- list()
+  for(cv in cat_vars) {
+    lvls <- levels(as.factor(anno_df[[cv]]))
+    pal <- c("darkgreen", "darkorange")
+    # Failsafe in case a categorical variable has more than 2 levels
+    if(length(lvls) > 2) pal <- (if(exists("FALLBACK_CAT_PALETTE")) FALLBACK_CAT_PALETTE else c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7"))[1:length(lvls)]
+    col_list[[cv]] <- setNames(pal[1:length(lvls)], lvls)
+  }
+  
+  ha_clin <- HeatmapAnnotation(df = as.data.frame(anno_df), col = col_list, na_col = "white")
+
+  # 4. Z-score Continuous Clinical Variables
+  if(length(cont_vars) > 0) {
+    c_mat <- t(scale(sub_clin %>% select(all_of(cont_vars))))
+    colnames(c_mat) <- sub_clin$Subject_ID
+
+    hc <- Heatmap(c_mat, 
+                  name = "Clinical Z-Score",
+                  column_title = "Clinical Parameter Alignment",
+                  top_annotation = ha_clin,
+                  cluster_columns = FALSE, 
+                  cluster_rows = TRUE,
+                  show_column_names = FALSE,
+                  row_names_side = "left",
+                  col = colorRamp2(c(-2, 0, 2), c("darkgreen", "white", "darkorange")))
+    
+    # Draw both together
+    draw(hp %v% hc)
+  } else {
+    draw(hp %v% ha_clin)
+    cat("\n\n")
+  }
+}
+```
+
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
