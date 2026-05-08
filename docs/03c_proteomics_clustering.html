@@ -380,7 +380,7 @@ div.tocify {
       <a href="03c_proteomics_clustering.html">Clustering</a>
     </li>
     <li>
-      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+      <a href="03d_proteomics_subgroups.html">Subgroups</a>
     </li>
     <li>
       <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">04 May, 2026</h4>
+<h4 class="date">08 May, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-04
+<strong>Last updated:</strong> 2026-05-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree703cf9a7690feaead1d8b9be6f991fa9477d54e7targetblank703cf9aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6c8b4ff7e45c99f60cc12c9d1d9375128441519ctargetblank6c8b4ffa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/703cf9a7690feaead1d8b9be6f991fa9477d54e7" target="_blank">703cf9a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6c8b4ff7e45c99f60cc12c9d1d9375128441519c" target="_blank">6c8b4ff</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree703cf9a7690feaead1d8b9be6f991fa9477d54e7targetblank703cf9aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6c8b4ff7e45c99f60cc12c9d1d9375128441519ctargetblank6c8b4ffa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/703cf9a7690feaead1d8b9be6f991fa9477d54e7" target="_blank">703cf9a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6c8b4ff7e45c99f60cc12c9d1d9375128441519c" target="_blank">6c8b4ff</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -653,9 +653,7 @@ Untracked files:
     Untracked:  core
 
 Unstaged changes:
-    Modified:   analysis/01b_clinical_feature_engineering.Rmd
-    Modified:   analysis/03b_proteomics_differential.Rmd
-    Modified:   analysis/z02_sideproject_vascular_2.Rmd
+    Modified:   analysis/03d_proteomics_subgroups.Rmd
     Modified:   code/00_omics_engines.R
 
 </code></pre>
@@ -702,6 +700,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6c8b4ff7e45c99f60cc12c9d1d9375128441519c/analysis/03c_proteomics_clustering.Rmd" target="_blank">6c8b4ff</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-08
+</td>
+<td>
+added umap coloring
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/5f3a00fb9c55f8515e12fbf4154ae8497817cead/docs/03c_proteomics_clustering.html" target="_blank">5f3a00f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -838,7 +870,15 @@ olink_mat &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and
 
 # Load High Variance Proteins (generated at end of 03a)
 high_var_path &lt;- here::here(&quot;output&quot;, &quot;03a_proteomics_variance&quot;, &quot;high_var_features.rds&quot;)
-high_var_prots &lt;- if(file.exists(high_var_path)) readRDS(high_var_path) else NULL</code></pre>
+high_var_prots &lt;- if(file.exists(high_var_path)) readRDS(high_var_path) else NULL
+
+# Load Subgroup Scores from 03d (if script has been run) to use as overlays
+scores_path &lt;- here::here(&quot;output&quot;, &quot;03d_proteomics_subgroups&quot;, &quot;score_master.rds&quot;)
+if(file.exists(scores_path)) {
+  score_master &lt;- readRDS(scores_path)
+  # Left join scores directly to the spine so the clustering engine can access them seamlessly
+  master_spine &lt;- master_spine %&gt;% left_join(score_master, by = &quot;Subject_ID&quot;)
+}</code></pre>
 </div>
 <div id="configurations" class="section level1">
 <h1>Configurations</h1>
@@ -857,8 +897,8 @@ Set K-means centers (k) to test different numbers of potential
 endotypes.
 </li>
 <li>
-Selected specific clinical variables to automatically profile against
-the newly discovered clusters.
+Configured the smart ‘overlay_vars’ to automatically generate
+color-coded UMAPs and statistical distribution plots.
 </li>
 </ul>
 </div>
@@ -904,17 +944,8 @@ clustering_configs &lt;- list(
     n_neighbors = 15, 
     include_features = high_var_prots, 
     include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes 
-  ),
-  
-  # Test a 3-cluster split (Full Cohort)
-  k3_split_filtered = list(
-    title = &quot;Molecular Endotypes (k=3) | Full Cohort High Variance&quot;,
-    k = 3,
-    n_neighbors = 15, 
-    include_features = high_var_prots, 
-    include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes 
+    exclude_clinical_vars = final_excludes,
+    overlay_vars = c()
   ),
   
   # Non-Active Sub-Clustering
@@ -925,7 +956,9 @@ clustering_configs &lt;- list(
     n_neighbors = 5, # Lowered due to much smaller N-size of this subset
     include_features = na_high_var_prots, # Using the internally filtered top 260
     include_clinical_vars = unname(unlist(clinical_domains)),
-    exclude_clinical_vars = final_excludes
+    exclude_clinical_vars = final_excludes,
+    # The Smart Routing Variables (Mixing Continuous Scores and Categorical Clinicals)
+    overlay_vars = c(&quot;PCA_Active_Score&quot;, &quot;Sig_Active_Score&quot;, &quot;HM_Active_Score&quot;, &quot;Age&quot;, &quot;Sex&quot;)
   )
 )</code></pre>
 </div>
@@ -946,6 +979,10 @@ molecular groups.
 Cross-referenced the newly discovered groups against the clinical spine
 to identify defining clinical characteristics.
 </li>
+<li>
+Generated nested tabsets to display variables mapped structurally onto
+the UMAP space alongside their statistical group comparisons.
+</li>
 </ul>
 </div>
 <div class="why-box">
@@ -962,6 +999,7 @@ features they share.
 </div>
 <pre class="r"><code>for (c_id in names(clustering_configs)) {
   conf &lt;- clustering_configs[[c_id]]
+  # Main Tab for this Configuration
   cat(sprintf(&quot;\n\n## %s\n\n&quot;, conf$title))
   
   res &lt;- wrap_clustering_pipeline(olink_mat, master_spine, conf, c_id, output_dir_data, get_project_colors)
@@ -972,14 +1010,29 @@ features they share.
     print(res$plots$umap)
     cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
     
-    # 2. Print Diagnostic Histograms (if any variables were dropped due to skew)
+    # 2. Print Smart Overlays in Nested Tabset
+    if (!is.null(res$plots$overlays) &amp;&amp; length(res$plots$overlays) &gt; 0) {
+      cat(&quot;\n\n### UMAP Overlays {.tabset}\n\n&quot;)
+      
+      for (ov_name in names(res$plots$overlays)) {
+        # Sub-Tab for each Overlay Variable
+        cat(sprintf(&quot;\n\n#### %s\n\n&quot;, ov_name))
+        print(res$plots$overlays[[ov_name]])
+        cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
+      }
+      
+      # Exit the sub-tabset by creating a sibling header for the diagnostic log
+      cat(&quot;\n\n### Cohort Statistics\n\n&quot;)
+    }
+    
+    # 3. Print Diagnostic Histograms (if any variables were dropped due to skew)
     if (!is.null(res$plots$excluded_hist)) {
       cat(&quot;#### Diagnostic: Skewed Variables Excluded\n\n&quot;)
       print(res$plots$excluded_hist)
       cat(&quot;\n\n&lt;br&gt;\n\n&quot;)
     }
     
-    # 3. Print the Clinical Cross-Reference Table with Log
+    # 4. Print the Clinical Cross-Reference Table with Log
     if (!is.null(res$tables$clinical_profile)) {
       cat(sprintf(&quot;#### Clinical Profile of %s\n\n&quot;, conf$title))
       
@@ -1007,55 +1060,6 @@ features they share.
 <div id="molecular-endotypes-k2-full-cohort-high-variance"
 class="section level2">
 <h2>Molecular Endotypes (k=2) | Full Cohort High Variance</h2>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-1">
-Past versions of UMAP-1.png
-</button>
-</p>
-<div id="fig-UMAP-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/95fa2c7734484c4cf12df1dd4653352ac68e31dd/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">95fa2c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8b778e3c156199e9189db304d1d8860393c22f6e/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">8b778e3</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <p><br></p>
 <div
 id="clinical-profile-of-molecular-endotypes-k2-full-cohort-high-variance"
@@ -1966,9 +1970,58 @@ Fisher’s exact test
 </table>
 </div>
 </div>
-<div id="molecular-endotypes-k3-full-cohort-high-variance"
+<div id="non-active-sub-clustering-k2-internal-high-variance"
 class="section level2">
-<h2>Molecular Endotypes (k=3) | Full Cohort High Variance</h2>
+<h2>Non-Active Sub-Clustering (k=2) | Internal High Variance</h2>
+<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-1">
+Past versions of UMAP-1.png
+</button>
+</p>
+<div id="fig-UMAP-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/95fa2c7734484c4cf12df1dd4653352ac68e31dd/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">95fa2c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8b778e3c156199e9189db304d1d8860393c22f6e/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">8b778e3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-2">
@@ -2019,1072 +2072,10 @@ alexander-gysin
 </div>
 </div>
 <p><br></p>
-<div
-id="clinical-profile-of-molecular-endotypes-k3-full-cohort-high-variance"
-class="section level4">
-<h4>Clinical Profile of Molecular Endotypes (k=3) | Full Cohort High
-Variance</h4>
-<blockquote>
-<p><strong>Auto-QA/QC Filter Log:</strong> * <strong>Dropped Categorical
-(&lt;10% frequency):</strong> Right atrium area (cm2), Right ventricular
-area (cm2) * <strong>Dropped Continuous (|Skew| &gt; 2.5):</strong>
-None</p>
-</blockquote>
-<table style="NAborder-bottom: 0; width: auto !important; " class="table table-striped table-hover table-condensed">
-<thead>
-<tr>
-<th style="text-align:left;">
-Clinical Variable
-</th>
-<th style="text-align:center;">
-Overall <br>N = 131
-</th>
-<th style="text-align:center;">
-Cluster 1 <br>N = 42
-</th>
-<th style="text-align:center;">
-Cluster 2 <br>N = 49
-</th>
-<th style="text-align:center;">
-Cluster 3 <br>N = 40
-</th>
-<th style="text-align:center;">
-p-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Distance in m</span>
-</td>
-<td style="text-align:center;">
-575 (510, 45,743)
-</td>
-<td style="text-align:center;">
-540 (509, 23,062)
-</td>
-<td style="text-align:center;">
-540 (428, 665)
-</td>
-<td style="text-align:center;">
-45,468 (580, 45,827)
-</td>
-<td style="text-align:center;">
-0.002
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Malabsorption syndrome</span>
-</td>
-<td style="text-align:center;">
-15 (16%)
-</td>
-<td style="text-align:center;">
-5 (19%)
-</td>
-<td style="text-align:center;">
-2 (5.1%)
-</td>
-<td style="text-align:center;">
-8 (30%)
-</td>
-<td style="text-align:center;">
-0.021
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">SSc Antibodies</span>
-</td>
-<td style="text-align:center;">
-84 (88%)
-</td>
-<td style="text-align:center;">
-29 (100%)
-</td>
-<td style="text-align:center;">
-31 (79%)
-</td>
-<td style="text-align:center;">
-24 (89%)
-</td>
-<td style="text-align:center;">
-0.022
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">mRSS Worsening (1yr)</span>
-</td>
-<td style="text-align:center;">
-13 (15%)
-</td>
-<td style="text-align:center;">
-5 (19%)
-</td>
-<td style="text-align:center;">
-2 (5.6%)
-</td>
-<td style="text-align:center;">
-6 (25%)
-</td>
-<td style="text-align:center;">
-0.073
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Capillaroscopy Pattern</span>
-</td>
-<td style="text-align:center;">
-62 (70%)
-</td>
-<td style="text-align:center;">
-14 (54%)
-</td>
-<td style="text-align:center;">
-28 (78%)
-</td>
-<td style="text-align:center;">
-20 (77%)
-</td>
-<td style="text-align:center;">
-0.086
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Joint involvement</span>
-</td>
-<td style="text-align:center;">
-30 (32%)
-</td>
-<td style="text-align:center;">
-7 (24%)
-</td>
-<td style="text-align:center;">
-10 (26%)
-</td>
-<td style="text-align:center;">
-13 (48%)
-</td>
-<td style="text-align:center;">
-0.090
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Hemoglobin (g/dl)</span>
-</td>
-<td style="text-align:center;">
-12.80 (12.00, 14.20)
-</td>
-<td style="text-align:center;">
-13.20 (12.30, 13.90)
-</td>
-<td style="text-align:center;">
-13.20 (12.00, 14.40)
-</td>
-<td style="text-align:center;">
-12.50 (11.80, 13.80)
-</td>
-<td style="text-align:center;">
-0.2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">vascular_active</span>
-</td>
-<td style="text-align:center;">
-45 (47%)
-</td>
-<td style="text-align:center;">
-11 (37%)
-</td>
-<td style="text-align:center;">
-18 (46%)
-</td>
-<td style="text-align:center;">
-16 (59%)
-</td>
-<td style="text-align:center;">
-0.2
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">fibrotic_active</span>
-</td>
-<td style="text-align:center;">
-33 (34%)
-</td>
-<td style="text-align:center;">
-11 (37%)
-</td>
-<td style="text-align:center;">
-10 (26%)
-</td>
-<td style="text-align:center;">
-12 (44%)
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Proximal Dysphagia</span>
-</td>
-<td style="text-align:center;">
-12 (13%)
-</td>
-<td style="text-align:center;">
-6 (22%)
-</td>
-<td style="text-align:center;">
-3 (7.7%)
-</td>
-<td style="text-align:center;">
-3 (12%)
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Sex</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Male
-</td>
-<td style="text-align:center;">
-27 (21%)
-</td>
-<td style="text-align:center;">
-10 (24%)
-</td>
-<td style="text-align:center;">
-12 (24%)
-</td>
-<td style="text-align:center;">
-5 (13%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Female
-</td>
-<td style="text-align:center;">
-104 (79%)
-</td>
-<td style="text-align:center;">
-32 (76%)
-</td>
-<td style="text-align:center;">
-37 (76%)
-</td>
-<td style="text-align:center;">
-35 (88%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Abnormal Capillaroscopy</span>
-</td>
-<td style="text-align:center;">
-81 (86%)
-</td>
-<td style="text-align:center;">
-23 (82%)
-</td>
-<td style="text-align:center;">
-36 (92%)
-</td>
-<td style="text-align:center;">
-22 (81%)
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">LVEF %</span>
-</td>
-<td style="text-align:center;">
-60.0 (58.0, 63.0)
-</td>
-<td style="text-align:center;">
-61.0 (58.5, 64.5)
-</td>
-<td style="text-align:center;">
-60.0 (57.5, 63.0)
-</td>
-<td style="text-align:center;">
-60.0 (58.0, 61.0)
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Telangiectasia</span>
-</td>
-<td style="text-align:center;">
-58 (61%)
-</td>
-<td style="text-align:center;">
-17 (59%)
-</td>
-<td style="text-align:center;">
-27 (69%)
-</td>
-<td style="text-align:center;">
-14 (52%)
-</td>
-<td style="text-align:center;">
-0.3
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">DLCO/VA (% predicted)</span>
-</td>
-<td style="text-align:center;">
-77 (65, 88)
-</td>
-<td style="text-align:center;">
-77 (70, 91)
-</td>
-<td style="text-align:center;">
-78 (70, 89)
-</td>
-<td style="text-align:center;">
-76 (63, 82)
-</td>
-<td style="text-align:center;">
-0.4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Inflamm_active</span>
-</td>
-<td style="text-align:center;">
-30 (31%)
-</td>
-<td style="text-align:center;">
-11 (37%)
-</td>
-<td style="text-align:center;">
-9 (23%)
-</td>
-<td style="text-align:center;">
-10 (37%)
-</td>
-<td style="text-align:center;">
-0.4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Skin Thickening (Ext. MCP)</span>
-</td>
-<td style="text-align:center;">
-36 (38%)
-</td>
-<td style="text-align:center;">
-9 (31%)
-</td>
-<td style="text-align:center;">
-14 (36%)
-</td>
-<td style="text-align:center;">
-13 (48%)
-</td>
-<td style="text-align:center;">
-0.4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">eustarAI</span>
-</td>
-<td style="text-align:center;">
-1.09 (0.00, 2.85)
-</td>
-<td style="text-align:center;">
-1.21 (1.00, 2.86)
-</td>
-<td style="text-align:center;">
-1.00 (0.00, 2.50)
-</td>
-<td style="text-align:center;">
-1.84 (0.17, 3.44)
-</td>
-<td style="text-align:center;">
-0.4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Stomach Symptoms</span>
-</td>
-<td style="text-align:center;">
-24 (26%)
-</td>
-<td style="text-align:center;">
-7 (25%)
-</td>
-<td style="text-align:center;">
-8 (21%)
-</td>
-<td style="text-align:center;">
-9 (35%)
-</td>
-<td style="text-align:center;">
-0.4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Sclerodactyly</span>
-</td>
-<td style="text-align:center;">
-23 (26%)
-</td>
-<td style="text-align:center;">
-9 (35%)
-</td>
-<td style="text-align:center;">
-8 (22%)
-</td>
-<td style="text-align:center;">
-6 (23%)
-</td>
-<td style="text-align:center;">
-0.5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Subcutaneous Calcinosis</span>
-</td>
-<td style="text-align:center;">
-23 (24%)
-</td>
-<td style="text-align:center;">
-5 (17%)
-</td>
-<td style="text-align:center;">
-10 (26%)
-</td>
-<td style="text-align:center;">
-8 (30%)
-</td>
-<td style="text-align:center;">
-0.5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Telangiectasia (any)</span>
-</td>
-<td style="text-align:center;">
-54 (56%)
-</td>
-<td style="text-align:center;">
-19 (63%)
-</td>
-<td style="text-align:center;">
-22 (56%)
-</td>
-<td style="text-align:center;">
-13 (48%)
-</td>
-<td style="text-align:center;">
-0.5
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Joint Contractures</span>
-</td>
-<td style="text-align:center;">
-31 (33%)
-</td>
-<td style="text-align:center;">
-8 (28%)
-</td>
-<td style="text-align:center;">
-12 (32%)
-</td>
-<td style="text-align:center;">
-11 (41%)
-</td>
-<td style="text-align:center;">
-0.6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Forced Vital Capacity (ml)</span>
-</td>
-<td style="text-align:center;">
-3,020 (2,450, 3,535)
-</td>
-<td style="text-align:center;">
-3,025 (2,535, 3,720)
-</td>
-<td style="text-align:center;">
-2,955 (2,190, 3,530)
-</td>
-<td style="text-align:center;">
-3,045 (2,460, 3,330)
-</td>
-<td style="text-align:center;">
-0.6
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Puffy Fingers</span>
-</td>
-<td style="text-align:center;">
-66 (69%)
-</td>
-<td style="text-align:center;">
-22 (76%)
-</td>
-<td style="text-align:center;">
-26 (67%)
-</td>
-<td style="text-align:center;">
-18 (67%)
-</td>
-<td style="text-align:center;">
-0.7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Digital Tip Ulcers</span>
-</td>
-<td style="text-align:center;">
-21 (22%)
-</td>
-<td style="text-align:center;">
-7 (24%)
-</td>
-<td style="text-align:center;">
-7 (18%)
-</td>
-<td style="text-align:center;">
-7 (26%)
-</td>
-<td style="text-align:center;">
-0.7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Fingertip pitting scars</span>
-</td>
-<td style="text-align:center;">
-47 (49%)
-</td>
-<td style="text-align:center;">
-14 (48%)
-</td>
-<td style="text-align:center;">
-21 (54%)
-</td>
-<td style="text-align:center;">
-12 (44%)
-</td>
-<td style="text-align:center;">
-0.7
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Age</span>
-</td>
-<td style="text-align:center;">
-61 (49, 71)
-</td>
-<td style="text-align:center;">
-62 (49, 68)
-</td>
-<td style="text-align:center;">
-61 (49, 73)
-</td>
-<td style="text-align:center;">
-59 (48, 74)
-</td>
-<td style="text-align:center;">
-0.8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Max Borg Dyspnea</span>
-</td>
-<td style="text-align:center;">
-3.00 (1.00, 5.00)
-</td>
-<td style="text-align:center;">
-3.00 (1.00, 5.00)
-</td>
-<td style="text-align:center;">
-3.50 (1.00, 5.00)
-</td>
-<td style="text-align:center;">
-2.00 (0.50, 4.50)
-</td>
-<td style="text-align:center;">
-0.8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Sample_Age</span>
-</td>
-<td style="text-align:center;">
-1.19 (0.96, 1.42)
-</td>
-<td style="text-align:center;">
-1.20 (0.96, 1.38)
-</td>
-<td style="text-align:center;">
-1.16 (0.98, 1.38)
-</td>
-<td style="text-align:center;">
-1.19 (0.86, 1.49)
-</td>
-<td style="text-align:center;">
-0.8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">FVC %pred</span>
-</td>
-<td style="text-align:center;">
-92 (80, 101)
-</td>
-<td style="text-align:center;">
-94 (82, 99)
-</td>
-<td style="text-align:center;">
-91 (76, 102)
-</td>
-<td style="text-align:center;">
-92 (82, 105)
-</td>
-<td style="text-align:center;">
-0.8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Intestinal Symptoms</span>
-</td>
-<td style="text-align:center;">
-25 (26%)
-</td>
-<td style="text-align:center;">
-8 (28%)
-</td>
-<td style="text-align:center;">
-11 (28%)
-</td>
-<td style="text-align:center;">
-6 (22%)
-</td>
-<td style="text-align:center;">
-0.8
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Ramified bushy capillaries</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-0.9
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Moderate
-</td>
-<td style="text-align:center;">
-13 (14%)
-</td>
-<td style="text-align:center;">
-3 (12%)
-</td>
-<td style="text-align:center;">
-7 (18%)
-</td>
-<td style="text-align:center;">
-3 (11%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-None
-</td>
-<td style="text-align:center;">
-20 (22%)
-</td>
-<td style="text-align:center;">
-7 (27%)
-</td>
-<td style="text-align:center;">
-7 (18%)
-</td>
-<td style="text-align:center;">
-6 (22%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-Rare
-</td>
-<td style="text-align:center;">
-58 (64%)
-</td>
-<td style="text-align:center;">
-16 (62%)
-</td>
-<td style="text-align:center;">
-24 (63%)
-</td>
-<td style="text-align:center;">
-18 (67%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Raynaud’s present</span>
-</td>
-<td style="text-align:center;">
-75 (87%)
-</td>
-<td style="text-align:center;">
-26 (90%)
-</td>
-<td style="text-align:center;">
-28 (85%)
-</td>
-<td style="text-align:center;">
-21 (88%)
-</td>
-<td style="text-align:center;">
-&gt;0.9
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Total Score</span>
-</td>
-<td style="text-align:center;">
-14.0 (10.0, 22.0)
-</td>
-<td style="text-align:center;">
-14.0 (12.0, 19.0)
-</td>
-<td style="text-align:center;">
-15.0 (10.0, 21.0)
-</td>
-<td style="text-align:center;">
-15.0 (10.0, 24.0)
-</td>
-<td style="text-align:center;">
-&gt;0.9
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">DLCO (SB) (% predicted)</span>
-</td>
-<td style="text-align:center;">
-65 (49, 77)
-</td>
-<td style="text-align:center;">
-66 (47, 77)
-</td>
-<td style="text-align:center;">
-63 (52, 75)
-</td>
-<td style="text-align:center;">
-66 (49, 78)
-</td>
-<td style="text-align:center;">
-&gt;0.9
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Subset_Diffuse</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-0
-</td>
-<td style="text-align:center;">
-96 (100%)
-</td>
-<td style="text-align:center;">
-30 (100%)
-</td>
-<td style="text-align:center;">
-39 (100%)
-</td>
-<td style="text-align:center;">
-27 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Subset_Limited</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-0
-</td>
-<td style="text-align:center;">
-96 (100%)
-</td>
-<td style="text-align:center;">
-30 (100%)
-</td>
-<td style="text-align:center;">
-39 (100%)
-</td>
-<td style="text-align:center;">
-27 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Subset_Sine</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-0
-</td>
-<td style="text-align:center;">
-96 (100%)
-</td>
-<td style="text-align:center;">
-30 (100%)
-</td>
-<td style="text-align:center;">
-39 (100%)
-</td>
-<td style="text-align:center;">
-27 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Score : Raynaud phenomenon</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-3
-</td>
-<td style="text-align:center;">
-92 (100%)
-</td>
-<td style="text-align:center;">
-27 (100%)
-</td>
-<td style="text-align:center;">
-38 (100%)
-</td>
-<td style="text-align:center;">
-27 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">Capillaroscopy Score</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-2
-</td>
-<td style="text-align:center;">
-81 (100%)
-</td>
-<td style="text-align:center;">
-23 (100%)
-</td>
-<td style="text-align:center;">
-36 (100%)
-</td>
-<td style="text-align:center;">
-22 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    ">SSc Antibody Score</span>
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-<tr>
-<td style="text-align:left;padding-left: 2em;" indentlevel="1">
-3
-</td>
-<td style="text-align:center;">
-84 (100%)
-</td>
-<td style="text-align:center;">
-29 (100%)
-</td>
-<td style="text-align:center;">
-31 (100%)
-</td>
-<td style="text-align:center;">
-24 (100%)
-</td>
-<td style="text-align:center;">
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup>1</sup> Median (Q1, Q3); n (%)
-</td>
-</tr>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup>2</sup> Kruskal-Wallis rank sum test; Pearson’s Chi-squared test;
-NA; Fisher’s exact test
-</td>
-</tr>
-</tfoot>
-</table>
-</div>
-</div>
-<div id="non-active-sub-clustering-k2-internal-high-variance"
-class="section level2">
-<h2>Non-Active Sub-Clustering (k=2) | Internal High Variance</h2>
+<div id="umap-overlays" class="section level3 tabset">
+<h3 class="tabset">UMAP Overlays</h3>
+<div id="pca_active_score" class="section level4">
+<h4>PCA_Active_Score</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-3">
@@ -3124,6 +2115,30 @@ alexander-gysin
 </div>
 </div>
 <p><br></p>
+</div>
+<div id="sig_active_score" class="section level4">
+<h4>Sig_Active_Score</h4>
+<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="hm_active_score" class="section level4">
+<h4>HM_Active_Score</h4>
+<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="age" class="section level4">
+<h4>Age</h4>
+<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="sex" class="section level4">
+<h4>Sex</h4>
+<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+</div>
+<div id="cohort-statistics" class="section level3">
+<h3>Cohort Statistics</h3>
 <div
 id="clinical-profile-of-non-active-sub-clustering-k2-internal-high-variance"
 class="section level4">
@@ -4166,6 +3181,7 @@ Chi-squared test
 <pre class="r"><code># Clean memory
 rm(c_id, conf, res)
 invisible(gc())</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -5402,8 +4418,80 @@ wrap_clustering_pipeline &lt;- function(omics_mat, clin_df, conf, cluster_id, ba
     results$tables[[&quot;clinical_profile&quot;]] &lt;- tbl_clust
   }
 
+  results$tables[[&quot;clinical_profile&quot;]] &lt;- tbl_clust
+
+  # --- 7. Smart UMAP Overlays &amp; Stats Routing -------------------------------
+  if (!is.null(conf$overlay_vars)) {
+    results$plots$overlays &lt;- list()
+
+    # Only process variables that survived the merge and actually exist
+    valid_overlays &lt;- intersect(conf$overlay_vars, colnames(plot_df))
+
+    for (ov in valid_overlays) {
+      vec &lt;- plot_df[[ov]]
+      clean_df &lt;- plot_df %&gt;% filter(!is.na(!!sym(ov)))
+      if(nrow(clean_df) == 0) next
+
+      # Detect Data Type (Continuous vs Categorical)
+      is_num &lt;- is.numeric(vec) &amp;&amp; length(unique(na.omit(vec))) &gt; 5
+
+      if (is_num) {
+        # Path A: CONTINUOUS (Divergent Scale + Boxplot + Non-Parametric Test)
+        mid_val &lt;- median(vec, na.rm = TRUE)
+
+        # Built explicitly for continuous mapping
+        p_umap_ov &lt;- ggplot(clean_df, aes(x = UMAP1, y = UMAP2, fill = !!sym(ov))) +
+          geom_point(shape = 21, color = &quot;black&quot;, size = 3.5, alpha = 0.8) +
+          scale_fill_gradient2(low = &quot;#2980b9&quot;, mid = &quot;white&quot;, high = &quot;#c0392b&quot;, midpoint = mid_val) +
+          theme_project_base() + labs(title = sprintf(&quot;UMAP: %s&quot;, ov), fill = ov)
+
+        p_stats &lt;- ggplot(clean_df, aes(x = Molecular_Cluster, y = !!sym(ov), fill = Molecular_Cluster)) +
+          geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+          geom_jitter(width = 0.2, alpha = 0.6, size = 1.5) +
+          scale_fill_manual(values = mapped_colors) +
+          theme_project_base() + theme(legend.position = &quot;none&quot;) +
+          labs(title = sprintf(&quot;%s Distribution&quot;, ov), x = NULL, y = ov) +
+          ggpubr::stat_compare_means(method = ifelse(conf$k == 2, &quot;wilcox.test&quot;, &quot;kruskal.test&quot;),
+                                     label = &quot;p.format&quot;, label.x.npc = &quot;center&quot;)
+
+      } else {
+        # Path B: CATEGORICAL (Discrete Scale + Stacked Bar + Count Test)
+        lvls &lt;- levels(as.factor(clean_df[[ov]]))
+        pal &lt;- (if(exists(&quot;FALLBACK_CAT_PALETTE&quot;)) FALLBACK_CAT_PALETTE else c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;))[1:length(lvls)]
+
+        # Built explicitly for discrete mapping (forced to as.factor)
+        p_umap_ov &lt;- ggplot(clean_df, aes(x = UMAP1, y = UMAP2, fill = as.factor(!!sym(ov)))) +
+          geom_point(shape = 21, color = &quot;black&quot;, size = 3.5, alpha = 0.8) +
+          scale_fill_manual(values = setNames(pal, lvls)) +
+          theme_project_base() + labs(title = sprintf(&quot;UMAP: %s&quot;, ov), fill = ov)
+
+        # Calculate p-value (Fisher if small N, else ChiSq)
+        tbl &lt;- table(clean_df$Molecular_Cluster, clean_df[[ov]])
+        pval &lt;- tryCatch({
+          if(any(tbl &lt; 5)) fisher.test(tbl, simulate.p.value=TRUE)$p.value else chisq.test(tbl)$p.value
+        }, error = function(e) NA)
+        pval_text &lt;- ifelse(is.na(pval), &quot;p = NA&quot;, sprintf(&quot;p = %.3g&quot;, pval))
+
+        p_stats &lt;- ggplot(clean_df, aes(x = Molecular_Cluster, fill = as.factor(!!sym(ov)))) +
+          geom_bar(position = &quot;fill&quot;, color = &quot;black&quot;, alpha = 0.8) +
+          scale_y_continuous(labels = scales::percent) +
+          scale_fill_manual(values = setNames(pal, lvls)) +
+          theme_project_base() +
+          labs(title = sprintf(&quot;Proportions (%s)&quot;, pval_text), x = NULL, y = &quot;Percentage&quot;, fill = ov)
+      }
+
+      # Stitch them together and save dynamically
+      p_combined &lt;- p_umap_ov | p_stats
+      ggsave(file.path(clust_dir, paste0(cluster_id, &quot;_Overlay_&quot;, ov, &quot;.png&quot;)),
+             p_combined, width = 12, height = 5, dpi = 300, bg = &quot;white&quot;)
+
+      results$plots$overlays[[ov]] &lt;- p_combined
+    }
+  }
   return(results)
 }
+
+
 
 # 11. Global Omics Variance Filter Engine --------------------------------------
 # Description:
@@ -6245,17 +5333,18 @@ loaded via a namespace (and not attached):
 [139] stringi_1.8.7           MASS_7.3-65             plyr_1.8.9             
 [142] listenv_0.10.1          parallel_4.5.2          Biostrings_2.78.0      
 [145] splines_4.5.2           hms_1.1.4               ps_1.9.2               
-[148] igraph_2.2.2            reshape2_1.4.5          stats4_4.5.2           
-[151] evaluate_1.0.5          renv_1.1.5              BiocManager_1.30.27    
-[154] nloptr_2.2.1            tzdb_0.5.0              foreach_1.5.2          
-[157] tweenr_2.0.3            httpuv_1.6.16           cards_0.7.1            
-[160] openssl_2.3.5           polyclip_1.10-7         clue_0.3-68            
-[163] ggforce_0.5.0           cardx_0.3.2             broom_1.0.12           
-[166] fANCOVA_0.6-1           RSpectra_0.16-2         tidytree_0.4.7         
-[169] tidydr_0.0.6            later_1.4.8             viridisLite_0.4.3      
-[172] ragg_1.5.2              lmerTest_3.2-1          aplot_0.2.9            
-[175] memoise_2.0.1           AnnotationDbi_1.72.0    IRanges_2.44.0         
-[178] cluster_2.1.8.2         globals_0.19.1          timechange_0.4.0       </code></pre>
+[148] ggpubr_0.6.3            igraph_2.2.2            ggsignif_0.6.4         
+[151] reshape2_1.4.5          stats4_4.5.2            evaluate_1.0.5         
+[154] renv_1.1.5              BiocManager_1.30.27     nloptr_2.2.1           
+[157] tzdb_0.5.0              foreach_1.5.2           tweenr_2.0.3           
+[160] httpuv_1.6.16           cards_0.7.1             openssl_2.3.5          
+[163] polyclip_1.10-7         clue_0.3-68             ggforce_0.5.0          
+[166] cardx_0.3.2             broom_1.0.12            fANCOVA_0.6-1          
+[169] RSpectra_0.16-2         tidytree_0.4.7          rstatix_0.7.3          
+[172] tidydr_0.0.6            later_1.4.8             viridisLite_0.4.3      
+[175] ragg_1.5.2              lmerTest_3.2-1          aplot_0.2.9            
+[178] memoise_2.0.1           AnnotationDbi_1.72.0    IRanges_2.44.0         
+[181] cluster_2.1.8.2         globals_0.19.1          timechange_0.4.0       </code></pre>
 </div>
 </div>
 </div>
