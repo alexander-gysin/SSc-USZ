@@ -42,10 +42,18 @@ olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink
 # Load High Variance Proteins (generated at end of 03a)
 high_var_path <- here::here("output", "03a_proteomics_variance", "high_var_features.rds")
 high_var_prots <- if(file.exists(high_var_path)) readRDS(high_var_path) else NULL
+
+# Load Subgroup Scores from 03d (if script has been run) to use as overlays
+scores_path <- here::here("output", "03d_proteomics_subgroups", "score_master.rds")
+if(file.exists(scores_path)) {
+  score_master <- readRDS(scores_path)
+  # Left join scores directly to the spine so the clustering engine can access them seamlessly
+  master_spine <- master_spine %>% left_join(score_master, by = "Subject_ID")
+}
 ```
 
 # Configurations
-`r what_this_does("Defined configuration parameters for unsupervised molecular clustering.", "Calculated a Non-Active specific high-variance protein subset using the global variance engine.", "Set K-means centers (k) to test different numbers of potential endotypes.", "Selected specific clinical variables to automatically profile against the newly discovered clusters.")`
+`r what_this_does("Defined configuration parameters for unsupervised molecular clustering.", "Calculated a Non-Active specific high-variance protein subset using the global variance engine.", "Set K-means centers (k) to test different numbers of potential endotypes.", "Configured the smart 'overlay_vars' to automatically generate color-coded UMAPs and statistical distribution plots.")`
 
 ```{r config}
 # 0. Data Dictionary Shield & Base Excludes ------------------------------------
@@ -90,17 +98,8 @@ clustering_configs <- list(
     n_neighbors = 15, 
     include_features = high_var_prots, 
     include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes 
-  ),
-  
-  # Test a 3-cluster split (Full Cohort)
-  k3_split_filtered = list(
-    title = "Molecular Endotypes (k=3) | Full Cohort High Variance",
-    k = 3,
-    n_neighbors = 15, 
-    include_features = high_var_prots, 
-    include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes 
+    exclude_clinical_vars = final_excludes,
+    overlay_vars = c()
   ),
   
   # Non-Active Sub-Clustering
@@ -111,18 +110,21 @@ clustering_configs <- list(
     n_neighbors = 5, # Lowered due to much smaller N-size of this subset
     include_features = na_high_var_prots, # Using the internally filtered top 260
     include_clinical_vars = unname(unlist(clinical_domains)),
-    exclude_clinical_vars = final_excludes
+    exclude_clinical_vars = final_excludes,
+    # The Smart Routing Variables (Mixing Continuous Scores and Categorical Clinicals)
+    overlay_vars = c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score", "Age", "Sex")
   )
 )
 ```
 
 # Unsupervised Clustering {.tabset}
-`r what_this_does("Calculated UMAP coordinates to map high-dimensional proteomics into 2D space based on biological similarity.", "Applied K-Means clustering to officially assign patients to new molecular groups.", "Cross-referenced the newly discovered groups against the clinical spine to identify defining clinical characteristics.")`
+`r what_this_does("Calculated UMAP coordinates to map high-dimensional proteomics into 2D space based on biological similarity.", "Applied K-Means clustering to officially assign patients to new molecular groups.", "Cross-referenced the newly discovered groups against the clinical spine to identify defining clinical characteristics.", "Generated nested tabsets to display variables mapped structurally onto the UMAP space alongside their statistical group comparisons.")`
 
 `r why_is_this_done("Since predefined clinical labels (like Inflammatory vs Non-Inflammatory) did not yield strong proteomic differences, the approach was inverted. By letting the proteins organically group the patients, we can discover hidden disease endotypes and retrospectively identify what clinical features they share.")`
 ```{r UMAP, results='asis'}
 for (c_id in names(clustering_configs)) {
   conf <- clustering_configs[[c_id]]
+  # Main Tab for this Configuration
   cat(sprintf("\n\n## %s\n\n", conf$title))
   
   res <- wrap_clustering_pipeline(olink_mat, master_spine, conf, c_id, output_dir_data, get_project_colors)
@@ -133,14 +135,29 @@ for (c_id in names(clustering_configs)) {
     print(res$plots$umap)
     cat("\n\n<br>\n\n")
     
-    # 2. Print Diagnostic Histograms (if any variables were dropped due to skew)
+    # 2. Print Smart Overlays in Nested Tabset
+    if (!is.null(res$plots$overlays) && length(res$plots$overlays) > 0) {
+      cat("\n\n### UMAP Overlays {.tabset}\n\n")
+      
+      for (ov_name in names(res$plots$overlays)) {
+        # Sub-Tab for each Overlay Variable
+        cat(sprintf("\n\n#### %s\n\n", ov_name))
+        print(res$plots$overlays[[ov_name]])
+        cat("\n\n<br>\n\n")
+      }
+      
+      # Exit the sub-tabset by creating a sibling header for the diagnostic log
+      cat("\n\n### Cohort Statistics\n\n")
+    }
+    
+    # 3. Print Diagnostic Histograms (if any variables were dropped due to skew)
     if (!is.null(res$plots$excluded_hist)) {
       cat("#### Diagnostic: Skewed Variables Excluded\n\n")
       print(res$plots$excluded_hist)
       cat("\n\n<br>\n\n")
     }
     
-    # 3. Print the Clinical Cross-Reference Table with Log
+    # 4. Print the Clinical Cross-Reference Table with Log
     if (!is.null(res$tables$clinical_profile)) {
       cat(sprintf("#### Clinical Profile of %s\n\n", conf$title))
       
