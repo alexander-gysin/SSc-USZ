@@ -19,6 +19,8 @@ The computational pipeline currently lacks patient medication histories . If org
 source(here::here("code", "00_config.R"))
 ```
 
+# Setup and Import
+
 `r what_this_does("Loaded analytical packages for scoring, correlation, and clinical profiling.", "Imported the pre-cleaned clinical master spine, numeric spine, data dictionary, and Olink proteomics matrix.", "Sourced the master omics engines for downstream DEA and Heatmap rendering.")`
 
 ```{r setup_and_import, warning=FALSE, message=FALSE}
@@ -30,7 +32,7 @@ library(kableExtra)
 library(ComplexHeatmap)
 library(circlize)
 library(writexl)
-library(ggrepel) # Added for non-overlapping scatterplot labels
+library(ggrepel) 
 
 # Knitr Config
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -46,7 +48,7 @@ source(here::here("code", "00_omics_engines.R"))
 # Load Pre-Cleaned Data & Global DEA Results
 master_spine  <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 numeric_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds"))
-data_dict     <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds")) # Adjust to .csv and read_csv() if your dict is a csv!
+data_dict     <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 olink_mat     <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
 
 # Load Global Vascular DEA (from Script 03b)
@@ -66,30 +68,33 @@ proteins_of_interest   <- unique(c(vascular_up_proteins, vascular_down_proteins,
 
 # 2. Scoring Parameters
 score_config <- list(
-  z_thresh   = 1.0,  # Threshold for Direction Count Score (+1 or -1)
-  extreme_n  = 5,    # Number of patients to select for Top and Bottom groups (for DEA)
-  shopping_n = 10    # Number of patients to export for Biobank retrieval
+  z_thresh = 1.0  # Threshold for Direction Count Score (+1 or -1)
 )
 
-# 3. Clinical Audit & Visualization Parameters
-plot_color_vars <- c("vascular_active", "Inflamm_active", "cohort_group")
-audit_vars      <- c("Age", "Sex", "log_Creatinine", "SSc Antibodies", "disease_duration")
+# 3. MANUAL COHORT SELECTION
+manual_cohort <- list(
+  pool_20 = c("Act_7", "Act_33", "Act_44", "Nonact_24", "Nonact_15", 
+              "Nonact_20", "Act_16", "Nonact_48", "Act_24", "Nonact_45", 
+              "Nonact_22", "Nonact_34", "Nonact_31", "Nonact_30", "Nonact_35", 
+              "Nonact_37", "Nonact_46", "Act_35", "Nonact_2", "Nonact_36", "Act_46", "Act_8", "Act_37", "Act_6", "Act_33", "Nonact_20", "Act_16", "Nonact_36"),
+              
+  high_4  = c("Act_46", "Act_8", "Act_37", "Act_6"), 
+  low_4   = c("Act_33", "Nonact_20", "Act_16", "Nonact_36")      
+)
 
-# 4. Global Omics Thresholds (Required for DEA wrapper)
+# 4. Clinical Audit & Visualization Parameters
+plot_color_vars <- c("vascular_active", "Inflamm_active", "cohort_group")
+audit_vars      <- c("Age", "Sex", "log_Creatinine", "SSc Antibodies")
+
+# 5. Global Omics Thresholds
 omics_config <- list(gsea_p_cutoff = 0.20, gsea_min_size = 3)
 heatmap_config <- list(top_n = 30, split_by_group = TRUE, row_font_size = 8)
 
-# 5. NEW: Correlation Discovery Thresholds
+# 6. Correlation Discovery Thresholds
 cor_config <- list(
-  max_table_rows = 30, # How many top hits to display in the HTML tables
-  proteomics = list(
-    fdr_thresh = 0.05,
-    rho_thresh = 0.4
-  ),
-  clinical = list(
-    fdr_thresh = 0.10, # Slightly looser FDR for clinical traits due to lower N and higher variance
-    rho_thresh = 0.3
-  )
+  max_table_rows = 30,
+  proteomics = list(fdr_thresh = 0.05, rho_thresh = 0.4),
+  clinical = list(fdr_thresh = 0.10, rho_thresh = 0.3)
 )
 ```
 
@@ -238,7 +243,7 @@ clin_vars <- setdiff(clin_vars, "Subject_ID")
 
 clin_df <- numeric_spine %>% filter(Subject_ID %in% valid_ssc_ids) %>% select(Subject_ID, all_of(clin_vars))
 
-# FIX: Safely move ID to row names, then purge any accidental text columns before transposing
+# Safely move ID to row names, then purge any accidental text columns before transposing
 clin_mat <- t(clin_df %>% 
                 column_to_rownames("Subject_ID") %>% 
                 select(where(is.numeric)))
@@ -406,60 +411,67 @@ rm(clin_mat, prot_mat, score_df_sub, clin_df, cor_results, html_out)
 
 # Patients
 ## Patient Concordance & Selection
-`r what_this_does("Ranked patients based on their aggregate performance across both the Magnitude and Direction Count scoring systems.", "Designated the Top N and Bottom N patients as the extreme vascular phenotypes.", "Generated a scatterplot with overlaid linear regression to visually highlight the selected patients in the extreme corners of the concordance distribution.")`
+`r what_this_does("Tagged patients based on the predefined manual cohort lists (Pool of 20, High 4, Low 4).", "Generated a scatterplot to visually confirm where the hand-picked patients sit relative to the global mathematical extremes of the cohort.", "Printed a formatted table of the 20 selected patients displaying their global vascular scores and ranks.")`
 
 ```{r patient_concordance_and_selection, results='asis'}
-# Define the Extreme Groups based on Concordance Rank
-top_patients <- plot_spine %>% slice_min(Concordance_Rank, n = score_config$extreme_n) %>% pull(Subject_ID)
-bot_patients <- plot_spine %>% slice_max(Concordance_Rank, n = score_config$extreme_n) %>% pull(Subject_ID)
+# Define Labels
+lbl_unselected <- "Global SSc Cohort"
+lbl_pool       <- "Selected Pool (n=20)"
+lbl_top        <- "Target: Vascular High (n=4)"
+lbl_bot        <- "Target: Vascular Low (n=4)"
 
-lbl_unselected <- "Unselected"
-lbl_top <- sprintf("Top %d (Vascular High)", score_config$extreme_n)
-lbl_bot <- sprintf("Bottom %d (Vascular Low)", score_config$extreme_n)
-
+# Tag Patients
 plot_spine <- plot_spine %>%
   mutate(Selection = case_when(
-    Subject_ID %in% top_patients ~ lbl_top,
-    Subject_ID %in% bot_patients ~ lbl_bot,
+    Subject_ID %in% manual_cohort$high_4 ~ lbl_top,
+    Subject_ID %in% manual_cohort$low_4 ~ lbl_bot,
+    Subject_ID %in% manual_cohort$pool_20 ~ lbl_pool,
     TRUE ~ lbl_unselected
-  ))
+  )) %>%
+  # Factor to control plotting order (so bold dots plot on top of grey ones)
+  mutate(Selection = factor(Selection, levels = c(lbl_unselected, lbl_pool, lbl_top, lbl_bot)))
 
-selection_colors <- setNames(c("grey80", "#c0392b", "#2980b9"), c(lbl_unselected, lbl_top, lbl_bot))
+# Assign Colors
+selection_colors <- setNames(c("grey90", "#F39C12", "#c0392b", "#2980b9"), 
+                             c(lbl_unselected, lbl_pool, lbl_top, lbl_bot))
 
-p_scatter <- ggplot(plot_spine, aes(x = Magnitude_Score, y = Count_Score, fill = Selection)) +
+# 1. Scatterplot
+p_scatter <- ggplot(plot_spine %>% arrange(Selection), aes(x = Magnitude_Score, y = Count_Score, fill = Selection)) +
   geom_point(shape = 21, size = 3, alpha = 0.8, color = "black") +
   scale_fill_manual(values = selection_colors) + 
   theme_project_base() +
-  labs(title = "Score Concordance & Sera Selection", 
-       subtitle = sprintf("Selecting top and bottom %d patients based on combined ranking", score_config$extreme_n),
+  labs(title = "Score Concordance: Manual Sera Selection", 
+       subtitle = "Visualizing the manually selected cohort within the global SSc distribution",
        x = "Magnitude Score (Z-Score Sum)", y = "Count Score (+1/-1)")
 
 print(p_scatter)
-ggsave(file.path(output_dir_data, "Patient_Selection_Concordance.png"), p_scatter, width=8, height=6, bg="white")
+ggsave(file.path(output_dir_data, "Manual_Selection_Concordance.png"), p_scatter, width=8, height=6, bg="white")
+cat("\n\n")
 
-
+# 2. Print Table for the 20 Pool
 tbl_data <- plot_spine %>% 
-  filter(Selection != lbl_unselected) %>%
+  filter(Subject_ID %in% manual_cohort$pool_20) %>%
   select(Subject_ID, Selection, Magnitude_Score, Count_Score, Concordance_Rank) %>%
   arrange(Concordance_Rank)
 
-# Print cleanly for both inline RStudio and Knitted HTML
+# Render clean HTML table
 tbl_data %>% 
-  kbl(format = "html", digits = 2, align = "c") %>% 
+  kbl(format = "html", digits = 2, align = "c", caption = "Global Scores for the 20 Manually Selected Patients") %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
   row_spec(0, bold = TRUE)
 ```
 
-
 ## Clinical Confounder Audit
-`r what_this_does("Generates a cross-reference table of the selected extreme patients.", "Allows wet-lab experimenters to check if the 'High Vascular' serum happens to be systematically older, uremic (Creatinine), or tied to a specific autoantibody, which could artificially influence the organoids.")`
+`r what_this_does("Filtered the cohort strictly to the 8 extreme patients (4 High vs 4 Low).", "Generated a cross-reference table to audit potential clinical confounders (Age, Sex, Renal Function) prior to in vitro experiments.")`
 
 ```{r clinical_confounder_audit}
 audit_cols <- intersect(audit_vars, colnames(plot_spine))
 
+# Strictly filter to the final 8
 audit_df <- plot_spine %>%
-  filter(Selection != "Unselected") %>%
-  select(Selection, all_of(audit_cols))
+  filter(Selection %in% c("Target: Vascular High (n=4)", "Target: Vascular Low (n=4)")) %>%
+  select(Selection, all_of(audit_cols)) %>%
+  droplevels()
 
 continuous_force_vars <- intersect(c("Age", "log_Creatinine", "disease_duration"), colnames(audit_df))
 
@@ -481,26 +493,29 @@ tbl_audit %>% as_kable_extra(format = "html") %>%
 
 
 ## Differential Expression Analysis {.tabset}
-`r what_this_does("Runs the master Limma Differential Expression Analysis specifically on the Top N vs Bottom N selected patients.", "Generates standard Volcano plots and heatmaps to visually validate the biological extreme phenotype of the chosen sera.")`
+`r what_this_does("Ran the master Limma DEA strictly comparing the 4 Manual High vs 4 Manual Low patients.", "Generated standard Volcano plots and heatmaps restricted to the 8 targeted patients to visually validate the biological extreme phenotype of the chosen sera.")`
 
 ```{r DEA, fig.height=8, fig.width=10, results='asis'}
-# 1. Setup Custom DEA Config for the Wrapper
+# 1. Restrict data to the final 8 patients
+clin_extreme <- plot_spine %>% filter(Selection %in% c("Target: Vascular High (n=4)", "Target: Vascular Low (n=4)")) %>% droplevels()
+
+# 2. Setup Custom DEA Config for the Wrapper
 extreme_dea_conf <- list(
-  title = sprintf("Organoid Candidates: Top %d vs Bottom %d", score_config$extreme_n, score_config$extreme_n),
+  title = "Organoid Candidates: Manual High vs Manual Low",
   group_col = "Selection",
-  target_groups = c(sprintf("Top %d (Vascular High)", score_config$extreme_n)),
-  ref_groups = c(sprintf("Bottom %d (Vascular Low)", score_config$extreme_n)),
+  target_groups = c("Target: Vascular High (n=4)"),
+  ref_groups = c("Target: Vascular Low (n=4)"),
   is_continuous = FALSE,
   covariates = c(),
   dea_p_cutoff = 0.05,
   dea_fc_cutoff = 0.5,
-  custom_color_map = selection_colors # <--- Pass custom colors safely
+  custom_color_map = selection_colors
 )
 
-# 2. Run DEA Engine
+# 3. Run DEA Engine
 dea_res <- wrap_dea_pipeline(
     omics_mat           = olink_mat, 
-    clin_df             = plot_spine, 
+    clin_df             = clin_extreme, 
     dea_conf            = extreme_dea_conf, 
     dea_id              = "extreme_vascular", 
     base_output_dir     = output_dir_data, 
@@ -510,10 +525,8 @@ dea_res <- wrap_dea_pipeline(
     project_colors_func = get_project_colors
 )
 
-clin_extreme <- plot_spine %>% filter(Selection != "Unselected")
-
 # HEATMAP 1: Local DEA (Extreme Phenotype)
-cat("## Local DEA Heatmap\n\n")
+cat("### Local DEA Heatmap\n\n")
 if (dea_res$status == "success") {
   print(dea_res$plots$volcano)
   cat("\n\n<br>\n\n")
@@ -522,9 +535,9 @@ if (dea_res$status == "success") {
     mat = olink_mat, 
     clin = clin_extreme, 
     dea_res = dea_res$data$dea,
-    title = "Local DEA (5v5)",
+    title = "Local DEA (4v4 Manual)",
     n_top = 30, 
-    split_by_group = FALSE, # Unsupervised clustering
+    split_by_group = FALSE,
     split_col = "Selection",
     custom_color_map = selection_colors
   )
@@ -535,13 +548,13 @@ if (dea_res$status == "success") {
 }
 
 # HEATMAP 2: Global DEA Signature
-cat("## Global DEA Heatmap\n\n")
+cat("### Global DEA Heatmap\n\n")
 if (exists("global_vascular_dea") && !is.null(global_vascular_dea)) {
   hm_global <- run_heatmap_engine(
     mat = olink_mat, 
     clin = clin_extreme, 
     dea_res = global_vascular_dea,
-    title = "Global DEA (full cohort)",
+    title = "Global Signature (Filtered to 8 Manual)",
     n_top = 30, 
     split_by_group = FALSE,
     split_col = "Selection",
@@ -554,7 +567,7 @@ if (exists("global_vascular_dea") && !is.null(global_vascular_dea)) {
 }
 
 # HEATMAP 3: Custom Proteins of Interest
-cat("## Custom POI Heatmap\n\n")
+cat("### Custom POI Heatmap\n\n")
 valid_poi <- intersect(proteins_of_interest, rownames(olink_mat))
 if (length(valid_poi) > 1 && dea_res$status == "success") {
   
@@ -564,11 +577,11 @@ if (length(valid_poi) > 1 && dea_res$status == "success") {
     mat = olink_mat, 
     clin = clin_extreme, 
     dea_res = poi_limma_df,
-    title = "Selected Proteins of Interest (5v5 DEA)",
+    title = "Selected Proteins of Interest (4v4 Manual)",
     n_top = length(valid_poi), 
     split_by_group = FALSE,
     split_col = "Selection",
-    show_top_n_title = FALSE, # Suppress the "Top 9" text
+    show_top_n_title = FALSE,
     custom_color_map = selection_colors
   )
   draw(poi_heatmap)
@@ -576,35 +589,6 @@ if (length(valid_poi) > 1 && dea_res$status == "success") {
 } else {
   cat("> Insufficient Valid POIs to generate targeted heatmap.\n\n")
 }
-```
-
-## Biobank Shopping List Export
-`r what_this_does("Exports an extended priority list of extreme patients to CSV, providing the biobank with backup options in case primary aliquots are depleted.", "Prints the shopping list to the HTML report for quick reference.")`
-
-```{r biobank_shopping_list_export}
-# Select only the needed columns FIRST to prevent duplicate column warnings
-shopping_top <- plot_spine %>% 
-  slice_min(Concordance_Rank, n = score_config$shopping_n) %>% 
-  mutate(Target_Group = "High Vascular Serum") %>%
-  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
-
-shopping_bot <- plot_spine %>% 
-  slice_max(Concordance_Rank, n = score_config$shopping_n) %>% 
-  mutate(Target_Group = "Low Vascular Serum") %>%
-  select(Target_Group, Subject_ID, Concordance_Rank, Magnitude_Score, Count_Score)
-
-# Bind clean rows
-shopping_list <- bind_rows(shopping_top, shopping_bot) %>%
-  arrange(Target_Group, Concordance_Rank)
-
-export_path <- file.path(output_dir_data, "Biobank_Serum_Shopping_List.xlsx")
-write_xlsx(shopping_list, export_path)
-
-# Print the Table to HTML
-shopping_list %>% 
-  kbl(format = "html", digits = 2, align = "c") %>% 
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
-  row_spec(0, bold = TRUE)
 ```
 
 # Appendix
