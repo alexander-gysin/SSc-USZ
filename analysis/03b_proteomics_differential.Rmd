@@ -102,7 +102,7 @@ contrast_configs <- list(
     target_groups = c(GRP_ACTIVE),
     ref_groups = c(GRP_NON_ACTIVE),
     is_continuous = FALSE,
-    covariates = candidate_vars$set1,
+    covariates = c("Age", "Sex"),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.2
   ),
@@ -112,7 +112,7 @@ contrast_configs <- list(
     target_groups = c("yes"), 
     ref_groups = c("No"),     
     is_continuous = FALSE,
-    covariates = candidate_vars$set1, 
+    covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   ),
@@ -122,7 +122,7 @@ contrast_configs <- list(
     target_groups = c("yes"), 
     ref_groups = c("No"),     
     is_continuous = FALSE,
-    covariates = candidate_vars$set1, 
+    covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   ),
@@ -132,7 +132,7 @@ contrast_configs <- list(
     target_groups = c("yes"), 
     ref_groups = c("No"),     
     is_continuous = FALSE,
-    covariates = candidate_vars$set1, 
+    covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   )

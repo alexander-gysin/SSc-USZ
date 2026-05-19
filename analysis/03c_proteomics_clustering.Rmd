@@ -12,181 +12,395 @@ source(here::here("code", "00_config.R"))
 ```
 
 # Setup and Import
-`r what_this_does("Loaded required packages including UMAP for non-linear dimensionality reduction and gtsummary for clinical cross-referencing.", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Sourced custom omics engines tailored for unsupervised learning.")`
+`r what_this_does("Loaded required packages including UMAP for non-linear dimensionality reduction and gtsummary for clinical cross-referencing.", "Imported the pre-cleaned clinical spine and Olink proteomics matrix.", "Sourced custom omics engines")`
+
 ```{r setup_import, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(patchwork)
 library(here)
 library(umap)       # Non-linear reduction
+library(cluster)    # Diagnostics
+library(dbscan)     # HDBSCAN Density clustering
+library(igraph)     # Louvain Graph clustering
 library(gtsummary)  # Clinical tables
 
 # Knitr Config
-knitr::opts_chunk$set(
-  warning = FALSE,
-  message = FALSE
-)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Output paths
 current_file <- "03c_proteomics_clustering"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
+# Global DEA Path
+proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
+
 # Source Configuration & Engines
 source(here::here("code", "00_omics_engines.R"))
 
-# Load Pre-Cleaned Data (Twin Spine Architecture)
+# Load Pre-Cleaned Data
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
-
-# Load High Variance Proteins (generated at end of 03a)
-high_var_path <- here::here("output", "03a_proteomics_variance", "high_var_features.rds")
-high_var_prots <- if(file.exists(high_var_path)) readRDS(high_var_path) else NULL
-
-# Load Subgroup Scores from 03d (if script has been run) to use as overlays
-scores_path <- here::here("output", "03d_proteomics_subgroups", "score_master.rds")
-if(file.exists(scores_path)) {
-  score_master <- readRDS(scores_path)
-  # Left join scores directly to the spine so the clustering engine can access them seamlessly
-  master_spine <- master_spine %>% left_join(score_master, by = "Subject_ID")
-}
 ```
 
 # Configurations
-`r what_this_does("Defined configuration parameters for unsupervised molecular clustering.", "Calculated a Non-Active specific high-variance protein subset using the global variance engine.", "Set K-means centers (k) to test different numbers of potential endotypes.", "Configured the smart 'overlay_vars' to automatically generate color-coded UMAPs and statistical distribution plots.")`
+`r what_this_does("Configured the Matrix Factory, Algorithm Optimization, Clustering, and dual Phenotyping (Clinical & Feature) parameters.")`
 
 ```{r config}
-# 0. Data Dictionary Shield & Base Excludes ------------------------------------
-# Automatically identify variables that are mathematically unstable, skewed, or contain outliers
-unstable_vars <- data_dictionary %>%
-  filter(grepl("ZERO VARIANCE|IMBALANCED|SKEWED|OUTLIER", toupper(QC_Flag))) %>%
-  pull(Variable)
-
-# Base administrative or redundant variables to exclude
-base_excludes <- c(
-  "inCentraxx", "SELECTED", "Subject_ID", "Birth_Year", "Raynaud VAS Unknown", 
-  "Face", "Chest", "Abdomen", "Left_Upper Arms", "Right_Upper Arms", 
-  "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", 
-  "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", 
-  "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Active_our",
-  "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean", "Distance_in_m" 
-)
-
+# 0. Data Dictionary Shield & Base Excludes
+unstable_vars <- data_dictionary %>% filter(grepl("ZERO VARIANCE", toupper(QC_Flag))) %>% pull(Variable)
+base_excludes <- c("inCentraxx", "SELECTED", "Subject_ID", "Birth_Year", "Raynaud VAS Unknown", "Face", "Chest", "Abdomen", "Left_Upper Arms", "Right_Upper Arms", "Left_Forearms", "Right_Forearms", "Left_Hands", "Right_Hands", "Left_Fingers", "Right_Fingers", "Left_Thighs", "Right_Thighs", "Left_Legs", "Right_Legs", "Left_Feet", "Right_Feet", "Active_our", "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean", "Distance_in_m")
 final_excludes <- unique(c(base_excludes, unstable_vars))
 
-# 1. Non-Active Specific High Variance Proteins --------------------------------
-na_clin <- master_spine %>% filter(cohort_group == GRP_NON_ACTIVE)
-na_mat <- olink_mat[, intersect(colnames(olink_mat), na_clin$Subject_ID)]
-
-na_var_conf <- list(
-  title = "Non-Active Variance Filter", 
-  top_n_features = 260, 
-  omics_type = "Protein"
-)
-
-# Run the variance filter engine specifically on the Non-Active matrix
-na_var_res <- wrap_global_variance_filter(na_mat, na_var_conf, output_dir_data)
-na_high_var_prots <- na_var_res$features
-
-# 2. Molecular Clustering Configs ----------------------------------------------
-clustering_configs <- list(
-  
-  # Test a 2-cluster split (Full Cohort)
-  k2_split_filtered = list(
-    title = "Molecular Endotypes (k=2) | Full Cohort High Variance",
-    k = 2,
-    n_neighbors = 15, 
-    include_features = high_var_prots, 
-    include_clinical_vars = unname(unlist(clinical_domains)), 
-    exclude_clinical_vars = final_excludes,
-    overlay_vars = c()
-  ),
-  
-  # Non-Active Sub-Clustering
-  nonactive_only_k2 = list(
-    title = "Non-Active Sub-Clustering (k=2) | Internal High Variance",
-    subset_groups = c(GRP_NON_ACTIVE), # Focus only on Non-Actives
-    k = 2,
-    n_neighbors = 5, # Lowered due to much smaller N-size of this subset
-    include_features = na_high_var_prots, # Using the internally filtered top 260
-    include_clinical_vars = unname(unlist(clinical_domains)),
-    exclude_clinical_vars = final_excludes,
-    # The Smart Routing Variables (Mixing Continuous Scores and Categorical Clinicals)
-    overlay_vars = c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score", "Age", "Sex")
+# 1. Matrix Factory Configurations
+matrix_prep_configs <- list(
+  mat_avc_age_residualized = list(
+    subset_var = NULL,
+    base_features = list(
+      method = "dea", dea_path = proteomics_dea_path, source_file = "dea_active_vs_control.rds", 
+      fdr_cutoff = 0.05, fc_cutoff = 0.58, min_features = 30, top_n = 200 
+    ),
+    transform = list(method = "residualize", covariates = c("Age"))
   )
 )
+
+# 2. Pre-Flight Algorithm Optimization Configs
+k_opt_configs <- list(
+  k_opt_multi_topology = list(
+    title = "Optimization: Age Regressed",
+    input_matrix = "mat_avc_age_residualized",
+    k_range = 2:8,
+    gap_bootstraps = 0, 
+    algorithms = list(
+      pam = list(run=TRUE, metric="euclidean"),
+      kmeans = list(run=TRUE, nstart=25),
+      hclust = list(run=TRUE, distance="euclidean", method="ward.D2"),
+      hdbscan = list(run=TRUE, minPts_range = 2:15),
+      louvain = list(run=TRUE, k_neighbors = 4, resolution_range = seq(0.1, 2.0, by=0.1))
+    )
+  )
+)
+
+# 3. Clustering Configs 
+clustering_configs <- list(
+  job_avc = list(
+    title = "Age Regressed Clustering",
+    input_matrix = "mat_avc_age_residualized", 
+    k = 3, 
+    n_neighbors = 5,
+    algorithms = list(
+      kmeans = list(run=TRUE, nstart=25), 
+      pam = list(run=TRUE, metric="euclidean"), 
+      hclust = list(run=TRUE, distance="euclidean", method="ward.D2"), 
+      hdbscan = list(run=TRUE, minPts=4),          
+      louvain = list(run=TRUE, k_neighbors=4, resolution=0.5) 
+    )
+  )
+)
+
+# 4. Diagnostic Targets
+diagnostic_configs <- list(
+  evaluate_jobs = c("job_avc"),
+  correlate_vars = c("cohort_group", "Age", "Sex")
+)
+
+# 5. Clinical Phenotyping Targets
+pheno_configs <- list(
+  pheno_avc = list(
+    target_job = "job_avc",
+    target_algorithms = c("kmeans", "louvain"),
+    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
+    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    p_cutoff = 0.05,
+    must_include_vars = c("Age", "Sex", "cohort_group")
+  )
+)
+
+# 6. Feature Phenotyping Targets (DEA)
+feature_configs <- list(
+  feat_avc = list(
+    target_job = "job_avc",
+    target_algorithms = c("kmeans", "louvain"),
+    input_matrix = "raw", # Use the pure unaltered Olink matrix for unbiased biological discovery
+    covariates = c("Age"), 
+    contrasts = list(
+      c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2", target_groups = c("Cluster 1"), ref_groups = c("Cluster 2")),
+      c3_vs_rest = list(title = "Cluster 3 vs Rest", target_groups = c("Cluster 3"), ref_groups = c("Cluster 1", "Cluster 2"))
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  )
+)
+
+# 6.b DEA Heatmap Configs
+heatmap_config <- list(
+  top_n = 30,
+  split_by_group = FALSE, 
+  row_font_size = 8
+)
 ```
 
-# Unsupervised Clustering {.tabset}
-`r what_this_does("Calculated UMAP coordinates to map high-dimensional proteomics into 2D space based on biological similarity.", "Applied K-Means clustering to officially assign patients to new molecular groups.", "Cross-referenced the newly discovered groups against the clinical spine to identify defining clinical characteristics.", "Generated nested tabsets to display variables mapped structurally onto the UMAP space alongside their statistical group comparisons.")`
+# Matrix Factory
+`r analysis_decision("Employed three distinct matrix transformations to isolate the disease signature from the Age confounder. The baseline matrix remains unmodified. The pruned matrix surgically removes features correlating heavily with Age (Spearman rho > 0.4). The residualized matrix uses linear modeling to mathematically regress Age out of the coordinate space.")` 
 
-`r why_is_this_done("Since predefined clinical labels (like Inflammatory vs Non-Inflammatory) did not yield strong proteomic differences, the approach was inverted. By letting the proteins organically group the patients, we can discover hidden disease endotypes and retrospectively identify what clinical features they share.")`
-```{r UMAP, results='asis'}
-for (c_id in names(clustering_configs)) {
-  conf <- clustering_configs[[c_id]]
-  # Main Tab for this Configuration
-  cat(sprintf("\n\n## %s\n\n", conf$title))
+```{r matrix_factory, results='asis'}
+# Global storage for the prepared mathematical matrices
+prepared_matrices <- list()
+
+for (prep_id in names(matrix_prep_configs)) {
   
-  res <- wrap_clustering_pipeline(olink_mat, master_spine, conf, c_id, output_dir_data, get_project_colors)
+  conf <- matrix_prep_configs[[prep_id]]
+  res <- wrap_matrix_factory(olink_mat, master_spine, conf, prep_id)
   
   if (res$status == "success") {
+    prepared_matrices[[prep_id]] <- res$matrix
     
-    # 1. Print the UMAP
-    print(res$plots$umap)
-    cat("\n\n<br>\n\n")
+    # 1. Print the raw text log generated by the engine
+    cat(res$log_text, "\n\n") 
     
-    # 2. Print Smart Overlays in Nested Tabset
-    if (!is.null(res$plots$overlays) && length(res$plots$overlays) > 0) {
-      cat("\n\n### UMAP Overlays {.tabset}\n\n")
-      
-      for (ov_name in names(res$plots$overlays)) {
-        # Sub-Tab for each Overlay Variable
-        cat(sprintf("\n\n#### %s\n\n", ov_name))
-        print(res$plots$overlays[[ov_name]])
-        cat("\n\n<br>\n\n")
-      }
-      
-      # Exit the sub-tabset by creating a sibling header for the diagnostic log
-      cat("\n\n### Cohort Statistics\n\n")
-    }
-    
-    # 3. Print Diagnostic Histograms (if any variables were dropped due to skew)
-    if (!is.null(res$plots$excluded_hist)) {
-      cat("#### Diagnostic: Skewed Variables Excluded\n\n")
-      print(res$plots$excluded_hist)
-      cat("\n\n<br>\n\n")
-    }
-    
-    # 4. Print the Clinical Cross-Reference Table with Log
-    if (!is.null(res$tables$clinical_profile)) {
-      cat(sprintf("#### Clinical Profile of %s\n\n", conf$title))
-      
-      # Print Auto-Filter Log
-      log_msg <- sprintf("> **Auto-QA/QC Filter Log:**\n> * **Dropped Categorical (<10%% frequency):** %s\n> * **Dropped Continuous (|Skew| > 2.5):** %s\n\n",
-                         ifelse(length(res$log$dropped_cat) > 0, paste(res$log$dropped_cat, collapse = ", "), "None"),
-                         ifelse(length(res$log$dropped_cont) > 0, paste(res$log$dropped_cont, collapse = ", "), "None"))
-      cat(log_msg)
-      
-      # Extract HTML from gtsummary object for rendering
-      tbl_html <- res$tables$clinical_profile %>% 
-        as_kable_extra(format = "html") %>% 
-        kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
+    # 2. Format and Print the Audit Table
+    if (!is.null(res$audit_tbl) && nrow(res$audit_tbl) > 0) {
+      formatted_tbl <- res$audit_tbl %>%
+        mutate(
+          # Clean up the numbers
+          logFC = round(logFC, 3),
+          FDR = formatC(FDR, format = "e", digits = 2),
+          
+          # Inject HTML color tags for the status
+          Final_Status = case_when(
+            grepl("Included", Final_Status) ~ sprintf("<span style='color:#27ae60; font-weight:bold;'>%s</span>", Final_Status),
+            grepl("Excluded", Final_Status) ~ sprintf("<span style='color:#c0392b; font-weight:bold;'>%s</span>", Final_Status),
+            TRUE ~ Final_Status
+          )
+        ) %>%
+        kableExtra::kbl(format = "html", escape = FALSE, caption = sprintf("Matrix Audit: %s", prep_id)) %>%
+        kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+        kableExtra::scroll_box(height = "400px") 
         
-      if (interactive()) {
-        print(res$tables$clinical_profile)
-      } else {
-        cat(as.character(tbl_html))
-      }
+      print(formatted_tbl)
     }
+    
   } else {
-    cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n\n", res$error_msg))
+    cat(sprintf("FAILED: %s\n", res$error_msg))
   }
 }
-
-# Clean memory
-rm(c_id, conf, res)
-invisible(gc())
 ```
+# Algorithm Optimization
+`r what_this_does("Executes algorithm-aware hyperparameter sweeps.", "Evaluates Silhouette boundaries for K-Means, PAM, and H-Clust.", "Traces the Noise-to-Cluster tradeoff for HDBSCAN density, and measures Modularity peaks for Louvain network communities.")`
+
+```{r algorithm_optimization}
+for (opt_id in names(k_opt_configs)) {
+  conf <- k_opt_configs[[opt_id]]
+  
+  target_matrix <- prepared_matrices[[conf$input_matrix]]
+  if (is.null(target_matrix)) next
+  
+  res <- wrap_k_optimization_pipeline(target_matrix, conf, opt_id, output_dir_data)
+  
+  if (res$status == "success") {
+    for (algo in names(res$plots)) {
+      print(res$plots[[algo]])
+    }
+  }
+}
+```
+
+
+# Unsupervised Clustering {.tabset}
+`r what_this_does("Ingested the dynamically pre-processed matrices from the Matrix Factory.", "Calculated mathematical distances and assigned endotypes using true high-dimensional protein matrices.", "Calculated 2D UMAP coordinates exclusively for visualization, painting high-dimensional labels onto the squashed axes.")`
+
+`r why_is_this_done("Clustering on projected 2D UMAP space introduces manifold distortion. By calculating groupings mathematically across all protein dimensions, we ensure biological robustness, even if the 2D visual projection appears slightly overlapping.")`
+```{r UMAP, results='asis'}
+# Store the payload globally so the diagnostic chunk can access it later!
+global_cluster_payloads <- list()
+
+for (c_id in names(clustering_configs)) {
+  conf <- clustering_configs[[c_id]]
+  
+  target_matrix <- prepared_matrices[[conf$input_matrix]]
+  if (is.null(target_matrix)) next
+  
+  res <- wrap_clustering_pipeline(target_matrix, master_spine, conf, c_id, output_dir_data, get_project_colors)
+  global_cluster_payloads[[c_id]] <- res
+  
+  if (res$status == "success") {
+    for (algo in names(res$plots$umaps)) {
+      # Explicitly print the UMAP so it appears in the RStudio Plots pane
+      print(res$plots$umaps[[algo]])
+    }
+  } 
+}
+```
+# Clustering Diagnostic {.tabset}
+
+`r analysis_decision("Employed the Silhouette Score to mathematically quantify algorithm confidence. The algorithm with the highest average width indicates the most robust, well-separated endotypes.")`
+
+`r what_this_does("Extracted the underlying distance matrices and specific patient assignments from the upstream multi-algorithm pipeline.", "Calculated the global Silhouette width for K-Means, PAM, and Hierarchical clustering.", "Generated comparative bar charts to guide algorithmic selection.")`
+
+```{r clustering_diagnostic}
+# Store diagnostic results to extract the "best_algo" for Consensus later
+global_diagnostic_payloads <- list()
+
+for (job_id in diagnostic_configs$evaluate_jobs) {
+  payload <- global_cluster_payloads[[job_id]]
+  
+  if (!is.null(payload) && payload$status == "success") {
+    
+    # Extract the exact matrix and config used for this job
+    target_matrix <- prepared_matrices[[clustering_configs[[job_id]]$input_matrix]]
+    cluster_conf <- clustering_configs[[job_id]]
+    
+    diag_res <- run_clustering_diagnostics(
+      payload, target_matrix, master_spine, data_dictionary, 
+      diagnostic_configs, cluster_conf, job_id, output_dir_data
+    )
+    
+    global_diagnostic_payloads[[job_id]] <- diag_res
+    
+    if (!is.null(diag_res)) {
+      # 1. Print the New Global HTML Table
+      print(diag_res$plots[["leaderboard"]])
+      
+      # 2. Print Variable Correlation Plots
+      for (v in names(diag_res$plots)) {
+        if (v == "leaderboard") next
+        print(diag_res$plots[[v]])
+      }
+    }
+  }
+}
+```
+
+# Clinical Phenotyping
+`r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
+
+`r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes.")`
+
+```{r clinical_phenotyping, fig.height=6, fig.width=12, warning=FALSE}
+for (p_id in names(pheno_configs)) {
+  conf <- pheno_configs[[p_id]]
+  payload <- global_cluster_payloads[[conf$target_job]]
+  if (is.null(payload)) next
+  
+  res <- wrap_clinical_phenotyping(payload, master_spine, data_dictionary, conf, p_id, output_dir_data)
+  
+  if (res$status == "success") {
+    for (algo in names(res$plots)) {
+      cat(sprintf("\n\n#### Algorithm: %s\n", toupper(algo)))
+      
+      # Print Table
+      if (!is.null(res$tables[[algo]])) {
+        print(res$tables[[algo]] %>% as_gt() %>% gt::tab_header(title=sprintf("Clinical Summary: %s", toupper(algo))))
+      }
+      # Print Heatmap (Using ComplexHeatmap::draw)
+      if (!is.null(res$plots[[algo]]$heatmap)) {
+        ComplexHeatmap::draw(res$plots[[algo]]$heatmap)
+      }
+      # Print Grid
+      if (!is.null(res$plots[[algo]]$highlights)) print(res$plots[[algo]]$highlights)
+    }
+  }
+}
+```
+
+# Feature Phenotyping {.tabset}
+`r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
+
+```{r feature_phenotyping}
+for (f_id in names(feature_configs)) {
+  conf <- feature_configs[[f_id]]
+  payload <- global_cluster_payloads[[conf$target_job]]
+  target_matrix <- if(conf$input_matrix == "raw") olink_mat else prepared_matrices[[conf$input_matrix]]
+  
+  if (is.null(payload) || is.null(target_matrix)) next
+  
+  for (algo_name in conf$target_algorithms) {
+    # 1. Dynamically update the spine with this specific algorithm's clusters
+    temp_spine <- master_spine
+    temp_spine$Dynamic_Cluster <- as.character(payload$data$assignments[[algo_name]][match(temp_spine$Subject_ID, names(payload$data$assignments[[algo_name]]))])
+    
+    # Filter out Noise if it exists (HDBSCAN artifacts)
+    temp_spine <- temp_spine %>% filter(!is.na(Dynamic_Cluster), Dynamic_Cluster != "Noise")
+
+    # 2. Iterate through contrasts and call the unified DEA engine
+    for (contrast_name in names(conf$contrasts)) {
+      c_conf <- conf$contrasts[[contrast_name]]
+      
+      # Build dynamic config
+      dea_conf <- list(
+        title = sprintf("%s | Alg: %s | Job: %s", c_conf$title, toupper(algo_name), f_id),
+        group_col = "Dynamic_Cluster",
+        target_groups = c_conf$target_groups,
+        ref_groups = c_conf$ref_groups,
+        covariates = conf$covariates,
+        dea_p_cutoff = conf$dea_p_cutoff,
+        dea_fc_cutoff = conf$dea_fc_cutoff
+      )
+      
+      # Reuse the wrap_dea_pipeline 
+      res <- wrap_dea_pipeline(
+        omics_mat = target_matrix,
+        clin_df = temp_spine,
+        dea_conf = dea_conf,
+        dea_id = sprintf("%s_%s_%s", f_id, algo_name, contrast_name),
+        base_output_dir = output_dir_data,
+        go_db = go_genesets, # Ensure go_genesets is loaded in this script
+        omics_config = omics_config,
+        heatmap_config = heatmap_config,
+        project_colors_func = get_project_colors
+      )
+      
+      if (res$status == "success") {
+        cat(sprintf("\n\n#### %s: %s\n", toupper(algo_name), c_conf$title))
+        print(res$plots$volcano)
+        
+        # Display Heatmap (ComplexHeatmap object)
+        if (!is.null(res$plots$heatmap)) ComplexHeatmap::draw(res$plots$heatmap)
+        
+        # Print Table
+        if (nrow(res$tables$significant_proteins) > 0) {
+          print(head(res$tables$significant_proteins, 10) %>%
+            mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = "e", digits = 2)) %>%
+            kableExtra::kbl(format = "html") %>% kableExtra::kable_styling(bootstrap_options = "striped"))
+        }
+      }
+    }
+  }
+}
+```
+
+<!-- # Consensus Export -->
+
+<!-- `r analysis_decision("Utilized a Reference-Based Overlap algorithm to translate arbitrary cluster numbers (e.g. Cluster 1 vs Cluster 3) into a unified coordinate space.", "Automatically anchored the alignment matrix to the algorithm with the highest average Silhouette confidence.")` -->
+
+<!-- ` r what_this_does("Evaluated row-wise mode to determine the Final Consensus Endotype for every patient.", "Assigned patients failing the stability threshold into a 'Mixed/Transitional' category.", "Exported a comprehensive .rds file containing translated sub-clusters, stability scores, and individual silhouette scores for downstream multi-omics integration.")` -->
+
+<!-- ```{r consensus_export} -->
+<!-- for (export_id in names(export_configs)) { -->
+<!--   conf <- export_configs[[export_id]] -->
+
+<!--   target_payload <- global_cluster_payloads[[conf$target_job]] -->
+<!--   target_diag <- global_diagnostic_payloads[[conf$target_job]] -->
+
+<!--   if (is.null(target_payload) || is.null(target_diag)) next -->
+
+<!--   # Auto-select anchor if requested -->
+<!--   anchor <- if (conf$anchor_algorithm == "auto") target_diag$best_algo else conf$anchor_algorithm -->
+
+<!--   res <- wrap_consensus_export(target_payload, anchor, conf, export_id, output_dir_data) -->
+
+<!--   if (res$status == "success") { -->
+<!--     # Print the raw text log natively -->
+<!--     cat(res$text_log, "\n") -->
+
+<!--     # Render the new diagnostics dynamically to the RStudio Viewer -->
+<!--     print(res$plots$convergence_bar) -->
+<!--     print(res$plots$consensus_umap) -->
+<!--   } -->
+<!-- } -->
+<!-- ``` -->
+
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom predictive engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`

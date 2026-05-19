@@ -1083,146 +1083,504 @@ wrap_vpa_scatter_diagnostics <- function(omics_mat, clin_df, vpa_df, covariates,
   return(results)
 }
 
-# 10. UMAP & Molecular Clustering Engine ---------------------------------------
-# Description:
-#   Performs non-linear dimensionality reduction (UMAP) followed by K-Means
-#   clustering to identify data-driven molecular endotypes. It then cross-references
-#   these new clusters against a strict whitelist of clinical data, dynamically
-#   filtering out highly skewed continuous and imbalanced categorical variables.
-wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
-  results <- list(status = "success", plots = list(), tables = list(), log = list())
 
-  clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
-  if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
+# 11. Algorithm-Aware Diagnostic & Clinical Correlation Engine -----------------
+run_clustering_diagnostics <- function(clustering_payload, omics_mat, clin_df, dict_df, diag_conf, cluster_conf, job_id, base_output_dir) {
+  library(cluster)
+  library(dbscan)
+  library(igraph)
 
-  # --- NEW: Dynamic Cohort Subsetting ---
-  # If subset_groups is specified, filter the clinical spine BEFORE any matrix matching
-  if (!is.null(conf$subset_groups)) {
-    clin_df <- clin_df %>% filter(cohort_group %in% conf$subset_groups) %>% droplevels()
-  }
+  results <- list(plots = list(), paths = list(), best_algo = NULL)
 
-  # --- 1. Dynamic Omics Subsetting ---
-  if (!is.null(conf$include_features)) {
-    valid_features <- intersect(rownames(omics_mat), conf$include_features)
-    if(length(valid_features) == 0) return(list(status = "failed", error_msg = "None of the specified features found in matrix."))
-    omics_mat_sub <- omics_mat[valid_features, , drop = FALSE]
-  } else {
-    omics_mat_sub <- omics_mat
-  }
+  diag_dir <- file.path(base_output_dir, "Diagnostics", job_id)
+  if (!dir.exists(diag_dir)) dir.create(diag_dir, recursive = TRUE)
 
-  valid_ids <- intersect(colnames(omics_mat_sub), clin_df$Subject_ID)
-  mat_sub <- omics_mat_sub[, valid_ids]
-  clin_sub <- clin_df %>% filter(Subject_ID %in% valid_ids)
+  dist_mat <- clustering_payload$data$dist_matrix
+  assignments <- clustering_payload$data$assignments
+  patient_mat <- t(omics_mat) # Rows = Patients, Cols = Features
 
-  if (length(valid_ids) < conf$k) {
-    return(list(status = "failed", error_msg = "Not enough samples for the requested k clusters."))
-  }
+  if(is.null(dist_mat) || length(assignments) == 0) return(NULL)
 
-  # --- 2. Calculate UMAP & K-Means ---
-  set.seed(42)
-  custom_umap_config <- umap::umap.defaults
-  custom_umap_config$n_neighbors <- if(!is.null(conf$n_neighbors)) conf$n_neighbors else 15
+  global_metrics_list <- list()
+  indiv_conf_list <- list()
 
-  umap_res <- umap::umap(t(mat_sub), config = custom_umap_config)
-  umap_df <- as.data.frame(umap_res$layout) %>%
-    rename(UMAP1 = V1, UMAP2 = V2) %>%
-    rownames_to_column("Subject_ID")
+  for (algo in names(assignments)) {
+    labels <- assignments[[algo]]
+    algo_conf <- cluster_conf$algorithms[[algo]]
 
-  set.seed(42)
-  km_res <- kmeans(umap_res$layout, centers = conf$k, nstart = 25)
-  umap_df$Molecular_Cluster <- as.factor(paste("Cluster", km_res$cluster))
-  plot_df <- clin_sub %>% left_join(umap_df, by = "Subject_ID")
+    global_grade <- ""
+    indiv_scores <- numeric(length(labels))
 
-  # --- 3. Build UMAP Plot ---
-  cluster_levels <- levels(plot_df$Molecular_Cluster)
-  safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
-  mapped_colors <- safe_pal[1:length(cluster_levels)]
+    # A. TOPOLOGY-SPECIFIC SCORING
+    # 1. CENTROID (K-Means, PAM, H-Clust) -> Silhouette Score
+    if (algo %in% c("kmeans", "pam", "hclust")) {
+      numeric_clusters <- as.numeric(as.factor(labels))
 
-  p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
-    geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
-    stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
-    scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
-    theme_project_base() +
-    labs(title = sprintf("%s", conf$title),
-         subtitle = sprintf("UMAP (n_neighbors = %d) | Features = %d | K-Means (k = %d)", custom_umap_config$n_neighbors, nrow(mat_sub), conf$k),
-         fill = "Endotype", color = "Endotype")
-
-  results$plots[["umap"]] <- p_umap
-
-  # --- 4. Automated QA/QC Variable Filtering ---
-  if (!is.null(conf$include_clinical_vars)) {
-    candidate_vars <- intersect(conf$include_clinical_vars, colnames(plot_df))
-  } else {
-    candidate_vars <- setdiff(colnames(plot_df), c("Subject_ID", "UMAP1", "UMAP2", "Molecular_Cluster"))
-  }
-  if (!is.null(conf$exclude_clinical_vars)) candidate_vars <- setdiff(candidate_vars, conf$exclude_clinical_vars)
-
-  surviving_vars <- c()
-  dropped_cat <- c()
-  dropped_cont <- c()
-
-  calc_skew <- function(x) {
-    x <- na.omit(x)
-    n <- length(x)
-    if (n < 3) return(999)
-    sum((x - mean(x))^3 / n) / (sd(x)^3)
-  }
-
-  for (v in candidate_vars) {
-    vec <- plot_df[[v]]
-    if (is.numeric(vec) && length(unique(na.omit(vec))) > 5) {
-      skew_val <- calc_skew(vec)
-      if (abs(skew_val) > 2.5) {
-        dropped_cont <- c(dropped_cont, v)
+      if (length(unique(numeric_clusters)) > 1) {
+        sil <- silhouette(numeric_clusters, dist_mat)
+        global_grade <- sprintf("Silhouette: %.3f", mean(sil[, "sil_width"]))
+        indiv_scores <- sil[, "sil_width"]
       } else {
-        surviving_vars <- c(surviving_vars, v)
+        global_grade <- "Silhouette: 0.000 (1 Cluster)"
+        indiv_scores <- rep(0, length(labels))
       }
-    } else {
-      props <- prop.table(table(vec))
-      if (length(props) > 0 && min(props) < 0.10) {
-        dropped_cat <- c(dropped_cat, v)
+      topology_type <- "Centroid"
+
+      # 2. DENSITY (HDBSCAN) -> Noise Ratio & Membership Probability
+    } else if (algo == "hdbscan") {
+      min_pts <- if(!is.null(algo_conf$minPts)) algo_conf$minPts else 5
+      hd_res <- dbscan::hdbscan(patient_mat, minPts = min_pts)
+
+      noise_pct <- (sum(hd_res$cluster == 0) / length(hd_res$cluster)) * 100
+      global_grade <- sprintf("Noise: %.1f%%", noise_pct)
+      indiv_scores <- hd_res$membership_prob
+      topology_type <- "Density"
+
+      # 3. GRAPH (Louvain) -> Modularity & Internal Edge Ratio
+    } else if (algo == "louvain") {
+      knn_k <- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
+      res_val <- if(!is.null(algo_conf$resolution)) algo_conf$resolution else 1.0
+
+      knn_obj <- dbscan::kNN(patient_mat, k = knn_k)
+      edges <- data.frame(
+        from = rep(1:nrow(patient_mat), each = knn_k),
+        to = as.vector(t(knn_obj$id)),
+        weight = 1 / (1 + as.vector(t(knn_obj$dist)))
+      )
+      g <- igraph::simplify(igraph::graph_from_data_frame(edges, directed = FALSE), remove.multiple = TRUE, remove.loops = TRUE)
+      lc <- igraph::cluster_louvain(g, resolution = res_val)
+
+      global_grade <- sprintf("Modularity: %.3f", igraph::modularity(lc))
+
+      # Calculate internal edge ratio for each patient
+      A <- igraph::as_adjacency_matrix(g, sparse=FALSE, attr="weight")
+      comm <- lc$membership
+      indiv_scores <- sapply(1:igraph::vcount(g), function(i) {
+        my_comm <- comm[i]
+        internal_edges <- sum(A[i, comm == my_comm])
+        total_edges <- sum(A[i, ])
+        if(total_edges == 0) return(0) else return(internal_edges / total_edges)
+      })
+      topology_type <- "Graph / Network"
+    }
+
+    # B. BIOLOGICAL DISTINCTNESS (Kruskal-Wallis)
+    # Exclude Noise points so they don't skew the true endotype differences
+    valid_idx <- labels != "Noise"
+    sig_proteins <- 0
+
+    if (length(unique(labels[valid_idx])) >= 2) {
+      p_vals <- apply(patient_mat[valid_idx, ], 2, function(x) {
+        kruskal.test(x ~ labels[valid_idx])$p.value
+      })
+      sig_proteins <- sum(p_vals < 0.05, na.rm = TRUE)
+    }
+
+    # Compile the Global Table Row
+    global_metrics_list[[length(global_metrics_list) + 1]] <- data.frame(
+      Algorithm = toupper(algo),
+      Topology = topology_type,
+      Mathematical_Grade = global_grade,
+      Smallest_Cluster_N = min(table(labels[valid_idx])),
+      Biological_Distinctness = sprintf("%d Sig. Proteins", sig_proteins)
+    )
+
+    # Compile the Individual Patient Confidence Data
+    indiv_conf_list[[length(indiv_conf_list) + 1]] <- data.frame(
+      Subject_ID = rownames(patient_mat),
+      Algorithm = toupper(algo),
+      Confidence_Score = indiv_scores
+    )
+  }
+
+
+  # C. RENDER TABLE & PLOTS
+  metrics_df <- bind_rows(global_metrics_list)
+
+  # Format table to HTML natively
+  results$plots[["leaderboard"]] <- metrics_df %>%
+    kableExtra::kbl(format = "html", escape = FALSE, caption = sprintf("Algorithm Performance Metrics: %s", job_id)) %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+    kableExtra::column_spec(1, bold = TRUE)
+
+  # Individual Confidence Correlation Plots
+  if (!is.null(diag_conf$correlate_vars) && length(indiv_conf_list) > 0) {
+    indiv_df <- bind_rows(indiv_conf_list)
+    plot_df <- clin_df %>%
+      select(Subject_ID, any_of(diag_conf$correlate_vars)) %>%
+      inner_join(indiv_df, by = "Subject_ID")
+
+    for (v in diag_conf$correlate_vars) {
+      if (!(v %in% colnames(plot_df))) next
+      var_class <- if (v %in% dict_df$Variable) dict_df$Class[dict_df$Variable == v] else "Continuous"
+
+      p_var <- NULL
+      if (grepl("Continuous|Ordinal", var_class, ignore.case = TRUE)) {
+        p_var <- ggplot(plot_df, aes(x = .data[[v]], y = Confidence_Score)) +
+          geom_point(aes(color = Algorithm), alpha = 0.6) +
+          geom_smooth(method = "lm", color = "black", se = FALSE) +
+          facet_wrap(~Algorithm, scales = "free_y") +
+          theme_project_base() + theme(legend.position = "none") +
+          labs(title = sprintf("Confidence vs %s", v),
+               subtitle = sprintf("Job: %s | Checking for continuous phenotypic confounders", job_id),
+               x = v, y = "Patient Confidence Score (Sil / Prob / Edge Ratio)")
+
       } else {
-        surviving_vars <- c(surviving_vars, v)
+        p_var <- ggplot(plot_df %>% filter(!is.na(.data[[v]])), aes(x = as.factor(.data[[v]]), y = Confidence_Score, fill = as.factor(.data[[v]]))) +
+          geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+          geom_jitter(width = 0.2, alpha = 0.5, size = 1) +
+          facet_wrap(~Algorithm, scales = "free_y") +
+          theme_project_base() + theme(legend.position = "none") +
+          labs(title = sprintf("Confidence Profile: %s", v),
+               subtitle = sprintf("Job: %s | Checking prediction confidence across groups", job_id),
+               x = v, y = "Patient Confidence Score (Sil / Prob / Edge Ratio)")
+      }
+
+      if (!is.null(p_var)) {
+        safe_v <- gsub("[^A-Za-z0-9_.-]", "_", v)
+        path_var <- file.path(diag_dir, paste0(job_id, "_Conf_vs_", safe_v, ".png"))
+        ggsave(path_var, p_var, width = 10, height = 5, bg = "white")
+
+        results$plots[[v]] <- p_var
+        results$paths[[v]] <- path_var
       }
     }
-  }
-
-  results$log$dropped_cat <- dropped_cat
-  results$log$dropped_cont <- dropped_cont
-
-  # --- 5. Generate Diagnostic Plot for Dropped Continuous Vars ---
-  if (length(dropped_cont) > 0) {
-    plot_data <- plot_df %>% select(all_of(dropped_cont)) %>% pivot_longer(everything(), names_to = "Variable", values_to = "Value")
-    p_hist <- ggplot(plot_data, aes(x = Value)) +
-      geom_histogram(bins = 30, fill = "#c0392b", color = "white", alpha = 0.8) +
-      facet_wrap(~ Variable, scales = "free") +
-      theme_project_base() +
-      labs(title = "Auto-Excluded Continuous Variables",
-           subtitle = "Variables removed due to extreme skewness (|Skew| > 2.5) or zero-inflation",
-           x = "Value", y = "Count")
-    results$plots[["excluded_hist"]] <- p_hist
-  }
-
-  # --- 6. Build Clinical Profiling Table ---
-  if (length(surviving_vars) > 0) {
-    tbl_data <- plot_df %>% select(Molecular_Cluster, all_of(surviving_vars))
-
-    suppressMessages(suppressWarnings({
-      tbl_clust <- tbl_data %>%
-        gtsummary::tbl_summary(by = Molecular_Cluster, missing = "no") %>%
-        gtsummary::add_p() %>%
-        gtsummary::add_overall() %>%
-        gtsummary::sort_p() %>%
-        gtsummary::modify_header(label = "**Clinical Variable**") %>%
-        gtsummary::bold_labels()
-    }))
-    results$tables[["clinical_profile"]] <- tbl_clust
   }
 
   return(results)
 }
 
-# 11. Global Omics Variance Filter Engine --------------------------------------
+# 12. Matrix Factory Engine ----------------------------------------------------
+# Description: Prepares custom matrices by applying dynamic cohort subsetting,
+# feature selection (strict DEA biological thresholds or Pi-Score fallbacks),
+# and confounder transformations (Pruning/Residualizing). Generates an audit table.
+wrap_matrix_factory <- function(omics_mat, clin_df, conf, prep_id) {
+  log_msg <- c()
+
+  # 1. Dynamic Cohort Subsetting
+  if (!is.null(conf$subset_var)) {
+    var_name <- conf$subset_var
+    if (!(var_name %in% colnames(clin_df))) {
+      return(list(status="failed", error_msg=sprintf("Subset variable '%s' not found.", var_name)))
+    }
+
+    if (!is.null(conf$subset_groups) && length(conf$subset_groups) > 0) {
+      clin_sub <- clin_df %>% filter(!!sym(var_name) %in% conf$subset_groups) %>% droplevels()
+      log_msg <- c(log_msg, sprintf("  -> Cohort Subset: Filtered '%s' to [%s].", var_name, paste(conf$subset_groups, collapse=", ")))
+    } else if (!is.null(conf$subset_inclusion_condition)) {
+      op <- conf$subset_inclusion_condition$operator
+      val <- as.numeric(conf$subset_inclusion_condition$value)
+
+      clin_sub <- switch(op,
+                         ">"  = clin_df %>% filter(!!sym(var_name) > val),
+                         "<"  = clin_df %>% filter(!!sym(var_name) < val),
+                         ">=" = clin_df %>% filter(!!sym(var_name) >= val),
+                         "<=" = clin_df %>% filter(!!sym(var_name) <= val),
+                         "==" = clin_df %>% filter(!!sym(var_name) == val),
+                         "="  = clin_df %>% filter(!!sym(var_name) == val),
+                         clin_df)
+      log_msg <- c(log_msg, sprintf("  -> Cohort Subset: Filtered where '%s' %s %s.", var_name, op, val))
+    } else {
+      clin_sub <- clin_df
+    }
+  } else {
+    clin_sub <- clin_df
+  }
+
+  valid_ids <- intersect(colnames(omics_mat), clin_sub$Subject_ID)
+  clin_sub <- clin_sub %>% filter(Subject_ID %in% valid_ids)
+  mat_sub <- omics_mat[, valid_ids, drop=FALSE]
+  log_msg <- c(log_msg, sprintf("  -> Cohort Survival: %d patients remaining.", length(valid_ids)))
+
+  # --- INITIALIZE AUDIT TABLE ---
+  audit_tbl <- data.frame(Feature = character(), logFC = numeric(), FDR = numeric(),
+                          Transform_Metric = character(), Final_Status = character(), stringsAsFactors = FALSE)
+
+  # 2. Base Feature Selection
+  if (!is.null(conf$base_features)) {
+    if (conf$base_features$method == "dea") {
+      dea_path <- file.path(conf$base_features$dea_path, conf$base_features$source_file)
+      if (!file.exists(dea_path)) return(list(status="failed", error_msg=sprintf("DEA file not found: %s", dea_path)))
+
+      dea_res <- readRDS(dea_path) %>%
+        mutate(pi_score = abs(logFC) * -log10(adj.P.Val)) %>%
+        arrange(desc(pi_score))
+
+      top_n <- conf$base_features$top_n
+      fdr_cut <- conf$base_features$fdr_cutoff
+      fc_cut <- conf$base_features$fc_cutoff
+      min_feats <- if(!is.null(conf$base_features$min_features)) conf$base_features$min_features else 30
+
+      if (!is.null(fdr_cut) && !is.null(fc_cut)) {
+        passing_df <- dea_res %>% filter(adj.P.Val < fdr_cut & abs(logFC) > fc_cut)
+        n_pass <- nrow(passing_df)
+
+        if (n_pass < min_feats) {
+          log_msg <- c(log_msg, sprintf("  -> WARNING: Only %d proteins passed thresholds. Falling back to top %d by Pi-Score.", n_pass, min_feats))
+          top_feats <- dea_res %>% head(min_feats) %>% pull(Feature)
+        } else if (n_pass > top_n) {
+          log_msg <- c(log_msg, sprintf("  -> WARNING: %d proteins passed. Capping at top %d strictly from passing group.", n_pass, top_n))
+          top_feats <- passing_df %>% head(top_n) %>% pull(Feature)
+        } else {
+          log_msg <- c(log_msg, sprintf("  -> Base Signature: %d proteins passed strict biological thresholds.", n_pass))
+          top_feats <- passing_df %>% pull(Feature)
+        }
+      } else {
+        log_msg <- c(log_msg, sprintf("  -> Base Signature: Top %d proteins extracted purely by Pi-Score.", top_n))
+        top_feats <- dea_res %>% head(top_n) %>% pull(Feature)
+      }
+
+      valid_features <- intersect(rownames(mat_sub), top_feats)
+      mat_sub <- mat_sub[valid_features, , drop=FALSE]
+
+      # Populate Audit Table with the candidates we initially selected
+      audit_tbl <- dea_res %>% filter(Feature %in% valid_features) %>%
+        select(Feature, logFC, FDR = adj.P.Val) %>%
+        mutate(Transform_Metric = "-", Final_Status = "Included")
+
+    } else if (conf$base_features$method == "variance") {
+      feat_vars <- apply(mat_sub, 1, var, na.rm = TRUE)
+      top_feats <- names(sort(feat_vars, decreasing = TRUE))[1:min(conf$base_features$top_n, length(feat_vars))]
+      valid_features <- intersect(rownames(mat_sub), top_feats)
+      mat_sub <- mat_sub[valid_features, , drop=FALSE]
+
+      # Dummy audit table since DEA isn't used
+      audit_tbl <- data.frame(Feature = valid_features, logFC = NA, FDR = NA,
+                              Transform_Metric = "-", Final_Status = "Included", stringsAsFactors = FALSE)
+      log_msg <- c(log_msg, sprintf("  -> Base Signature: %d proteins selected via Local Variance.", length(valid_features)))
+    }
+  }
+
+  # 3. Transformations (Age Confounder Correction)
+  if (!is.null(conf$transform)) {
+
+    # --- PRUNING LOGIC ---
+    if (conf$transform$method == "prune") {
+      cov_var <- conf$transform$covariate
+      p_thresh <- if(!is.null(conf$transform$p_threshold)) conf$transform$p_threshold else 0.05
+
+      if (cov_var %in% colnames(clin_sub)) {
+        cov_vec <- as.numeric(clin_sub[[cov_var]])
+        drop_feats <- c()
+
+        for (f in rownames(mat_sub)) {
+          # Use cor.test to get both rho and p-value
+          ct <- tryCatch(cor.test(mat_sub[f, ], cov_vec, method="spearman", exact=FALSE), error=function(e) NULL)
+          if (!is.null(ct)) {
+            rho <- unname(ct$estimate)
+            p_val <- ct$p.value
+
+            # Record in the audit table
+            audit_tbl$Transform_Metric[audit_tbl$Feature == f] <- sprintf("rho=%.2f, p=%.3f", rho, p_val)
+
+            # STRICT CHECK: Drop only if strongly correlated AND statistically significant
+            if (abs(rho) > conf$transform$threshold && p_val < p_thresh) {
+              drop_feats <- c(drop_feats, f)
+              audit_tbl$Final_Status[audit_tbl$Feature == f] <- "Excluded (Pruned)"
+            }
+          }
+        }
+        keep_feats <- setdiff(rownames(mat_sub), drop_feats)
+        mat_sub <- mat_sub[keep_feats, , drop=FALSE]
+        log_msg <- c(log_msg, sprintf("  -> Transformation (Pruned): %d proteins removed (|rho| > %.2f & p < %s). **%d proteins remain.**", length(drop_feats), conf$transform$threshold, p_thresh, nrow(mat_sub)))
+      }
+
+      # --- RESIDUALIZATION LOGIC ---
+    } else if (conf$transform$method == "residualize") {
+      cov_vars <- conf$transform$covariates
+      existing_covs <- intersect(cov_vars, colnames(clin_sub))
+      if (length(existing_covs) > 0) {
+        cov_df <- clin_sub %>% select(all_of(existing_covs)) %>% mutate(across(everything(), as.numeric))
+        complete_cases <- complete.cases(cov_df)
+
+        if (sum(!complete_cases) > 0) {
+          cov_df <- cov_df[complete_cases, , drop=FALSE]
+          mat_sub <- mat_sub[, complete_cases, drop=FALSE]
+          log_msg <- c(log_msg, sprintf("  -> Warning: Dropped %d patients due to missing covariate data.", sum(!complete_cases)))
+        }
+
+        # Calculate exact linear coefficients before residualizing
+        design_mat <- model.matrix(~ ., data = cov_df)
+        fit <- limma::lmFit(mat_sub, design_mat)
+
+        # Format the regression coefficients for the audit table
+        for (f in rownames(mat_sub)) {
+          coef_str <- paste(sapply(existing_covs, function(cv) {
+            beta <- fit$coefficients[f, cv]
+            sprintf("%s(beta=%.3f)", cv, beta)
+          }), collapse=" | ")
+
+          audit_tbl$Transform_Metric[audit_tbl$Feature == f] <- coef_str
+        }
+
+        suppressMessages({
+          mat_sub <- limma::removeBatchEffect(mat_sub, covariates = as.matrix(cov_df))
+        })
+        log_msg <- c(log_msg, sprintf("  -> Transformation (Residualized): Matrix updated to residuals using %s.", paste(existing_covs, collapse=", ")))
+      }
+    }
+  } else {
+    log_msg <- c(log_msg, "  -> Transformation: None (Raw Matrix preserved).")
+  }
+
+  final_log <- paste(log_msg, collapse="\n")
+  return(list(status = "success", matrix = mat_sub, log_text = final_log, audit_tbl = audit_tbl))
+}
+
+# 13. Consensus Export & Alignment Engine --------------------------------------
+# Description: Resolves arbitrary cluster naming via Reference-Based Greedy Overlap,
+# computes a multi-algorithm consensus endotype, and generates convergence diagnostics.
+wrap_consensus_export <- function(clustering_payload, anchor_algo, conf, export_id, base_output_dir) {
+
+  export_dir <- file.path(base_output_dir, "Exports")
+  if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
+
+  assignments <- clustering_payload$data$assignments
+  dist_mat <- clustering_payload$data$dist_matrix
+  umap_df <- clustering_payload$data$umap_df
+
+  if (is.null(assignments) || !(anchor_algo %in% names(assignments))) {
+    return(list(status = "failed", error_msg = "Invalid payload or anchor algorithm missing."))
+  }
+
+  # 1. Setup Base Dataframe (Anchor is truth)
+  anchor_labels <- assignments[[anchor_algo]]
+  master_df <- data.frame(Subject_ID = names(anchor_labels), stringsAsFactors = FALSE)
+  master_df[[paste0(toupper(anchor_algo), "_Cluster")]] <- as.character(anchor_labels)
+
+  num_anchor <- as.numeric(as.factor(anchor_labels))
+  sil_anchor <- silhouette(num_anchor, dist_mat)
+  master_df[[paste0(toupper(anchor_algo), "_Sil")]] <- round(sil_anchor[, "sil_width"], 3)
+
+  aligned_labels_list <- list()
+  aligned_labels_list[[toupper(anchor_algo)]] <- as.character(anchor_labels)
+
+  # 2. Greedy Alignment Algorithm
+  for (algo in names(assignments)) {
+    if (algo == anchor_algo) next
+
+    target_labels <- as.character(assignments[[algo]])
+    tbl <- table(Anchor = as.character(anchor_labels), Target = target_labels)
+    mapping <- setNames(rep(NA, ncol(tbl)), colnames(tbl))
+
+    for (i in 1:min(nrow(tbl), ncol(tbl))) {
+      max_idx <- which(tbl == max(tbl), arr.ind = TRUE)[1, , drop = FALSE]
+      r_name <- rownames(tbl)[max_idx[1]]
+      c_name <- colnames(tbl)[max_idx[2]]
+
+      mapping[c_name] <- r_name
+      tbl[max_idx[1], ] <- -1
+      tbl[, max_idx[2]] <- -1
+    }
+
+    translated_labels <- unname(mapping[target_labels])
+    aligned_labels_list[[toupper(algo)]] <- translated_labels
+    master_df[[paste0(toupper(algo), "_Cluster")]] <- translated_labels
+
+    num_target <- as.numeric(as.factor(assignments[[algo]]))
+    sil_target <- silhouette(num_target, dist_mat)
+    master_df[[paste0(toupper(algo), "_Sil")]] <- round(sil_target[, "sil_width"], 3)
+  }
+
+  # 3. Consensus Math (Dynamically scales to N algorithms)
+  algos_to_check <- names(aligned_labels_list)
+  n_algos <- length(algos_to_check)
+
+  consensus_vec <- character(nrow(master_df))
+  stability_vec <- numeric(nrow(master_df))
+  max_votes_vec <- numeric(nrow(master_df)) # Track raw votes for the bar chart
+
+  for (i in 1:nrow(master_df)) {
+    row_votes <- sapply(algos_to_check, function(x) master_df[[paste0(x, "_Cluster")]][i])
+    vote_table <- table(row_votes)
+    max_votes <- max(vote_table)
+    max_votes_vec[i] <- max_votes
+
+    if (max_votes == 1 && n_algos > 1) {
+      consensus_vec[i] <- "Mixed/Transitional"
+    } else {
+      consensus_vec[i] <- names(vote_table)[which.max(vote_table)]
+    }
+
+    stability_vec[i] <- round(max_votes / n_algos, 3)
+  }
+
+  master_df$Consensus_Cluster <- consensus_vec
+  master_df$Stability_Score <- stability_vec
+  master_df$Max_Votes <- max_votes_vec
+
+  # Apply confidence threshold flag
+  if (!is.null(conf$min_stability_threshold)) {
+    master_df <- master_df %>%
+      mutate(Consensus_Cluster = ifelse(Stability_Score < conf$min_stability_threshold, "Mixed/Transitional", Consensus_Cluster))
+  }
+
+  # 4. Generate Diagnostics: Convergence Bar Chart
+  master_df$Vote_Ratio <- paste0(master_df$Max_Votes, "/", n_algos)
+
+  summary_df <- master_df %>%
+    group_by(Vote_Ratio, Stability_Score) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    mutate(
+      Color = case_when(
+        Stability_Score == 1 ~ "#27ae60", # Perfect (Green)
+        Stability_Score >= conf$min_stability_threshold ~ "#f39c12", # Passed (Yellow/Orange)
+        TRUE ~ "#c0392b" # Failed (Red)
+      )
+    ) %>% arrange(Stability_Score)
+
+  p_bar <- ggplot(summary_df, aes(x = reorder(Vote_Ratio, Stability_Score), y = Count, fill = Color)) +
+    geom_bar(stat = "identity", color = "black", alpha = 0.85) +
+    scale_fill_identity() +
+    geom_text(aes(label = Count), vjust = -0.5, fontface = "bold", size = 5) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+    theme_project_base() +
+    labs(title = "Algorithmic Convergence",
+         subtitle = sprintf("Job: %s | Threshold: >= %.2f | Total Algorithms: %d", export_id, conf$min_stability_threshold, n_algos),
+         x = "Agreement (Votes / Total Algorithms)", y = "Number of Patients")
+
+  # 5. Generate Diagnostics: Consensus UMAP
+  plot_df <- master_df %>% left_join(umap_df, by = "Subject_ID")
+
+  # Dynamically map colors. Distinct clusters get colors, Mixed gets Grey.
+  cluster_lvls <- setdiff(unique(plot_df$Consensus_Cluster), "Mixed/Transitional")
+  safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
+  color_map <- setNames(safe_pal[1:length(cluster_lvls)], cluster_lvls)
+  color_map["Mixed/Transitional"] <- "grey75"
+
+  p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Consensus_Cluster)) +
+    geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
+    scale_fill_manual(values = color_map) +
+    theme_project_base() +
+    labs(title = "Final Consensus Endotypes",
+         subtitle = sprintf("Job: %s | Anchor Algorithm: %s | Patients: %d", export_id, toupper(anchor_algo), nrow(plot_df)),
+         fill = "Consensus")
+
+  # 6. Save and Return
+  rds_path <- file.path(export_dir, paste0(export_id, ".rds"))
+  csv_path <- file.path(export_dir, paste0(export_id, ".csv"))
+
+  # Remove our temporary Max_Votes column before saving
+  save_df <- master_df %>% select(-Max_Votes, -Vote_Ratio)
+  saveRDS(save_df, rds_path)
+  write_csv(save_df, csv_path)
+
+  ggsave(file.path(export_dir, paste0(export_id, "_Convergence_Bar.png")), p_bar, width = 7, height = 5, bg="white")
+  ggsave(file.path(export_dir, paste0(export_id, "_Consensus_UMAP.png")), p_umap, width = 8, height = 6, bg="white")
+
+  text_log <- sprintf(
+    "  -> Anchor Algorithm: %s (Automatic Alignment Applied)\n  -> Consensus Reached: %d patients classified.\n  -> Mixed/Transitional: %d patients lacked algorithmic agreement.\n  -> Export Location: %s",
+    toupper(anchor_algo),
+    sum(master_df$Consensus_Cluster != "Mixed/Transitional"),
+    sum(master_df$Consensus_Cluster == "Mixed/Transitional"),
+    export_id
+  )
+
+  return(list(status = "success", data = save_df, text_log = text_log, plots = list(convergence_bar = p_bar, consensus_umap = p_umap)))
+}
+
+
+# 14. Global Omics Variance Filter Engine --------------------------------------
 # Description:
 #   Calculates global variance for all omics features, generates a density
 #   histogram, and extracts the top N highly variable features for downstream
@@ -1269,6 +1627,232 @@ wrap_global_variance_filter <- function(omics_mat, conf, base_output_dir) {
   saveRDS(high_var_feats, rds_path)
 
   return(list(status = "success", plot = p_var, features = high_var_feats))
+}
+
+# 15. Clinical Phenotyping Engine (ComplexHeatmap version) ---------------------
+wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf, job_id, base_output_dir) {
+  results <- list(status = "success", plots = list(), tables = list())
+  pheno_dir <- file.path(base_output_dir, "Clinical_Phenotyping", job_id)
+  if (!dir.exists(pheno_dir)) dir.create(pheno_dir, recursive = TRUE)
+
+  for (algo_name in conf$target_algorithms) {
+    labels <- clustering_payload$data$assignments[[algo_name]]
+    if (is.null(labels)) next
+
+    results$plots[[algo_name]] <- list(); results$tables[[algo_name]] <- list()
+
+    plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
+    plot_df$Cluster <- as.factor(labels[plot_df$Subject_ID])
+    valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
+    if (length(unique(valid_df$Cluster)) < 2) next
+
+    # 1. CLINICAL TABLE
+    results$tables[[algo_name]] <- valid_df %>%
+      select(any_of(conf$variables), Cluster) %>%
+      gtsummary::tbl_summary(by = Cluster, missing = "no") %>%
+      gtsummary::add_p() %>% gtsummary::sort_p() %>% gtsummary::bold_labels()
+
+    # 2. ENRICHMENT DATA PREP (Mandatory + Significant Discovery)
+    enrichment_list <- list()
+    mandatory_vars <- intersect(conf$must_include_vars, colnames(valid_df))
+    discovery_vars <- setdiff(intersect(conf$variables, colnames(valid_df)), mandatory_vars)
+
+    for (v in unique(c(mandatory_vars, discovery_vars))) {
+      var_class <- if (v %in% dict_df$Variable) dict_df$Class[dict_df$Variable == v] else "Continuous"
+      vec <- valid_df[[v]]; clust_vec <- valid_df$Cluster
+      is_mandatory <- v %in% mandatory_vars
+
+      if (grepl("Continuous|Ordinal", var_class, ignore.case = TRUE) && is.numeric(vec)) {
+        p_val <- tryCatch(kruskal.test(vec ~ clust_vec)$p.value, error=function(e) NA)
+        if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
+        g_m <- mean(vec, na.rm=T); g_sd <- sd(vec, na.rm=T)
+        for (c_lvl in levels(clust_vec)) {
+          enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=v, Score=(mean(vec[clust_vec==c_lvl], na.rm=T)-g_m)/g_sd)
+        }
+      } else {
+        vec <- as.factor(vec); tbl <- table(vec, clust_vec)
+        p_val <- tryCatch(chisq.test(tbl)$p.value, error=function(e) NA)
+        if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
+        E <- rowSums(tbl) %o% colSums(tbl) / sum(tbl)
+        resids <- (tbl - E) / sqrt(E)
+        for (lvl in rownames(resids)) {
+          for (c_lvl in colnames(resids)) {
+            enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=sprintf("%s (%s)", v, lvl), Score=resids[lvl, c_lvl])
+          }
+        }
+      }
+    }
+
+    # 3. RENDER COMPLEXHEATMAP (Clusters=Rows, Params=Cols)
+    if (length(enrichment_list) > 0) {
+      heat_df <- bind_rows(enrichment_list)
+      mat_wide <- heat_df %>% pivot_wider(names_from=Feature, values_from=Score, values_fill=0) %>% column_to_rownames("Cluster")
+
+      png(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Heatmap.png")), width=1200, height=600)
+      ht <- ComplexHeatmap::Heatmap(
+        as.matrix(mat_wide),
+        name = "Enrichment",
+        column_title = sprintf("Clinical Enrichment Heatmap\nJob: %s | Algorithm: %s | (p < %s)", job_id, toupper(algo_name), conf$p_cutoff),
+        column_names_rot = 45,
+        column_names_side = "bottom",
+        row_title = "Endotypes",
+        clustering_distance_rows = "euclidean",
+        clustering_distance_columns = "euclidean",
+        col = circlize::colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b"))
+      )
+      ComplexHeatmap::draw(ht)
+      dev.off()
+      results$plots[[algo_name]][["heatmap"]] <- ht
+    }
+
+    # 4. HIGHLIGHT GRID
+    hl_plots <- list()
+    for (hv in conf$highlight_variables) {
+      if (!(hv %in% colnames(valid_df))) next
+      hl_plots[[hv]] <- if(is.numeric(valid_df[[hv]])) {
+        ggplot(valid_df, aes(x=Cluster, y=.data[[hv]], fill=Cluster)) + geom_boxplot() +
+          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL)
+      } else {
+        ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) + geom_bar(position="fill") +
+          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL, y="Prop")
+      }
+    }
+    master_grid <- wrap_plots(hl_plots, ncol=3) + plot_annotation(title=sprintf("Selected Clinical Parameters: %s (%s)", job_id, toupper(algo_name)))
+    results$plots[[algo_name]][["highlights"]] <- master_grid
+    ggsave(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_HL_Grid.png")), master_grid, width=9, height=4, bg="white")
+  }
+  return(results)
+}
+
+
+# 16. Cluster Feature Phenotyping Engine (DEA) --------------------------------
+wrap_cluster_feature_phenotyping <- function(omics_mat, clin_df, clustering_payload, conf, job_id, base_output_dir) {
+  results <- list(status = "success", plots = list(), tables = list())
+  feat_dir <- file.path(base_output_dir, "Feature_Phenotyping", job_id)
+  if (!dir.exists(feat_dir)) dir.create(feat_dir, recursive = TRUE)
+
+  for (algo_name in conf$target_algorithms) {
+    labels <- clustering_payload$data$assignments[[algo_name]]
+    if (is.null(labels)) next
+
+    results$plots[[algo_name]] <- list(); results$tables[[algo_name]] <- list()
+
+    plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
+    plot_df$Dynamic_Cluster <- as.character(labels[plot_df$Subject_ID])
+
+    # 1. RUN DEA FOR CONTRASTS
+    all_sig_feats <- c()
+    for (contrast_name in names(conf$contrasts)) {
+      c_conf <- conf$contrasts[[contrast_name]]
+      tmp_dea_conf <- list(
+        title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
+        group_col = "Dynamic_Cluster", target_groups = c_conf$target_groups, ref_groups = c_conf$ref_groups,
+        covariates = if(!is.null(conf$covariates)) conf$covariates else c(),
+        dea_p_cutoff = 0.05, dea_fc_cutoff = 0.58
+      )
+
+      limma_res <- run_limma_engine(omics_mat, plot_df, tmp_dea_conf, function(x) c("#e74c3c", "#3498db"))
+      if (is.null(limma_res)) next
+
+      results$plots[[algo_name]][[contrast_name]] <- limma_res$volcano
+      sig_df <- limma_res$data %>% filter(Significance != "Not Significant") %>% arrange(adj.P.Val)
+      results$tables[[algo_name]][[contrast_name]] <- sig_df
+      all_sig_feats <- unique(c(all_sig_feats, sig_df$Feature))
+
+      ggsave(file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, bg="white")
+    }
+
+    # 2. FEATURE HEATMAP (Aggregated across all algorithm contrasts)
+    if (length(all_sig_feats) > 0) {
+      hm_mat <- omics_mat[intersect(rownames(omics_mat), all_sig_feats), plot_df$Subject_ID]
+
+      # DIAGNOSTIC CHECK: Print dims to console to confirm data is not empty
+      message(sprintf("DEBUG: Heatmap Matrix Dims for %s: %d rows, %d cols", algo_name, nrow(hm_mat), ncol(hm_mat)))
+
+      plot_mat <- t(scale(t(hm_mat)))
+      cluster_split <- plot_df$Dynamic_Cluster[match(colnames(plot_mat), plot_df$Subject_ID)]
+
+      # ERROR TRAPPING
+      tryCatch({
+        png(file.path(feat_dir, paste0(job_id, "_", algo_name, "_Heatmap.png")), width=1200, height=800)
+        ht <- ComplexHeatmap::Heatmap(
+          t(plot_mat),
+          name = "Z-Score",
+          column_title = sprintf("Significant Proteins Heatmap: %s", toupper(algo_name)),
+          column_split = cluster_split,
+          column_names_rot = 45, column_names_side = "bottom",
+          clustering_distance_rows = "euclidean", clustering_distance_columns = "euclidean",
+          col = circlize::colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))
+        )
+        ComplexHeatmap::draw(ht)
+        dev.off()
+        results$plots[[algo_name]][["heatmap"]] <- ht
+      }, error = function(e) {
+        if (dev.cur() > 1) dev.off()
+        message(sprintf("HEATMAP ERROR for %s: %s", algo_name, e$message))
+      })
+    }
+  }
+  return(results)
+}
+
+# 16. Cluster Feature Phenotyping Engine (DEA) --------------------------------
+# Description: Leverages the core Limma engine to find the exact biological
+# proteins driving the separation between specified clusters across algorithms.
+wrap_cluster_feature_phenotyping <- function(omics_mat, clin_df, clustering_payload, conf, job_id, base_output_dir) {
+  results <- list(status = "success", plots = list(), tables = list())
+
+  feat_dir <- file.path(base_output_dir, "Feature_Phenotyping", job_id)
+  if (!dir.exists(feat_dir)) dir.create(feat_dir, recursive = TRUE)
+
+  # Temp color function for Volcano plot
+  cluster_colors_func <- function(lvl) {
+    colors <- c("Cluster 1"="#e74c3c", "Cluster 2"="#3498db", "Cluster 3"="#2ecc71", "Cluster 4"="#9b59b6", "Cluster 5"="#f1c40f", "Noise"="grey50")
+    if (lvl %in% names(colors)) return(colors[lvl]) else return("#34495e")
+  }
+
+  for (algo_name in conf$target_algorithms) {
+    labels <- clustering_payload$data$assignments[[algo_name]]
+    if (is.null(labels)) next
+
+    results$plots[[algo_name]] <- list()
+    results$tables[[algo_name]] <- list()
+
+    # Inject the cluster labels directly into the clinical spine for DEA
+    plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
+    plot_df$Dynamic_Cluster <- as.character(labels[plot_df$Subject_ID])
+
+    for (contrast_name in names(conf$contrasts)) {
+      c_conf <- conf$contrasts[[contrast_name]]
+
+      # Build a temporary DEA config
+      tmp_dea_conf <- list(
+        title = sprintf("%s (%s)", c_conf$title, toupper(algo_name)),
+        group_col = "Dynamic_Cluster",
+        target_groups = c_conf$target_groups,
+        ref_groups = c_conf$ref_groups,
+        covariates = if(!is.null(conf$covariates)) conf$covariates else c(),
+        dea_p_cutoff = 0.05,
+        dea_fc_cutoff = 0.58
+      )
+
+      limma_res <- run_limma_engine(omics_mat, plot_df, tmp_dea_conf, cluster_colors_func)
+      if (is.null(limma_res)) next
+
+      results$plots[[algo_name]][[contrast_name]] <- limma_res$volcano
+      ggsave(file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300, bg="white")
+
+      sig_table <- limma_res$data %>%
+        filter(Significance != "Not Significant") %>%
+        select(Feature, logFC, adj.P.Val, Significance) %>%
+        arrange(adj.P.Val)
+
+      results$tables[[algo_name]][[contrast_name]] <- sig_table
+      write_csv(sig_table, file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Sig_Proteins.csv")))
+    }
+  }
+
+  return(results)
 }
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
@@ -1963,4 +2547,253 @@ run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
     arrange(P_Val)
 
   return(df)
+}
+
+# 10a. Shared Clustering Worker Engine ----------------------------------------
+# Description:
+#   The mathematical core that calculates cluster assignments on true high-dimensional
+#   data. Supports Classic (K-Means, PAM, H-Clust), Density (HDBSCAN), and Graph (Louvain).
+run_clustering_worker <- function(patient_matrix, k, algo_name, algo_conf) {
+  set.seed(42)
+  cluster_labels <- NULL
+
+  if (algo_name == "kmeans") {
+    n_start <- if(!is.null(algo_conf$nstart)) algo_conf$nstart else 25
+    km_res <- kmeans(patient_matrix, centers = k, nstart = n_start)
+    cluster_labels <- as.factor(paste("Cluster", km_res$cluster))
+
+  } else if (algo_name == "pam") {
+    library(cluster)
+    dist_metric <- if(!is.null(algo_conf$metric)) algo_conf$metric else "euclidean"
+    pam_res <- pam(patient_matrix, k = k, metric = dist_metric)
+    cluster_labels <- as.factor(paste("Cluster", pam_res$clustering))
+
+  } else if (algo_name == "hclust") {
+    dist_metric <- if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
+    link_method <- if(!is.null(algo_conf$method)) algo_conf$method else "ward.D2"
+    hc_res <- hclust(dist(patient_matrix, method = dist_metric), method = link_method)
+    cluster_labels <- as.factor(paste("Cluster", cutree(hc_res, k = k)))
+
+  } else if (algo_name == "hdbscan") {
+    library(dbscan)
+    min_pts <- if(!is.null(algo_conf$minPts)) algo_conf$minPts else 5
+    hd_res <- dbscan::hdbscan(patient_matrix, minPts = min_pts)
+
+    # Map 0 to "Noise" so it behaves like "Mixed/Transitional" downstream
+    char_labels <- ifelse(hd_res$cluster == 0, "Noise", paste("Cluster", hd_res$cluster))
+    cluster_labels <- as.factor(char_labels)
+
+  } else if (algo_name == "louvain") {
+    library(dbscan)
+    library(igraph)
+    knn_k <- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
+    res_val <- if(!is.null(algo_conf$resolution)) algo_conf$resolution else 1.0
+
+    # 1. Build kNN graph using Euclidean distance in high-dim space
+    knn_obj <- dbscan::kNN(patient_matrix, k = knn_k)
+
+    # 2. Convert to undirected igraph object (weight = similarity)
+    edges <- data.frame(
+      from = rep(1:nrow(patient_matrix), each = knn_k),
+      to = as.vector(t(knn_obj$id)),
+      weight = 1 / (1 + as.vector(t(knn_obj$dist))) # Inverse distance for edge strength
+    )
+    g <- igraph::graph_from_data_frame(edges, directed = FALSE)
+    g <- igraph::simplify(g, remove.multiple = TRUE, remove.loops = TRUE)
+
+    # 3. Community detection
+    louvain_res <- igraph::cluster_louvain(g, resolution = res_val)
+    cluster_labels <- as.factor(paste("Cluster", louvain_res$membership))
+  }
+
+  if (!is.null(cluster_labels)) {
+    names(cluster_labels) <- rownames(patient_matrix)
+  }
+
+  return(cluster_labels)
+}
+
+# 10b. K-Optimization (Pre-Flight) Pipeline Wrapper ---------------------------
+# Description:
+#   Algorithm-Aware Optimization. Sweeps 'k' for classic algorithms (Silhouette/WSS),
+#   sweeps 'minPts' for HDBSCAN (Noise vs Clusters), and sweeps 'resolution' for
+#   Louvain (Modularity).
+wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_dir) {
+  results <- list(status = "success", plots = list(), paths = list())
+
+  opt_dir <- file.path(base_output_dir, "K_Optimization", opt_id)
+  if (!dir.exists(opt_dir)) dir.create(opt_dir, recursive = TRUE)
+
+  patient_mat <- t(omics_mat) # Rows = Patients, Cols = Features
+
+  for (algo_name in names(conf$algorithms)) {
+    algo_conf <- conf$algorithms[[algo_name]]
+    if (!isTRUE(algo_conf$run)) next
+
+    combined_plot <- NULL
+
+    # --- A. HDBSCAN Optimization Sweep ---
+    if (algo_name == "hdbscan") {
+      library(dbscan)
+      minPts_vals <- if(!is.null(algo_conf$minPts_range)) algo_conf$minPts_range else 3:15
+      sweep_df <- data.frame(minPts = minPts_vals, Clusters = 0, Noise_Pct = 0)
+
+      for (i in seq_along(minPts_vals)) {
+        hd <- dbscan::hdbscan(patient_mat, minPts = minPts_vals[i])
+        sweep_df$Clusters[i] <- max(hd$cluster)
+        sweep_df$Noise_Pct[i] <- sum(hd$cluster == 0) / length(hd$cluster)
+      }
+
+      # Dual-axis plot: Clusters vs Noise
+      max_c <- max(sweep_df$Clusters, 1)
+      combined_plot <- ggplot(sweep_df, aes(x = minPts)) +
+        geom_line(aes(y = Clusters, color = "Clusters Found"), linewidth = 1) +
+        geom_point(aes(y = Clusters, color = "Clusters Found"), size = 3) +
+        geom_line(aes(y = Noise_Pct * max_c, color = "% Noise"), linewidth = 1, linetype="dashed") +
+        scale_y_continuous(
+          name = "Number of Clusters",
+          sec.axis = sec_axis(~ . / max_c, name = "% Noise", labels = scales::percent)
+        ) +
+        scale_color_manual(values = c("Clusters Found" = "#2980b9", "% Noise" = "#c0392b")) +
+        theme_project_base() + theme(legend.position = "bottom", legend.title = element_blank()) +
+        labs(title = "HDBSCAN Optimization", subtitle = "Sweep: minPts (Look for cluster stability with low noise)", x = "minPts")
+
+      # --- B. LOUVAIN Optimization Sweep ---
+    } else if (algo_name == "louvain") {
+      library(dbscan)
+      library(igraph)
+      res_vals <- if(!is.null(algo_conf$resolution_range)) algo_conf$resolution_range else seq(0.1, 2.0, by=0.1)
+      knn_k <- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
+
+      # Build base graph once
+      knn_obj <- dbscan::kNN(patient_mat, k = knn_k)
+      edges <- data.frame(
+        from = rep(1:nrow(patient_mat), each = knn_k),
+        to = as.vector(t(knn_obj$id)),
+        weight = 1 / (1 + as.vector(t(knn_obj$dist)))
+      )
+      g <- igraph::simplify(igraph::graph_from_data_frame(edges, directed = FALSE), remove.multiple = TRUE, remove.loops = TRUE)
+
+      sweep_df <- data.frame(Resolution = res_vals, Modularity = 0, Clusters = 0)
+      for (i in seq_along(res_vals)) {
+        lc <- igraph::cluster_louvain(g, resolution = res_vals[i])
+        sweep_df$Modularity[i] <- igraph::modularity(lc)
+        sweep_df$Clusters[i] <- length(unique(lc$membership))
+      }
+
+      combined_plot <- ggplot(sweep_df, aes(x = Resolution)) +
+        geom_line(aes(y = Modularity), color = "#27ae60", linewidth = 1) +
+        geom_point(aes(y = Modularity), color = "#27ae60", size = 3) +
+        geom_text(aes(y = Modularity, label = paste0(Clusters, "c")), vjust = -1, size = 3.5, color = "grey30") +
+        theme_project_base() +
+        labs(title = "Graph Community Optimization", subtitle = "Sweep: Resolution (Peak Modularity = Best Web Split)\nLabels indicate # of communities found", x = "Resolution Parameter", y = "Modularity Score")
+
+      # --- C. CLASSIC Optimization Sweep (K-Means/PAM/H-Clust) ---
+    } else {
+      k_max <- max(conf$k_range)
+      gap_boot <- if(!is.null(conf$gap_bootstraps)) conf$gap_bootstraps else 0
+
+      FUNcluster <- function(x, k) {
+        labels <- run_clustering_worker(x, k, algo_name, algo_conf)
+        list(cluster = as.numeric(as.factor(labels)))
+      }
+
+      p_wss <- fviz_nbclust(patient_mat, FUNcluster, method = "wss", k.max = k_max) +
+        theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
+
+      p_sil <- fviz_nbclust(patient_mat, FUNcluster, method = "silhouette", k.max = k_max) +
+        theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
+
+      if (gap_boot > 0) {
+        set.seed(42)
+        p_gap <- fviz_nbclust(patient_mat, FUNcluster, method = "gap_stat", k.max = k_max, nboot = gap_boot) +
+          theme_project_base() + labs(title = "Gap Statistic", subtitle = sprintf("Bootstraps: %d", gap_boot))
+        combined_plot <- (p_wss | p_sil | p_gap) + plot_annotation(title = sprintf("K-Opt: %s (%s)", conf$title, toupper(algo_name)))
+      } else {
+        combined_plot <- (p_wss | p_sil) + plot_annotation(title = sprintf("K-Opt: %s (%s)", conf$title, toupper(algo_name)))
+      }
+    }
+
+    # Save & Export
+    if (!is.null(combined_plot)) {
+      safe_algo <- gsub("[^A-Za-z0-9_.-]", "_", algo_name)
+      plot_path <- file.path(opt_dir, paste0(opt_id, "_", safe_algo, "_k_opt.png"))
+      w <- if(algo_name %in% c("hdbscan", "louvain")) 8 else if(!is.null(conf$gap_bootstraps) && conf$gap_bootstraps > 0) 15 else 10
+      ggsave(plot_path, combined_plot, width = w, height = 5, dpi = 300, bg = "white")
+
+      results$plots[[algo_name]] <- combined_plot
+      results$paths[[algo_name]] <- plot_path
+    }
+  }
+
+  return(results)
+}
+
+# 10c. UMAP & Multi-Algorithm Molecular Clustering Engine -----------------------
+# Description:
+#   Performs unsupervised clustering on TRUE high-dimensional space, calculates a 2D UMAP
+#   strictly for visualization, and paints the high-dimensional clusters onto the UMAP.
+wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
+  results <- list(status = "success", plots = list(), tables = list(), log = list(), data = list())
+
+  clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
+  if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
+
+  valid_ids <- colnames(omics_mat)
+  clin_sub <- clin_df %>% filter(Subject_ID %in% valid_ids) %>% droplevels()
+  patient_mat <- t(omics_mat) # Rows = Patients, Cols = Features for True Math
+
+  if (length(valid_ids) < conf$k) {
+    return(list(status = "failed", error_msg = "Not enough samples for the requested k clusters."))
+  }
+
+  # --- 1. Visualization Math (UMAP) ---
+  set.seed(42)
+  custom_umap_config <- umap::umap.defaults
+  custom_umap_config$n_neighbors <- if(!is.null(conf$n_neighbors)) conf$n_neighbors else 15
+
+  umap_res <- umap::umap(patient_mat, config = custom_umap_config)
+  umap_df <- as.data.frame(umap_res$layout) %>%
+    rename(UMAP1 = V1, UMAP2 = V2) %>%
+    rownames_to_column("Subject_ID")
+
+  # Save distance matrix & UMAP for consensus/diagnostic engines
+  dist_matrix <- dist(patient_mat, method = "euclidean")
+  results$data$dist_matrix <- dist_matrix
+  results$data$umap_df <- umap_df
+
+  # --- 2. High-Dimensional Clustering Math ---
+  for (algo_name in names(conf$algorithms)) {
+    algo_conf <- conf$algorithms[[algo_name]]
+    if (!isTRUE(algo_conf$run)) next
+
+    # Call the DRY worker using TRUE high-dimensional space
+    cluster_labels <- run_clustering_worker(patient_mat, conf$k, algo_name, algo_conf)
+    if (is.null(cluster_labels)) next
+
+    results$data$assignments[[algo_name]] <- setNames(cluster_labels, clin_sub$Subject_ID)
+
+    plot_df <- clin_sub %>% left_join(umap_df, by = "Subject_ID")
+    plot_df$Molecular_Cluster <- cluster_labels
+
+    cluster_levels <- levels(plot_df$Molecular_Cluster)
+    safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
+    mapped_colors <- safe_pal[1:length(cluster_levels)]
+
+    # Comprehensive Subtitle
+    dist_used <- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
+    p_subtitle <- sprintf("Job: %s | Algorithm: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP", cluster_id, toupper(algo_name), dist_used)
+
+    p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
+      geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
+      stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
+      scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
+      theme_project_base() +
+      labs(title = conf$title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
+
+    results$plots$umaps[[algo_name]] <- p_umap
+
+  }
+
+  return(results)
 }

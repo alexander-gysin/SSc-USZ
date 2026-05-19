@@ -281,6 +281,9 @@ p3 <- ggplot(score_master, aes(x=Sig_Active_Score, y=HM_Active_Score)) +
 
 p_corrs <- (p1 | p2 | p3) + plot_annotation(title="Pairwise Agreement of Mathematical Scoring Methods")
 print(p_corrs)
+
+# Export Score Master for downstream integration with UMAP Clustering (Script 03c)
+saveRDS(score_master, file.path(output_dir_data, "score_master.rds"))
 ```
 
 # Subgrouping
