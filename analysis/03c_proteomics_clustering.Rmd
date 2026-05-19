@@ -22,7 +22,8 @@ library(umap)       # Non-linear reduction
 library(cluster)    # Diagnostics
 library(dbscan)     # HDBSCAN Density clustering
 library(igraph)     # Louvain Graph clustering
-library(gtsummary)  # Clinical tables
+library(gtsummary)  # Clinical tables$
+library(msigdbr)
 
 # Knitr Config
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -42,6 +43,9 @@ source(here::here("code", "00_omics_engines.R"))
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+
+# Fetch GO Biological Processes Database for GSEA
+go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
 ```
 
 # Configurations
@@ -136,8 +140,14 @@ feature_configs <- list(
 # 6.b DEA Heatmap Configs
 heatmap_config <- list(
   top_n = 30,
-  split_by_group = FALSE, 
+  split_by_group = TRUE, 
   row_font_size = 8
+)
+
+# 6.c GSEA configs (called omics_configs to keep things confusing)
+omics_config <- list(
+  gsea_p_cutoff  = 0.20, 
+  gsea_min_size  = 3     
 )
 ```
 
@@ -307,7 +317,7 @@ for (p_id in names(pheno_configs)) {
 # Feature Phenotyping {.tabset}
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
-```{r feature_phenotyping}
+```{r feature_phenotyping, fig.width=8, fig.height=8, results='asis'}
 for (f_id in names(feature_configs)) {
   conf <- feature_configs[[f_id]]
   payload <- global_cluster_payloads[[conf$target_job]]
