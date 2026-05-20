@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">19 May, 2026</h4>
+<h4 class="date">20 May, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-19
+<strong>Last updated:</strong> 2026-05-20
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree61bc62e3ef510457200afd68bbe1f4353dd9db72targetblank61bc62ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee6aab565f64b1ef2109177f0bf7ba80932520b9dtargetblanke6aab56a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/61bc62e3ef510457200afd68bbe1f4353dd9db72" target="_blank">61bc62e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e6aab565f64b1ef2109177f0bf7ba80932520b9d" target="_blank">e6aab56</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree61bc62e3ef510457200afd68bbe1f4353dd9db72targetblank61bc62ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee6aab565f64b1ef2109177f0bf7ba80932520b9dtargetblanke6aab56a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/61bc62e3ef510457200afd68bbe1f4353dd9db72" target="_blank">61bc62e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e6aab565f64b1ef2109177f0bf7ba80932520b9d" target="_blank">e6aab56</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -652,6 +652,9 @@ Untracked files:
     Untracked:  code/clinical_master_mapping_creation.R
     Untracked:  code/randomizer.R
     Untracked:  core
+
+Unstaged changes:
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -697,6 +700,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e6aab565f64b1ef2109177f0bf7ba80932520b9d/analysis/03c_proteomics_clustering.Rmd" target="_blank">e6aab56</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-20
+</td>
+<td>
+wflow_publish("analysis/03c_proteomics_clustering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/03c_proteomics_clustering.html" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -979,7 +1016,7 @@ clustering_configs &lt;- list(
       kmeans = list(run=TRUE, nstart=25), 
       pam = list(run=TRUE, metric=&quot;euclidean&quot;), 
       hclust = list(run=TRUE, distance=&quot;euclidean&quot;, method=&quot;ward.D2&quot;), 
-      hdbscan = list(run=TRUE, minPts=4),          
+      hdbscan = list(run=TRUE, minPts=3),          
       louvain = list(run=TRUE, k_neighbors=4, resolution=0.5) 
     )
   )
@@ -995,7 +1032,8 @@ diagnostic_configs &lt;- list(
 pheno_configs &lt;- list(
   pheno_avc = list(
     target_job = &quot;job_avc&quot;,
-    target_algorithms = c(&quot;kmeans&quot;, &quot;louvain&quot;),
+    title = &quot;Age Regressed Clustering&quot;,
+    target_algorithms = c(&quot;kmeans&quot;, &quot;hclust&quot;,&quot;louvain&quot;),
     variables = unique(c(ssc_clinical_parameters, &quot;Age&quot;, &quot;Sex&quot;, &quot;cohort_group&quot;)),
     highlight_variables = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;cohort_group&quot;) ,
     p_cutoff = 0.05,
@@ -1007,12 +1045,29 @@ pheno_configs &lt;- list(
 feature_configs &lt;- list(
   feat_avc = list(
     target_job = &quot;job_avc&quot;,
-    target_algorithms = c(&quot;kmeans&quot;, &quot;louvain&quot;),
-    input_matrix = &quot;raw&quot;, # Use the pure unaltered Olink matrix for unbiased biological discovery
-    covariates = c(&quot;Age&quot;), 
-    contrasts = list(
-      c1_vs_c2 = list(title = &quot;Cluster 1 vs Cluster 2&quot;, target_groups = c(&quot;Cluster 1&quot;), ref_groups = c(&quot;Cluster 2&quot;)),
-      c3_vs_rest = list(title = &quot;Cluster 3 vs Rest&quot;, target_groups = c(&quot;Cluster 3&quot;), ref_groups = c(&quot;Cluster 1&quot;, &quot;Cluster 2&quot;))
+    title = &quot;Age Regressed Clustering&quot;,
+    input_matrix = &quot;raw&quot;, 
+    covariates = c(&quot;Age&quot;),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = &quot;Cluster 1 vs Cluster 2&quot;, desc = &quot;Active-like (high mRSS &amp; high anti-RNA-Pol-III) vs Control-like&quot;, target=c(&quot;Cluster 1&quot;), ref=c(&quot;Cluster 2&quot;)),
+          c1_vs_c3 = list(title = &quot;Cluster 1 vs Cluster 3&quot;, desc = &quot;Active-like (high mRSS &amp; high anti-RNA-Pol-III) vs Nonactive-Active mixed&quot;, target=c(&quot;Cluster 1&quot;), ref=c(&quot;Cluster 3&quot;))
+        )
+      ),
+      hclust = list(
+        contrasts = list(
+          c2_vs_c1 = list(title = &quot;Cluster 2 vs Cluster 1&quot;, desc = &quot;Active-like (high mRSS &amp; high anti-RNA-Pol-III) vs Control-like&quot;, target=c(&quot;Cluster 2&quot;), ref=c(&quot;Cluster 1&quot;)),
+          c2_vs_c3 = list(title = &quot;Cluster 2 vs Cluster 3&quot;, desc = &quot;Active-like (high mRSS &amp; high anti-RNA-Pol-III) vs Nonactive-Active mixed&quot;, target=c(&quot;Cluster 2&quot;), ref=c(&quot;Cluster 3&quot;))
+        )
+      ),
+      louvain = list(
+        contrasts = list(
+          c2_vs_c1 = list(title = &quot;Cluster 2 vs Cluster 1&quot;, desc = &quot;Active-like (high mRSS) vs Control-like&quot;, target=c(&quot;Cluster 2&quot;), ref=c(&quot;Cluster 1&quot;)),
+          c2_vs_c3 = list(title = &quot;Cluster 2 vs Cluster 3&quot;, desc = &quot;Active-like (high mRSS) vs Nonactive-Active mixed&quot;, target=c(&quot;Cluster 2&quot;), ref=c(&quot;Cluster 3&quot;))
+        )
+      )
     ),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
@@ -1044,6 +1099,24 @@ unmodified. The pruned matrix surgically removes features correlating
 heavily with Age (Spearman rho &gt; 0.4). The residualized matrix uses
 linear modeling to mathematically regress Age out of the coordinate
 space.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Matrix Factory: Dynamically generates custom feature matrices by
+subsetting the Olink proteomics landscape.
+</li>
+<li>
+Transformation: Applies mathematical corrections (Residualization
+vs. Pruning) to isolate the clinical signature from the Age confounder.
+</li>
+<li>
+Audit: Tracks the inclusion/exclusion status of every feature against
+defined biological thresholds (FDR/FC) to ensure transparency in the
+dimensionality of your input space.
 </li>
 </ul>
 </div>
@@ -2154,7 +2227,196 @@ Modularity peaks for Louvain network communities.
     }
   }
 }</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-algorithm_optimization-1">
+Past versions of algorithm_optimization-1.png
+</button>
+</p>
+<div id="fig-algorithm_optimization-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-algorithm_optimization-2">
+Past versions of algorithm_optimization-2.png
+</button>
+</p>
+<div id="fig-algorithm_optimization-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-algorithm_optimization-3">
+Past versions of algorithm_optimization-3.png
+</button>
+</p>
+<div id="fig-algorithm_optimization-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-algorithm_optimization-4">
+Past versions of algorithm_optimization-4.png
+</button>
+</p>
+<div id="fig-algorithm_optimization-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/algorithm_optimization-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-algorithm_optimization-5">
+Past versions of algorithm_optimization-5.png
+</button>
+</p>
+<div id="fig-algorithm_optimization-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-5.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="unsupervised-clustering" class="section level1 tabset">
 <h1 class="tabset">Unsupervised Clustering</h1>
@@ -2190,6 +2452,8 @@ global_cluster_payloads &lt;- list()
 
 for (c_id in names(clustering_configs)) {
   conf &lt;- clustering_configs[[c_id]]
+  # Inject the Job Title
+  cat(sprintf(&quot;\n\n## %s {.tabset}\n\n&quot;, conf$title))
   
   target_matrix &lt;- prepared_matrices[[conf$input_matrix]]
   if (is.null(target_matrix)) next
@@ -2199,248 +2463,35 @@ for (c_id in names(clustering_configs)) {
   
   if (res$status == &quot;success&quot;) {
     for (algo in names(res$plots$umaps)) {
-      # Explicitly print the UMAP so it appears in the RStudio Plots pane
-      print(res$plots$umaps[[algo]])
+      # Inject the Algorithm Tab
+     cat(sprintf(&quot;\n\n### %s\n\n&quot;, toupper(algo)))
+     print(res$plots$umaps[[algo]])
+      cat(&quot;\n\n&quot;) # Crucial empty lines for pandoc rendering
     }
   } 
 }</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-1">
-Past versions of UMAP-1.png
-</button>
-</p>
-<div id="fig-UMAP-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/95fa2c7734484c4cf12df1dd4653352ac68e31dd/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">95fa2c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8b778e3c156199e9189db304d1d8860393c22f6e/docs/figure/03c_proteomics_clustering.Rmd/UMAP-1.png" target="_blank">8b778e3</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-03
-</td>
-</tr>
-</tbody>
-</table>
+<div id="age-regressed-clustering" class="section level2 tabset">
+<h2 class="tabset">Age Regressed Clustering</h2>
+<div id="kmeans" class="section level3">
+<h3>KMEANS</h3>
+<p><img src="figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="pam" class="section level3">
+<h3>PAM</h3>
+<p><img src="figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-2">
-Past versions of UMAP-2.png
-</button>
-</p>
-<div id="fig-UMAP-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6523832302d70ea685ab5c065c9d9ed597a60d9a/docs/figure/03c_proteomics_clustering.Rmd/UMAP-2.png" target="_blank">6523832</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/95fa2c7734484c4cf12df1dd4653352ac68e31dd/docs/figure/03c_proteomics_clustering.Rmd/UMAP-2.png" target="_blank">95fa2c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8b778e3c156199e9189db304d1d8860393c22f6e/docs/figure/03c_proteomics_clustering.Rmd/UMAP-2.png" target="_blank">8b778e3</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-03
-</td>
-</tr>
-</tbody>
-</table>
+<div id="hclust" class="section level3">
+<h3>HCLUST</h3>
+<p><img src="figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="hdbscan" class="section level3">
+<h3>HDBSCAN</h3>
+<p><img src="figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-3">
-Past versions of UMAP-3.png
-</button>
-</p>
-<div id="fig-UMAP-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6523832302d70ea685ab5c065c9d9ed597a60d9a/docs/figure/03c_proteomics_clustering.Rmd/UMAP-3.png" target="_blank">6523832</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/95fa2c7734484c4cf12df1dd4653352ac68e31dd/docs/figure/03c_proteomics_clustering.Rmd/UMAP-3.png" target="_blank">95fa2c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-4">
-Past versions of UMAP-4.png
-</button>
-</p>
-<div id="fig-UMAP-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6523832302d70ea685ab5c065c9d9ed597a60d9a/docs/figure/03c_proteomics_clustering.Rmd/UMAP-4.png" target="_blank">6523832</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/UMAP-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-UMAP-5">
-Past versions of UMAP-5.png
-</button>
-</p>
-<div id="fig-UMAP-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6523832302d70ea685ab5c065c9d9ed597a60d9a/docs/figure/03c_proteomics_clustering.Rmd/UMAP-5.png" target="_blank">6523832</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="clustering-diagnostic" class="section level1 tabset">
-<h1 class="tabset">Clustering Diagnostic</h1>
+<div id="louvain" class="section level3">
+<h3>LOUVAIN</h3>
+<p><img src="figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-5.png" alt="" width="672" style="display: block; margin: auto;" />
+# Clustering Diagnostic {.tabset}</p>
 <div class="decision-box">
 <strong>Analysis Decisions:</strong>
 <ul>
@@ -2498,59 +2549,236 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
     }
   }
 }</code></pre>
-<pre><code>&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
-&lt;caption&gt;Algorithm Performance Metrics: job_avc&lt;/caption&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt; Algorithm &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt; Topology &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt; Mathematical_Grade &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;&quot;&gt; Smallest_Cluster_N &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt; Biological_Distinctness &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;font-weight: bold;&quot;&gt; KMEANS &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Centroid &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Silhouette: 0.087 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 22 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 57 Sig. Proteins &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;font-weight: bold;&quot;&gt; PAM &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Centroid &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Silhouette: 0.060 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 37 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 57 Sig. Proteins &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;font-weight: bold;&quot;&gt; HCLUST &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Centroid &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Silhouette: 0.075 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 21 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 56 Sig. Proteins &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;font-weight: bold;&quot;&gt; HDBSCAN &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Density &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Noise: 74.0% &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 0 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 33 Sig. Proteins &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;font-weight: bold;&quot;&gt; LOUVAIN &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Graph / Network &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Modularity: 0.653 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 16 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; 55 Sig. Proteins &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-1.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-2.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+Algorithm Performance Metrics: job_avc
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Algorithm
+</th>
+<th style="text-align:left;">
+Topology
+</th>
+<th style="text-align:left;">
+Mathematical_Grade
+</th>
+<th style="text-align:right;">
+Smallest_Cluster_N
+</th>
+<th style="text-align:left;">
+Biological_Distinctness
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+KMEANS
+</td>
+<td style="text-align:left;">
+Centroid
+</td>
+<td style="text-align:left;">
+Silhouette: 0.087
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+57 Sig. Proteins
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+PAM
+</td>
+<td style="text-align:left;">
+Centroid
+</td>
+<td style="text-align:left;">
+Silhouette: 0.060
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+57 Sig. Proteins
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+HCLUST
+</td>
+<td style="text-align:left;">
+Centroid
+</td>
+<td style="text-align:left;">
+Silhouette: 0.075
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+56 Sig. Proteins
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+HDBSCAN
+</td>
+<td style="text-align:left;">
+Density
+</td>
+<td style="text-align:left;">
+Noise: 35.9%
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+19 Sig. Proteins
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+LOUVAIN
+</td>
+<td style="text-align:left;">
+Graph / Network
+</td>
+<td style="text-align:left;">
+Modularity: 0.653
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+55 Sig. Proteins
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-1">
+Past versions of clustering_diagnostic-1.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-1.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="clinical-phenotyping" class="section level1">
-<h1>Clinical Phenotyping</h1>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-2">
+Past versions of clustering_diagnostic-2.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-2.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-3">
+Past versions of clustering_diagnostic-3.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-3.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="clinical-phenotyping" class="section level1 tabset">
+<h1 class="tabset">Clinical Phenotyping</h1>
 <div class="decision-box">
 <strong>Analysis Decisions:</strong>
 <ul>
@@ -2572,6 +2800,8 @@ of the discovered endotypes.
 </div>
 <pre class="r"><code>for (p_id in names(pheno_configs)) {
   conf &lt;- pheno_configs[[p_id]]
+  # Assuming you have the job name mapped, or just print conf$target_job
+  cat(sprintf(&quot;\n\n## %s {.tabset}\n\n&quot;, conf$title))
   payload &lt;- global_cluster_payloads[[conf$target_job]]
   if (is.null(payload)) next
   
@@ -2579,1427 +2809,2389 @@ of the discovered endotypes.
   
   if (res$status == &quot;success&quot;) {
     for (algo in names(res$plots)) {
-      cat(sprintf(&quot;\n\n#### Algorithm: %s\n&quot;, toupper(algo)))
+      # Inject Markdown Header for the Tabset
+      cat(sprintf(&quot;\n\n### %s\n\n&quot;, toupper(algo)))
       
-      # Print Table
+      # Print Table (Converted to kableExtra for consistent HTML styling)
       if (!is.null(res$tables[[algo]])) {
-        print(res$tables[[algo]] %&gt;% as_gt() %&gt;% gt::tab_header(title=sprintf(&quot;Clinical Summary: %s&quot;, toupper(algo))))
+        tbl &lt;- res$tables[[algo]] %&gt;% 
+          gtsummary::as_kable_extra(caption = sprintf(&quot;Clinical Summary: %s&quot;, toupper(algo))) %&gt;%
+          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)
+        print(tbl)
+        cat(&quot;\n\n&quot;)
       }
+      
       # Print Heatmap (Using ComplexHeatmap::draw)
       if (!is.null(res$plots[[algo]]$heatmap)) {
         ComplexHeatmap::draw(res$plots[[algo]]$heatmap)
+        cat(&quot;\n\n&quot;)
       }
+      
       # Print Grid
-      if (!is.null(res$plots[[algo]]$highlights)) print(res$plots[[algo]]$highlights)
+      if (!is.null(res$plots[[algo]]$highlights)) {
+        print(res$plots[[algo]]$highlights)
+        cat(&quot;\n\n&quot;)
+      }
     }
   }
 }</code></pre>
-<pre><code>
-
-#### Algorithm: KMEANS
-&lt;div id=&quot;grguextrgq&quot; style=&quot;padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;&quot;&gt;
-  &lt;style&gt;#grguextrgq table {
-  font-family: system-ui, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif, &#39;Apple Color Emoji&#39;, &#39;Segoe UI Emoji&#39;, &#39;Segoe UI Symbol&#39;, &#39;Noto Color Emoji&#39;;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#grguextrgq thead, #grguextrgq tbody, #grguextrgq tfoot, #grguextrgq tr, #grguextrgq td, #grguextrgq th {
-  border-style: none;
-}
-
-#grguextrgq p {
-  margin: 0;
-  padding: 0;
-}
-
-#grguextrgq .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#grguextrgq .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#grguextrgq .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#grguextrgq .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#grguextrgq .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#grguextrgq .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#grguextrgq .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#grguextrgq .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#grguextrgq .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#grguextrgq .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#grguextrgq .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#grguextrgq .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#grguextrgq .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#grguextrgq .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#grguextrgq .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#grguextrgq .gt_from_md &gt; :first-child {
-  margin-top: 0;
-}
-
-#grguextrgq .gt_from_md &gt; :last-child {
-  margin-bottom: 0;
-}
-
-#grguextrgq .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#grguextrgq .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#grguextrgq .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#grguextrgq .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#grguextrgq .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#grguextrgq .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#grguextrgq .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#grguextrgq .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#grguextrgq .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#grguextrgq .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#grguextrgq .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#grguextrgq .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#grguextrgq .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#grguextrgq .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#grguextrgq .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#grguextrgq .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#grguextrgq .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#grguextrgq .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#grguextrgq .gt_left {
-  text-align: left;
-}
-
-#grguextrgq .gt_center {
-  text-align: center;
-}
-
-#grguextrgq .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#grguextrgq .gt_font_normal {
-  font-weight: normal;
-}
-
-#grguextrgq .gt_font_bold {
-  font-weight: bold;
-}
-
-#grguextrgq .gt_font_italic {
-  font-style: italic;
-}
-
-#grguextrgq .gt_super {
-  font-size: 65%;
-}
-
-#grguextrgq .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#grguextrgq .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#grguextrgq .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#grguextrgq .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#grguextrgq .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#grguextrgq .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#grguextrgq .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#grguextrgq .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#grguextrgq div.Reactable &gt; div.rt-table &gt; div.rt-thead &gt; div.rt-tr.rt-tr-group-header &gt; div.rt-th-group:after {
-  height: 0px !important;
-}
-&lt;/style&gt;
-  &lt;table class=&quot;gt_table&quot; data-quarto-disable-processing=&quot;false&quot; data-quarto-bootstrap=&quot;false&quot;&gt;
-  &lt;thead&gt;
-    &lt;tr class=&quot;gt_heading&quot;&gt;
-      &lt;td colspan=&quot;5&quot; class=&quot;gt_heading gt_title gt_font_normal gt_bottom_border&quot; style&gt;Clinical Summary: KMEANS&lt;/td&gt;
-    &lt;/tr&gt;
-    
-    &lt;tr class=&quot;gt_col_headings&quot;&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_left&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;label&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Characteristic&lt;/strong&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 1&lt;/strong&gt;&lt;br /&gt;
-N = 22&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_2&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 2&lt;/strong&gt;&lt;br /&gt;
-N = 44&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_3&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 3&lt;/strong&gt;&lt;br /&gt;
-N = 65&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;p-value&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody class=&quot;gt_table_body&quot;&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;cohort_group&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Active&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;17 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;5 (11%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;26 (40%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Non-Active&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;8 (18%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;35 (54%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Control&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;31 (70%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;4 (6.2%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;eustarAI&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;2.80 (1.60, 3.44)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0.00 (0.00, 1.59)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;1.00 (0.00, 2.50)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;DLCO (SB) (% predicted)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;54 (33, 65)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;74 (66, 80)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;66 (56, 78)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Modified rodnan skin score&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;3.0 (0.0, 8.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0.0 (0.0, 0.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0.0 (0.0, 4.0)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.017&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;ILD diagnosed via HRCT&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.019&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    No&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (33%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;10 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;22 (37%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    yes&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (4.8%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Yes&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;13 (62%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;3 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;37 (63%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-RNA polymerase III&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (25%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;3 (5.3%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.030&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;CK value in serum (U/L)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;82 (63, 116)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;62 (54, 67)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;82 (61, 117)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.054&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;FVC %pred&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;80 (66, 100)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;96 (91, 99)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;91 (82, 105)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.071&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Telangiectasia (any)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;17 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;6 (46%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;31 (51%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.074&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;LVEF %&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;61.0 (58.0, 63.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;61.5 (60.5, 65.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;59.0 (57.0, 63.0)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.11&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Digital ulcer&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.12&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Current&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (32%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;11 (18%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    never&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (4.5%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Never&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;9 (41%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;10 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;35 (57%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Previously&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;3 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;15 (25%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;CRP&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0.30 (0.09, 0.87)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0.18 (0.13, 0.28)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0.14 (0.06, 0.33)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.12&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-centromere (ACA)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (35%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;9 (69%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;25 (42%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.13&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Joint involvement&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (32%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;1 (7.7%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;22 (37%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.13&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Abnormal Capillaroscopy&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;17 (85%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;9 (69%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;55 (90%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.14&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;EULAR/ACR 2013 Criteria&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;21 (95%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;10 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;54 (89%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.2&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-Scl70&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (25%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;2 (15%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;22 (37%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.3&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Raynaud phenomenon&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;19 (95%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;13 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;60 (98%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.6&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Proximal muscle weakness&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (5.0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;1 (1.8%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.6&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Age&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;61 (54, 73)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;59 (49, 68)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;62 (49, 72)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.6&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Puffy Fingers&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;16 (76%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;8 (62%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;42 (69%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.6&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Tendon friction rubs&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (4.5%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;1 (7.7%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;2 (3.3%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.8&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Sex&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Male&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;8 (18%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;14 (22%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Female&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;17 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;36 (82%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;51 (78%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Intestinal Symptoms&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (24%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;4 (31%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;16 (26%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Esophageal symptom at the time of visit&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;10 (48%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;6 (46%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;30 (49%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Stomach Symptoms&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;5 (24%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;3 (23%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;16 (27%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Subset_Diffuse&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    0&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;22 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;13 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;61 (100%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-  &lt;/tbody&gt;
-  &lt;tfoot&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;5&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;n (%); Median (Q1, Q3)&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;5&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Fisher’s exact test; Kruskal-Wallis rank sum test; NA; Pearson’s Chi-squared test&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tfoot&gt;
-&lt;/table&gt;
-&lt;/div&gt;</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<pre><code>
-
-#### Algorithm: LOUVAIN
-&lt;div id=&quot;qdmsaqdybz&quot; style=&quot;padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;&quot;&gt;
-  &lt;style&gt;#qdmsaqdybz table {
-  font-family: system-ui, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif, &#39;Apple Color Emoji&#39;, &#39;Segoe UI Emoji&#39;, &#39;Segoe UI Symbol&#39;, &#39;Noto Color Emoji&#39;;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#qdmsaqdybz thead, #qdmsaqdybz tbody, #qdmsaqdybz tfoot, #qdmsaqdybz tr, #qdmsaqdybz td, #qdmsaqdybz th {
-  border-style: none;
-}
-
-#qdmsaqdybz p {
-  margin: 0;
-  padding: 0;
-}
-
-#qdmsaqdybz .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#qdmsaqdybz .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#qdmsaqdybz .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#qdmsaqdybz .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#qdmsaqdybz .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#qdmsaqdybz .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#qdmsaqdybz .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#qdmsaqdybz .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#qdmsaqdybz .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#qdmsaqdybz .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#qdmsaqdybz .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#qdmsaqdybz .gt_from_md &gt; :first-child {
-  margin-top: 0;
-}
-
-#qdmsaqdybz .gt_from_md &gt; :last-child {
-  margin-bottom: 0;
-}
-
-#qdmsaqdybz .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#qdmsaqdybz .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#qdmsaqdybz .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#qdmsaqdybz .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#qdmsaqdybz .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#qdmsaqdybz .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#qdmsaqdybz .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#qdmsaqdybz .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#qdmsaqdybz .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#qdmsaqdybz .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#qdmsaqdybz .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#qdmsaqdybz .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#qdmsaqdybz .gt_left {
-  text-align: left;
-}
-
-#qdmsaqdybz .gt_center {
-  text-align: center;
-}
-
-#qdmsaqdybz .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#qdmsaqdybz .gt_font_normal {
-  font-weight: normal;
-}
-
-#qdmsaqdybz .gt_font_bold {
-  font-weight: bold;
-}
-
-#qdmsaqdybz .gt_font_italic {
-  font-style: italic;
-}
-
-#qdmsaqdybz .gt_super {
-  font-size: 65%;
-}
-
-#qdmsaqdybz .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#qdmsaqdybz .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#qdmsaqdybz .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#qdmsaqdybz .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#qdmsaqdybz .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#qdmsaqdybz .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#qdmsaqdybz .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#qdmsaqdybz .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#qdmsaqdybz div.Reactable &gt; div.rt-table &gt; div.rt-thead &gt; div.rt-tr.rt-tr-group-header &gt; div.rt-th-group:after {
-  height: 0px !important;
-}
-&lt;/style&gt;
-  &lt;table class=&quot;gt_table&quot; data-quarto-disable-processing=&quot;false&quot; data-quarto-bootstrap=&quot;false&quot;&gt;
-  &lt;thead&gt;
-    &lt;tr class=&quot;gt_heading&quot;&gt;
-      &lt;td colspan=&quot;6&quot; class=&quot;gt_heading gt_title gt_font_normal gt_bottom_border&quot; style&gt;Clinical Summary: LOUVAIN&lt;/td&gt;
-    &lt;/tr&gt;
-    
-    &lt;tr class=&quot;gt_col_headings&quot;&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_left&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;label&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Characteristic&lt;/strong&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_1&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 1&lt;/strong&gt;&lt;br /&gt;
-N = 59&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_2&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 2&lt;/strong&gt;&lt;br /&gt;
-N = 39&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_3&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 3&lt;/strong&gt;&lt;br /&gt;
-N = 17&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;stat_4&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;Cluster 4&lt;/strong&gt;&lt;br /&gt;
-N = 16&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-      &lt;th class=&quot;gt_col_heading gt_columns_bottom_border gt_center&quot; rowspan=&quot;1&quot; colspan=&quot;1&quot; scope=&quot;col&quot; id=&quot;p.value&quot;&gt;&lt;span class=&#39;gt_from_md&#39;&gt;&lt;strong&gt;p-value&lt;/strong&gt;&lt;/span&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody class=&quot;gt_table_body&quot;&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;cohort_group&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Active&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;11 (19%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;24 (62%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;10 (59%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;3 (19%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Non-Active&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;17 (29%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;14 (36%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;7 (41%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;10 (63%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Control&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;31 (53%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;1 (2.6%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;3 (19%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Modified rodnan skin score&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0.0 (0.0, 0.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;3.0 (0.0, 6.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0.0 (0.0, 6.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0.0 (0.0, 0.0)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-centromere (ACA)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;20 (77%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;14 (38%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;2 (13%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;ILD diagnosed via HRCT&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    No&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;20 (74%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;12 (33%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;2 (12%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    yes&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;1 (2.8%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Yes&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (26%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;23 (64%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;15 (88%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;8 (62%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;FVC %pred&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;98 (91, 106)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;86 (73, 101)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;82 (62, 92)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;91 (83, 105)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.001&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;DLCO (SB) (% predicted)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;75 (66, 80)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;59 (36, 73)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;58 (48, 68)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;66 (60, 74)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.002&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;eustarAI&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0.00 (0.00, 2.25)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;2.59 (1.00, 3.25)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;1.09 (1.00, 2.25)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;1.00 (0.00, 1.09)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.002&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;CRP&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0.16 (0.11, 0.36)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0.29 (0.12, 0.52)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0.06 (0.06, 0.08)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0.13 (0.07, 0.19)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.004&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-Scl70&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;3 (12%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;11 (30%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;10 (63%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.006&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Digital ulcer&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.020&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Current&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (3.6%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;13 (34%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;3 (18%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;1 (7.7%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    never&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;1 (5.9%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Never&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;20 (71%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;15 (39%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;11 (65%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;8 (62%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Previously&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (25%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;10 (26%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;2 (12%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;4 (31%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Anti-RNA polymerase III&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;1 (4.0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;7 (19%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.077&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;CK value in serum (U/L)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;65 (58, 97)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;80 (59, 116)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;86 (60, 108)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;103 (80, 130)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.084&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Telangiectasia (any)&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;13 (46%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;27 (71%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;9 (53%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.10&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Sex&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.2&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Male&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;8 (14%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;12 (31%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;3 (18%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;4 (25%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    Female&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;51 (86%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;27 (69%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;14 (82%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;12 (75%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Stomach Symptoms&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;8 (30%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;6 (16%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;5 (31%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.3&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Puffy Fingers&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;22 (79%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;25 (68%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;9 (53%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;10 (77%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.3&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;LVEF %&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;61.0 (59.0, 65.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;60.5 (58.0, 63.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;61.0 (56.0, 63.0)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;58.0 (57.0, 61.0)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.3&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Tendon friction rubs&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;3 (11%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;1 (2.6%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.3&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;EULAR/ACR 2013 Criteria&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;25 (89%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;35 (92%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;15 (88%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;10 (77%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.5&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Abnormal Capillaroscopy&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;22 (79%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;32 (86%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;15 (94%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;12 (92%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.6&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Raynaud phenomenon&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;28 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;35 (95%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;16 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;13 (100%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.8&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Proximal muscle weakness&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;2 (5.7%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;0 (0%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.8&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Joint involvement&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;7 (25%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;12 (32%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;6 (35%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;5 (38%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.8&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Esophageal symptom at the time of visit&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;14 (50%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;16 (43%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;9 (53%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;7 (54%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Intestinal Symptoms&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;9 (32%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;9 (24%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;4 (24%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;3 (23%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Age&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;59 (48, 72)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;61 (49, 73)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;63 (48, 69)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;62 (50, 70)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&gt;0.9&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot; style=&quot;font-weight: bold;&quot;&gt;Subset_Diffuse&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-    &lt;tr&gt;&lt;td headers=&quot;label&quot; class=&quot;gt_row gt_left&quot;&gt;    0&lt;/td&gt;
-&lt;td headers=&quot;stat_1&quot; class=&quot;gt_row gt_center&quot;&gt;28 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_2&quot; class=&quot;gt_row gt_center&quot;&gt;38 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_3&quot; class=&quot;gt_row gt_center&quot;&gt;17 (100%)&lt;/td&gt;
-&lt;td headers=&quot;stat_4&quot; class=&quot;gt_row gt_center&quot;&gt;13 (100%)&lt;/td&gt;
-&lt;td headers=&quot;p.value&quot; class=&quot;gt_row gt_center&quot;&gt;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
-  &lt;/tbody&gt;
-  &lt;tfoot&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;6&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;n (%); Median (Q1, Q3)&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr class=&quot;gt_footnotes&quot;&gt;
-      &lt;td class=&quot;gt_footnote&quot; colspan=&quot;6&quot;&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt; &lt;span class=&#39;gt_from_md&#39;&gt;Fisher’s exact test; Kruskal-Wallis rank sum test; NA; Pearson’s Chi-squared test&lt;/span&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tfoot&gt;
-&lt;/table&gt;
-&lt;/div&gt;</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-3.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<div id="age-regressed-clustering-1" class="section level2 tabset">
+<h2 class="tabset">Age Regressed Clustering</h2>
+<div id="kmeans-1" class="section level3">
+<h3>KMEANS</h3>
+<table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<caption>
+Clinical Summary: KMEANS
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Characteristic
+</th>
+<th style="text-align:center;">
+Cluster 1 <br>N = 22
+</th>
+<th style="text-align:center;">
+Cluster 2 <br>N = 44
+</th>
+<th style="text-align:center;">
+Cluster 3 <br>N = 65
+</th>
+<th style="text-align:center;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">cohort_group</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Active
+</td>
+<td style="text-align:center;">
+17 (77%)
+</td>
+<td style="text-align:center;">
+5 (11%)
+</td>
+<td style="text-align:center;">
+26 (40%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Non-Active
+</td>
+<td style="text-align:center;">
+5 (23%)
+</td>
+<td style="text-align:center;">
+8 (18%)
+</td>
+<td style="text-align:center;">
+35 (54%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Control
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+31 (70%)
+</td>
+<td style="text-align:center;">
+4 (6.2%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">eustarAI</span>
+</td>
+<td style="text-align:center;">
+2.80 (1.60, 3.44)
+</td>
+<td style="text-align:center;">
+0.00 (0.00, 1.59)
+</td>
+<td style="text-align:center;">
+1.00 (0.00, 2.50)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">DLCO (SB) (% predicted)</span>
+</td>
+<td style="text-align:center;">
+54 (33, 65)
+</td>
+<td style="text-align:center;">
+74 (66, 80)
+</td>
+<td style="text-align:center;">
+66 (56, 78)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Modified rodnan skin score</span>
+</td>
+<td style="text-align:center;">
+3.0 (0.0, 8.0)
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 0.0)
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 4.0)
+</td>
+<td style="text-align:center;">
+0.017
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">ILD diagnosed via HRCT</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.019
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+No
+</td>
+<td style="text-align:center;">
+7 (33%)
+</td>
+<td style="text-align:center;">
+10 (77%)
+</td>
+<td style="text-align:center;">
+22 (37%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+yes
+</td>
+<td style="text-align:center;">
+1 (4.8%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Yes
+</td>
+<td style="text-align:center;">
+13 (62%)
+</td>
+<td style="text-align:center;">
+3 (23%)
+</td>
+<td style="text-align:center;">
+37 (63%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-RNA polymerase III</span>
+</td>
+<td style="text-align:center;">
+5 (25%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+3 (5.3%)
+</td>
+<td style="text-align:center;">
+0.030
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CK value in serum (U/L)</span>
+</td>
+<td style="text-align:center;">
+82 (63, 116)
+</td>
+<td style="text-align:center;">
+62 (54, 67)
+</td>
+<td style="text-align:center;">
+82 (61, 117)
+</td>
+<td style="text-align:center;">
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">FVC %pred</span>
+</td>
+<td style="text-align:center;">
+80 (66, 100)
+</td>
+<td style="text-align:center;">
+96 (91, 99)
+</td>
+<td style="text-align:center;">
+91 (82, 105)
+</td>
+<td style="text-align:center;">
+0.071
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Telangiectasia (any)</span>
+</td>
+<td style="text-align:center;">
+17 (77%)
+</td>
+<td style="text-align:center;">
+6 (46%)
+</td>
+<td style="text-align:center;">
+31 (51%)
+</td>
+<td style="text-align:center;">
+0.074
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">LVEF %</span>
+</td>
+<td style="text-align:center;">
+61.0 (58.0, 63.0)
+</td>
+<td style="text-align:center;">
+61.5 (60.5, 65.0)
+</td>
+<td style="text-align:center;">
+59.0 (57.0, 63.0)
+</td>
+<td style="text-align:center;">
+0.11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Digital ulcer</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Current
+</td>
+<td style="text-align:center;">
+7 (32%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+11 (18%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+never
+</td>
+<td style="text-align:center;">
+1 (4.5%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Never
+</td>
+<td style="text-align:center;">
+9 (41%)
+</td>
+<td style="text-align:center;">
+10 (77%)
+</td>
+<td style="text-align:center;">
+35 (57%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Previously
+</td>
+<td style="text-align:center;">
+5 (23%)
+</td>
+<td style="text-align:center;">
+3 (23%)
+</td>
+<td style="text-align:center;">
+15 (25%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CRP</span>
+</td>
+<td style="text-align:center;">
+0.30 (0.09, 0.87)
+</td>
+<td style="text-align:center;">
+0.18 (0.13, 0.28)
+</td>
+<td style="text-align:center;">
+0.14 (0.06, 0.33)
+</td>
+<td style="text-align:center;">
+0.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-centromere (ACA)</span>
+</td>
+<td style="text-align:center;">
+7 (35%)
+</td>
+<td style="text-align:center;">
+9 (69%)
+</td>
+<td style="text-align:center;">
+25 (42%)
+</td>
+<td style="text-align:center;">
+0.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Joint involvement</span>
+</td>
+<td style="text-align:center;">
+7 (32%)
+</td>
+<td style="text-align:center;">
+1 (7.7%)
+</td>
+<td style="text-align:center;">
+22 (37%)
+</td>
+<td style="text-align:center;">
+0.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Abnormal Capillaroscopy</span>
+</td>
+<td style="text-align:center;">
+17 (85%)
+</td>
+<td style="text-align:center;">
+9 (69%)
+</td>
+<td style="text-align:center;">
+55 (90%)
+</td>
+<td style="text-align:center;">
+0.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">EULAR/ACR 2013 Criteria</span>
+</td>
+<td style="text-align:center;">
+21 (95%)
+</td>
+<td style="text-align:center;">
+10 (77%)
+</td>
+<td style="text-align:center;">
+54 (89%)
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-Scl70</span>
+</td>
+<td style="text-align:center;">
+5 (25%)
+</td>
+<td style="text-align:center;">
+2 (15%)
+</td>
+<td style="text-align:center;">
+22 (37%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Raynaud phenomenon</span>
+</td>
+<td style="text-align:center;">
+19 (95%)
+</td>
+<td style="text-align:center;">
+13 (100%)
+</td>
+<td style="text-align:center;">
+60 (98%)
+</td>
+<td style="text-align:center;">
+0.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Proximal muscle weakness</span>
+</td>
+<td style="text-align:center;">
+1 (5.0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (1.8%)
+</td>
+<td style="text-align:center;">
+0.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Age</span>
+</td>
+<td style="text-align:center;">
+61 (54, 73)
+</td>
+<td style="text-align:center;">
+59 (49, 68)
+</td>
+<td style="text-align:center;">
+62 (49, 72)
+</td>
+<td style="text-align:center;">
+0.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Puffy Fingers</span>
+</td>
+<td style="text-align:center;">
+16 (76%)
+</td>
+<td style="text-align:center;">
+8 (62%)
+</td>
+<td style="text-align:center;">
+42 (69%)
+</td>
+<td style="text-align:center;">
+0.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Tendon friction rubs</span>
+</td>
+<td style="text-align:center;">
+1 (4.5%)
+</td>
+<td style="text-align:center;">
+1 (7.7%)
+</td>
+<td style="text-align:center;">
+2 (3.3%)
+</td>
+<td style="text-align:center;">
+0.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sex</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Male
+</td>
+<td style="text-align:center;">
+5 (23%)
+</td>
+<td style="text-align:center;">
+8 (18%)
+</td>
+<td style="text-align:center;">
+14 (22%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Female
+</td>
+<td style="text-align:center;">
+17 (77%)
+</td>
+<td style="text-align:center;">
+36 (82%)
+</td>
+<td style="text-align:center;">
+51 (78%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Intestinal Symptoms</span>
+</td>
+<td style="text-align:center;">
+5 (24%)
+</td>
+<td style="text-align:center;">
+4 (31%)
+</td>
+<td style="text-align:center;">
+16 (26%)
+</td>
+<td style="text-align:center;">
+0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Esophageal symptom at the time of
+visit</span>
+</td>
+<td style="text-align:center;">
+10 (48%)
+</td>
+<td style="text-align:center;">
+6 (46%)
+</td>
+<td style="text-align:center;">
+30 (49%)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Stomach Symptoms</span>
+</td>
+<td style="text-align:center;">
+5 (24%)
+</td>
+<td style="text-align:center;">
+3 (23%)
+</td>
+<td style="text-align:center;">
+16 (27%)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Subset_Diffuse</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:center;">
+22 (100%)
+</td>
+<td style="text-align:center;">
+13 (100%)
+</td>
+<td style="text-align:center;">
+61 (100%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>1</sup> n (%); Median (Q1, Q3)
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>2</sup> Fisher’s exact test; Kruskal-Wallis rank sum test; NA;
+Pearson’s Chi-squared test
+</td>
+</tr>
+</tfoot>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-1">
+Past versions of clinical_phenotyping-1.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-1.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-2">
+Past versions of clinical_phenotyping-2.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="hclust-1" class="section level3">
+<h3>HCLUST</h3>
+<table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<caption>
+Clinical Summary: HCLUST
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Characteristic
+</th>
+<th style="text-align:center;">
+Cluster 1 <br>N = 39
+</th>
+<th style="text-align:center;">
+Cluster 2 <br>N = 21
+</th>
+<th style="text-align:center;">
+Cluster 3 <br>N = 71
+</th>
+<th style="text-align:center;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">cohort_group</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Active
+</td>
+<td style="text-align:center;">
+4 (10%)
+</td>
+<td style="text-align:center;">
+18 (86%)
+</td>
+<td style="text-align:center;">
+26 (37%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Non-Active
+</td>
+<td style="text-align:center;">
+7 (18%)
+</td>
+<td style="text-align:center;">
+3 (14%)
+</td>
+<td style="text-align:center;">
+38 (54%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Control
+</td>
+<td style="text-align:center;">
+28 (72%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+7 (9.9%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">eustarAI</span>
+</td>
+<td style="text-align:center;">
+0.00 (0.00, 2.50)
+</td>
+<td style="text-align:center;">
+2.76 (2.19, 3.25)
+</td>
+<td style="text-align:center;">
+1.00 (0.00, 2.38)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">DLCO (SB) (% predicted)</span>
+</td>
+<td style="text-align:center;">
+73 (63, 80)
+</td>
+<td style="text-align:center;">
+45 (32, 65)
+</td>
+<td style="text-align:center;">
+66 (58, 78)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Modified rodnan skin score</span>
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 0.0)
+</td>
+<td style="text-align:center;">
+3.0 (0.0, 8.0)
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 4.0)
+</td>
+<td style="text-align:center;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-RNA polymerase III</span>
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+5 (26%)
+</td>
+<td style="text-align:center;">
+3 (5.0%)
+</td>
+<td style="text-align:center;">
+0.022
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CK value in serum (U/L)</span>
+</td>
+<td style="text-align:center;">
+58 (45, 65)
+</td>
+<td style="text-align:center;">
+84 (77, 116)
+</td>
+<td style="text-align:center;">
+78 (61, 116)
+</td>
+<td style="text-align:center;">
+0.029
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Abnormal Capillaroscopy</span>
+</td>
+<td style="text-align:center;">
+7 (64%)
+</td>
+<td style="text-align:center;">
+16 (84%)
+</td>
+<td style="text-align:center;">
+58 (91%)
+</td>
+<td style="text-align:center;">
+0.053
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-centromere (ACA)</span>
+</td>
+<td style="text-align:center;">
+8 (73%)
+</td>
+<td style="text-align:center;">
+5 (26%)
+</td>
+<td style="text-align:center;">
+28 (45%)
+</td>
+<td style="text-align:center;">
+0.053
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Proximal muscle weakness</span>
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+2 (11%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0.056
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">ILD diagnosed via HRCT</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.087
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+No
+</td>
+<td style="text-align:center;">
+7 (64%)
+</td>
+<td style="text-align:center;">
+5 (25%)
+</td>
+<td style="text-align:center;">
+27 (44%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+yes
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (5.0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Yes
+</td>
+<td style="text-align:center;">
+4 (36%)
+</td>
+<td style="text-align:center;">
+14 (70%)
+</td>
+<td style="text-align:center;">
+35 (56%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Digital ulcer</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Current
+</td>
+<td style="text-align:center;">
+1 (9.1%)
+</td>
+<td style="text-align:center;">
+7 (33%)
+</td>
+<td style="text-align:center;">
+10 (16%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+never
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (4.8%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Never
+</td>
+<td style="text-align:center;">
+9 (82%)
+</td>
+<td style="text-align:center;">
+8 (38%)
+</td>
+<td style="text-align:center;">
+37 (58%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Previously
+</td>
+<td style="text-align:center;">
+1 (9.1%)
+</td>
+<td style="text-align:center;">
+5 (24%)
+</td>
+<td style="text-align:center;">
+17 (27%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">FVC %pred</span>
+</td>
+<td style="text-align:center;">
+96 (89, 101)
+</td>
+<td style="text-align:center;">
+81 (66, 100)
+</td>
+<td style="text-align:center;">
+92 (82, 102)
+</td>
+<td style="text-align:center;">
+0.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CRP</span>
+</td>
+<td style="text-align:center;">
+0.18 (0.13, 0.28)
+</td>
+<td style="text-align:center;">
+0.32 (0.10, 0.70)
+</td>
+<td style="text-align:center;">
+0.13 (0.06, 0.33)
+</td>
+<td style="text-align:center;">
+0.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">LVEF %</span>
+</td>
+<td style="text-align:center;">
+61.0 (60.0, 65.0)
+</td>
+<td style="text-align:center;">
+61.0 (58.0, 63.0)
+</td>
+<td style="text-align:center;">
+60.0 (57.0, 63.0)
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Intestinal Symptoms</span>
+</td>
+<td style="text-align:center;">
+5 (45%)
+</td>
+<td style="text-align:center;">
+4 (20%)
+</td>
+<td style="text-align:center;">
+16 (25%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Esophageal symptom at the time of
+visit</span>
+</td>
+<td style="text-align:center;">
+7 (64%)
+</td>
+<td style="text-align:center;">
+7 (35%)
+</td>
+<td style="text-align:center;">
+32 (50%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sex</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Male
+</td>
+<td style="text-align:center;">
+5 (13%)
+</td>
+<td style="text-align:center;">
+5 (24%)
+</td>
+<td style="text-align:center;">
+17 (24%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Female
+</td>
+<td style="text-align:center;">
+34 (87%)
+</td>
+<td style="text-align:center;">
+16 (76%)
+</td>
+<td style="text-align:center;">
+54 (76%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Joint involvement</span>
+</td>
+<td style="text-align:center;">
+3 (27%)
+</td>
+<td style="text-align:center;">
+9 (43%)
+</td>
+<td style="text-align:center;">
+18 (29%)
+</td>
+<td style="text-align:center;">
+0.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Telangiectasia (any)</span>
+</td>
+<td style="text-align:center;">
+5 (45%)
+</td>
+<td style="text-align:center;">
+14 (67%)
+</td>
+<td style="text-align:center;">
+35 (55%)
+</td>
+<td style="text-align:center;">
+0.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-Scl70</span>
+</td>
+<td style="text-align:center;">
+2 (18%)
+</td>
+<td style="text-align:center;">
+7 (37%)
+</td>
+<td style="text-align:center;">
+20 (32%)
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Puffy Fingers</span>
+</td>
+<td style="text-align:center;">
+9 (82%)
+</td>
+<td style="text-align:center;">
+14 (70%)
+</td>
+<td style="text-align:center;">
+43 (67%)
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">EULAR/ACR 2013 Criteria</span>
+</td>
+<td style="text-align:center;">
+10 (91%)
+</td>
+<td style="text-align:center;">
+20 (95%)
+</td>
+<td style="text-align:center;">
+55 (86%)
+</td>
+<td style="text-align:center;">
+0.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Stomach Symptoms</span>
+</td>
+<td style="text-align:center;">
+3 (30%)
+</td>
+<td style="text-align:center;">
+4 (20%)
+</td>
+<td style="text-align:center;">
+17 (27%)
+</td>
+<td style="text-align:center;">
+0.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Age</span>
+</td>
+<td style="text-align:center;">
+59 (51, 72)
+</td>
+<td style="text-align:center;">
+61 (54, 73)
+</td>
+<td style="text-align:center;">
+61 (48, 71)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Raynaud phenomenon</span>
+</td>
+<td style="text-align:center;">
+11 (100%)
+</td>
+<td style="text-align:center;">
+19 (100%)
+</td>
+<td style="text-align:center;">
+62 (97%)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Tendon friction rubs</span>
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (4.8%)
+</td>
+<td style="text-align:center;">
+3 (4.7%)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Subset_Diffuse</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:center;">
+11 (100%)
+</td>
+<td style="text-align:center;">
+21 (100%)
+</td>
+<td style="text-align:center;">
+64 (100%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>1</sup> n (%); Median (Q1, Q3)
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>2</sup> Fisher’s exact test; Kruskal-Wallis rank sum test; NA;
+Pearson’s Chi-squared test
+</td>
+</tr>
+</tfoot>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-3.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-3">
+Past versions of clinical_phenotyping-3.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-3.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-4">
+Past versions of clinical_phenotyping-4.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="louvain-1" class="section level3">
+<h3>LOUVAIN</h3>
+<table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<caption>
+Clinical Summary: LOUVAIN
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Characteristic
+</th>
+<th style="text-align:center;">
+Cluster 1 <br>N = 59
+</th>
+<th style="text-align:center;">
+Cluster 2 <br>N = 39
+</th>
+<th style="text-align:center;">
+Cluster 3 <br>N = 17
+</th>
+<th style="text-align:center;">
+Cluster 4 <br>N = 16
+</th>
+<th style="text-align:center;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">cohort_group</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Active
+</td>
+<td style="text-align:center;">
+11 (19%)
+</td>
+<td style="text-align:center;">
+24 (62%)
+</td>
+<td style="text-align:center;">
+10 (59%)
+</td>
+<td style="text-align:center;">
+3 (19%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Non-Active
+</td>
+<td style="text-align:center;">
+17 (29%)
+</td>
+<td style="text-align:center;">
+14 (36%)
+</td>
+<td style="text-align:center;">
+7 (41%)
+</td>
+<td style="text-align:center;">
+10 (63%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Control
+</td>
+<td style="text-align:center;">
+31 (53%)
+</td>
+<td style="text-align:center;">
+1 (2.6%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+3 (19%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Modified rodnan skin score</span>
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 0.0)
+</td>
+<td style="text-align:center;">
+3.0 (0.0, 6.0)
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 6.0)
+</td>
+<td style="text-align:center;">
+0.0 (0.0, 0.0)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-centromere (ACA)</span>
+</td>
+<td style="text-align:center;">
+20 (77%)
+</td>
+<td style="text-align:center;">
+14 (38%)
+</td>
+<td style="text-align:center;">
+2 (13%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">ILD diagnosed via HRCT</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+&lt;0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+No
+</td>
+<td style="text-align:center;">
+20 (74%)
+</td>
+<td style="text-align:center;">
+12 (33%)
+</td>
+<td style="text-align:center;">
+2 (12%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+yes
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (2.8%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Yes
+</td>
+<td style="text-align:center;">
+7 (26%)
+</td>
+<td style="text-align:center;">
+23 (64%)
+</td>
+<td style="text-align:center;">
+15 (88%)
+</td>
+<td style="text-align:center;">
+8 (62%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">FVC %pred</span>
+</td>
+<td style="text-align:center;">
+98 (91, 106)
+</td>
+<td style="text-align:center;">
+86 (73, 101)
+</td>
+<td style="text-align:center;">
+82 (62, 92)
+</td>
+<td style="text-align:center;">
+91 (83, 105)
+</td>
+<td style="text-align:center;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">DLCO (SB) (% predicted)</span>
+</td>
+<td style="text-align:center;">
+75 (66, 80)
+</td>
+<td style="text-align:center;">
+59 (36, 73)
+</td>
+<td style="text-align:center;">
+58 (48, 68)
+</td>
+<td style="text-align:center;">
+66 (60, 74)
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">eustarAI</span>
+</td>
+<td style="text-align:center;">
+0.00 (0.00, 2.25)
+</td>
+<td style="text-align:center;">
+2.59 (1.00, 3.25)
+</td>
+<td style="text-align:center;">
+1.09 (1.00, 2.25)
+</td>
+<td style="text-align:center;">
+1.00 (0.00, 1.09)
+</td>
+<td style="text-align:center;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CRP</span>
+</td>
+<td style="text-align:center;">
+0.16 (0.11, 0.36)
+</td>
+<td style="text-align:center;">
+0.29 (0.12, 0.52)
+</td>
+<td style="text-align:center;">
+0.06 (0.06, 0.08)
+</td>
+<td style="text-align:center;">
+0.13 (0.07, 0.19)
+</td>
+<td style="text-align:center;">
+0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-Scl70</span>
+</td>
+<td style="text-align:center;">
+3 (12%)
+</td>
+<td style="text-align:center;">
+11 (30%)
+</td>
+<td style="text-align:center;">
+10 (63%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+0.006
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Digital ulcer</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Current
+</td>
+<td style="text-align:center;">
+1 (3.6%)
+</td>
+<td style="text-align:center;">
+13 (34%)
+</td>
+<td style="text-align:center;">
+3 (18%)
+</td>
+<td style="text-align:center;">
+1 (7.7%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+never
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+1 (5.9%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Never
+</td>
+<td style="text-align:center;">
+20 (71%)
+</td>
+<td style="text-align:center;">
+15 (39%)
+</td>
+<td style="text-align:center;">
+11 (65%)
+</td>
+<td style="text-align:center;">
+8 (62%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Previously
+</td>
+<td style="text-align:center;">
+7 (25%)
+</td>
+<td style="text-align:center;">
+10 (26%)
+</td>
+<td style="text-align:center;">
+2 (12%)
+</td>
+<td style="text-align:center;">
+4 (31%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Anti-RNA polymerase III</span>
+</td>
+<td style="text-align:center;">
+1 (4.0%)
+</td>
+<td style="text-align:center;">
+7 (19%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0.077
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">CK value in serum (U/L)</span>
+</td>
+<td style="text-align:center;">
+65 (58, 97)
+</td>
+<td style="text-align:center;">
+80 (59, 116)
+</td>
+<td style="text-align:center;">
+86 (60, 108)
+</td>
+<td style="text-align:center;">
+103 (80, 130)
+</td>
+<td style="text-align:center;">
+0.084
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Telangiectasia (any)</span>
+</td>
+<td style="text-align:center;">
+13 (46%)
+</td>
+<td style="text-align:center;">
+27 (71%)
+</td>
+<td style="text-align:center;">
+9 (53%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+0.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Sex</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Male
+</td>
+<td style="text-align:center;">
+8 (14%)
+</td>
+<td style="text-align:center;">
+12 (31%)
+</td>
+<td style="text-align:center;">
+3 (18%)
+</td>
+<td style="text-align:center;">
+4 (25%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+Female
+</td>
+<td style="text-align:center;">
+51 (86%)
+</td>
+<td style="text-align:center;">
+27 (69%)
+</td>
+<td style="text-align:center;">
+14 (82%)
+</td>
+<td style="text-align:center;">
+12 (75%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Stomach Symptoms</span>
+</td>
+<td style="text-align:center;">
+8 (30%)
+</td>
+<td style="text-align:center;">
+6 (16%)
+</td>
+<td style="text-align:center;">
+5 (31%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Puffy Fingers</span>
+</td>
+<td style="text-align:center;">
+22 (79%)
+</td>
+<td style="text-align:center;">
+25 (68%)
+</td>
+<td style="text-align:center;">
+9 (53%)
+</td>
+<td style="text-align:center;">
+10 (77%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">LVEF %</span>
+</td>
+<td style="text-align:center;">
+61.0 (59.0, 65.0)
+</td>
+<td style="text-align:center;">
+60.5 (58.0, 63.0)
+</td>
+<td style="text-align:center;">
+61.0 (56.0, 63.0)
+</td>
+<td style="text-align:center;">
+58.0 (57.0, 61.0)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Tendon friction rubs</span>
+</td>
+<td style="text-align:center;">
+3 (11%)
+</td>
+<td style="text-align:center;">
+1 (2.6%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">EULAR/ACR 2013 Criteria</span>
+</td>
+<td style="text-align:center;">
+25 (89%)
+</td>
+<td style="text-align:center;">
+35 (92%)
+</td>
+<td style="text-align:center;">
+15 (88%)
+</td>
+<td style="text-align:center;">
+10 (77%)
+</td>
+<td style="text-align:center;">
+0.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Abnormal Capillaroscopy</span>
+</td>
+<td style="text-align:center;">
+22 (79%)
+</td>
+<td style="text-align:center;">
+32 (86%)
+</td>
+<td style="text-align:center;">
+15 (94%)
+</td>
+<td style="text-align:center;">
+12 (92%)
+</td>
+<td style="text-align:center;">
+0.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Raynaud phenomenon</span>
+</td>
+<td style="text-align:center;">
+28 (100%)
+</td>
+<td style="text-align:center;">
+35 (95%)
+</td>
+<td style="text-align:center;">
+16 (100%)
+</td>
+<td style="text-align:center;">
+13 (100%)
+</td>
+<td style="text-align:center;">
+0.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Proximal muscle weakness</span>
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+2 (5.7%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0 (0%)
+</td>
+<td style="text-align:center;">
+0.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Joint involvement</span>
+</td>
+<td style="text-align:center;">
+7 (25%)
+</td>
+<td style="text-align:center;">
+12 (32%)
+</td>
+<td style="text-align:center;">
+6 (35%)
+</td>
+<td style="text-align:center;">
+5 (38%)
+</td>
+<td style="text-align:center;">
+0.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Esophageal symptom at the time of
+visit</span>
+</td>
+<td style="text-align:center;">
+14 (50%)
+</td>
+<td style="text-align:center;">
+16 (43%)
+</td>
+<td style="text-align:center;">
+9 (53%)
+</td>
+<td style="text-align:center;">
+7 (54%)
+</td>
+<td style="text-align:center;">
+0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Intestinal Symptoms</span>
+</td>
+<td style="text-align:center;">
+9 (32%)
+</td>
+<td style="text-align:center;">
+9 (24%)
+</td>
+<td style="text-align:center;">
+4 (24%)
+</td>
+<td style="text-align:center;">
+3 (23%)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Age</span>
+</td>
+<td style="text-align:center;">
+59 (48, 72)
+</td>
+<td style="text-align:center;">
+61 (49, 73)
+</td>
+<td style="text-align:center;">
+63 (48, 69)
+</td>
+<td style="text-align:center;">
+62 (50, 70)
+</td>
+<td style="text-align:center;">
+&gt;0.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style=" font-weight: bold;    ">Subset_Diffuse</span>
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+0
+</td>
+<td style="text-align:center;">
+28 (100%)
+</td>
+<td style="text-align:center;">
+38 (100%)
+</td>
+<td style="text-align:center;">
+17 (100%)
+</td>
+<td style="text-align:center;">
+13 (100%)
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>1</sup> n (%); Median (Q1, Q3)
+</td>
+</tr>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<sup>2</sup> Fisher’s exact test; Kruskal-Wallis rank sum test; NA;
+Pearson’s Chi-squared test
+</td>
+</tr>
+</tfoot>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-5.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-6.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 </div>
 <div id="feature-phenotyping" class="section level1 tabset">
 <h1 class="tabset">Feature Phenotyping</h1>
@@ -4018,64 +5210,95 @@ algorithmically discovered endotypes.
   target_matrix &lt;- if(conf$input_matrix == &quot;raw&quot;) olink_mat else prepared_matrices[[conf$input_matrix]]
   
   if (is.null(payload) || is.null(target_matrix)) next
-  
-  for (algo_name in conf$target_algorithms) {
-    # 1. Dynamically update the spine with this specific algorithm&#39;s clusters
+
+  # Tier 1: Job Title
+  cat(sprintf(&quot;\n\n## %s {.tabset}\n\n&quot;, conf$title))
+
+  for (algo_name in names(conf$algorithms)) {
+    # Tier 2: Algorithm Tab
+    cat(sprintf(&quot;\n\n### %s {.tabset}\n\n&quot;, toupper(algo_name)))
+    
+    # Inject cluster labels for this algorithm
     temp_spine &lt;- master_spine
     temp_spine$Dynamic_Cluster &lt;- as.character(payload$data$assignments[[algo_name]][match(temp_spine$Subject_ID, names(payload$data$assignments[[algo_name]]))])
-    
-    # Filter out Noise if it exists (HDBSCAN artifacts)
     temp_spine &lt;- temp_spine %&gt;% filter(!is.na(Dynamic_Cluster), Dynamic_Cluster != &quot;Noise&quot;)
 
-    # 2. Iterate through contrasts and call the unified DEA engine
-    for (contrast_name in names(conf$contrasts)) {
-      c_conf &lt;- conf$contrasts[[contrast_name]]
+    # Tier 3: Contrast Loop
+    algo_conf &lt;- conf$algorithms[[algo_name]]
+    for (contrast_name in names(algo_conf$contrasts)) {
+      c_conf &lt;- algo_conf$contrasts[[contrast_name]]
       
-      # Build dynamic config
+      # The \n\n padding here is crucial for pandoc
+      cat(sprintf(&quot;\n\n#### %s\n\n&quot;, c_conf$title))
+      cat(sprintf(&quot;**Description:** %s\n\n&quot;, c_conf$desc))
+      
       dea_conf &lt;- list(
-        title = sprintf(&quot;%s | Alg: %s | Job: %s&quot;, c_conf$title, toupper(algo_name), f_id),
+        title = sprintf(&quot;%s | Alg: %s&quot;, c_conf$title, toupper(algo_name)),
         group_col = &quot;Dynamic_Cluster&quot;,
-        target_groups = c_conf$target_groups,
-        ref_groups = c_conf$ref_groups,
+        target_groups = c_conf$target,
+        ref_groups = c_conf$ref,
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
-      # Reuse the wrap_dea_pipeline 
-      res &lt;- wrap_dea_pipeline(
-        omics_mat = target_matrix,
-        clin_df = temp_spine,
-        dea_conf = dea_conf,
-        dea_id = sprintf(&quot;%s_%s_%s&quot;, f_id, algo_name, contrast_name),
-        base_output_dir = output_dir_data,
-        go_db = go_genesets, # Ensure go_genesets is loaded in this script
-        omics_config = omics_config,
-        heatmap_config = heatmap_config,
-        project_colors_func = get_project_colors
-      )
+      res &lt;- wrap_dea_pipeline(target_matrix, temp_spine, dea_conf, sprintf(&quot;%s_%s_%s&quot;, f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
       
       if (res$status == &quot;success&quot;) {
-        cat(sprintf(&quot;\n\n#### %s: %s\n&quot;, toupper(algo_name), c_conf$title))
-        print(res$plots$volcano)
         
-        # Display Heatmap (ComplexHeatmap object)
-        if (!is.null(res$plots$heatmap)) ComplexHeatmap::draw(res$plots$heatmap)
-        
-        # Print Table
+        # 1. TABLE
         if (nrow(res$tables$significant_proteins) &gt; 0) {
-          print(head(res$tables$significant_proteins, 10) %&gt;%
+          tbl &lt;- head(res$tables$significant_proteins, 10) %&gt;% 
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = &quot;e&quot;, digits = 2)) %&gt;%
-            kableExtra::kbl(format = &quot;html&quot;) %&gt;% kableExtra::kable_styling(bootstrap_options = &quot;striped&quot;))
+            kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Top 10 Significant Proteins&quot;) %&gt;% 
+            kableExtra::kable_styling(bootstrap_options = &quot;striped&quot;)
+          print(tbl)
+          cat(&quot;\n\n&quot;) # Reset markdown parser
+        }
+        
+        # 2. VOLCANO PLOT
+        if (!is.null(res$plots$volcano)) {
+          print(res$plots$volcano)
+          cat(&quot;\n\n&quot;) # Reset markdown parser
+        }
+        
+        # 3. GSEA DOTPLOT
+        if (!is.null(res$plots$gsea_dotplot)) {
+          print(res$plots$gsea_dotplot)
+          cat(&quot;\n\n&quot;)
+        } else {
+          cat(&quot;*Note: No GSEA Dotplot generated (insufficient pathways passed FDR).* \n\n&quot;)
+        }
+        
+        # 4. GSEA RIDGEPLOT
+        if (!is.null(res$plots$gsea_ridge)) {
+          print(res$plots$gsea_ridge)
+          cat(&quot;\n\n&quot;)
+        } else {
+          cat(&quot;*Note: No GSEA Ridgeplot generated (requires &gt;= 2 significant pathways).* \n\n&quot;)
+        }
+        
+        # 5. COMPLEXHEATMAP (Moved to the very end to prevent tabset hijacking)
+        if (!is.null(res$plots$heatmap)) {
+          ComplexHeatmap::draw(res$plots$heatmap)
+          cat(&quot;\n\n&quot;) # The ultimate safety buffer
         }
       }
     }
   }
 }</code></pre>
-<div id="kmeans-cluster-1-vs-cluster-2" class="section level4">
-<h4>KMEANS: Cluster 1 vs Cluster 2</h4>
-<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" alt="" width="768" style="display: block; margin: auto;" />
+<div id="age-regressed-clustering-2" class="section level2 tabset">
+<h2 class="tabset">Age Regressed Clustering</h2>
+<div id="kmeans-2" class="section level3 tabset">
+<h3 class="tabset">KMEANS</h3>
+<div id="cluster-1-vs-cluster-2" class="section level4">
+<h4>Cluster 1 vs Cluster 2</h4>
+<p><strong>Description:</strong> Active-like (high mRSS &amp; high
+anti-RNA-Pol-III) vs Control-like</p>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -4235,16 +5458,837 @@ Up-regulated
 </tr>
 </tbody>
 </table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-1">
+Past versions of feature_phenotyping-1.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-2">
+Past versions of feature_phenotyping-2.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="kmeans-cluster-3-vs-rest" class="section level4">
-<h4>KMEANS: Cluster 3 vs Rest</h4>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" alt="" width="768" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 </div>
-<div id="louvain-cluster-1-vs-cluster-2" class="section level4">
-<h4>LOUVAIN: Cluster 1 vs Cluster 2</h4>
-<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" alt="" width="768" style="display: block; margin: auto;" />
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-3">
+Past versions of feature_phenotyping-3.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cluster-1-vs-cluster-3" class="section level4">
+<h4>Cluster 1 vs Cluster 3</h4>
+<p><strong>Description:</strong> Active-like (high mRSS &amp; high
+anti-RNA-Pol-III) vs Nonactive-Active mixed</p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-4">
+Past versions of feature_phenotyping-4.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Feature
+</th>
+<th style="text-align:right;">
+logFC
+</th>
+<th style="text-align:left;">
+adj.P.Val
+</th>
+<th style="text-align:left;">
+Significance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+MAD1L1
+</td>
+<td style="text-align:right;">
+1.06
+</td>
+<td style="text-align:left;">
+1.79e-11
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EFHD2
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:left;">
+1.19e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TNFRSF10B
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:left;">
+4.95e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZBTB17
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:left;">
+8.44e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFI30
+</td>
+<td style="text-align:right;">
+0.80
+</td>
+<td style="text-align:left;">
+8.44e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LMNB2
+</td>
+<td style="text-align:right;">
+0.77
+</td>
+<td style="text-align:left;">
+1.23e-07
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HNRNPUL1
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:left;">
+1.23e-07
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DPY30
+</td>
+<td style="text-align:right;">
+0.74
+</td>
+<td style="text-align:left;">
+1.96e-07
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINB8
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:left;">
+2.44e-07
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD79B
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+2.44e-07
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-5">
+Past versions of feature_phenotyping-5.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-6">
+Past versions of feature_phenotyping-6.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-7">
+Past versions of feature_phenotyping-7.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="hclust-2" class="section level3 tabset">
+<h3 class="tabset">HCLUST</h3>
+<div id="cluster-2-vs-cluster-1" class="section level4">
+<h4>Cluster 2 vs Cluster 1</h4>
+<p><strong>Description:</strong> Active-like (high mRSS &amp; high
+anti-RNA-Pol-III) vs Control-like</p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-8">
+Past versions of feature_phenotyping-8.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">f2817c7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Feature
+</th>
+<th style="text-align:right;">
+logFC
+</th>
+<th style="text-align:left;">
+adj.P.Val
+</th>
+<th style="text-align:left;">
+Significance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+S100A11
+</td>
+<td style="text-align:right;">
+0.92
+</td>
+<td style="text-align:left;">
+1.20e-18
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CAPG
+</td>
+<td style="text-align:right;">
+1.38
+</td>
+<td style="text-align:left;">
+3.93e-16
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFI30
+</td>
+<td style="text-align:right;">
+1.39
+</td>
+<td style="text-align:left;">
+7.73e-16
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINB8
+</td>
+<td style="text-align:right;">
+1.62
+</td>
+<td style="text-align:left;">
+3.08e-15
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LMNB2
+</td>
+<td style="text-align:right;">
+1.36
+</td>
+<td style="text-align:left;">
+5.96e-15
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAD1L1
+</td>
+<td style="text-align:right;">
+1.62
+</td>
+<td style="text-align:left;">
+1.08e-12
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POLR2F
+</td>
+<td style="text-align:right;">
+0.77
+</td>
+<td style="text-align:left;">
+4.99e-12
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S100A12
+</td>
+<td style="text-align:right;">
+2.32
+</td>
+<td style="text-align:left;">
+1.03e-11
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RBFOX3
+</td>
+<td style="text-align:right;">
+1.20
+</td>
+<td style="text-align:left;">
+1.03e-11
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FKBP15
+</td>
+<td style="text-align:right;">
+1.26
+</td>
+<td style="text-align:left;">
+1.03e-11
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cluster-2-vs-cluster-3" class="section level4">
+<h4>Cluster 2 vs Cluster 3</h4>
+<p><strong>Description:</strong> Active-like (high mRSS &amp; high
+anti-RNA-Pol-III) vs Nonactive-Active mixed</p>
+<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" alt="" width="768" style="display: block; margin: auto;" />
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Feature
+</th>
+<th style="text-align:right;">
+logFC
+</th>
+<th style="text-align:left;">
+adj.P.Val
+</th>
+<th style="text-align:left;">
+Significance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+CAPG
+</td>
+<td style="text-align:right;">
+0.89
+</td>
+<td style="text-align:left;">
+3.47e-12
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S100A11
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+3.47e-12
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAD1L1
+</td>
+<td style="text-align:right;">
+1.10
+</td>
+<td style="text-align:left;">
+5.12e-12
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EFHD2
+</td>
+<td style="text-align:right;">
+0.71
+</td>
+<td style="text-align:left;">
+7.65e-11
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINB8
+</td>
+<td style="text-align:right;">
+1.06
+</td>
+<td style="text-align:left;">
+2.18e-09
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LMNB2
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:left;">
+3.50e-09
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZBTB17
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:left;">
+4.50e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEBPA
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+4.50e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TNFRSF10B
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+4.77e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HNRNPUL1
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:left;">
+7.83e-08
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="louvain-2" class="section level3 tabset">
+<h3 class="tabset">LOUVAIN</h3>
+<div id="cluster-2-vs-cluster-1-1" class="section level4">
+<h4>Cluster 2 vs Cluster 1</h4>
+<p><strong>Description:</strong> Active-like (high mRSS) vs
+Control-like</p>
+<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" alt="" width="768" style="display: block; margin: auto;" />
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -4267,13 +6311,13 @@ Significance
 IFI30
 </td>
 <td style="text-align:right;">
--0.82
+0.82
 </td>
 <td style="text-align:left;">
 8.20e-13
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4281,13 +6325,13 @@ Down-regulated
 S100A12
 </td>
 <td style="text-align:right;">
--1.75
+1.75
 </td>
 <td style="text-align:left;">
 8.20e-13
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4295,13 +6339,13 @@ Down-regulated
 MAD1L1
 </td>
 <td style="text-align:right;">
--0.84
+0.84
 </td>
 <td style="text-align:left;">
 5.96e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4309,13 +6353,13 @@ Down-regulated
 TPR
 </td>
 <td style="text-align:right;">
--0.76
+0.76
 </td>
 <td style="text-align:left;">
 5.96e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4323,13 +6367,13 @@ Down-regulated
 CAPG
 </td>
 <td style="text-align:right;">
--0.79
+0.79
 </td>
 <td style="text-align:left;">
 7.17e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4337,13 +6381,13 @@ Down-regulated
 NT5C1A
 </td>
 <td style="text-align:right;">
--0.76
+0.76
 </td>
 <td style="text-align:left;">
 7.17e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4351,13 +6395,13 @@ Down-regulated
 LMNB1
 </td>
 <td style="text-align:right;">
--0.86
+0.86
 </td>
 <td style="text-align:left;">
 7.17e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4365,13 +6409,13 @@ Down-regulated
 TNFRSF10B
 </td>
 <td style="text-align:right;">
--0.87
+0.87
 </td>
 <td style="text-align:left;">
 8.40e-11
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4379,13 +6423,13 @@ Down-regulated
 LMNB2
 </td>
 <td style="text-align:right;">
--0.75
+0.75
 </td>
 <td style="text-align:left;">
 1.28e-09
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -4393,23 +6437,30 @@ Down-regulated
 HGF
 </td>
 <td style="text-align:right;">
--0.63
+0.63
 </td>
 <td style="text-align:left;">
 4.27e-09
 </td>
 <td style="text-align:left;">
-Down-regulated
+Up-regulated
 </td>
 </tr>
 </tbody>
 </table>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 </div>
-<div id="louvain-cluster-3-vs-rest" class="section level4">
-<h4>LOUVAIN: Cluster 3 vs Rest</h4>
-<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" alt="" width="768" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" alt="" width="768" style="display: block; margin: auto;" />
+<div id="cluster-2-vs-cluster-3-1" class="section level4">
+<h4>Cluster 2 vs Cluster 3</h4>
+<p><strong>Description:</strong> Active-like (high mRSS) vs
+Nonactive-Active mixed</p>
+<img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" alt="" width="768" style="display: block; margin: auto;" />
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<caption>
+Top 10 Significant Proteins
+</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -4432,143 +6483,21 @@ Significance
 IL6
 </td>
 <td style="text-align:right;">
-4.00
+-3.2
 </td>
 <td style="text-align:left;">
-3.57e-20
+1.15e-08
 </td>
 <td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LMNB1
-</td>
-<td style="text-align:right;">
-1.34
-</td>
-<td style="text-align:left;">
-1.37e-06
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ZBP1
-</td>
-<td style="text-align:right;">
-0.88
-</td>
-<td style="text-align:left;">
-2.06e-05
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-KYNU
-</td>
-<td style="text-align:right;">
-0.64
-</td>
-<td style="text-align:left;">
-7.19e-04
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IDO1
-</td>
-<td style="text-align:right;">
-0.78
-</td>
-<td style="text-align:left;">
-2.93e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CEBPA
-</td>
-<td style="text-align:right;">
-0.62
-</td>
-<td style="text-align:left;">
-5.39e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CXCL10
-</td>
-<td style="text-align:right;">
-0.97
-</td>
-<td style="text-align:left;">
-5.39e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LAMP3
-</td>
-<td style="text-align:right;">
-0.78
-</td>
-<td style="text-align:left;">
-5.96e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SSB
-</td>
-<td style="text-align:right;">
-0.68
-</td>
-<td style="text-align:left;">
-7.00e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CES2
-</td>
-<td style="text-align:right;">
-0.67
-</td>
-<td style="text-align:left;">
-7.00e-03
-</td>
-<td style="text-align:left;">
-Up-regulated
+Down-regulated
 </td>
 </tr>
 </tbody>
 </table>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" alt="" width="768" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <!-- # Consensus Export -->
 <!-- 
 <div class="decision-box">
@@ -4597,6 +6526,8 @@ Up-regulated
 <!--   } -->
 <!-- } -->
 <!-- ``` -->
+</div>
+</div>
 </div>
 </div>
 <div id="appendix" class="section level1">
@@ -7312,10 +9243,10 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
       }
 
       p_wss &lt;- fviz_nbclust(patient_mat, FUNcluster, method = &quot;wss&quot;, k.max = k_max) +
-        theme_project_base() + labs(title = &quot;Elbow Method (WSS)&quot;, subtitle = sprintf(&quot;Algorithm: %s&quot;, toupper(algo_name)))
+        theme_project_base() + labs(title = &quot;Elbow Method (WSS)&quot;, subtitle = sprintf(&quot;**Algorithm: %s**&quot;, toupper(algo_name)))
 
       p_sil &lt;- fviz_nbclust(patient_mat, FUNcluster, method = &quot;silhouette&quot;, k.max = k_max) +
-        theme_project_base() + labs(title = &quot;Average Silhouette&quot;, subtitle = sprintf(&quot;Algorithm: %s&quot;, toupper(algo_name)))
+        theme_project_base() + labs(title = &quot;Average Silhouette&quot;, subtitle = sprintf(&quot;**Algorithm: %s**&quot;, toupper(algo_name)))
 
       if (gap_boot &gt; 0) {
         set.seed(42)
@@ -7370,7 +9301,6 @@ wrap_clustering_pipeline &lt;- function(omics_mat, clin_df, conf, cluster_id, ba
     rename(UMAP1 = V1, UMAP2 = V2) %&gt;%
     rownames_to_column(&quot;Subject_ID&quot;)
 
-  # Save distance matrix &amp; UMAP for consensus/diagnostic engines
   dist_matrix &lt;- dist(patient_mat, method = &quot;euclidean&quot;)
   results$data$dist_matrix &lt;- dist_matrix
   results$data$umap_df &lt;- umap_df
@@ -7380,7 +9310,6 @@ wrap_clustering_pipeline &lt;- function(omics_mat, clin_df, conf, cluster_id, ba
     algo_conf &lt;- conf$algorithms[[algo_name]]
     if (!isTRUE(algo_conf$run)) next
 
-    # Call the DRY worker using TRUE high-dimensional space
     cluster_labels &lt;- run_clustering_worker(patient_mat, conf$k, algo_name, algo_conf)
     if (is.null(cluster_labels)) next
 
@@ -7393,19 +9322,20 @@ wrap_clustering_pipeline &lt;- function(omics_mat, clin_df, conf, cluster_id, ba
     safe_pal &lt;- c(&quot;#e74c3c&quot;, &quot;#9b59b6&quot;, &quot;#f1c40f&quot;, &quot;#1abc9c&quot;, &quot;#34495e&quot;, &quot;#e67e22&quot;)
     mapped_colors &lt;- safe_pal[1:length(cluster_levels)]
 
-    # Comprehensive Subtitle
     dist_used &lt;- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else &quot;euclidean&quot;
-    p_subtitle &lt;- sprintf(&quot;Job: %s | Algorithm: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP&quot;, cluster_id, toupper(algo_name), dist_used)
+
+    # NEW: Dynamic Title and Subtitle Logic
+    p_title &lt;- sprintf(&quot;%s Clustering&quot;, toupper(algo_name))
+    p_subtitle &lt;- sprintf(&quot;Job: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP&quot;, conf$title, dist_used)
 
     p_umap &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
       geom_point(shape = 21, color = &quot;black&quot;, size = 3.5, alpha = 0.8) +
       stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = &quot;dashed&quot;, alpha = 0.6) +
       scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
       theme_project_base() +
-      labs(title = conf$title, subtitle = p_subtitle, fill = &quot;Endotype&quot;, color = &quot;Endotype&quot;)
+      labs(title = p_title, subtitle = p_subtitle, fill = &quot;Endotype&quot;, color = &quot;Endotype&quot;)
 
     results$plots$umaps[[algo_name]] &lt;- p_umap
-
   }
 
   return(results)
@@ -7464,66 +9394,64 @@ loaded via a namespace (and not attached):
   [4] httr_1.4.8              RColorBrewer_1.1-3      doParallel_1.0.17      
   [7] numDeriv_2016.8-1.1     backports_1.5.1         tools_4.5.2            
  [10] R6_2.6.1                DT_0.34.0               mgcv_1.9-4             
- [13] lazyeval_0.2.2          GetoptLong_1.1.0        litedown_0.9           
- [16] withr_3.0.2             gridExtra_2.3           textshaping_1.0.5      
- [19] cli_3.6.5               Biobase_2.70.0          gt_1.3.0               
- [22] flashClust_1.1-4        scatterpie_0.2.6        labeling_0.4.3         
- [25] sass_0.4.10             mvtnorm_1.3-6           S7_0.2.1               
- [28] askpass_1.2.1           commonmark_2.0.0        systemfonts_1.3.2      
- [31] yulab.utils_0.2.4       gson_0.1.0              svglite_2.2.2          
- [34] DOSE_4.4.0              R.utils_2.13.0          parallelly_1.46.1      
- [37] rstudioapi_0.18.0       RSQLite_2.4.6           generics_0.1.4         
- [40] gridGraphics_0.5-1      shape_1.4.6.1           vroom_1.7.1            
- [43] gtools_3.9.5            GO.db_3.22.0            leaps_3.2              
- [46] S4Vectors_0.48.1        abind_1.4-8             R.methodsS3_1.8.2      
- [49] lifecycle_1.0.5         whisker_0.4.1           scatterplot3d_0.3-45   
- [52] yaml_2.3.12             gplots_3.3.0            qvalue_2.42.0          
- [55] blob_1.3.0              promises_1.5.0          crayon_1.5.3           
- [58] ggtangle_0.1.1          lattice_0.22-9          cowplot_1.2.0          
- [61] KEGGREST_1.50.0         pillar_1.11.1           knitr_1.51             
- [64] fgsea_1.36.2            boot_1.3-32             rjson_0.2.23           
- [67] estimability_1.5.1      corpcor_1.6.10          codetools_0.2-20       
- [70] fastmatch_1.1-8         glue_1.8.0              ggiraph_0.9.6          
- [73] getPass_0.2-4           ggfun_0.2.0             fontLiberation_0.1.0   
- [76] data.table_1.18.2.1     vctrs_0.7.2             png_0.1-9              
- [79] treeio_1.34.0           Rdpack_2.6.6            gtable_0.3.6           
- [82] assertthat_0.2.1        cachem_1.1.0            xfun_0.57              
- [85] rbibutils_2.4.1         Seqinfo_1.0.0           reformulas_0.4.4       
- [88] survival_3.8-6          iterators_1.0.14        statmod_1.5.1          
- [91] nlme_3.1-169            pbkrtest_0.5.5          ggtree_4.0.5           
- [94] bit64_4.6.0-1           fontquiver_0.2.1        EnvStats_3.1.0         
- [97] rprojroot_2.1.1         bslib_0.10.0            KernSmooth_2.23-26     
-[100] otel_0.2.0              colorspace_2.1-2        BiocGenerics_0.56.0    
-[103] DBI_1.3.0               tidyselect_1.2.1        processx_3.8.7         
-[106] emmeans_2.0.2           bit_4.6.0               compiler_4.5.2         
-[109] curl_7.0.0              git2r_0.36.2            xml2_1.5.2             
-[112] fontBitstreamVera_0.1.1 scales_1.4.0            caTools_1.18.3         
-[115] remaCor_0.0.20          callr_3.7.6             multcompView_0.1-11    
-[118] rappdirs_0.3.4          digest_0.6.39           minqa_1.2.8            
-[121] rmarkdown_2.31          aod_1.3.3               XVector_0.50.0         
-[124] RhpcBLASctl_0.23-42     htmltools_0.5.9         pkgconfig_2.0.3        
-[127] lme4_2.0-1              fastmap_1.2.0           rlang_1.2.0            
-[130] GlobalOptions_0.1.3     htmlwidgets_1.6.4       farver_2.1.2           
-[133] jquerylib_0.1.4         jsonlite_2.0.0          GOSemSim_2.36.0        
-[136] R.oo_1.27.1             magrittr_2.0.5          kableExtra_1.4.0       
-[139] Formula_1.2-5           ggplotify_0.1.3         Rcpp_1.1.1             
-[142] ape_5.8-1               babelgene_22.9          ggnewscale_0.5.2       
-[145] gdtools_0.5.0           reticulate_1.46.0       stringi_1.8.7          
-[148] MASS_7.3-65             plyr_1.8.9              listenv_0.10.1         
-[151] parallel_4.5.2          Biostrings_2.78.0       splines_4.5.2          
-[154] hms_1.1.4               ps_1.9.2                ggpubr_0.6.3           
-[157] markdown_2.0            ggsignif_0.6.4          reshape2_1.4.5         
-[160] stats4_4.5.2            evaluate_1.0.5          renv_1.1.5             
-[163] BiocManager_1.30.27     nloptr_2.2.1            tzdb_0.5.0             
-[166] foreach_1.5.2           tweenr_2.0.3            httpuv_1.6.16          
-[169] cards_0.7.1             openssl_2.3.5           polyclip_1.10-7        
-[172] clue_0.3-68             ggforce_0.5.0           cardx_0.3.2            
-[175] broom_1.0.12            fANCOVA_0.6-1           RSpectra_0.16-2        
-[178] tidytree_0.4.7          rstatix_0.7.3           tidydr_0.0.6           
-[181] later_1.4.8             ragg_1.5.2              viridisLite_0.4.3      
-[184] lmerTest_3.2-1          aplot_0.2.9             memoise_2.0.1          
-[187] AnnotationDbi_1.72.0    IRanges_2.44.0          globals_0.19.1         
-[190] timechange_0.4.0       </code></pre>
+ [13] lazyeval_0.2.2          GetoptLong_1.1.0        withr_3.0.2            
+ [16] gridExtra_2.3           textshaping_1.0.5       cli_3.6.5              
+ [19] Biobase_2.70.0          flashClust_1.1-4        scatterpie_0.2.6       
+ [22] labeling_0.4.3          sass_0.4.10             mvtnorm_1.3-6          
+ [25] S7_0.2.1                askpass_1.2.1           systemfonts_1.3.2      
+ [28] yulab.utils_0.2.4       gson_0.1.0              svglite_2.2.2          
+ [31] DOSE_4.4.0              R.utils_2.13.0          parallelly_1.46.1      
+ [34] rstudioapi_0.18.0       RSQLite_2.4.6           generics_0.1.4         
+ [37] gridGraphics_0.5-1      shape_1.4.6.1           vroom_1.7.1            
+ [40] gtools_3.9.5            GO.db_3.22.0            leaps_3.2              
+ [43] S4Vectors_0.48.1        abind_1.4-8             R.methodsS3_1.8.2      
+ [46] lifecycle_1.0.5         whisker_0.4.1           scatterplot3d_0.3-45   
+ [49] yaml_2.3.12             gplots_3.3.0            qvalue_2.42.0          
+ [52] blob_1.3.0              promises_1.5.0          crayon_1.5.3           
+ [55] ggtangle_0.1.1          lattice_0.22-9          cowplot_1.2.0          
+ [58] KEGGREST_1.50.0         pillar_1.11.1           knitr_1.51             
+ [61] fgsea_1.36.2            boot_1.3-32             rjson_0.2.23           
+ [64] estimability_1.5.1      corpcor_1.6.10          codetools_0.2-20       
+ [67] fastmatch_1.1-8         glue_1.8.0              ggiraph_0.9.6          
+ [70] getPass_0.2-4           ggfun_0.2.0             fontLiberation_0.1.0   
+ [73] data.table_1.18.2.1     vctrs_0.7.2             png_0.1-9              
+ [76] treeio_1.34.0           Rdpack_2.6.6            gtable_0.3.6           
+ [79] assertthat_0.2.1        cachem_1.1.0            xfun_0.57              
+ [82] rbibutils_2.4.1         Seqinfo_1.0.0           reformulas_0.4.4       
+ [85] survival_3.8-6          iterators_1.0.14        statmod_1.5.1          
+ [88] nlme_3.1-169            pbkrtest_0.5.5          ggtree_4.0.5           
+ [91] bit64_4.6.0-1           fontquiver_0.2.1        EnvStats_3.1.0         
+ [94] rprojroot_2.1.1         bslib_0.10.0            KernSmooth_2.23-26     
+ [97] otel_0.2.0              colorspace_2.1-2        BiocGenerics_0.56.0    
+[100] DBI_1.3.0               tidyselect_1.2.1        processx_3.8.7         
+[103] emmeans_2.0.2           bit_4.6.0               compiler_4.5.2         
+[106] curl_7.0.0              git2r_0.36.2            xml2_1.5.2             
+[109] fontBitstreamVera_0.1.1 scales_1.4.0            caTools_1.18.3         
+[112] remaCor_0.0.20          callr_3.7.6             multcompView_0.1-11    
+[115] rappdirs_0.3.4          digest_0.6.39           minqa_1.2.8            
+[118] rmarkdown_2.31          aod_1.3.3               XVector_0.50.0         
+[121] RhpcBLASctl_0.23-42     htmltools_0.5.9         pkgconfig_2.0.3        
+[124] lme4_2.0-1              fastmap_1.2.0           rlang_1.2.0            
+[127] GlobalOptions_0.1.3     htmlwidgets_1.6.4       farver_2.1.2           
+[130] jquerylib_0.1.4         jsonlite_2.0.0          GOSemSim_2.36.0        
+[133] R.oo_1.27.1             magrittr_2.0.5          kableExtra_1.4.0       
+[136] Formula_1.2-5           ggplotify_0.1.3         Rcpp_1.1.1             
+[139] ape_5.8-1               babelgene_22.9          ggnewscale_0.5.2       
+[142] gdtools_0.5.0           reticulate_1.46.0       stringi_1.8.7          
+[145] MASS_7.3-65             plyr_1.8.9              listenv_0.10.1         
+[148] parallel_4.5.2          Biostrings_2.78.0       splines_4.5.2          
+[151] hms_1.1.4               ps_1.9.2                ggpubr_0.6.3           
+[154] ggsignif_0.6.4          reshape2_1.4.5          stats4_4.5.2           
+[157] evaluate_1.0.5          renv_1.1.5              BiocManager_1.30.27    
+[160] nloptr_2.2.1            tzdb_0.5.0              foreach_1.5.2          
+[163] tweenr_2.0.3            httpuv_1.6.16           cards_0.7.1            
+[166] openssl_2.3.5           polyclip_1.10-7         clue_0.3-68            
+[169] ggforce_0.5.0           cardx_0.3.2             broom_1.0.12           
+[172] fANCOVA_0.6-1           RSpectra_0.16-2         tidytree_0.4.7         
+[175] rstatix_0.7.3           tidydr_0.0.6            later_1.4.8            
+[178] ragg_1.5.2              viridisLite_0.4.3       lmerTest_3.2-1         
+[181] aplot_0.2.9             memoise_2.0.1           AnnotationDbi_1.72.0   
+[184] IRanges_2.44.0          globals_0.19.1          timechange_0.4.0       </code></pre>
 </div>
 </div>
 </div>
