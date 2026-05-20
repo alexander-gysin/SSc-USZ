@@ -2699,10 +2699,10 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
       }
 
       p_wss <- fviz_nbclust(patient_mat, FUNcluster, method = "wss", k.max = k_max) +
-        theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
+        theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("**Algorithm: %s**", toupper(algo_name)))
 
       p_sil <- fviz_nbclust(patient_mat, FUNcluster, method = "silhouette", k.max = k_max) +
-        theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
+        theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("**Algorithm: %s**", toupper(algo_name)))
 
       if (gap_boot > 0) {
         set.seed(42)
@@ -2757,7 +2757,6 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
     rename(UMAP1 = V1, UMAP2 = V2) %>%
     rownames_to_column("Subject_ID")
 
-  # Save distance matrix & UMAP for consensus/diagnostic engines
   dist_matrix <- dist(patient_mat, method = "euclidean")
   results$data$dist_matrix <- dist_matrix
   results$data$umap_df <- umap_df
@@ -2767,7 +2766,6 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
     algo_conf <- conf$algorithms[[algo_name]]
     if (!isTRUE(algo_conf$run)) next
 
-    # Call the DRY worker using TRUE high-dimensional space
     cluster_labels <- run_clustering_worker(patient_mat, conf$k, algo_name, algo_conf)
     if (is.null(cluster_labels)) next
 
@@ -2780,19 +2778,20 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
     safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
     mapped_colors <- safe_pal[1:length(cluster_levels)]
 
-    # Comprehensive Subtitle
     dist_used <- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
-    p_subtitle <- sprintf("Job: %s | Algorithm: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP", cluster_id, toupper(algo_name), dist_used)
+
+    # NEW: Dynamic Title and Subtitle Logic
+    p_title <- sprintf("%s Clustering", toupper(algo_name))
+    p_subtitle <- sprintf("Job: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP", conf$title, dist_used)
 
     p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
       geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
       stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
       scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
       theme_project_base() +
-      labs(title = conf$title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
+      labs(title = p_title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
 
     results$plots$umaps[[algo_name]] <- p_umap
-
   }
 
   return(results)
