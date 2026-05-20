@@ -97,7 +97,7 @@ clustering_configs <- list(
       kmeans = list(run=TRUE, nstart=25), 
       pam = list(run=TRUE, metric="euclidean"), 
       hclust = list(run=TRUE, distance="euclidean", method="ward.D2"), 
-      hdbscan = list(run=TRUE, minPts=4),          
+      hdbscan = list(run=TRUE, minPts=3),          
       louvain = list(run=TRUE, k_neighbors=4, resolution=0.5) 
     )
   )
@@ -113,7 +113,8 @@ diagnostic_configs <- list(
 pheno_configs <- list(
   pheno_avc = list(
     target_job = "job_avc",
-    target_algorithms = c("kmeans", "louvain"),
+    title = "Age Regressed Clustering",
+    target_algorithms = c("kmeans", "hclust","louvain"),
     variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
     highlight_variables = c("Age", "Sex", "cohort_group") ,
     p_cutoff = 0.05,
@@ -125,12 +126,29 @@ pheno_configs <- list(
 feature_configs <- list(
   feat_avc = list(
     target_job = "job_avc",
-    target_algorithms = c("kmeans", "louvain"),
-    input_matrix = "raw", # Use the pure unaltered Olink matrix for unbiased biological discovery
-    covariates = c("Age"), 
-    contrasts = list(
-      c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2", target_groups = c("Cluster 1"), ref_groups = c("Cluster 2")),
-      c3_vs_rest = list(title = "Cluster 3 vs Rest", target_groups = c("Cluster 3"), ref_groups = c("Cluster 1", "Cluster 2"))
+    title = "Age Regressed Clustering",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Control-like", target=c("Cluster 1"), ref=c("Cluster 2")),
+          c1_vs_c3 = list(title = "Cluster 1 vs Cluster 3", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Nonactive-Active mixed", target=c("Cluster 1"), ref=c("Cluster 3"))
+        )
+      ),
+      hclust = list(
+        contrasts = list(
+          c2_vs_c1 = list(title = "Cluster 2 vs Cluster 1", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Control-like", target=c("Cluster 2"), ref=c("Cluster 1")),
+          c2_vs_c3 = list(title = "Cluster 2 vs Cluster 3", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Nonactive-Active mixed", target=c("Cluster 2"), ref=c("Cluster 3"))
+        )
+      ),
+      louvain = list(
+        contrasts = list(
+          c2_vs_c1 = list(title = "Cluster 2 vs Cluster 1", desc = "Active-like (high mRSS) vs Control-like", target=c("Cluster 2"), ref=c("Cluster 1")),
+          c2_vs_c3 = list(title = "Cluster 2 vs Cluster 3", desc = "Active-like (high mRSS) vs Nonactive-Active mixed", target=c("Cluster 2"), ref=c("Cluster 3"))
+        )
+      )
     ),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
@@ -153,6 +171,8 @@ omics_config <- list(
 
 # Matrix Factory
 `r analysis_decision("Employed three distinct matrix transformations to isolate the disease signature from the Age confounder. The baseline matrix remains unmodified. The pruned matrix surgically removes features correlating heavily with Age (Spearman rho > 0.4). The residualized matrix uses linear modeling to mathematically regress Age out of the coordinate space.")` 
+
+`r what_this_does("Matrix Factory: Dynamically generates custom feature matrices by subsetting the Olink proteomics landscape.", "Transformation: Applies mathematical corrections (Residualization vs. Pruning) to isolate the clinical signature from the Age confounder.", "Audit: Tracks the inclusion/exclusion status of every feature against defined biological thresholds (FDR/FC) to ensure transparency in the dimensionality of your input space.")`
 
 ```{r matrix_factory, results='asis'}
 # Global storage for the prepared mathematical matrices
@@ -221,12 +241,14 @@ for (opt_id in names(k_opt_configs)) {
 `r what_this_does("Ingested the dynamically pre-processed matrices from the Matrix Factory.", "Calculated mathematical distances and assigned endotypes using true high-dimensional protein matrices.", "Calculated 2D UMAP coordinates exclusively for visualization, painting high-dimensional labels onto the squashed axes.")`
 
 `r why_is_this_done("Clustering on projected 2D UMAP space introduces manifold distortion. By calculating groupings mathematically across all protein dimensions, we ensure biological robustness, even if the 2D visual projection appears slightly overlapping.")`
-```{r UMAP, results='asis'}
+```{r unsupervised_clustering, results='asis'}
 # Store the payload globally so the diagnostic chunk can access it later!
 global_cluster_payloads <- list()
 
 for (c_id in names(clustering_configs)) {
   conf <- clustering_configs[[c_id]]
+  # Inject the Job Title
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
   
   target_matrix <- prepared_matrices[[conf$input_matrix]]
   if (is.null(target_matrix)) next
@@ -236,8 +258,10 @@ for (c_id in names(clustering_configs)) {
   
   if (res$status == "success") {
     for (algo in names(res$plots$umaps)) {
-      # Explicitly print the UMAP so it appears in the RStudio Plots pane
-      print(res$plots$umaps[[algo]])
+      # Inject the Algorithm Tab
+     cat(sprintf("\n\n### %s\n\n", toupper(algo)))
+     print(res$plots$umaps[[algo]])
+      cat("\n\n") # Crucial empty lines for pandoc rendering
     }
   } 
 }
@@ -248,7 +272,7 @@ for (c_id in names(clustering_configs)) {
 
 `r what_this_does("Extracted the underlying distance matrices and specific patient assignments from the upstream multi-algorithm pipeline.", "Calculated the global Silhouette width for K-Means, PAM, and Hierarchical clustering.", "Generated comparative bar charts to guide algorithmic selection.")`
 
-```{r clustering_diagnostic}
+```{r clustering_diagnostic,results='asis'}
 # Store diagnostic results to extract the "best_algo" for Consensus later
 global_diagnostic_payloads <- list()
 
@@ -282,14 +306,16 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
 }
 ```
 
-# Clinical Phenotyping
+# Clinical Phenotyping {.tabset}
 `r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
 
 `r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes.")`
 
-```{r clinical_phenotyping, fig.height=6, fig.width=12, warning=FALSE}
+```{r clinical_phenotyping, fig.height=6, fig.width=12, warning=FALSE, results='asis'}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
+  # Assuming you have the job name mapped, or just print conf$target_job
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
   payload <- global_cluster_payloads[[conf$target_job]]
   if (is.null(payload)) next
   
@@ -297,18 +323,29 @@ for (p_id in names(pheno_configs)) {
   
   if (res$status == "success") {
     for (algo in names(res$plots)) {
-      cat(sprintf("\n\n#### Algorithm: %s\n", toupper(algo)))
+      # Inject Markdown Header for the Tabset
+      cat(sprintf("\n\n### %s\n\n", toupper(algo)))
       
-      # Print Table
+      # Print Table (Converted to kableExtra for consistent HTML styling)
       if (!is.null(res$tables[[algo]])) {
-        print(res$tables[[algo]] %>% as_gt() %>% gt::tab_header(title=sprintf("Clinical Summary: %s", toupper(algo))))
+        tbl <- res$tables[[algo]] %>% 
+          gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
+          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
+        print(tbl)
+        cat("\n\n")
       }
+      
       # Print Heatmap (Using ComplexHeatmap::draw)
       if (!is.null(res$plots[[algo]]$heatmap)) {
         ComplexHeatmap::draw(res$plots[[algo]]$heatmap)
+        cat("\n\n")
       }
+      
       # Print Grid
-      if (!is.null(res$plots[[algo]]$highlights)) print(res$plots[[algo]]$highlights)
+      if (!is.null(res$plots[[algo]]$highlights)) {
+        print(res$plots[[algo]]$highlights)
+        cat("\n\n")
+      }
     }
   }
 }
@@ -324,55 +361,78 @@ for (f_id in names(feature_configs)) {
   target_matrix <- if(conf$input_matrix == "raw") olink_mat else prepared_matrices[[conf$input_matrix]]
   
   if (is.null(payload) || is.null(target_matrix)) next
-  
-  for (algo_name in conf$target_algorithms) {
-    # 1. Dynamically update the spine with this specific algorithm's clusters
+
+  # Tier 1: Job Title
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+
+  for (algo_name in names(conf$algorithms)) {
+    # Tier 2: Algorithm Tab
+    cat(sprintf("\n\n### %s {.tabset}\n\n", toupper(algo_name)))
+    
+    # Inject cluster labels for this algorithm
     temp_spine <- master_spine
     temp_spine$Dynamic_Cluster <- as.character(payload$data$assignments[[algo_name]][match(temp_spine$Subject_ID, names(payload$data$assignments[[algo_name]]))])
-    
-    # Filter out Noise if it exists (HDBSCAN artifacts)
     temp_spine <- temp_spine %>% filter(!is.na(Dynamic_Cluster), Dynamic_Cluster != "Noise")
 
-    # 2. Iterate through contrasts and call the unified DEA engine
-    for (contrast_name in names(conf$contrasts)) {
-      c_conf <- conf$contrasts[[contrast_name]]
+    # Tier 3: Contrast Loop
+    algo_conf <- conf$algorithms[[algo_name]]
+    for (contrast_name in names(algo_conf$contrasts)) {
+      c_conf <- algo_conf$contrasts[[contrast_name]]
       
-      # Build dynamic config
+      # The \n\n padding here is crucial for pandoc
+      cat(sprintf("\n\n#### %s\n\n", c_conf$title))
+      cat(sprintf("**Description:** %s\n\n", c_conf$desc))
+      
       dea_conf <- list(
-        title = sprintf("%s | Alg: %s | Job: %s", c_conf$title, toupper(algo_name), f_id),
+        title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
-        target_groups = c_conf$target_groups,
-        ref_groups = c_conf$ref_groups,
+        target_groups = c_conf$target,
+        ref_groups = c_conf$ref,
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
-      # Reuse the wrap_dea_pipeline 
-      res <- wrap_dea_pipeline(
-        omics_mat = target_matrix,
-        clin_df = temp_spine,
-        dea_conf = dea_conf,
-        dea_id = sprintf("%s_%s_%s", f_id, algo_name, contrast_name),
-        base_output_dir = output_dir_data,
-        go_db = go_genesets, # Ensure go_genesets is loaded in this script
-        omics_config = omics_config,
-        heatmap_config = heatmap_config,
-        project_colors_func = get_project_colors
-      )
+      res <- wrap_dea_pipeline(target_matrix, temp_spine, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
       
       if (res$status == "success") {
-        cat(sprintf("\n\n#### %s: %s\n", toupper(algo_name), c_conf$title))
-        print(res$plots$volcano)
         
-        # Display Heatmap (ComplexHeatmap object)
-        if (!is.null(res$plots$heatmap)) ComplexHeatmap::draw(res$plots$heatmap)
-        
-        # Print Table
+        # 1. TABLE
         if (nrow(res$tables$significant_proteins) > 0) {
-          print(head(res$tables$significant_proteins, 10) %>%
+          tbl <- head(res$tables$significant_proteins, 10) %>% 
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = "e", digits = 2)) %>%
-            kableExtra::kbl(format = "html") %>% kableExtra::kable_styling(bootstrap_options = "striped"))
+            kableExtra::kbl(format = "html", caption = "Top 10 Significant Proteins") %>% 
+            kableExtra::kable_styling(bootstrap_options = "striped")
+          print(tbl)
+          cat("\n\n") # Reset markdown parser
+        }
+        
+        # 2. VOLCANO PLOT
+        if (!is.null(res$plots$volcano)) {
+          print(res$plots$volcano)
+          cat("\n\n") # Reset markdown parser
+        }
+        
+        # 3. GSEA DOTPLOT
+        if (!is.null(res$plots$gsea_dotplot)) {
+          print(res$plots$gsea_dotplot)
+          cat("\n\n")
+        } else {
+          cat("*Note: No GSEA Dotplot generated (insufficient pathways passed FDR).* \n\n")
+        }
+        
+        # 4. GSEA RIDGEPLOT
+        if (!is.null(res$plots$gsea_ridge)) {
+          print(res$plots$gsea_ridge)
+          cat("\n\n")
+        } else {
+          cat("*Note: No GSEA Ridgeplot generated (requires >= 2 significant pathways).* \n\n")
+        }
+        
+        # 5. COMPLEXHEATMAP (Moved to the very end to prevent tabset hijacking)
+        if (!is.null(res$plots$heatmap)) {
+          ComplexHeatmap::draw(res$plots$heatmap)
+          cat("\n\n") # The ultimate safety buffer
         }
       }
     }
