@@ -265,6 +265,8 @@ for (c_id in names(clustering_configs)) {
     }
   } 
 }
+
+cat("\n\n")
 ```
 # Clustering Diagnostic {.tabset}
 
@@ -379,9 +381,10 @@ for (f_id in names(feature_configs)) {
     for (contrast_name in names(algo_conf$contrasts)) {
       c_conf <- algo_conf$contrasts[[contrast_name]]
       
-      # The \n\n padding here is crucial for pandoc
       cat(sprintf("\n\n#### %s\n\n", c_conf$title))
       cat(sprintf("**Description:** %s\n\n", c_conf$desc))
+      
+      current_dea_id <- sprintf("%s_%s_%s", f_id, algo_name, contrast_name)
       
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
@@ -393,7 +396,7 @@ for (f_id in names(feature_configs)) {
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
-      res <- wrap_dea_pipeline(target_matrix, temp_spine, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
+      res <- wrap_dea_pipeline(target_matrix, temp_spine, dea_conf, current_dea_id, output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
       
       if (res$status == "success") {
         
@@ -404,16 +407,28 @@ for (f_id in names(feature_configs)) {
             kableExtra::kbl(format = "html", caption = "Top 10 Significant Proteins") %>% 
             kableExtra::kable_styling(bootstrap_options = "striped")
           print(tbl)
-          cat("\n\n") # Reset markdown parser
+          cat("\n\n") 
         }
         
         # 2. VOLCANO PLOT
         if (!is.null(res$plots$volcano)) {
           print(res$plots$volcano)
-          cat("\n\n") # Reset markdown parser
+          cat("\n\n")
         }
         
-        # 3. GSEA DOTPLOT
+        # 3. COMPLEXHEATMAP (The Path Reconstruction Hack)
+        if (!is.null(res$plots$heatmap)) {
+          # Reconstruct the exact path where the engine just saved the PNG
+          hm_filename <- paste0(current_dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")
+          
+          # workflowr knits from the 'analysis' folder, so we use a relative path back to 'output'
+          rel_path <- file.path("..", "output", current_file, "DEA", current_dea_id, hm_filename)
+          safe_path <- gsub("\\\\", "/", rel_path) # Normalize slashes for Pandoc
+          
+          cat(sprintf("![](%s)\n\n", safe_path))
+        }
+        
+        # 4. GSEA DOTPLOT
         if (!is.null(res$plots$gsea_dotplot)) {
           print(res$plots$gsea_dotplot)
           cat("\n\n")
@@ -421,18 +436,12 @@ for (f_id in names(feature_configs)) {
           cat("*Note: No GSEA Dotplot generated (insufficient pathways passed FDR).* \n\n")
         }
         
-        # 4. GSEA RIDGEPLOT
+        # 5. GSEA RIDGEPLOT
         if (!is.null(res$plots$gsea_ridge)) {
           print(res$plots$gsea_ridge)
           cat("\n\n")
         } else {
           cat("*Note: No GSEA Ridgeplot generated (requires >= 2 significant pathways).* \n\n")
-        }
-        
-        # 5. COMPLEXHEATMAP (Moved to the very end to prevent tabset hijacking)
-        if (!is.null(res$plots$heatmap)) {
-          ComplexHeatmap::draw(res$plots$heatmap)
-          cat("\n\n") # The ultimate safety buffer
         }
       }
     }
