@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1a67cb8e101e72b449057f6d77a288bb16deddf7targetblank1a67cb8a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec03272339705976c47601ea6962e90c7b9cd3e8ctargetblankc032723a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1a67cb8e101e72b449057f6d77a288bb16deddf7" target="_blank">1a67cb8</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c03272339705976c47601ea6962e90c7b9cd3e8c" target="_blank">c032723</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1a67cb8e101e72b449057f6d77a288bb16deddf7targetblank1a67cb8a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec03272339705976c47601ea6962e90c7b9cd3e8ctargetblankc032723a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1a67cb8e101e72b449057f6d77a288bb16deddf7" target="_blank">1a67cb8</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c03272339705976c47601ea6962e90c7b9cd3e8c" target="_blank">c032723</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -651,11 +651,6 @@ Untracked files:
     Untracked:  code/clinical_master_mapping_creation.R
     Untracked:  code/randomizer.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/01a_data_import_and_qc.Rmd
-    Modified:   code/00_config.R
-    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -701,6 +696,41 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c03272339705976c47601ea6962e90c7b9cd3e8c/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">c032723</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Added medications, improved log transformation, factors to lowercase,
+fixed clincal atlas
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/01b_clinical_feature_engineering.html" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1005,7 +1035,7 @@ Forced all character columns to lowercase.
 </ul>
 </div>
 <pre class="r"><code># Initialize the global audit log to track every change made to the dataset
-audit_log &lt;- c(&quot;### Phase 1: Schema &amp; Mapping Audit Log\n&quot;)
+audit_log &lt;- c(&quot;Phase 1: Schema &amp; Mapping Audit Log\n&quot;)
 curated_spine &lt;- copy(raw_spine)
 
 # 1. Load Master Mapping File
@@ -1068,8 +1098,7 @@ if(length(cat_vars) &gt; 0) curated_spine[, (cat_vars) := lapply(.SD, as.factor)
 
 # Print the Phase 1 Log
 cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
-<div id="phase-1-schema-mapping-audit-log" class="section level3">
-<h3>Phase 1: Schema &amp; Mapping Audit Log</h3>
+<p>Phase 1: Schema &amp; Mapping Audit Log</p>
 <ul>
 <li><p><strong>WARNING:</strong> 16 columns in raw data are missing from
 the mapping file.</p></li>
@@ -1083,7 +1112,6 @@ variables.</p></li>
 <li><p>Standardized 20 categorical/character variables to
 lowercase.</p></li>
 </ul>
-</div>
 </div>
 <div id="feature-engineering" class="section level1">
 <h1>Feature Engineering</h1>
@@ -1107,7 +1135,7 @@ binary features.
 </li>
 </ul>
 </div>
-<pre class="r"><code>audit_log &lt;- c(&quot;### Phase 2: Feature Engineering Audit Log\n&quot;)
+<pre class="r"><code>audit_log &lt;- c(&quot;Phase 2: Feature Engineering Audit Log\n&quot;)
 
 # 1. Cohort Group Assignment
 curated_spine[, cohort_group := fcase(
@@ -1204,8 +1232,7 @@ if (length(actual_med_cols) &gt; 0) {
 if(&quot;CRP&quot; %in% names(curated_spine)) curated_spine[CRP &lt;= 0, CRP := NA_real_]
 
 cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
-<div id="phase-2-feature-engineering-audit-log" class="section level3">
-<h3>Phase 2: Feature Engineering Audit Log</h3>
+<p>Phase 2: Feature Engineering Audit Log</p>
 <ul>
 <li><p>Calculated ‘Age’ and ‘Sample_Age’ using Entnahmedatum and
 Geburtsdatum.</p></li>
@@ -1216,7 +1243,6 @@ date.</p></li>
 <li><p>Parsed medication strings: Extracted 21 specific drugs into
 one-hot variables and binarized parent classes.</p></li>
 </ul>
-</div>
 </div>
 <div id="numeric-spine-generation" class="section level1">
 <h1>Numeric Spine Generation</h1>
@@ -2090,6 +2116,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -2129,6 +2166,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">2bb3054</a>
@@ -2172,6 +2220,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -2211,6 +2270,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">2bb3054</a>
@@ -2254,6 +2324,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -2293,6 +2374,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">2bb3054</a>
@@ -2336,6 +2428,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -2377,6 +2480,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -2416,6 +2530,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">2bb3054</a>
@@ -3159,6 +3284,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -3198,6 +3334,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">2bb3054</a>
@@ -3241,6 +3388,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -3280,6 +3438,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">2bb3054</a>
@@ -3323,6 +3492,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -3364,6 +3544,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">2bb3054</a>
 </td>
 <td>
@@ -3403,6 +3594,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">2bb3054</a>
@@ -4508,7 +4710,22 @@ Select a clinical domain to visualize its feature distributions:
 <option value="Cardiac">Cardiac</option>
 <option value="Gastrointestinal">Gastrointestinal</option>
 <option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
-<option value="Medications">Medications</option></p>
+<option value="Medications">Medications</option> </select></p>
+<div id="atlasPlotContainer">
+<p><img id="atlasImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;"></p>
+</div>
+<script>
+function switchAtlasPlot() {
+  var val = document.getElementById("atlasSelector").value;
+  var img = document.getElementById("atlasImage");
+  if (val) {
+    img.src = "assets/01b_clinical_feature_engineering/" + val + "_atlas.png";
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+}
+</script>
 <pre class="r"><code># Point directly to the web-accessible docs folder
 atlas_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file)
 if(!dir.exists(atlas_dir)) dir.create(atlas_dir, recursive = TRUE)
