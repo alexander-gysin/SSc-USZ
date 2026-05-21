@@ -170,7 +170,7 @@ invisible(gc())
 
 # Print HTML output as a single block to prevent code fragmentation
 cat(paste(audit_log, collapse = "\n\n"))
-cat("\n\n<br>\n\n")
+cat("\n\n")
 if (dropped_html != "") cat(dropped_html)
 ```
 

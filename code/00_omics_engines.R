@@ -1662,6 +1662,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       vec <- valid_df[[v]]; clust_vec <- valid_df$Cluster
       is_mandatory <- v %in% mandatory_vars
 
+      # For continuous variables the Z-score is calculated and a Kruskal-Wallis test is performed
       if (grepl("Continuous|Ordinal", var_class, ignore.case = TRUE) && is.numeric(vec)) {
         p_val <- tryCatch(kruskal.test(vec ~ clust_vec)$p.value, error=function(e) NA)
         if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
@@ -1669,6 +1670,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
         for (c_lvl in levels(clust_vec)) {
           enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=v, Score=(mean(vec[clust_vec==c_lvl], na.rm=T)-g_m)/g_sd)
         }
+        # For categorical variables the derivateive (observed - expected)/sqrt(expected) and a Chi-Square test is performed
       } else {
         vec <- as.factor(vec); tbl <- table(vec, clust_vec)
         p_val <- tryCatch(chisq.test(tbl)$p.value, error=function(e) NA)

@@ -136,7 +136,11 @@ clinical_domains <- list(
     "CRP", "Creatinine", "NT-proBNP (pg/ml)", "Uric Acid (mg/dl)",
     "Hemoglobin (g/dl)", "CK value in serum (U/U/L)", "Proteinuria (>300mg/d)",
     "SSc Antibodies", "SSc Antibody Score", "log_creatinine", "log_NT_ProBNP", "log_Distance_in_m"
-  )
+  ),
+  Medications = c(
+    "Med_rituximab", "Med_tocilizumab", "Med_MMF", "Med_MTX", "Med_JAKi", "Med_abatacept", "Med_PPI", "Med_ACEi", "Med_nintedanib",
+    "Med_ASA", "Med_CCB", "Med_ARB", "Med_nintadanib", "Med_OAC", "Med_nintetanib", "Immunosuppressants", "Major vascular", "Steroids", "Other_medication"
+    )
 )
 
 # ------------------------------------------------------------------------------
