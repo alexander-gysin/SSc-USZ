@@ -84,7 +84,7 @@ qc_bypass_conf <- c("cohort_group", "Subject_ID", "inCentraxx", "Geburtsdatum", 
 
 ```{r schema_enforcement, results='asis'}
 # Initialize the global audit log to track every change made to the dataset
-audit_log <- c("### Phase 1: Schema & Mapping Audit Log\n")
+audit_log <- c("Phase 1: Schema & Mapping Audit Log\n")
 curated_spine <- copy(raw_spine)
 
 # 1. Load Master Mapping File
@@ -153,7 +153,7 @@ cat(paste(audit_log, collapse = "\n\n"))
 `r what_this_does("Engineered cohort groups strictly from Subject_ID prefixes.", "Calculated standard baseline demographics (Age, Sex, Sample_Age) and temporal deltas between clinical assessments and blood draws.", "Permanently encoded Subsets (Diffuse/Limited/Sine) as One-Hot binary variables.", "Extracted individual medications from grouped text strings into discrete binary features.")`
 
 ```{r feature_engineering, results='asis'}
-audit_log <- c("### Phase 2: Feature Engineering Audit Log\n")
+audit_log <- c("Phase 2: Feature Engineering Audit Log\n")
 
 # 1. Cohort Group Assignment
 curated_spine[, cohort_group := fcase(
@@ -592,15 +592,35 @@ if (length(imb_log_list) > 0) {
 
 <p>Select a clinical domain to visualize its feature distributions:</p>
 
-<select id="atlasSelector" onchange="switchAtlasPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">
-  <option value="">-- Select Domain --</option>
 ```{r build_dropdown, results='asis', echo=FALSE}
-# Dynamically generate the dropdown options based on your config list
+# 1. Build the Dropdown
+cat('<select id="atlasSelector" onchange="switchAtlasPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">\n')
+cat('  <option value="">-- Select Domain --</option>\n')
+
 for(dom in names(clinical_domains)) {
-  # We use gsub to replace underscores with spaces for a clean, human-readable label
   clean_label <- gsub("_", " ", dom)
   cat(sprintf('  <option value="%s">%s</option>\n', dom, clean_label))
 }
+cat('</select>\n\n')
+
+# 2. Build the Image Container
+cat('<div id="atlasPlotContainer">\n')
+cat('  <img id="atlasImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;">\n')
+cat('</div>\n\n')
+
+# 3. Build the Javascript (Injecting the dynamic folder path)
+cat('<script>\n')
+cat('function switchAtlasPlot() {\n')
+cat('  var val = document.getElementById("atlasSelector").value;\n')
+cat('  var img = document.getElementById("atlasImage");\n')
+cat('  if (val) {\n')
+cat(sprintf('    img.src = "assets/%s/" + val + "_atlas.png";\n', current_file))
+cat('    img.style.display = "block";\n')
+cat('  } else {\n')
+cat('    img.style.display = "none";\n')
+cat('  }\n')
+cat('}\n')
+cat('</script>\n\n')
 ```
 
 ```{r clinical_domain_atlas, results='hide'}
