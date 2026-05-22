@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb770fabce59a238b7ff7d6374f012807c1d213b7targetblankb770faba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree7a979fef2e2d22b6435fa33fffd5d3201b31ba55targetblank7a979fea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b770fabce59a238b7ff7d6374f012807c1d213b7" target="_blank">b770fab</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/7a979fef2e2d22b6435fa33fffd5d3201b31ba55" target="_blank">7a979fe</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb770fabce59a238b7ff7d6374f012807c1d213b7targetblankb770faba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree7a979fef2e2d22b6435fa33fffd5d3201b31ba55targetblank7a979fea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b770fabce59a238b7ff7d6374f012807c1d213b7" target="_blank">b770fab</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/7a979fef2e2d22b6435fa33fffd5d3201b31ba55" target="_blank">7a979fe</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -697,6 +697,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7a979fef2e2d22b6435fa33fffd5d3201b31ba55/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">7a979fe</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/659a2576444eaab1596b4e7bb9f82d3dbc468e5d/docs/01b_clinical_feature_engineering.html" target="_blank">659a257</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1020,7 +1054,10 @@ qc_config &lt;- list(
   olink_date = as.Date(&quot;2026-03-30&quot;)
 )
   # Variables to bypass QC:
-qc_bypass_conf &lt;- c(&quot;cohort_group&quot;, &quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Geburtsdatum&quot;, &quot;Geschlecht&quot;, &quot;Entnahmedatum&quot;, &quot;Entnahmedatum_Clean&quot;, &quot;Birth_Year&quot;)</code></pre>
+qc_bypass_conf &lt;- c(&quot;cohort_group&quot;, &quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Geburtsdatum&quot;, &quot;Geschlecht&quot;, &quot;Entnahmedatum&quot;, &quot;Entnahmedatum_Clean&quot;, &quot;Birth_Year&quot;)
+
+# Clinical variables to remove at the end
+vars_to_remove = c(&quot;Geburtsdatum&quot;, &quot;Birth_Year&quot;, &quot;Geschlecht&quot;)</code></pre>
 </div>
 <div id="schema-mapping-enforcement" class="section level1">
 <h1>Schema &amp; Mapping Enforcement</h1>
@@ -1278,6 +1315,10 @@ if (length(actual_med_cols) &gt; 0) {
 
 # 7. Biological Failsafes
 if(&quot;CRP&quot; %in% names(curated_spine)) curated_spine[CRP &lt;= 0, CRP := NA_real_]
+
+# Remove redundant clinical variables
+curated_spine &lt;- curated_spine %&gt;%
+  select(-all_of(vars_to_remove))
 
 cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
 <p>Phase 2: Feature Engineering Audit Log</p>
