@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">21 May, 2026</h4>
+<h4 class="date">22 May, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-21
+<strong>Last updated:</strong> 2026-05-22
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec03272339705976c47601ea6962e90c7b9cd3e8ctargetblankc032723a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb770fabce59a238b7ff7d6374f012807c1d213b7targetblankb770faba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c03272339705976c47601ea6962e90c7b9cd3e8c" target="_blank">c032723</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b770fabce59a238b7ff7d6374f012807c1d213b7" target="_blank">b770fab</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreec03272339705976c47601ea6962e90c7b9cd3e8ctargetblankc032723a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb770fabce59a238b7ff7d6374f012807c1d213b7targetblankb770faba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/c03272339705976c47601ea6962e90c7b9cd3e8c" target="_blank">c032723</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b770fabce59a238b7ff7d6374f012807c1d213b7" target="_blank">b770fab</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -640,6 +640,7 @@ Ignored files:
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_clustering/
     Ignored:    output/03d_proteomics_subgroups/
+    Ignored:    output/03e_proteomics_correlations/
     Ignored:    output/randomizer/
     Ignored:    output/z01_sideproject_ellen/
     Ignored:    output/z02_sideproject_vascular_2/
@@ -696,6 +697,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b770fabce59a238b7ff7d6374f012807c1d213b7/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">b770fab</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/486671b3a3fb2691bf86dfffd394f6a03f33e755/docs/01b_clinical_feature_engineering.html" target="_blank">486671b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1048,7 +1083,7 @@ mapped_cols &lt;- mapping_df$Raw_Name
 unmapped &lt;- setdiff(raw_cols, mapped_cols)
 
 if(length(unmapped) &gt; 0) {
-  audit_log &lt;- c(audit_log, sprintf(&quot;- **WARNING:** %d columns in raw data are missing from the mapping file.&quot;, length(unmapped)))
+  audit_log &lt;- c(audit_log, sprintf(&quot;- **WARNING:** %d columns in raw data are missing from the mapping file.&quot;, length(unmapped)), setdiff(colnames(raw_spine), mapping_df$Raw_Name))
 }
 
 # 3. Rename First, Forget the Past
@@ -1100,16 +1135,29 @@ if(length(cat_vars) &gt; 0) curated_spine[, (cat_vars) := lapply(.SD, as.factor)
 cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
 <p>Phase 1: Schema &amp; Mapping Audit Log</p>
 <ul>
-<li><p><strong>WARNING:</strong> 16 columns in raw data are missing from
-the mapping file.</p></li>
-<li><p>Applied Master Naming Dictionary. Renamed 387 variables. All
+<li><strong>WARNING:</strong> 11 columns in raw data are missing from
+the mapping file.</li>
+</ul>
+<p>Pulmonary Fction Tests performed ?</p>
+<p>Total lg capacity (TLC- % predicted) performed ?</p>
+<p>Right bdle branch block</p>
+<p>Right atrium area (cm²)</p>
+<p>Right ventricular area (cm²)</p>
+<p>Raynaud VAS…277</p>
+<p>Raynaud VAS…278</p>
+<p>Activity of arthritis during the past week</p>
+<p>Patients global assessment of disease activity VAS…282</p>
+<p>Physicians global assessment of disease activity VAS…284</p>
+<p>Unique Sample ID (for letters standard A-Z only)</p>
+<ul>
+<li><p>Applied Master Naming Dictionary. Renamed 388 variables. All
 subsequent steps now use ‘Clean_Name’.</p></li>
 <li><p><strong>Dropped 18 variables</strong> designated as ‘x’
 (Excluded) in master mapping.</p></li>
-<li><p>Enforced Datatypes: Coerced <strong>39 Numeric</strong>,
-<strong>71 Categorical</strong>, and <strong>7 Date</strong>
+<li><p>Enforced Datatypes: Coerced <strong>40 Numeric</strong>,
+<strong>74 Categorical</strong>, and <strong>8 Date</strong>
 variables.</p></li>
-<li><p>Standardized 20 categorical/character variables to
+<li><p>Standardized 15 categorical/character variables to
 lowercase.</p></li>
 </ul>
 </div>
@@ -1396,7 +1444,7 @@ Conduction blocks
 </tr>
 <tr>
 <td style="text-align:left;">
-Diastolic fction abnormal(on echo, E/a less than 10cm/sec)
+Diastolic Dysf. (Echo)
 </td>
 </tr>
 <tr>
@@ -1611,6 +1659,11 @@ Other_medication
 </tr>
 <tr>
 <td style="text-align:left;">
+PAH/ILD
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 Patients eligible
 </td>
 </tr>
@@ -1657,11 +1710,6 @@ Puffy fingers
 <tr>
 <td style="text-align:left;">
 Pulmonary Fction Tests performed ?
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Pulmonary arterial hypertension and/or Interstitial lg Disease
 </td>
 </tr>
 <tr>
