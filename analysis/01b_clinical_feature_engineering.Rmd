@@ -75,6 +75,9 @@ qc_config <- list(
 )
   # Variables to bypass QC:
 qc_bypass_conf <- c("cohort_group", "Subject_ID", "inCentraxx", "Geburtsdatum", "Geschlecht", "Entnahmedatum", "Entnahmedatum_Clean", "Birth_Year")
+
+# Clinical variables to remove at the end
+vars_to_remove = c("Geburtsdatum", "Birth_Year", "Geschlecht")
 ```
 
 # Schema & Mapping Enforcement
@@ -248,6 +251,10 @@ if (length(actual_med_cols) > 0) {
 
 # 7. Biological Failsafes
 if("CRP" %in% names(curated_spine)) curated_spine[CRP <= 0, CRP := NA_real_]
+
+# Remove redundant clinical variables
+curated_spine <- curated_spine %>%
+  select(-all_of(vars_to_remove))
 
 cat(paste(audit_log, collapse = "\n\n"))
 ```
