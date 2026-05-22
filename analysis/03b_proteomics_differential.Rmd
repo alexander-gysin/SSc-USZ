@@ -273,7 +273,13 @@ for (cross_name in names(cross_contrasts)) {
 # Export
 `r what_this_does("Exported the full vascular DEA results to hand off to the subsetted side-project script.", "Finalized the script execution.")`
 ```{r export}
-# Export Vascular DEA
+#Export all DEA Results
+for (name in names(master_dea_results)) {
+  target_file <- file.path(output_dir_data, paste0(name, ".rds"))
+  saveRDS(master_dea_results[[name]], target_file)
+}
+
+# Export Vascular DEA (Legacy support)
 if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
   saveRDS(
     master_dea_results[["vascular_vs_nonvascular"]], 
