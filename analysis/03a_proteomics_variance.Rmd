@@ -552,20 +552,20 @@ rm(id, m, t_grps, r_grps, dyn_conf, res)
 invisible(gc())
 ```
 
-<!-- # Variance Filtering -->
+# Variance Filtering
 
-<!-- `r what_this_does("Calculated the variance of all measured features across the entire patient cohort.", "Generated a density histogram to visualize the global distribution of variance.", "Extracted and saved the highest-variance features to an RDS file to strip background noise for downstream unsupervised discovery scripts.")` -->
+`r what_this_does("Calculated the variance of all measured features across the entire patient cohort.", "Generated a density histogram to visualize the global distribution of variance.", "Extracted and saved the highest-variance features to an RDS file to strip background noise for downstream unsupervised discovery scripts.")`
 
-<!-- `r why_is_this_done("Features that do not change across the cohort (low variance) are biological background noise. Removing them here, at the end of the script, prevents dilution of true signals in downstream algorithms like UMAP or hierarchical clustering, while ensuring we do not prematurely drop them from earlier targeted VPA or DEA steps.")` -->
+`r why_is_this_done("Features that do not change across the cohort (low variance) are biological background noise. Removing them here, at the end of the script, prevents dilution of true signals in downstream algorithms like UMAP or hierarchical clustering, while ensuring we do not prematurely drop them from earlier targeted VPA or DEA steps.")`
 
-<!-- ```{r global_variance_filter, warning=FALSE} -->
-<!-- var_res <- wrap_global_variance_filter(olink_mat, global_var_filter, output_dir_data) -->
-<!-- print(var_res$plot) -->
+```{r global_variance_filter, warning=FALSE}
+var_res <- wrap_global_variance_filter(olink_mat, global_var_filter, output_dir_data)
+print(var_res$plot)
 
-<!-- # Clean memory -->
-<!-- rm(var_res) -->
-<!-- invisible(gc()) -->
-<!-- ``` -->
+# Clean memory
+rm(var_res)
+invisible(gc())
+```
 
 # Appendix
 
