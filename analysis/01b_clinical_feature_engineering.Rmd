@@ -97,7 +97,7 @@ mapped_cols <- mapping_df$Raw_Name
 unmapped <- setdiff(raw_cols, mapped_cols)
 
 if(length(unmapped) > 0) {
-  audit_log <- c(audit_log, sprintf("- **WARNING:** %d columns in raw data are missing from the mapping file.", length(unmapped)))
+  audit_log <- c(audit_log, sprintf("- **WARNING:** %d columns in raw data are missing from the mapping file.", length(unmapped)), setdiff(colnames(raw_spine), mapping_df$Raw_Name))
 }
 
 # 3. Rename First, Forget the Past
