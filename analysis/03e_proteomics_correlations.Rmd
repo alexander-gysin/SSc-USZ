@@ -1,0 +1,680 @@
+---
+title: "Correlations"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Introduction
+
+# Setup and Import
+`r what_this_does("Loaded required packages for data manipulation and visualization.", "Created dynamic output directories.", "Sourced the custom omics engines and loaded the pre-cleaned clinical and omics datasets.")`
+
+```{r setup_and_import, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(patchwork)
+library(ggpubr)
+library(here)
+library(FactoMineR)
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file <- "03e_proteomics_correlations"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Configuration & Engines
+source(here::here("code", "00_omics_engines.R"))
+
+# Load Pre-Cleaned Data
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
+olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+
+# Dynamic Feature Count
+total_features <- nrow(olink_mat)
+
+# Global DEA Path
+proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
+```
+
+# Configuration
+`r what_this_does("Decoupled the pipeline into three distinct phases: Matrix Generation, Dimensionality Reduction (PCA), and Statistical Correlation.", "Introduced 'Pi-Score' ranking to bound heatmaps to the most biologically and statistically relevant features.", "Enabled an Interactive Domain Dropdown for clinical parameters.")`
+
+```{r configuration}
+# 1. Matrix Generation Configurations
+matrix_configs <- list( 
+  mat_raw_age_res = list(
+    subset_var = "cohort_group",
+    subset_groups = c("Active", "Non-Active"),
+    base_features = list(method = "variance", top_n = total_features), 
+    transform = list(method = "residualize", covariates = c("Age"))
+  ),
+  mat_ssc_age_res = list(
+    subset_var = "cohort_group",
+    subset_groups = c("Active", "Non-Active"),
+    base_features = list(
+      method = "dea", dea_path = proteomics_dea_path, source_file = "ssc_vs_control.rds", 
+      fdr_cutoff = 0.05, fc_cutoff = 0.58, min_features = 30, top_n = 200 ),
+    transform = list(method = "residualize", covariates = c("Age")) 
+  )
+)
+
+# 2. PCA Configurations
+pca_configs <- list(
+  full_pca = list(
+    input_matrix = "mat_raw_age_res",
+    title = "Age residualized full PCA",
+    color_vars = c("cohort_group", "Sex", "Age")
+  ),
+  
+  ssc_pca = list(
+    input_matrix = "mat_ssc_age_res",
+    title = "SSc subset PCA",
+    color_vars = c("cohort_group", "Sex", "Age")
+  )
+)
+
+# 3. Correlation & Plotting Jobs
+cor_configs <- list(
+  full_pca_vs_all_clinical = list(
+    title = "Age residualized full PCA vs all Clinical Parameters",
+    x = list(source = "pca", id = "full_pca", vars = c("Dim.1", "Dim.2", "Dim.3", "Dim.4", "Dim.5", "Dim.6", "Dim.7", "Dim.8", "Dim.9", "Dim.10")),
+    y = list(source = "clinical", id = "master_spine", vars = NULL), # NULL = Correlate against EVERYTHING
+    fdr_cutoff = 0.05,
+    plotting = list(
+      # Micro View (Dashboard)
+      top_n_micro_plots = 16, 
+      n_cols = 4,
+      must_include_x_vars = c(),
+      must_include_y_vars = c(),
+      
+      # Macro View Limits & HTML UI
+      max_heatmap_features = 50,       # Cps heatmap axes using Pi-Score
+      enable_clinical_dropdown = TRUE  # Triggers HTML Dropdown generation
+    )
+  ),
+  
+  full_prot_vs_all_clinical = list(
+    title = "Age residualized full Proteomics vs all Clinical Parameters",
+    x = list(source = "matrix", id = "mat_raw_age_res", vars = NULL),
+    y = list(source = "clinical", id = "master_spine", vars = NULL), # NULL = Correlate against EVERYTHING
+    fdr_cutoff = 0.05,
+    plotting = list(
+      # Micro View (Dashboard)
+      top_n_micro_plots = 16, 
+      n_cols = 4,
+      must_include_x_vars = c(),
+      must_include_y_vars = c(),
+      
+      # Macro View Limits & HTML UI
+      max_heatmap_features = 50,       # Cps heatmap axes using Pi-Score
+      enable_clinical_dropdown = TRUE  # Triggers HTML Dropdown generation
+    )
+  ),
+  
+  ssc_pca_vs_all_clinical = list(
+    title = "Age residualized SSc PCA vs all Clinical Parameters",
+    x = list(source = "pca", id = "ssc_pca", vars = c("Dim.1", "Dim.2", "Dim.3", "Dim.4", "Dim.5", "Dim.6", "Dim.7", "Dim.8", "Dim.9", "Dim.10")),
+    y = list(source = "clinical", id = "master_spine", vars = NULL), # NULL = Correlate against EVERYTHING
+    fdr_cutoff = 0.05,
+    plotting = list(
+      # Micro View (Dashboard)
+      top_n_micro_plots = 16, 
+      n_cols = 4,
+      must_include_x_vars = c(),
+      must_include_y_vars = c(),
+      
+      # Macro View Limits & HTML UI
+      max_heatmap_features = 50,       # Cps heatmap axes using Pi-Score
+      enable_clinical_dropdown = TRUE  # Triggers HTML Dropdown generation
+    )
+  ),
+  
+  ssc_prot_vs_all_clinical = list(
+    title = "Age Residualized SSc Proteomics vs all Clinical Parameters",
+    x = list(source = "matrix", id = "mat_ssc_age_res", vars = NULL),
+    y = list(source = "clinical", id = "master_spine", vars = NULL), # NULL = Correlate against EVERYTHING
+    fdr_cutoff = 0.05,
+    plotting = list(
+      # Micro View (Dashboard)
+      top_n_micro_plots = 16, 
+      n_cols = 4,
+      must_include_x_vars = c(),
+      must_include_y_vars = c(),
+      
+      # Macro View Limits & HTML UI
+      max_heatmap_features = 50,       # Cps heatmap axes using Pi-Score
+      enable_clinical_dropdown = TRUE  # Triggers HTML Dropdown generation
+    )
+  )
+)
+
+```
+
+# Matrix Factory
+`r what_this_does("Processed the raw omics inputs based on the matrix configurations.", "Applied specific mathematical transformations (e.g., Age Residualization) globally before downstream splitting.", "Printed validation audit tables to track data preservation.")`
+
+```{r data_preparation}
+prepared_matrices <- list()
+
+for (prep_id in names(matrix_configs)) {
+  conf <- matrix_configs[[prep_id]]
+  res <- wrap_matrix_factory(olink_mat, master_spine, conf, prep_id)
+  
+  if (res$status == "success") {
+    prepared_matrices[[prep_id]] <- res$matrix
+    cat(res$log_text, "\n\n") 
+  } else {
+    cat(sprintf("FAILED: %s\n", res$error_msg))
+  }
+}
+```
+
+# PCA {.tabset}
+`r what_this_does("Ingested the dynamically pre-processed matrices and performs mean-imputation for complete cases.", "Automatically calculated the mathematical limit of variance (min(N-1, P)) to extract every statistically valid Principal Component.", "Transposed the PCA coordinate space so that Components act as 'Features' for correlation mapping.", "Generated interactive PCA scatterplots colored by requested clinical metadata.")`
+
+```{r PCA, results='asis', fig.width=8, fig.height=8}
+pca_results <- list()
+
+for (pca_id in names(pca_configs)) {
+  conf <- pca_configs[[pca_id]]
+  target_mat <- prepared_matrices[[conf$input_matrix]]
+  
+  if (is.null(target_mat)) next
+  
+  # 1. NA Imputation (FactoMineR crashes if ANY NAs exist)
+  # Transpose first so patients are rows (required for FactoMineR)
+  target_mat_imp <- t(target_mat)
+  for(i in 1:ncol(target_mat_imp)) {
+    col_mean <- mean(target_mat_imp[, i], na.rm = TRUE)
+    target_mat_imp[is.na(target_mat_imp[, i]), i] <- ifelse(is.na(col_mean), 0, col_mean)
+  }
+  
+  # 2. PCA Math
+  max_valid_pcs <- min(nrow(target_mat_imp), ncol(target_mat_imp)) - 1
+  pca_res <- FactoMineR::PCA(target_mat_imp, scale.unit = TRUE, ncp = max_valid_pcs, graph = FALSE)
+  
+  # 3. Transpose back for correlation matrix storage
+  pca_mat <- t(as.data.frame(pca_res$ind$coord)) 
+  pca_results[[pca_id]] <- pca_mat
+  
+  # 4. Visualization (One Tabset Parent per Job)
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  
+  # --- Scree Plot Tab ---
+  cat("\n\n### Scree Plot\n\n")
+  
+  p_scree <- fviz_eig(pca_res, addlabels = TRUE, ylim = c(0, max(pca_res$eig[, 2]) + 10)) +
+    theme_project_base() + 
+    labs(title = conf$title, subtitle = "Scree Plot: Explained Variance by Component")
+  
+  print(p_scree)
+  cat("\n\n")
+  
+  # --- NEW: Top Drivers Heatmap Tab ---
+  # Dynamically cap at 10 dimensions, or fewer if the matrix is small
+  n_dims_to_plot <- min(10, max_valid_pcs)
+  
+  if (n_dims_to_plot >= 1) {
+    cat("\n\n### Top Drivers Heatmap\n\n")
+    
+    # Extract matrices for the available dimensions
+    contrib_mat <- pca_res$var$contrib[, 1:n_dims_to_plot, drop = FALSE]
+    cor_mat <- pca_res$var$cor[, 1:n_dims_to_plot, drop = FALSE]
+    
+    # Find the top 5 driving variables for each dimension based on contribution
+    top_vars <- c()
+    for (i in 1:n_dims_to_plot) {
+      sorted_vars <- rownames(contrib_mat)[order(contrib_mat[, i], decreasing = TRUE)]
+      top_vars <- c(top_vars, head(sorted_vars, 5))
+    }
+    top_vars <- unique(top_vars) # Remove duplicates
+    
+    # Subset the correlation matrix to only plot these top drivers
+    plot_mat <- cor_mat[top_vars, , drop = FALSE]
+    
+    # Diverging color ramp for Correlation (-1 to 1)
+    col_fun <- circlize::colorRamp2(c(-1, 0, 1), c("#2166AC", "white", "#B2182B"))
+    
+    ht <- ComplexHeatmap::Heatmap(
+      plot_mat,
+      name = "Loading",
+      column_title = sprintf("Top Drivers across First %d PCs\n(Selected via Contribution)", n_dims_to_plot),
+      col = col_fun,
+      cluster_columns = TRUE,  # Per your request, allowing PCs to cluster
+      cluster_rows = TRUE,
+      show_row_dend = TRUE,
+      show_column_dend = TRUE,
+      row_names_gp = grid::gpar(fontsize = 10),
+      column_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+      rect_gp = grid::gpar(col = "grey85", lwd = 0.5) # Adds a subtle grid line between cells
+    )
+    
+    ComplexHeatmap::draw(ht)
+    cat("\n\n")
+  }
+  
+  # --- Existing: Color Variable Tabs ---
+  clin_sub <- master_spine %>% filter(Subject_ID %in% rownames(target_mat_imp))
+  
+  for (c_var in conf$color_vars) {
+    if (!(c_var %in% colnames(clin_sub))) next
+    
+    cat(sprintf("\n\n### Colored by %s\n\n", c_var))
+    
+    vec <- clin_sub[[c_var]]
+    if (is.numeric(vec)) {
+      p <- fviz_pca_ind(pca_res, label = "none", col.ind = vec, legend.title = c_var) +
+        scale_color_viridis_c(na.value = "grey85") +
+        theme_project_base() + labs(title = conf$title, subtitle = paste("Colored by:", c_var))
+    } else {
+      p <- fviz_pca_ind(pca_res, label = "none", habillage = as.factor(vec), addEllipses = TRUE) +
+        theme_project_base() + labs(title = conf$title, subtitle = paste("Colored by:", c_var))
+    }
+    print(p)
+    cat("\n\n")
+  }
+}
+```
+
+# Correlation Engine {.tabset}
+`r what_this_does("Cross-references every X variable against every Y variable without generating any visuals.", "Filters out variables with zero variance and skips sparse pairwise comparisons (< 10 valid patients).", "Evaluates datatypes on the fly to route features to Spearman, Kruskal-Wallis/Wilcoxon, or Chi-Square tests.", "Outputs a master list containing the FDR-corrected math tables, and generates a diagnostic plain-text audit for each job.")`
+
+```{r correlation_calc, results='asis'}
+# --- Helper to Fetch Agnostic Data (Used in Phase 3 & 4) ---
+get_axis_data <- function(source, id, vars) {
+  dropped_vars <- character(0)
+  
+  if (source == "clinical") {
+    df <- master_spine
+    if (!is.null(vars)) {
+      dropped_vars <- setdiff(vars, colnames(df))
+      df <- df %>% select(Subject_ID, any_of(vars))
+    }
+    return(list(data = df, missing_vars = dropped_vars))
+    
+  } else if (source == "matrix") {
+    mat <- prepared_matrices[[id]]
+    if (is.null(mat)) stop(sprintf("FATAL: Matrix '%s' not found.", id))
+    if (!is.null(vars)) {
+      dropped_vars <- setdiff(vars, rownames(mat))
+      mat <- mat[intersect(rownames(mat), vars), , drop=FALSE]
+    }
+    df <- as.data.frame(t(mat)) %>% rownames_to_column("Subject_ID")
+    return(list(data = df, missing_vars = dropped_vars))
+    
+  } else if (source == "pca") {
+    mat <- pca_results[[id]]
+    if (is.null(mat)) stop(sprintf("FATAL: PCA '%s' not found.", id))
+    if (!is.null(vars)) {
+      dropped_vars <- setdiff(vars, rownames(mat))
+      mat <- mat[intersect(rownames(mat), vars), , drop=FALSE]
+    }
+    df <- as.data.frame(t(mat)) %>% rownames_to_column("Subject_ID")
+    return(list(data = df, missing_vars = dropped_vars))
+  }
+}
+
+# --- Execution Loop ---
+stats_payloads <- list()
+
+for (job_id in names(cor_configs)) {
+  conf <- cor_configs[[job_id]]
+  
+  cat(sprintf("\n\n## %s Audit\n\n", conf$title))
+  
+  # Fetch data and missing variable logs
+  x_obj <- get_axis_data(conf$x$source, conf$x$id, conf$x$vars)
+  y_obj <- get_axis_data(conf$y$source, conf$y$id, conf$y$vars)
+  
+  df_x <- x_obj$data
+  df_y <- y_obj$data
+  
+  start_x_vars <- setdiff(colnames(df_x), "Subject_ID")
+  start_y_vars <- setdiff(colnames(df_y), "Subject_ID")
+  
+  common_ids <- intersect(df_x$Subject_ID, df_y$Subject_ID)
+  
+  # Track which subjects are being dropped due to the intersect
+  dropped_subjects_x <- setdiff(df_x$Subject_ID, common_ids)
+  dropped_subjects_y <- setdiff(df_y$Subject_ID, common_ids)
+  
+  df_x <- df_x %>% filter(Subject_ID %in% common_ids) %>% arrange(Subject_ID)
+  df_y <- df_y %>% filter(Subject_ID %in% common_ids) %>% arrange(Subject_ID)
+  
+  # --- Zero Variance Detection ---
+  zero_var_x <- start_x_vars[sapply(start_x_vars, function(v) length(unique(na.omit(df_x[[v]]))) < 2)]
+  zero_var_y <- start_y_vars[sapply(start_y_vars, function(v) length(unique(na.omit(df_y[[v]]))) < 2)]
+  
+  x_vars <- setdiff(start_x_vars, zero_var_x)
+  y_vars <- setdiff(start_y_vars, zero_var_y)
+  
+  results_list <- list()
+  comparisons_skipped_na <- 0
+  
+  for (x_col in x_vars) {
+    for (y_col in y_vars) {
+      vx <- df_x[[x_col]]; vy <- df_y[[y_col]]
+      valid_idx <- complete.cases(vx, vy)
+      vx <- vx[valid_idx]; vy <- vy[valid_idx]
+      
+      if (length(vx) < 10) {
+        comparisons_skipped_na <- comparisons_skipped_na + 1
+        next 
+      }
+      
+      type_x <- if(is.numeric(vx)) "num" else "cat"
+      type_y <- if(is.numeric(vy)) "num" else "cat"
+      eff <- NA; pval <- NA; method <- NA
+      
+      if (type_x == "num" && type_y == "num") {
+        ct <- tryCatch(cor.test(vx, vy, method="spearman", exact=FALSE), error=function(e) NULL)
+        if (!is.null(ct)) { eff <- ct$estimate; pval <- ct$p.value; method <- "Spearman" }
+      } else if (type_x != type_y) {
+        num_v <- if(type_x == "num") vx else vy
+        cat_v <- as.factor(if(type_x == "cat") vx else vy)
+        if (length(levels(cat_v)) == 2) {
+          wt <- tryCatch(wilcox.test(num_v ~ cat_v), error=function(e) NULL)
+          if (!is.null(wt)) {
+            eff <- abs(qnorm(wt$p.value / 2)) / sqrt(length(num_v))
+            pval <- wt$p.value; method <- "Wilcoxon"
+          }
+        } else if (length(levels(cat_v)) > 2) {
+          kw <- tryCatch(kruskal.test(num_v ~ cat_v), error=function(e) NULL)
+          if (!is.null(kw)) { pval <- kw$p.value; method <- "Kruskal-Wallis" }
+        }
+      } else {
+        tbl <- table(as.factor(vx), as.factor(vy))
+        cq <- tryCatch(chisq.test(tbl), error=function(e) NULL)
+        if (!is.null(cq)) {
+          eff <- sqrt(cq$statistic / (sum(tbl) * (min(dim(tbl)) - 1)))
+          pval <- cq$p.value; method <- "Chi-Square"
+        }
+      }
+      
+      if (!is.na(pval)) {
+        results_list[[length(results_list) + 1]] <- data.frame(
+          X_Var = x_col, Y_Var = y_col, Effect_Size = as.numeric(eff), 
+          P_Value = as.numeric(pval), Method = method, stringsAsFactors = FALSE
+        )
+      }
+    }
+  }
+  
+  sig_hits <- 0
+  if (length(results_list) > 0) {
+    master_tbl <- bind_rows(results_list) %>% mutate(FDR = p.adjust(P_Value, method = "BH")) %>% arrange(FDR)
+    write_csv(master_tbl, file.path(output_dir_data, paste0(job_id, "_Correlations.csv")))
+    stats_payloads[[job_id]] <- master_tbl
+    sig_hits <- sum(master_tbl$FDR < conf$fdr_cutoff)
+  }
+  
+  # --- Print Plain-Text Audit Box ---
+  missing_x_str <- if(length(x_obj$missing_vars) > 0) paste(x_obj$missing_vars, collapse=", ") else "None"
+  missing_y_str <- if(length(y_obj$missing_vars) > 0) paste(y_obj$missing_vars, collapse=", ") else "None"
+  
+  drop_subj_x_str <- if(length(dropped_subjects_x) > 0) paste(dropped_subjects_x, collapse=", ") else "None"
+  drop_subj_y_str <- if(length(dropped_subjects_y) > 0) paste(dropped_subjects_y, collapse=", ") else "None"
+  
+  zero_x_str <- if(length(zero_var_x) > 0) paste(zero_var_x, collapse=", ") else "None"
+  zero_y_str <- if(length(zero_var_y) > 0) paste(zero_var_y, collapse=", ") else "None"
+  
+  audit_text <- sprintf(
+    "--- DATA ALIGNMENT ---\n  Intersected Patients: %d\n  Dropped from X-Axis:  %s\n  Dropped from Y-Axis:  %s\n\n--- VARIABLE EXTRACTION ---\n  X-Axis Target: %d variables extracted from '%s'\n  Y-Axis Target: %d variables extracted from '%s'\n  Requested but missing (X): %s\n  Requested but missing (Y): %s\n  Dropped due to Zero Variance (X): %s\n  Dropped due to Zero Variance (Y): %s\n\n--- STATISTICAL PERFORMANCE ---\n  Pairwise tests calculated: %d\n  Pairwise tests skipped (N < 10): %d\n  Significant Hits (FDR < %s): %d\n------------------------------------------------\n",
+    length(common_ids), 
+    drop_subj_x_str, drop_subj_y_str,
+    length(start_x_vars), conf$x$source, 
+    length(start_y_vars), conf$y$source,
+    missing_x_str, missing_y_str,
+    zero_x_str, zero_y_str,
+    length(results_list), comparisons_skipped_na,
+    conf$fdr_cutoff, sig_hits
+  )
+  
+  cat(audit_text, "\n")
+}
+```
+
+# Visualization {.tabset}
+`r what_this_does("Ranks results by Pi-Score to identify the strongest biological and statistical drivers.", "Generates an uncensored 'Top Hits' ComplexHeatmap, muting non-significant intersections.", "Generates a fully interactive Javascript Dropdown Menu to explore individual Clinical Domains.", "Stitches a dynamic grid of Scatters/Boxplots/Bars (Micro View) based on real-time datatype evaluations.")`
+
+```{r vis, results='asis', fig.width=12, fig.height=10}
+for (job_id in names(cor_configs)) {
+  conf <- cor_configs[[job_id]]
+  plot_conf <- conf$plotting
+  master_tbl <- stats_payloads[[job_id]]
+  
+  if (is.null(master_tbl)) next
+  
+  cat(sprintf("\n\n## %s \n\n", conf$title))
+  
+  # Calculate Pi-Score: |Effect Size| * -log10(FDR)
+  # Adding a tiny epsilon to FDR prevents log10(0) returning Inf
+  master_tbl <- master_tbl %>% 
+    mutate(Pi_Score = abs(Effect_Size) * -log10(FDR + 1e-300))
+  
+  # THE FIX: Removed the global while (!is.null(dev.list())) dev.off()
+  # RMarkdown knitr automatically handles the graphics devices between chunks and loops.
+  
+  col_fun <- circlize::colorRamp2(c(-1, 0, 1), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))
+  
+  # --- MACRO VIEW 1: TOP HITS HEATMAP ---
+  cat("\n\n### Macro View (Top Hits)\n\n")
+  
+  top_x <- master_tbl %>% group_by(X_Var) %>% summarize(max_pi = max(Pi_Score, na.rm=TRUE)) %>% top_n(plot_conf$max_heatmap_features, max_pi) %>% pull(X_Var)
+  top_y <- master_tbl %>% group_by(Y_Var) %>% summarize(max_pi = max(Pi_Score, na.rm=TRUE)) %>% top_n(plot_conf$max_heatmap_features, max_pi) %>% pull(Y_Var)
+  
+  sub_tbl <- master_tbl %>% filter(X_Var %in% top_x, Y_Var %in% top_y)
+  
+  if (nrow(sub_tbl) > 0) {
+    wide_eff <- sub_tbl %>% select(X_Var, Y_Var, Effect_Size) %>% pivot_wider(names_from = X_Var, values_from = Effect_Size, values_fill = 0) %>% column_to_rownames("Y_Var")
+    wide_fdr <- sub_tbl %>% select(X_Var, Y_Var, FDR) %>% pivot_wider(names_from = X_Var, values_from = FDR, values_fill = 1) %>% column_to_rownames("Y_Var")
+    
+    mat_eff <- as.matrix(wide_eff)
+    mat_fdr <- as.matrix(wide_fdr)
+    
+    mat_plot <- mat_eff
+    mat_plot[mat_fdr >= conf$fdr_cutoff] <- NA
+    
+    # Safely determine clustering based on dimensions
+    row_clust_top <- if(nrow(mat_eff) > 1 && !any(rowSums(is.na(mat_eff)) == ncol(mat_eff))) hclust(dist(mat_eff), method="ward.D2") else FALSE
+    col_clust_top <- if(ncol(mat_eff) > 1 && !any(colSums(is.na(mat_eff)) == nrow(mat_eff))) hclust(dist(t(mat_eff)), method="ward.D2") else FALSE
+    
+    ht_top <- ComplexHeatmap::Heatmap(
+      mat_plot,
+      name = "Effect Size",
+      column_title = sprintf("Global Top Hits (Max %dx%d via Pi-Score)\nBlank/Grey indicates FDR ≥ %s", 
+                             plot_conf$max_heatmap_features, plot_conf$max_heatmap_features, conf$fdr_cutoff),
+      na_col = "gray93",
+      cluster_rows = row_clust_top,
+      cluster_columns = col_clust_top,
+      show_row_dend = if(is.logical(row_clust_top)) FALSE else TRUE, 
+      show_column_dend = if(is.logical(col_clust_top)) FALSE else TRUE,
+      row_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+      column_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+      column_names_rot = 45,
+      col = col_fun,
+      cell_fun = function(j, i, x, y, width, height, fill) {
+            grid.rect(x = x, y = y, width = width, height = height, 
+                      gp = gpar(col = "grey60", fill = NA))
+        }
+    )
+    
+    ComplexHeatmap::draw(ht_top)
+  } else {
+    cat("> Insufficient significant correlations to generate Top Hits heatmap.\n")
+  }
+  cat("\n\n")
+
+  # --- MACRO VIEW 2: DOMAIN DRILL-DOWN (HTML DROPDOWN) ---
+  if (conf$y$source == "clinical" && isTRUE(plot_conf$enable_clinical_dropdown)) {
+    cat("\n\n### Domain Atlas (Dropdown)\n\n")
+    
+    domain_lists <- clinical_domains
+    domain_lists[["SSc_Parameters"]] <- ssc_clinical_parameters
+    
+    dropdown_options <- c()
+    safe_job <- gsub("[^A-Za-z0-9_.-]", "_", job_id)
+    
+    for (dom_name in names(domain_lists)) {
+      dom_vars <- domain_lists[[dom_name]]
+      dom_tbl <- master_tbl %>% filter(Y_Var %in% dom_vars)
+      
+      if(nrow(dom_tbl) == 0) next
+      
+      dom_top_x <- dom_tbl %>% group_by(X_Var) %>% summarize(max_pi = max(Pi_Score, na.rm=TRUE)) %>% top_n(plot_conf$max_heatmap_features, max_pi) %>% pull(X_Var)
+      dom_tbl <- dom_tbl %>% filter(X_Var %in% dom_top_x)
+      
+      d_wide_eff <- dom_tbl %>% select(X_Var, Y_Var, Effect_Size) %>% pivot_wider(names_from = X_Var, values_from = Effect_Size, values_fill = 0) %>% column_to_rownames("Y_Var")
+      d_wide_fdr <- dom_tbl %>% select(X_Var, Y_Var, FDR) %>% pivot_wider(names_from = X_Var, values_from = FDR, values_fill = 1) %>% column_to_rownames("Y_Var")
+      
+      d_mat_eff <- as.matrix(d_wide_eff)
+      d_mat_fdr <- as.matrix(d_wide_fdr)
+      d_mat_plot <- d_mat_eff
+      d_mat_plot[d_mat_fdr >= conf$fdr_cutoff] <- NA
+      
+      # Safely determine clustering based on dimensions
+      row_clust_dom <- if(nrow(d_mat_eff) > 1 && !any(rowSums(is.na(d_mat_eff)) == ncol(d_mat_eff))) hclust(dist(d_mat_eff), method="ward.D2") else FALSE
+      col_clust_dom <- if(ncol(d_mat_eff) > 1 && !any(colSums(is.na(d_mat_eff)) == nrow(d_mat_eff))) hclust(dist(t(d_mat_eff)), method="ward.D2") else FALSE
+      
+      ht_dom <- ComplexHeatmap::Heatmap(
+        d_mat_plot,
+        name = "Effect Size",
+        column_title = sprintf("Domain: %s", gsub("_", " ", dom_name)),
+        na_col = "gray93",
+        cluster_rows = row_clust_dom,
+        cluster_columns = col_clust_dom,
+        show_row_dend = if(is.logical(row_clust_dom)) FALSE else TRUE, 
+        show_column_dend = if(is.logical(col_clust_dom)) FALSE else TRUE,
+        row_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+        column_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+        column_names_rot = 45,
+        col = col_fun,
+        cell_fun = function(j, i, x, y, width, height, fill) {
+            grid.rect(x = x, y = y, width = width, height = height, 
+                      gp = gpar(col = "grey60", fill = NA))
+        }
+      )
+      
+      img_name <- paste0(safe_job, "_domain_", dom_name, ".png")
+      img_path <- file.path(output_dir_data, img_name)
+      
+      dyn_h <- max(6, nrow(d_mat_eff) * 0.3 + 2)
+      png(img_path, width = 12, height = dyn_h, units = "in", res = 300)
+      ComplexHeatmap::draw(ht_dom)
+      dev.off()
+      
+      dropdown_options[[dom_name]] <- img_name
+    }
+    
+    if (length(dropdown_options) > 0) {
+      first_img <- dropdown_options[[1]]
+      
+      cat(sprintf('<select id="sel_%s" onchange="switchDom_%s()" class="form-control" style="width: auto; margin-bottom: 20px;">\n', safe_job, safe_job))
+      for (dom_name in names(dropdown_options)) {
+        cat(sprintf('  <option value="../output/%s/%s">%s</option>\n', current_file, dropdown_options[[dom_name]], gsub("_", " ", dom_name)))
+      }
+      cat('</select>\n\n')
+      
+      cat(sprintf('<div id="container_%s">\n', safe_job))
+      cat(sprintf('  <img id="img_%s" src="../output/%s/%s" style="width: 100%%; border: 1px solid #ddd; border-radius: 8px;">\n', safe_job, current_file, first_img))
+      cat('</div>\n\n')
+      
+      cat('<script>\n')
+      cat(sprintf('function switchDom_%s() {\n', safe_job))
+      cat(sprintf('  var val = document.getElementById("sel_%s").value;\n', safe_job))
+      cat(sprintf('  document.getElementById("img_%s").src = val;\n', safe_job))
+      cat('}\n')
+      cat('</script>\n\n')
+      
+    } else {
+      cat("> No significant domain-specific correlations found.\n")
+    }
+    cat("\n\n")
+  }
+
+  # --- MICRO VIEW (DASHBOARD) ---
+  cat("\n\n### Micro View (Dashboard)\n\n")
+  
+  df_x <- get_axis_data(conf$x$source, conf$x$id, conf$x$vars)$data
+  df_y <- get_axis_data(conf$y$source, conf$y$id, conf$y$vars)$data
+  
+  top_hits <- master_tbl %>% filter(FDR < conf$fdr_cutoff) %>% head(plot_conf$top_n_micro_plots)
+  must_inc <- master_tbl %>% filter(FDR < conf$fdr_cutoff) %>%
+    filter(X_Var %in% plot_conf$must_include_x_vars | Y_Var %in% plot_conf$must_include_y_vars)
+  
+  plot_targets <- bind_rows(top_hits, must_inc) %>% distinct(X_Var, Y_Var, .keep_all = TRUE)
+  
+  if (nrow(plot_targets) > 0) {
+    micro_plots <- list()
+    
+    for (i in 1:nrow(plot_targets)) {
+      x_col <- as.character(plot_targets$X_Var[[i]])
+      y_col <- as.character(plot_targets$Y_Var[[i]])
+      
+      plot_df <- inner_join(
+        df_x %>% select(Subject_ID, X_Val = all_of(x_col)),
+        df_y %>% select(Subject_ID, Y_Val = all_of(y_col)),
+        by = "Subject_ID"
+      ) %>% drop_na()
+      
+      type_x <- if(is.numeric(plot_df$X_Val)) "num" else "cat"
+      type_y <- if(is.numeric(plot_df$Y_Val)) "num" else "cat"
+      sub_text <- sprintf("Effect: %.2f | FDR: %.3e", plot_targets$Effect_Size[i], plot_targets$FDR[i])
+      
+      if (type_x == "num" && type_y == "num") {
+        p <- ggplot(plot_df, aes(x = X_Val, y = Y_Val)) +
+          geom_point(alpha = 0.6, color = "#2c3e50", size = 2) +
+          geom_smooth(method = "lm", color = "#c0392b", fill = "grey80", alpha = 0.5) +
+          theme_project_base(12) + labs(title = sprintf("%s vs %s", y_col, x_col), subtitle = sub_text, x = x_col, y = y_col)
+      } else if (type_x != type_y) {
+        cat_name <- if(type_x == "cat") x_col else y_col
+        num_name <- if(type_x == "num") x_col else y_col
+        plot_df_mixed <- plot_df %>% mutate(Cat_Val = as.factor(if(type_x == "cat") X_Val else Y_Val), Num_Val = if(type_x == "num") X_Val else Y_Val)
+        p <- ggplot(plot_df_mixed, aes(x = Cat_Val, y = Num_Val, fill = Cat_Val)) +
+          geom_boxplot(alpha = 0.6, outlier.shape = NA) +
+          geom_jitter(width = 0.2, alpha = 0.7, size = 1.5, color = "black") +
+          theme_project_base(12) + theme(legend.position = "none") +
+          labs(title = sprintf("%s by %s", num_name, cat_name), subtitle = sub_text, x = cat_name, y = num_name)
+      } else {
+        plot_df_cat <- plot_df %>% mutate(X_Val = as.factor(X_Val), Y_Val = as.factor(Y_Val))
+        p <- ggplot(plot_df_cat, aes(x = X_Val, fill = Y_Val)) +
+          geom_bar(position = "fill", color = "black", alpha = 0.8) +
+          scale_y_continuous(labels = scales::percent) + theme_project_base(12) +
+          labs(title = sprintf("%s vs %s", y_col, x_col), subtitle = sub_text, x = x_col, y = "Percentage", fill = y_col)
+      }
+      
+      micro_plots[[paste(x_col, y_col)]] <- p
+    }
+    
+    n_rows <- ceiling(length(micro_plots) / plot_conf$n_cols)
+    dyn_height <- max(5, n_rows * 4) 
+    
+    master_grid <- wrap_plots(micro_plots, ncol = plot_conf$n_cols) + 
+      plot_annotation(title = sprintf("Top Drivers: %s", conf$title))
+    
+    print(master_grid)
+    
+    safe_job <- gsub("[^A-Za-z0-9_.-]", "_", job_id)
+    grid_path <- file.path(output_dir_data, paste0(safe_job, "_Micro_Grid.png"))
+    ggsave(grid_path, master_grid, width = 14, height = dyn_height, dpi = 150, bg = "white")
+    cat(sprintf("![](%s)\n\n", grid_path))
+    
+  } else {
+    cat("> No significant hits passed the threshold for detailed plotting.\n")
+  }
+  cat("\n\n")
+}
+```
+
+
+
