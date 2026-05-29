@@ -44,8 +44,12 @@ source(here::here("code", "00_omics_engines.R"))
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
 
-# Fetch GO Biological Processes Database for GSEA
-go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7"),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
 ```
 
 # Analysis Configurator

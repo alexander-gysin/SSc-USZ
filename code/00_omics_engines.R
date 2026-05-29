@@ -266,7 +266,7 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
     db_obj <- pathway_dbs[[db_name]]
 
     # Run the engine for this specific database
-    gsea_res <- run_gsea_engine(limma_res$data, db_obj, omics_config, dea_conf$title)
+    gsea_res <- run_gsea_engine(limma_res$data, db_obj, omics_config, dea_conf$title, db_name)
 
     if (!is.null(gsea_res)) {
       results$data$gsea[[db_name]] <- gsea_res$data
@@ -1661,8 +1661,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     plot_df$Cluster <- as.factor(labels[plot_df$Subject_ID])
     valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
 
-    # --- SUBCLUSTER FILTERING (Option A) ---
-    # Intercept the dataset and physically drop rows before calculating statistics
+    # SUBCLUSTER FILTERING (Option A)
     if (!is.null(conf$subset_filter)) {
       filt_col <- conf$subset_filter$column
       filt_val <- conf$subset_filter$value
@@ -1671,7 +1670,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       }
     }
 
-    # Ensure we still have enough cluster levels to compare after filtering!
     if (length(unique(valid_df$Cluster)) < 2) next
 
     # 1. CLINICAL TABLE
@@ -1682,11 +1680,11 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
 
     results$tables[[algo_name]] <- summary_obj
 
-    # --- EXPORT RAW GTSUMMARY TO CSV ---
+    # EXPORT RAW GTSUMMARY TO CSV
     raw_tbl <- gtsummary::as_tibble(summary_obj)
     readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
 
-    # 2. ENRICHMENT DATA PREP (Mandatory + Significant Discovery)
+    # 2. ENRICHMENT DATA PREP (Keeping the established math)
     enrichment_list <- list()
     mandatory_vars <- intersect(conf$must_include_vars, colnames(valid_df))
     discovery_vars <- setdiff(intersect(conf$variables, colnames(valid_df)), mandatory_vars)
@@ -1696,7 +1694,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       vec <- valid_df[[v]]; clust_vec <- valid_df$Cluster
       is_mandatory <- v %in% mandatory_vars
 
-      # For continuous variables the Z-score is calculated and a Kruskal-Wallis test is performed
       if (grepl("Continuous|Ordinal", var_class, ignore.case = TRUE) && is.numeric(vec)) {
         p_val <- tryCatch(kruskal.test(vec ~ clust_vec)$p.value, error=function(e) NA)
         if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
@@ -1704,7 +1701,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
         for (c_lvl in levels(clust_vec)) {
           enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=v, Score=(mean(vec[clust_vec==c_lvl], na.rm=T)-g_m)/g_sd)
         }
-        # For categorical variables the derivateive (observed - expected)/sqrt(expected) and a Chi-Square test is performed
       } else {
         vec <- as.factor(vec); tbl <- table(vec, clust_vec)
         p_val <- tryCatch(chisq.test(tbl)$p.value, error=function(e) NA)
@@ -1719,7 +1715,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       }
     }
 
-    # 3. RENDER COMPLEXHEATMAP (Clusters=Rows, Params=Cols)
+    # 3. RENDER COMPLEXHEATMAP
     if (length(enrichment_list) > 0) {
       heat_df <- bind_rows(enrichment_list)
       mat_wide <- heat_df %>% pivot_wider(names_from=Feature, values_from=Score, values_fill=0) %>% column_to_rownames("Cluster")
@@ -1741,27 +1737,70 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       results$plots[[algo_name]][["heatmap"]] <- ht
     }
 
-    # 4. HIGHLIGHT GRID (Counts instead of Proportions)
+    # --- 4. HIGHLIGHT GRID (Pairwise Tests & Jitter Updates) ---
+
+    # Generate all possible pairwise combinations for testing
+    cluster_levels <- levels(valid_df$Cluster)
+    my_comparisons <- combn(cluster_levels, 2, simplify = FALSE)
+
     hl_plots <- list()
     for (hv in conf$highlight_variables) {
       if (!(hv %in% colnames(valid_df))) next
-      hl_plots[[hv]] <- if(is.numeric(valid_df[[hv]])) {
-        ggplot(valid_df, aes(x=Cluster, y=.data[[hv]], fill=Cluster)) + geom_boxplot() +
-          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL)
+
+      # CONTINUOUS: Boxplots with Jitter & ggpubr brackets
+      if (is.numeric(valid_df[[hv]])) {
+        hl_plots[[hv]] <- ggplot(valid_df, aes(x=Cluster, y=.data[[hv]], fill=Cluster)) +
+          geom_boxplot(outlier.shape = NA, alpha = 0.7) + # Hide outliers to prevent double-plotting with jitter
+          geom_jitter(width = 0.2, alpha = 0.5, color = "grey30") +
+          # stat_compare_means natively handles pairwise Wilcoxon tests and draws the brackets (ns, *, **)
+          ggpubr::stat_compare_means(comparisons = my_comparisons, label = "p.signif") +
+          theme_project_base() +
+          theme(axis.text.x = element_text(angle=45, hjust=1)) +
+          labs(title=hv, x=NULL)
+
+        # CATEGORICAL: Stacked Barplots with Custom Fisher Subtitle
       } else {
-        # --- NEW: position="stack" to show counts, and updated y-axis label ---
-        ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) + geom_bar(position="stack") +
-          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL, y="Count", fill=hv)
+
+        # Calculate Fisher's Exact test for each pairwise combination safely
+        p_vals <- sapply(my_comparisons, function(p) {
+          sub_df <- valid_df %>% filter(Cluster %in% p) %>% droplevels()
+          tbl <- table(sub_df$Cluster, sub_df[[hv]])
+          tryCatch(fisher.test(tbl, simulate.p.value = TRUE)$p.value, error = function(e) NA)
+        })
+
+        # Apply False Discovery Rate (FDR) correction
+        valid_idx <- !is.na(p_vals)
+        fdr_vals <- rep(NA, length(p_vals))
+        fdr_vals[valid_idx] <- p.adjust(p_vals[valid_idx], method = "fdr")
+
+        # Format the significant pairs into a clean string
+        sig_pairs <- c()
+        for (i in seq_along(fdr_vals)) {
+          if (!is.na(fdr_vals[i]) && fdr_vals[i] < 0.05) {
+            # Strip the word "Cluster " so the subtitle doesn't get massively long (e.g., C1 vs C2)
+            n1 <- gsub("Cluster ", "C", my_comparisons[[i]][1])
+            n2 <- gsub("Cluster ", "C", my_comparisons[[i]][2])
+            sig_pairs <- c(sig_pairs, sprintf("%s vs %s (FDR=%.2f)", n1, n2, fdr_vals[i]))
+          }
+        }
+
+        subtitle_str <- if(length(sig_pairs) == 0) "Sig Pairs (FDR < 0.05): ns" else paste("Sig:", paste(sig_pairs, collapse = " | "))
+
+        hl_plots[[hv]] <- ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) +
+          geom_bar(position="stack", color = "black") + # Added black borders to the stacks for clarity
+          theme_project_base() +
+          theme(axis.text.x = element_text(angle=45, hjust=1),
+                plot.subtitle = element_text(size = 9, color = "grey40")) +
+          labs(title=hv, subtitle=subtitle_str, x=NULL, y="Count", fill=hv)
       }
     }
-    master_grid <- wrap_plots(hl_plots, ncol=3) + plot_annotation(title=sprintf("Selected Clinical Parameters: %s (%s)", job_id, toupper(algo_name)))
+
+    master_grid <- wrap_plots(hl_plots, ncol=4) + plot_annotation(title=sprintf("Selected Clinical Parameters: %s (%s)", job_id, toupper(algo_name)))
     results$plots[[algo_name]][["highlights"]] <- master_grid
     ggsave(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_HL_Grid.png")), master_grid, width=9, height=4, bg="white")
   }
   return(results)
 }
-
-
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
 
@@ -1853,7 +1892,7 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
 #   title: Contrast name for plot headers.
 # Returns:
 #   Dataframe of pathways, a dotplot ggplot, and a ridgeplot ggplot.
-run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
+run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
 
   if (is.null(go_db)) return(NULL)
 
@@ -1870,10 +1909,11 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
   warning_tag <- if(sum(res_df$p.adjust < omics_config$gsea_p_cutoff) == 0) "\n(Exploratory: No paths passed FDR)" else ""
   plot_df <- res_df %>% group_by(Status) %>% slice_max(abs(NES), n = 10) %>% ungroup()
 
-  main_title <- str_wrap(sprintf("GSEA: %s", title), width = 60)
+  # --- NEW: Injecting the Database Name into all titles ---
+  main_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
   full_title <- paste0(main_title, warning_tag)
 
-  # 1. Exploratory Dotplot (Shows top 10 Up/Down regardless of strict significance)
+  # 1. Exploratory Dotplot
   p_dot <- ggplot(plot_df, aes(x = NES, y = reorder(Description, NES), color = p.adjust, size = setSize)) +
     geom_point() +
     scale_color_gradient(low = "firebrick3", high = "navy") +
@@ -1882,37 +1922,29 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
     theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
     labs(title = full_title, y = NULL)
 
-  # --- NEW: STRICT BIOLOGICAL PRE-FILTERING (FDR < 0.1) ---
-  # We clone the GSEA object and ruthlessly filter it so the networks only show true signal
+  # STRICT BIOLOGICAL PRE-FILTERING (FDR < 0.1) for Networks
   gsea_sig <- gsea_res
-  gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < 0.1)
+  gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < omics_config$network_p_cutoff)
 
-  # Calculate similarity only if at least 2 pathways survived the filtering
   gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
 
-  # 2. Ridgeplot (Now strictly filtered)
-  ridge_title <- str_wrap(sprintf("Pathways: %s", title), width = 60)
+  # 2. Ridgeplot
+  ridge_title <- str_wrap(sprintf("Pathways (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
   p_ridge <- if(!is.null(gsea_sim)) {
     enrichplot::ridgeplot(gsea_sim, showCategory = 15) +
       theme_project_base() +
       labs(title = ridge_title)
   } else NULL
 
-  # 3. Enrichment Map (Now strictly filtered)
-  emap_title <- str_wrap(sprintf("Enrichment Map: %s", title), width = 60)
+  # 3. Enrichment Map
+  emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
   p_emap <- if(!is.null(gsea_sim)) {
     enrichplot::emapplot(
-      gsea_sim,
-      color = "NES",
-      showCategory = 40,
-      node_label_size = 2.5,
-      size_category = 0.8,
-      size_edge = 0.1,
-      color_edge = "grey60",
-      min_edge = 0.3
+      gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
+      size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
     ) +
       theme_project_base() +
-      labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes (FDR < 0.1)")
+      labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes")
   } else NULL
 
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge, emap = p_emap))

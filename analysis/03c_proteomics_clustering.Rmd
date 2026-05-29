@@ -48,6 +48,7 @@ olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink
 pathway_dbs <- list(
   "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
   "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
   "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
 )
 # Dynamic Feature Count
@@ -136,14 +137,18 @@ diagnostic_configs <- list(
 # 6. Clinical Phenotyping Targets
 # , "hclust","louvain"
 #Note: For the value argument, I used %in% under the hood instead of ==, so you can even pass multiple values like value = c("Nonactive", "Mildly Active") if you ever need to group ordinal tiers together!
+clin_vars_to_highlight <- c("Age", "Sex", "cohort_group", "Major vascular", "Immunosuppressants", "Steroids", "Other_medication",
+                            "ILD diagnosed via HRCT", "Digital ulcer", "Puffy Fingers")
+clin_vars_to_include <- unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group", clinical_domains$Medications))
+
 pheno_configs <- list(
   pheno_svc = list(
     target_job = "job_svc",
     title = "Age Regressed AvC DEA PCA Clustering SSc only",
     target_algorithms = c("kmeans"),
         subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
-    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
-    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
     must_include_vars = c("Age", "Sex", "cohort_group")
   ),
@@ -153,8 +158,8 @@ pheno_configs <- list(
     title = "Age Regressed AvC DEA PCA Clustering Active only",
     target_algorithms = c("kmeans"),
     subset_filter = list(column = "cohort_group", value = c("Active")),
-    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
-    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
     must_include_vars = c("Age", "Sex", "cohort_group")
   ),
@@ -164,8 +169,8 @@ pheno_configs <- list(
     title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
     target_algorithms = c("kmeans"),
     subset_filter = list(column = "cohort_group", value = c("Non-Active")),
-    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
-    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
     must_include_vars = c("Age", "Sex", "cohort_group")
   )
@@ -242,7 +247,8 @@ heatmap_config <- list(
 # 7.c GSEA configs (called omics_configs to keep things confusing)
 omics_config <- list(
   gsea_p_cutoff  = 0.20, 
-  gsea_min_size  = 3     
+  gsea_min_size  = 3,
+  network_p_cutoff = 0.1
 )
 ```
 
@@ -519,7 +525,7 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
 
 `r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes.")`
 
-```{r clinical_phenotyping, fig.height=6, fig.width=12, warning=FALSE, results='asis'}
+```{r clinical_phenotyping, fig.height=14, fig.width=14, warning=FALSE, results='asis'}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
   # Assuming you have the job name mapped, or just print conf$target_job
@@ -562,7 +568,7 @@ for (p_id in names(pheno_configs)) {
 # Feature Phenotyping {.tabset}
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
-```{r feature_phenotyping, fig.width=10, fig.height=10, results='asis'}
+```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis'}
 for (f_id in names(feature_configs)) {
   conf <- feature_configs[[f_id]]
   payload <- global_cluster_payloads[[conf$target_job]]
