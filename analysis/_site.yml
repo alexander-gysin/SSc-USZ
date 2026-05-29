@@ -24,7 +24,7 @@ navbar:
     - text: Subgroups
       href: 03d_proteomics_subgroups.html
     - text: Correlations
-      href: 03e_proteomics_clinical_correlations.html
+      href: 03e_proteomics_correlations.html
   - text: Side Projects
     menu:
     - text: Vascular
