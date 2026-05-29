@@ -137,7 +137,7 @@ if(length(date_vars) > 0) curated_spine[, (date_vars) := lapply(.SD, safe_excel_
 audit_log <- c(audit_log, sprintf("- Enforced Datatypes: Coerced **%d Numeric**, **%d Categorical**, and **%d Date** variables.", length(num_vars), length(cat_vars), length(date_vars)))
 
 # 6. Global Lowercase Sweep
-char_cols <- names(curated_spine)[sapply(curated_spine, is.character)]
+char_cols <- names(curated_spine)[sapply(curated_spine, function (x) is.character(x) || is.factor(x))]
 char_cols <- setdiff(char_cols, c("Subject_ID", date_vars))
 
 if (length(char_cols) > 0) {

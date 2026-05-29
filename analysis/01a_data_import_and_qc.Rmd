@@ -46,14 +46,18 @@ if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 # 1. Global File Paths ---------------------------------------------------------
 file_paths <- list(
   clinical_raw  = "clinical_data.xlsx",
-  id_map        = "Samples for OLink submitted_final_0226.xlsx",
-  olink_raw     = "pre_quant.csv"
+  id_map        = "Samples for OLink submitted_final_0226_modified.xlsx",
+  olink_raw     = "pre_quant.csv",
+  lipid_raw     = "Dr Gabriela Kaina and Dr Amela Hurka aLipid Mediator Profiling raw data.xlsx",
+  lipid_map     = "Samples for SPM profiling_final export_081225.xlsx",
+  lipid_lod     = "Lipidomics_LOD.xlsx"
 )
 
 # 2. Global QC Thresholds & Protected Columns ----------------------------------
 qc_config <- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
+  max_missing_pct_lipid = 0.60,
   selected_col         = "SELECTED", 
   
   max_missingness_clin_var = 0.20, 
@@ -268,7 +272,99 @@ cat(paste(audit_log_olink, collapse = "\n\n"))
 cat("\n\n<br>\n\n")
 if (impute_html != "") cat(impute_html)
 ```
+# Lipidomics Data
+```{r lipidomics_data}
+# 1. Ingestion and ID Translation 
+audit_log_lipid <- c("Lipidomics QC Log\n")
 
+# Import the data
+raw_lipid <- read_excel(here::here("data", file_paths$lipid_raw), sheet = "Clean", na = "*")
+setDT(raw_lipid)
+
+# Extract lipid names and clean the matrix
+lipid_names <- raw_lipid[[1]] 
+raw_lipid_mat <- as.matrix(raw_lipid[, -1, with = FALSE])
+rownames(raw_lipid_mat) <- lipid_names
+
+# Import Mapping file (Links Sample ID to EUSTAR ID)
+id_map_lipid <- read_excel(here::here("data", file_paths$lipid_map))
+setDT(id_map_lipid)
+
+# Translation Strategy:
+# 1. Identify which Lipidomics columns map to which EUSTAR ID
+# 2. Match those EUSTAR IDs against the 'raw_spine' to get the definitive Subject_ID
+tech_ids <- colnames(raw_lipid_mat)
+
+# Create a lookup for EUSTAR ID based on Sample ID
+eustar_lookup <- setNames(id_map_lipid$`Subject ID (EUSTAR)`, id_map_lipid$`Sample ID (Plasma)`)
+
+# Get the EUSTAR IDs for our current samples
+corresponding_eustar <- eustar_lookup[tech_ids]
+
+# Now, match the EUSTAR IDs to the Subject_IDs present in our pre-processed clinical spine
+# We assume 'Subject-ID (EUSTAR)' is the column name in raw_spine
+eustar_to_subject_lookup <- setNames(raw_spine$Subject_ID, raw_spine$`inCentraxx`)
+
+# Perform the translation: Sample ID -> EUSTAR -> Subject_ID
+final_subject_ids <- eustar_to_subject_lookup[corresponding_eustar]
+
+# Identify columns that failed to map (either no match in ID map or no match in clinical spine)
+unmatched <- is.na(final_subject_ids)
+
+if(any(unmatched)) {
+  audit_log_lipid <- c(audit_log_lipid, sprintf("- Dropping %d unmatched samples.", sum(unmatched)))
+  raw_lipid_mat <- raw_lipid_mat[, !unmatched, drop = FALSE]
+  final_subject_ids <- final_subject_ids[!unmatched]
+}
+
+# Rename matrix columns to the definitive Subject_IDs
+colnames(raw_lipid_mat) <- final_subject_ids
+
+# 2. Missingness Filtering 
+# Applying the 50% threshold as requested
+miss_lipids <- rowMeans(is.na(raw_lipid_mat))
+valid_lipids <- miss_lipids < qc_config$max_missing_pct_lipid
+
+audit_log_lipid <- c(audit_log_lipid, sprintf("- Initial Matrix: %d Lipids | %d Samples", nrow(raw_lipid_mat), ncol(raw_lipid_mat)))
+audit_log_lipid <- c(audit_log_lipid, sprintf("- Dropped %d Lipids (>= 50%% missing). Which corresponds to %.1f%%", 
+                                              sum(!valid_lipids), 100*sum(!valid_lipids)/nrow(raw_lipid_mat)))
+
+qc_mat_lipid <- raw_lipid_mat[valid_lipids, , drop = FALSE]
+
+# 3. LOD Imputation (LOD / 5)
+# Create a named vector of LODs for quick lookup
+# Assumes 'Mediator' and 'LOD_Matrix' columns in the LOD file
+lod_df <- read_excel(here::here("data", file_paths$lipid_lod), sheet = "Master")
+lod_vec <- setNames(lod_df$LOD_Matrix, lod_df$Mediator)
+
+# Identify missing values
+na_coords <- which(is.na(qc_mat_lipid), arr.ind = TRUE)
+
+if(nrow(na_coords) > 0) {
+  # For each missing value, extract the lipid name (row index) and apply LOD/5
+  lipid_row_names <- rownames(qc_mat_lipid)[na_coords[, "row"]]
+  imputed_vals <- lod_vec[lipid_row_names] / 5
+  
+  # Update matrix
+  qc_mat_lipid[na_coords] <- imputed_vals
+  
+  audit_log_lipid <- c(audit_log_lipid, sprintf("- LOD Imputation Complete: %d values imputed.", nrow(na_coords)))
+} else {
+  audit_log_lipid <- c(audit_log_lipid, "- No missing values found; imputation not required.")
+}
+
+# 4. Final Sync 
+# Ensure Lipidomics samples are synced with the existing clinical spine
+qc_mat_lipid <- qc_mat_lipid[, colnames(qc_mat_lipid) %in% raw_spine$Subject_ID, drop = FALSE]
+raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat_lipid)]
+
+# Cleanup
+rm(raw_lipid, id_map_lipid, lod_df, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names)
+invisible(gc())
+
+# Print output
+cat(paste(audit_log_lipid, collapse = "\n\n"))
+```
 
 # Export 
 
@@ -278,6 +374,8 @@ if (impute_html != "") cat(impute_html)
 # Save the RAW but mathematically synced and filtered files
 saveRDS(raw_spine, file.path(output_dir_data, "raw_filtered_spine.rds"))
 saveRDS(qc_mat, file.path(output_dir_data, "clean_olink_matrix.rds"))
+saveRDS(qc_mat_lipid, file.path(output_dir_data, "clean_lipid_matrix.rds"))
+saveRDS(raw_lipid_mat, file.path(output_dir_data, "raw_lipid_matrix.rds"))
 
 cat("Script 01a Complete!\n")
 ```

@@ -249,23 +249,39 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
                                               n_top = heatmap_config$top_n,
                                               split_by_group = heatmap_config$split_by_group,
                                               split_col = dea_conf$group_col,
-                                              custom_color_map = custom_map)
+                                              custom_color_map = custom_map,
+                                              # NEW: Link the config to the engine!
+                                              annotation_vars = heatmap_config$annotation_vars)
 
   png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
       width=10, height=12, units="in", res=300)
-  draw(results$plots$heatmap); dev.off()
+  ComplexHeatmap::draw(results$plots$heatmap)
+  dev.off()
 
-  # D. GSEA
-  gsea_res <- run_gsea_engine(limma_res$data, go_db, omics_config, dea_conf$title)
-  if (!is.null(gsea_res)) {
-    results$data$gsea <- gsea_res$data
-    results$plots$gsea_dotplot <- gsea_res$dotplot
-    results$plots$gsea_ridge <- gsea_res$ridgeplot
+  # D. Multi-Database GSEA
+  results$plots$gsea <- list() # Initialize a nested list for GSEA plots
+  results$data$gsea <- list()
 
-    write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, "_GSEA_Results.csv")))
-    ggsave(file.path(dea_sub_dir, paste0(dea_id, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300)
-    if(!is.null(gsea_res$ridgeplot)) {
-      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300)
+  for (db_name in names(pathway_dbs)) {
+    db_obj <- pathway_dbs[[db_name]]
+
+    # Run the engine for this specific database
+    gsea_res <- run_gsea_engine(limma_res$data, db_obj, omics_config, dea_conf$title)
+
+    if (!is.null(gsea_res)) {
+      results$data$gsea[[db_name]] <- gsea_res$data
+      results$plots$gsea[[db_name]] <- gsea_res # Store the whole object (dot, ridge, emap)
+
+      # Save exports with the db_name injected into the filename
+      write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Results.csv")))
+      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+
+      if(!is.null(gsea_res$ridgeplot)) {
+        ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
+      }
+      if(!is.null(gsea_res$emap)) {
+        ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
+      }
     }
   }
 
@@ -1644,13 +1660,31 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
     plot_df$Cluster <- as.factor(labels[plot_df$Subject_ID])
     valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
+
+    # --- SUBCLUSTER FILTERING (Option A) ---
+    # Intercept the dataset and physically drop rows before calculating statistics
+    if (!is.null(conf$subset_filter)) {
+      filt_col <- conf$subset_filter$column
+      filt_val <- conf$subset_filter$value
+      if (filt_col %in% colnames(valid_df)) {
+        valid_df <- valid_df %>% filter(.data[[filt_col]] %in% filt_val) %>% droplevels()
+      }
+    }
+
+    # Ensure we still have enough cluster levels to compare after filtering!
     if (length(unique(valid_df$Cluster)) < 2) next
 
     # 1. CLINICAL TABLE
-    results$tables[[algo_name]] <- valid_df %>%
+    summary_obj <- valid_df %>%
       select(any_of(conf$variables), Cluster) %>%
       gtsummary::tbl_summary(by = Cluster, missing = "no") %>%
       gtsummary::add_p() %>% gtsummary::sort_p() %>% gtsummary::bold_labels()
+
+    results$tables[[algo_name]] <- summary_obj
+
+    # --- EXPORT RAW GTSUMMARY TO CSV ---
+    raw_tbl <- gtsummary::as_tibble(summary_obj)
+    readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
 
     # 2. ENRICHMENT DATA PREP (Mandatory + Significant Discovery)
     enrichment_list <- list()
@@ -1707,7 +1741,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       results$plots[[algo_name]][["heatmap"]] <- ht
     }
 
-    # 4. HIGHLIGHT GRID
+    # 4. HIGHLIGHT GRID (Counts instead of Proportions)
     hl_plots <- list()
     for (hv in conf$highlight_variables) {
       if (!(hv %in% colnames(valid_df))) next
@@ -1715,8 +1749,9 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
         ggplot(valid_df, aes(x=Cluster, y=.data[[hv]], fill=Cluster)) + geom_boxplot() +
           theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL)
       } else {
-        ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) + geom_bar(position="fill") +
-          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL, y="Prop")
+        # --- NEW: position="stack" to show counts, and updated y-axis label ---
+        ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) + geom_bar(position="stack") +
+          theme_project_base() + theme(axis.text.x = element_text(angle=45, hjust=1)) + labs(title=hv, x=NULL, y="Count", fill=hv)
       }
     }
     master_grid <- wrap_plots(hl_plots, ncol=3) + plot_annotation(title=sprintf("Selected Clinical Parameters: %s (%s)", job_id, toupper(algo_name)))
@@ -1727,135 +1762,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
 }
 
 
-# 16. Cluster Feature Phenotyping Engine (DEA) --------------------------------
-wrap_cluster_feature_phenotyping <- function(omics_mat, clin_df, clustering_payload, conf, job_id, base_output_dir) {
-  results <- list(status = "success", plots = list(), tables = list())
-  feat_dir <- file.path(base_output_dir, "Feature_Phenotyping", job_id)
-  if (!dir.exists(feat_dir)) dir.create(feat_dir, recursive = TRUE)
-
-  for (algo_name in conf$target_algorithms) {
-    labels <- clustering_payload$data$assignments[[algo_name]]
-    if (is.null(labels)) next
-
-    results$plots[[algo_name]] <- list(); results$tables[[algo_name]] <- list()
-
-    plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
-    plot_df$Dynamic_Cluster <- as.character(labels[plot_df$Subject_ID])
-
-    # 1. RUN DEA FOR CONTRASTS
-    all_sig_feats <- c()
-    for (contrast_name in names(conf$contrasts)) {
-      c_conf <- conf$contrasts[[contrast_name]]
-      tmp_dea_conf <- list(
-        title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
-        group_col = "Dynamic_Cluster", target_groups = c_conf$target_groups, ref_groups = c_conf$ref_groups,
-        covariates = if(!is.null(conf$covariates)) conf$covariates else c(),
-        dea_p_cutoff = 0.05, dea_fc_cutoff = 0.58
-      )
-
-      limma_res <- run_limma_engine(omics_mat, plot_df, tmp_dea_conf, function(x) c("#e74c3c", "#3498db"))
-      if (is.null(limma_res)) next
-
-      results$plots[[algo_name]][[contrast_name]] <- limma_res$volcano
-      sig_df <- limma_res$data %>% filter(Significance != "Not Significant") %>% arrange(adj.P.Val)
-      results$tables[[algo_name]][[contrast_name]] <- sig_df
-      all_sig_feats <- unique(c(all_sig_feats, sig_df$Feature))
-
-      ggsave(file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, bg="white")
-    }
-
-    # 2. FEATURE HEATMAP (Aggregated across all algorithm contrasts)
-    if (length(all_sig_feats) > 0) {
-      hm_mat <- omics_mat[intersect(rownames(omics_mat), all_sig_feats), plot_df$Subject_ID]
-
-      # DIAGNOSTIC CHECK: Print dims to console to confirm data is not empty
-      message(sprintf("DEBUG: Heatmap Matrix Dims for %s: %d rows, %d cols", algo_name, nrow(hm_mat), ncol(hm_mat)))
-
-      plot_mat <- t(scale(t(hm_mat)))
-      cluster_split <- plot_df$Dynamic_Cluster[match(colnames(plot_mat), plot_df$Subject_ID)]
-
-      # ERROR TRAPPING
-      tryCatch({
-        png(file.path(feat_dir, paste0(job_id, "_", algo_name, "_Heatmap.png")), width=1200, height=800)
-        ht <- ComplexHeatmap::Heatmap(
-          t(plot_mat),
-          name = "Z-Score",
-          column_title = sprintf("Significant Proteins Heatmap: %s", toupper(algo_name)),
-          column_split = cluster_split,
-          column_names_rot = 45, column_names_side = "bottom",
-          clustering_distance_rows = "euclidean", clustering_distance_columns = "euclidean",
-          col = circlize::colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH))
-        )
-        ComplexHeatmap::draw(ht)
-        dev.off()
-        results$plots[[algo_name]][["heatmap"]] <- ht
-      }, error = function(e) {
-        if (dev.cur() > 1) dev.off()
-        message(sprintf("HEATMAP ERROR for %s: %s", algo_name, e$message))
-      })
-    }
-  }
-  return(results)
-}
-
-# 16. Cluster Feature Phenotyping Engine (DEA) --------------------------------
-# Description: Leverages the core Limma engine to find the exact biological
-# proteins driving the separation between specified clusters across algorithms.
-wrap_cluster_feature_phenotyping <- function(omics_mat, clin_df, clustering_payload, conf, job_id, base_output_dir) {
-  results <- list(status = "success", plots = list(), tables = list())
-
-  feat_dir <- file.path(base_output_dir, "Feature_Phenotyping", job_id)
-  if (!dir.exists(feat_dir)) dir.create(feat_dir, recursive = TRUE)
-
-  # Temp color function for Volcano plot
-  cluster_colors_func <- function(lvl) {
-    colors <- c("Cluster 1"="#e74c3c", "Cluster 2"="#3498db", "Cluster 3"="#2ecc71", "Cluster 4"="#9b59b6", "Cluster 5"="#f1c40f", "Noise"="grey50")
-    if (lvl %in% names(colors)) return(colors[lvl]) else return("#34495e")
-  }
-
-  for (algo_name in conf$target_algorithms) {
-    labels <- clustering_payload$data$assignments[[algo_name]]
-    if (is.null(labels)) next
-
-    results$plots[[algo_name]] <- list()
-    results$tables[[algo_name]] <- list()
-
-    # Inject the cluster labels directly into the clinical spine for DEA
-    plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
-    plot_df$Dynamic_Cluster <- as.character(labels[plot_df$Subject_ID])
-
-    for (contrast_name in names(conf$contrasts)) {
-      c_conf <- conf$contrasts[[contrast_name]]
-
-      # Build a temporary DEA config
-      tmp_dea_conf <- list(
-        title = sprintf("%s (%s)", c_conf$title, toupper(algo_name)),
-        group_col = "Dynamic_Cluster",
-        target_groups = c_conf$target_groups,
-        ref_groups = c_conf$ref_groups,
-        covariates = if(!is.null(conf$covariates)) conf$covariates else c(),
-        dea_p_cutoff = 0.05,
-        dea_fc_cutoff = 0.58
-      )
-
-      limma_res <- run_limma_engine(omics_mat, plot_df, tmp_dea_conf, cluster_colors_func)
-      if (is.null(limma_res)) next
-
-      results$plots[[algo_name]][[contrast_name]] <- limma_res$volcano
-      ggsave(file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300, bg="white")
-
-      sig_table <- limma_res$data %>%
-        filter(Significance != "Not Significant") %>%
-        select(Feature, logFC, adj.P.Val, Significance) %>%
-        arrange(adj.P.Val)
-
-      results$tables[[algo_name]][[contrast_name]] <- sig_table
-      write_csv(sig_table, file.path(feat_dir, paste0(job_id, "_", algo_name, "_", contrast_name, "_Sig_Proteins.csv")))
-    }
-  }
-
-  return(results)
-}
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
 
@@ -1953,7 +1859,9 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
 
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
   set.seed(42)
-  gsea_res <- GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
+
+  # Calculate GSEA for ALL pathways (pvalueCutoff = 1) to preserve the exploratory dataframe
+  gsea_res <- clusterProfiler::GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
   gsea_res@result$Description <- gsub("GOBP_", "", gsea_res@result$Description) %>% gsub("_", " ", .)
@@ -1965,6 +1873,7 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
   main_title <- str_wrap(sprintf("GSEA: %s", title), width = 60)
   full_title <- paste0(main_title, warning_tag)
 
+  # 1. Exploratory Dotplot (Shows top 10 Up/Down regardless of strict significance)
   p_dot <- ggplot(plot_df, aes(x = NES, y = reorder(Description, NES), color = p.adjust, size = setSize)) +
     geom_point() +
     scale_color_gradient(low = "firebrick3", high = "navy") +
@@ -1973,10 +1882,40 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
     theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
     labs(title = full_title, y = NULL)
 
-  ridge_title <- str_wrap(sprintf("Pathways: %s", title), width = 60)
-  p_ridge <- if(nrow(res_df) >= 2) ridgeplot(pairwise_termsim(gsea_res), showCategory = 15) + theme_project_base() + labs(title = ridge_title) else NULL
+  # --- NEW: STRICT BIOLOGICAL PRE-FILTERING (FDR < 0.1) ---
+  # We clone the GSEA object and ruthlessly filter it so the networks only show true signal
+  gsea_sig <- gsea_res
+  gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < 0.1)
 
-  return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge))
+  # Calculate similarity only if at least 2 pathways survived the filtering
+  gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
+
+  # 2. Ridgeplot (Now strictly filtered)
+  ridge_title <- str_wrap(sprintf("Pathways: %s", title), width = 60)
+  p_ridge <- if(!is.null(gsea_sim)) {
+    enrichplot::ridgeplot(gsea_sim, showCategory = 15) +
+      theme_project_base() +
+      labs(title = ridge_title)
+  } else NULL
+
+  # 3. Enrichment Map (Now strictly filtered)
+  emap_title <- str_wrap(sprintf("Enrichment Map: %s", title), width = 60)
+  p_emap <- if(!is.null(gsea_sim)) {
+    enrichplot::emapplot(
+      gsea_sim,
+      color = "NES",
+      showCategory = 40,
+      node_label_size = 2.5,
+      size_category = 0.8,
+      size_edge = 0.1,
+      color_edge = "grey60",
+      min_edge = 0.3
+    ) +
+      theme_project_base() +
+      labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes (FDR < 0.1)")
+  } else NULL
+
+  return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge, emap = p_emap))
 }
 
 # 3. Heatmap Engine ------------------------------------------------------------
@@ -1993,26 +1932,73 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title) {
 #   split_by_group: Boolean dictating if the columns should be visually clustered by cohort.
 # Returns:
 #   A ComplexHeatmap object (must be drawn with draw()).
-run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_group = FALSE, split_col = "cohort_group", show_top_n_title = TRUE, custom_color_map = NULL) {
+run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_group = FALSE, split_col = "cohort_group", show_top_n_title = TRUE, custom_color_map = NULL, annotation_vars = NULL) {
+
   valid_ids <- intersect(clin$Subject_ID, colnames(mat))
   clin_sub <- clin %>% filter(Subject_ID %in% valid_ids)
 
   top_feats <- dea_res %>% mutate(pi = abs(logFC) * -log10(adj.P.Val)) %>% slice_max(pi, n = n_top) %>% pull(Feature)
+
+  if (length(top_feats) < 2) return(NULL) # Safety catch
+
   plot_mat <- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
 
-  # Use the dynamic column and pass the custom color map to the core function
-  grp_cols <- get_project_colors(as.character(unique(clin_sub[[split_col]])), custom_map = custom_color_map)
-  sex_cols <- setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male"))
-  age_fun  <- colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+  # 1. Determine which variables to extract for the top annotation
+  if (is.null(annotation_vars)) {
+    # Legacy Support: Default to the split column, Sex, and Age
+    req_vars <- unique(c(split_col, "Sex", "Age"))
+  } else {
+    # Dynamic Mode: Ensure the split column is always included to visualize the contrast
+    req_vars <- unique(c(split_col, annotation_vars))
+  }
 
-  ha <- HeatmapAnnotation(Group = clin_sub[[split_col]], Sex = clin_sub$Sex, Age = clin_sub$Age,
-                          col = list(Group = grp_cols, Sex = sex_cols, Age = age_fun))
+  valid_vars <- intersect(req_vars, colnames(clin_sub))
+
+  # 2. Build the Annotation DataFrame
+  anno_df <- clin_sub %>%
+    select(all_of(valid_vars)) %>%
+    mutate(across(where(is.character), as.factor))
+
+  # 3. Dynamically Assign Colors based on your global constants
+  col_list <- list()
+
+  # Handle the primary split column (e.g., Dynamic_Cluster)
+  if (!is.null(split_col) && split_col %in% valid_vars) {
+    col_list[[split_col]] <- get_project_colors(as.character(unique(clin_sub[[split_col]])), custom_map = custom_color_map)
+  }
+
+  # EXPLICIT TRAP: Force cohort_group to ALWAYS use the official project palette
+  if ("cohort_group" %in% valid_vars) {
+    col_list[["cohort_group"]] <- get_project_colors(as.character(unique(clin_sub[["cohort_group"]])))
+  }
+
+  # Explicit Trap: Sex
+  if ("Sex" %in% valid_vars) {
+    col_list[["Sex"]] <- setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male"))
+  }
+
+  # Explicit Trap: Age
+  if ("Age" %in% valid_vars) {
+    col_list[["Age"]] <- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+  }
+
+  # 4. Construct the HeatmapAnnotation object dynamically
+  if (ncol(anno_df) > 0) {
+    ha <- do.call(ComplexHeatmap::HeatmapAnnotation,
+                  c(as.list(anno_df),
+                    list(col = if(length(col_list) > 0) col_list else NULL,
+                         na_col = "grey80",
+                         annotation_name_gp = grid::gpar(fontsize = 9, fontface = "bold"))))
+  } else {
+    ha <- NULL
+  }
 
   final_title <- if(show_top_n_title) sprintf("%s: Top %d Proteins", title, n_top) else title
 
-  Heatmap(plot_mat, name = "Z-Score", column_title = final_title,
-          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub[[split_col]] else NULL,
-          col = colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
+  # 5. Draw the Heatmap
+  ComplexHeatmap::Heatmap(plot_mat, name = "Z-Score", column_title = final_title,
+                          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub[[split_col]] else NULL,
+                          col = circlize::colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
 }
 
 # 4. LASSO Engine --------------------------------------------------------------
@@ -2701,10 +2687,10 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
       }
 
       p_wss <- fviz_nbclust(patient_mat, FUNcluster, method = "wss", k.max = k_max) +
-        theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("**Algorithm: %s**", toupper(algo_name)))
+        theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
 
       p_sil <- fviz_nbclust(patient_mat, FUNcluster, method = "silhouette", k.max = k_max) +
-        theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("**Algorithm: %s**", toupper(algo_name)))
+        theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
 
       if (gap_boot > 0) {
         set.seed(42)
@@ -2735,6 +2721,7 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
 # Description:
 #   Performs unsupervised clustering on TRUE high-dimensional space, calculates a 2D UMAP
 #   strictly for visualization, and paints the high-dimensional clusters onto the UMAP.
+#   NEW: Automatically generates UMAPs colored by clinical metadata if provided.
 wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
   results <- list(status = "success", plots = list(), tables = list(), log = list(), data = list())
 
@@ -2782,18 +2769,49 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
 
     dist_used <- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
 
-    # NEW: Dynamic Title and Subtitle Logic
     p_title <- sprintf("%s Clustering", toupper(algo_name))
     p_subtitle <- sprintf("Job: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP", conf$title, dist_used)
 
-    p_umap <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
+    # Base Molecular Cluster UMAP
+    p_umap_base <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
       geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
       stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
       scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
       theme_project_base() +
       labs(title = p_title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
 
-    results$plots$umaps[[algo_name]] <- p_umap
+    # --- NEW: Clinical Parameter UMAP Coloring (2-Column Layout) ---
+    if (!is.null(conf$color_vars)) {
+      clinical_plots <- list()
+      for (c_var in conf$color_vars) {
+        if (c_var %in% colnames(plot_df)) {
+
+          # Check if the variable is numeric for a continuous gradient, else discrete
+          if (is.numeric(plot_df[[c_var]])) {
+            p_clin <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = .data[[c_var]])) +
+              geom_point(shape = 21, color = "black", size = 2.5, alpha = 0.8) +
+              scale_fill_viridis_c(na.value = "grey85") +
+              theme_project_base() + labs(title = c_var, fill = NULL)
+          } else {
+            p_clin <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = as.factor(.data[[c_var]]))) +
+              geom_point(shape = 21, color = "black", size = 2.5, alpha = 0.8) +
+              theme_project_base() + labs(title = c_var, fill = NULL)
+          }
+          clinical_plots[[c_var]] <- p_clin
+        }
+      }
+
+      # Combine Base UMAP with Clinical UMAPs into a single 2-column layout
+      if (length(clinical_plots) > 0) {
+        library(patchwork)
+        all_plots <- c(list(Base_UMAP = p_umap_base), clinical_plots)
+        results$plots$umaps[[algo_name]] <- wrap_plots(all_plots, ncol = 2)
+      } else {
+        results$plots$umaps[[algo_name]] <- p_umap_base
+      }
+    } else {
+      results$plots$umaps[[algo_name]] <- p_umap_base
+    }
   }
 
   return(results)

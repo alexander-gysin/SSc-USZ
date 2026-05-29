@@ -44,8 +44,14 @@ master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering",
 data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
 
-# Fetch GO Biological Processes Database for GSEA
-go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
+# Fetch multiple GSEA databases into a named list
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
+# Dynamic Feature Count
+total_features <- nrow(olink_mat)
 ```
 
 # Configurations
@@ -58,63 +64,106 @@ base_excludes <- c("inCentraxx", "SELECTED", "Subject_ID", "Birth_Year", "Raynau
 final_excludes <- unique(c(base_excludes, unstable_vars))
 
 # 1. Matrix Factory Configurations
+# Switch back to Active vs. Control?
 matrix_prep_configs <- list(
   mat_avc_age_residualized = list(
     subset_var = NULL,
     base_features = list(
-      method = "dea", dea_path = proteomics_dea_path, source_file = "dea_active_vs_control.rds", 
+      method = "dea", dea_path = proteomics_dea_path, source_file = "ssc_vs_control.rds", 
       fdr_cutoff = 0.05, fc_cutoff = 0.58, min_features = 30, top_n = 200 
     ),
     transform = list(method = "residualize", covariates = c("Age"))
   )
+  
+  # mat_full_age_res = list(
+  #   subset_var = NULL, # Change to NULL if you want to include Controls too
+  #   base_features = list(method = "variance", top_n = total_features), 
+  #   transform = list(method = "residualize", covariates = c("Age"))
+  # )
 )
 
-# 2. Pre-Flight Algorithm Optimization Configs
-k_opt_configs <- list(
-  k_opt_multi_topology = list(
-    title = "Optimization: Age Regressed",
+# 2. PCA
+pca_configs <- list(
+  ssc_pca = list(
     input_matrix = "mat_avc_age_residualized",
+    title = "SSc vs. Ctrl DEA subset PCA",
+    color_vars = c("cohort_group", "Sex", "Age"),
+    top_dim = 5
+  )
+)
+
+# 3. Pre-Flight Algorithm Optimization Configs
+# hdbscan = list(run=TRUE, minPts_range = 2:15),
+k_opt_configs <- list(
+  opt_SvC_DEA_PCA = list(
+    title = "Optimization: Age Regressed SvC DEA PCA",
+    input_matrix = "ssc_pca_top_dims", 
     k_range = 2:8,
     gap_bootstraps = 0, 
     algorithms = list(
       pam = list(run=TRUE, metric="euclidean"),
       kmeans = list(run=TRUE, nstart=25),
       hclust = list(run=TRUE, distance="euclidean", method="ward.D2"),
-      hdbscan = list(run=TRUE, minPts_range = 2:15),
       louvain = list(run=TRUE, k_neighbors = 4, resolution_range = seq(0.1, 2.0, by=0.1))
     )
   )
 )
 
-# 3. Clustering Configs 
+# 4. Clustering Configs
+# hdbscan = list(run=TRUE, minPts=3),  
 clustering_configs <- list(
-  job_avc = list(
-    title = "Age Regressed Clustering",
-    input_matrix = "mat_avc_age_residualized", 
-    k = 3, 
-    n_neighbors = 5,
+  job_svc = list(
+    title = "Age Regressed SvC DEA PCA Clustering",
+    input_matrix = "ssc_pca_top_dims", # <--- UPDATE THIS 
+    k = 2, 
+    n_neighbors = 10,
+    color_vars = c("Age", "Sex", "cohort_group"),
     algorithms = list(
       kmeans = list(run=TRUE, nstart=25), 
       pam = list(run=TRUE, metric="euclidean"), 
       hclust = list(run=TRUE, distance="euclidean", method="ward.D2"), 
-      hdbscan = list(run=TRUE, minPts=3),          
-      louvain = list(run=TRUE, k_neighbors=4, resolution=0.5) 
+      louvain = list(run=TRUE, k_neighbors=4, resolution=0.1) 
     )
   )
 )
 
-# 4. Diagnostic Targets
+# 5. Diagnostic Targets
 diagnostic_configs <- list(
-  evaluate_jobs = c("job_avc"),
+  evaluate_jobs = c("job_svc"),
   correlate_vars = c("cohort_group", "Age", "Sex")
 )
 
-# 5. Clinical Phenotyping Targets
+# 6. Clinical Phenotyping Targets
+# , "hclust","louvain"
+#Note: For the value argument, I used %in% under the hood instead of ==, so you can even pass multiple values like value = c("Nonactive", "Mildly Active") if you ever need to group ordinal tiers together!
 pheno_configs <- list(
-  pheno_avc = list(
-    target_job = "job_avc",
-    title = "Age Regressed Clustering",
-    target_algorithms = c("kmeans", "hclust","louvain"),
+  pheno_svc = list(
+    target_job = "job_svc",
+    title = "Age Regressed AvC DEA PCA Clustering SSc only",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
+    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
+    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    p_cutoff = 0.05,
+    must_include_vars = c("Age", "Sex", "cohort_group")
+  ),
+  
+  pheno_svc_act = list(
+    target_job = "job_svc",
+    title = "Age Regressed AvC DEA PCA Clustering Active only",
+    target_algorithms = c("kmeans"),
+    subset_filter = list(column = "cohort_group", value = c("Active")),
+    variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
+    highlight_variables = c("Age", "Sex", "cohort_group") ,
+    p_cutoff = 0.05,
+    must_include_vars = c("Age", "Sex", "cohort_group")
+  ),
+  
+  pheno_svc_nonact = list(
+    target_job = "job_svc",
+    title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
+    target_algorithms = c("kmeans"),
+    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
     variables = unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group")),
     highlight_variables = c("Age", "Sex", "cohort_group") ,
     p_cutoff = 0.05,
@@ -122,31 +171,58 @@ pheno_configs <- list(
   )
 )
 
-# 6. Feature Phenotyping Targets (DEA)
+# 7.a Feature Phenotyping Targets (DEA)
 feature_configs <- list(
-  feat_avc = list(
-    target_job = "job_avc",
-    title = "Age Regressed Clustering",
+  feat_svc = list(
+    target_job = "job_svc",
+    title = "Age Regressed SvC DEA Clustering SSc only",
     input_matrix = "raw", 
     covariates = c("Age"),
     # Algorithms are now the primary key to enable contrast-per-algorithm
     algorithms = list(
       kmeans = list(
         contrasts = list(
-          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Control-like", target=c("Cluster 1"), ref=c("Cluster 2")),
-          c1_vs_c3 = list(title = "Cluster 1 vs Cluster 3", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Nonactive-Active mixed", target=c("Cluster 1"), ref=c("Cluster 3"))
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "Both mixed active and nonacctive", 
+                          target=c("Cluster 1"), ref=c("Cluster 2"),
+                          subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")))
         )
-      ),
-      hclust = list(
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_svc_act = list(
+    target_job = "job_svc",
+    title = "Age Regressed SvC DEA Clustering Active only",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
         contrasts = list(
-          c2_vs_c1 = list(title = "Cluster 2 vs Cluster 1", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Control-like", target=c("Cluster 2"), ref=c("Cluster 1")),
-          c2_vs_c3 = list(title = "Cluster 2 vs Cluster 3", desc = "Active-like (high mRSS & high anti-RNA-Pol-III) vs Nonactive-Active mixed", target=c("Cluster 2"), ref=c("Cluster 3"))
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Active only", desc = "Both mixed active and nonacctive", 
+                          target=c("Cluster 1"), ref=c("Cluster 2"),
+                          subset_filter = list(column = "cohort_group", value = c("Active")))
         )
-      ),
-      louvain = list(
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_svc_nonact = list(
+    target_job = "job_svc",
+    title = "Age Regressed SvC DEA Clustering Nonactive only",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
         contrasts = list(
-          c2_vs_c1 = list(title = "Cluster 2 vs Cluster 1", desc = "Active-like (high mRSS) vs Control-like", target=c("Cluster 2"), ref=c("Cluster 1")),
-          c2_vs_c3 = list(title = "Cluster 2 vs Cluster 3", desc = "Active-like (high mRSS) vs Nonactive-Active mixed", target=c("Cluster 2"), ref=c("Cluster 3"))
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Nonactive only", desc = "Both mixed active and nonacctive", 
+                          target=c("Cluster 1"), ref=c("Cluster 2"),
+                          subset_filter = list(column = "cohort_group", value = c("Non-Active")))
         )
       )
     ),
@@ -155,14 +231,15 @@ feature_configs <- list(
   )
 )
 
-# 6.b DEA Heatmap Configs
+# 7.b DEA Heatmap Configs
 heatmap_config <- list(
   top_n = 30,
   split_by_group = TRUE, 
-  row_font_size = 8
+  row_font_size = 8,
+  annotation_vars = c("cohort_group", "Age", "Sex") # <--- Add this!
 )
 
-# 6.c GSEA configs (called omics_configs to keep things confusing)
+# 7.c GSEA configs (called omics_configs to keep things confusing)
 omics_config <- list(
   gsea_p_cutoff  = 0.20, 
   gsea_min_size  = 3     
@@ -193,9 +270,13 @@ for (prep_id in names(matrix_prep_configs)) {
     if (!is.null(res$audit_tbl) && nrow(res$audit_tbl) > 0) {
       formatted_tbl <- res$audit_tbl %>%
         mutate(
-          # Clean up the numbers
-          logFC = round(logFC, 3),
-          FDR = formatC(FDR, format = "e", digits = 2),
+          # THE FIX: Coerce to numeric first to prevent "unsupported type" logical errors
+          logFC = as.numeric(logFC),
+          FDR = as.numeric(FDR),
+          
+          # Clean up the numbers, safely handling NAs
+          logFC = if_else(is.na(logFC), "-", as.character(round(logFC, 3))),
+          FDR = if_else(is.na(FDR), "-", formatC(FDR, format = "e", digits = 2)),
           
           # Inject HTML color tags for the status
           Final_Status = case_when(
@@ -216,6 +297,131 @@ for (prep_id in names(matrix_prep_configs)) {
   }
 }
 ```
+# PCA {.tabset}
+`r what_this_does("Ingested the dynamically pre-processed matrices and performs mean-imputation for complete cases.", "Automatically calculated the mathematical limit of variance (min(N-1, P)) to extract every statistically valid Principal Component.", "Transposed the PCA coordinate space so that Components act as 'Features' for correlation mapping.", "Generated interactive PCA scatterplots colored by requested clinical metadata.")`
+
+```{r PCA, results='asis', fig.width=8, fig.height=8}
+pca_results <- list()
+
+for (pca_id in names(pca_configs)) {
+  conf <- pca_configs[[pca_id]]
+  target_mat <- prepared_matrices[[conf$input_matrix]]
+  
+  if (is.null(target_mat)) next
+  
+  # 1. NA Imputation (FactoMineR crashes if ANY NAs exist)
+  # Transpose first so patients are rows (required for FactoMineR)
+  target_mat_imp <- t(target_mat)
+  for(i in 1:ncol(target_mat_imp)) {
+    col_mean <- mean(target_mat_imp[, i], na.rm = TRUE)
+    target_mat_imp[is.na(target_mat_imp[, i]), i] <- ifelse(is.na(col_mean), 0, col_mean)
+  }
+  
+  # 2. PCA Math
+  max_valid_pcs <- min(nrow(target_mat_imp), ncol(target_mat_imp)) - 1
+  pca_res <- FactoMineR::PCA(target_mat_imp, scale.unit = TRUE, ncp = max_valid_pcs, graph = FALSE)
+  
+  # 3. Transpose back for correlation matrix storage
+  pca_mat <- t(as.data.frame(pca_res$ind$coord)) 
+  pca_results[[pca_id]] <- pca_mat
+  
+  # Extract the top PCs (or max valid if fewer than 10) 
+  n_pcs_to_extract <- min(conf$top_dim, ncol(pca_res$ind$coord))
+  # Extract cumulative variance for the selected cutoff
+  cum_var <- pca_res$eig[n_pcs_to_extract, 3]
+  
+  # Store securely in the matrix factory list for downstream wrapper access
+  prepared_matrices[[paste0(pca_id, "_top_dims")]] <- t(as.data.frame(pca_res$ind$coord[, 1:n_pcs_to_extract]))
+  
+  # 4. Visualization (One Tabset Parent per Job)
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  
+  # --- Scree Plot Tab ---
+  cat("\n\n### Scree Plot\n\n")
+  
+  p_scree <- fviz_eig(pca_res, addlabels = TRUE, ylim = c(0, max(pca_res$eig[, 2]) + 10)) +
+    theme_project_base() + 
+    labs(title = conf$title, subtitle = "Scree Plot: Explained Variance by Component") +
+    geom_vline(xintercept = conf$top_dim + 0.5, linetype = "dashed", color = "firebrick") +
+    annotate(
+      "text", 
+      x = conf$top_dim - 2.7,                  # X position: Slightly to the right of the line
+      y = max(pca_res$eig[, 2]) / 2,                          # Y position: High up on the axis
+      label = sprintf("Variance included: %.1f%%", cum_var), # %.2f cleans up the decimals
+      color = "firebrick", 
+      hjust = 0                                # Left-aligns the text so it flows away from the line
+    )
+
+  
+  print(p_scree)
+  cat("\n\n")
+  
+  # --- NEW: Top Drivers Heatmap Tab ---
+  # Dynamically cap at 10 dimensions, or fewer if the matrix is small
+  n_dims_to_plot <- min(10, max_valid_pcs)
+  
+  if (n_dims_to_plot >= 1) {
+    cat("\n\n### Top Drivers Heatmap\n\n")
+    
+    # Extract matrices for the available dimensions
+    contrib_mat <- pca_res$var$contrib[, 1:n_dims_to_plot, drop = FALSE]
+    cor_mat <- pca_res$var$cor[, 1:n_dims_to_plot, drop = FALSE]
+    
+    # Find the top 5 driving variables for each dimension based on contribution
+    top_vars <- c()
+    for (i in 1:n_dims_to_plot) {
+      sorted_vars <- rownames(contrib_mat)[order(contrib_mat[, i], decreasing = TRUE)]
+      top_vars <- c(top_vars, head(sorted_vars, 5))
+    }
+    top_vars <- unique(top_vars) # Remove duplicates
+    
+    # Subset the correlation matrix to only plot these top drivers
+    plot_mat <- cor_mat[top_vars, , drop = FALSE]
+    
+    # Diverging color ramp for Correlation (-1 to 1)
+    col_fun <- circlize::colorRamp2(c(-1, 0, 1), c("#2166AC", "white", "#B2182B"))
+    
+    ht <- ComplexHeatmap::Heatmap(
+      plot_mat,
+      name = "Loading",
+      column_title = sprintf("Top Drivers across First %d PCs\n(Selected via Contribution)", n_dims_to_plot),
+      col = col_fun,
+      cluster_columns = FALSE,  # Change to TRUE if PCs should be clustered
+      cluster_rows = TRUE,
+      show_row_dend = TRUE,
+      show_column_dend = TRUE,
+      row_names_gp = grid::gpar(fontsize = 10),
+      column_names_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+      rect_gp = grid::gpar(col = "grey85", lwd = 0.5) # Adds a subtle grid line between cells
+    )
+    
+    ComplexHeatmap::draw(ht)
+    cat("\n\n")
+  }
+  
+  # --- Existing: Color Variable Tabs ---
+  clin_sub <- master_spine %>% filter(Subject_ID %in% rownames(target_mat_imp))
+  
+  for (c_var in conf$color_vars) {
+    if (!(c_var %in% colnames(clin_sub))) next
+    
+    cat(sprintf("\n\n### Colored by %s\n\n", c_var))
+    
+    vec <- clin_sub[[c_var]]
+    if (is.numeric(vec)) {
+      p <- fviz_pca_ind(pca_res, label = "none", col.ind = vec, legend.title = c_var) +
+        scale_color_viridis_c(na.value = "grey85") +
+        theme_project_base() + labs(title = conf$title, subtitle = paste("Colored by:", c_var))
+    } else {
+      p <- fviz_pca_ind(pca_res, label = "none", habillage = as.factor(vec), addEllipses = TRUE) +
+        theme_project_base() + labs(title = conf$title, subtitle = paste("Colored by:", c_var))
+    }
+    print(p)
+    cat("\n\n")
+  }
+}
+```
+
 # Algorithm Optimization
 `r what_this_does("Executes algorithm-aware hyperparameter sweeps.", "Evaluates Silhouette boundaries for K-Means, PAM, and H-Clust.", "Traces the Noise-to-Cluster tradeoff for HDBSCAN density, and measures Modularity peaks for Louvain network communities.")`
 
@@ -241,7 +447,7 @@ for (opt_id in names(k_opt_configs)) {
 `r what_this_does("Ingested the dynamically pre-processed matrices from the Matrix Factory.", "Calculated mathematical distances and assigned endotypes using true high-dimensional protein matrices.", "Calculated 2D UMAP coordinates exclusively for visualization, painting high-dimensional labels onto the squashed axes.")`
 
 `r why_is_this_done("Clustering on projected 2D UMAP space introduces manifold distortion. By calculating groupings mathematically across all protein dimensions, we ensure biological robustness, even if the 2D visual projection appears slightly overlapping.")`
-```{r unsupervised_clustering, results='asis'}
+```{r unsupervised_clustering, results='asis', fig.height=11, fig.width=10}
 # Store the payload globally so the diagnostic chunk can access it later!
 global_cluster_payloads <- list()
 
@@ -356,7 +562,7 @@ for (p_id in names(pheno_configs)) {
 # Feature Phenotyping {.tabset}
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
-```{r feature_phenotyping, fig.width=8, fig.height=8, results='asis'}
+```{r feature_phenotyping, fig.width=10, fig.height=10, results='asis'}
 for (f_id in names(feature_configs)) {
   conf <- feature_configs[[f_id]]
   payload <- global_cluster_payloads[[conf$target_job]]
@@ -381,21 +587,36 @@ for (f_id in names(feature_configs)) {
     for (contrast_name in names(algo_conf$contrasts)) {
       c_conf <- algo_conf$contrasts[[contrast_name]]
       
-      # The \n\n padding here is crucial for pandoc
       cat(sprintf("\n\n#### %s\n\n", c_conf$title))
       cat(sprintf("**Description:** %s\n\n", c_conf$desc))
+
+      # --- THE MAGIC PRE-FILTER (Option A) ---
+      # Start with the baseline cluster assignments for this algorithm
+      contrast_df <- temp_spine
+
+      if (!is.null(c_conf$subset_filter)) {
+        filt_col <- c_conf$subset_filter$column
+        filt_val <- c_conf$subset_filter$value
+
+        if (filt_col %in% colnames(contrast_df)) {
+          # Physically isolate the sub-population BEFORE handing it to Limma
+          contrast_df <- contrast_df %>% filter(.data[[filt_col]] %in% filt_val)
+        }
+      }
       
+      # Build the config mapped explicitly to your config naming convention
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
-        target_groups = c_conf$target,
-        ref_groups = c_conf$ref,
+        target_groups = c_conf$target, # Fixed mapping!
+        ref_groups = c_conf$ref,       # Fixed mapping!
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
-      res <- wrap_dea_pipeline(target_matrix, temp_spine, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
+      # Push the pre-filtered dataframe directly into the core Limma wrapper
+      res <- wrap_dea_pipeline(target_matrix, contrast_df, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
       
       if (res$status == "success") {
         
@@ -406,27 +627,42 @@ for (f_id in names(feature_configs)) {
             kableExtra::kbl(format = "html", caption = "Top 10 Significant Proteins") %>% 
             kableExtra::kable_styling(bootstrap_options = "striped")
           print(tbl)
-          cat("\n\n") # Reset markdown parser
+          cat("\n\n") 
         }
         
         # 2. VOLCANO PLOT
         if (!is.null(res$plots$volcano)) {
           print(res$plots$volcano)
-          cat("\n\n") # Reset markdown parser
+          cat("\n\n") 
         }
         
         # 3. COMPLEXHEATMAP 
         if (!is.null(res$plots$heatmap)) {
           ComplexHeatmap::draw(res$plots$heatmap)
-          cat("\n\n") # The ultimate safety buffer
+          cat("\n\n") 
         }
         
-        # 4. GSEA DOTPLOT
-        if (!is.null(res$plots$gsea_dotplot)) {
-          print(res$plots$gsea_dotplot)
-          cat("\n\n")
+        # 4. GSEA PLOTS (Multi-Database Sub-tabs)
+        if (length(res$plots$gsea) > 0) {
+          # Create a new Tabset tier specifically for the different databases
+          cat("\n\n##### Pathway Analysis {.tabset}\n\n")
+          
+          for (db_name in names(res$plots$gsea)) {
+            cat(sprintf("\n\n###### %s\n\n", db_name))
+            
+            p_obj <- res$plots$gsea[[db_name]]
+            
+            if (!is.null(p_obj$dotplot)) print(p_obj$dotplot)
+            cat("\n\n")
+            
+            if (!is.null(p_obj$ridgeplot)) print(p_obj$ridgeplot)
+            cat("\n\n")
+            
+            if (!is.null(p_obj$emap)) print(p_obj$emap)
+            cat("\n\n")
+          }
         } else {
-          cat("*Note: No GSEA Dotplot generated (insufficient pathways passed FDR).* \n\n")
+          cat("*Note: No pathways passed FDR for any database.* \n\n")
         }
         
         # 5. GSEA RIDGEPLOT
@@ -437,7 +673,13 @@ for (f_id in names(feature_configs)) {
           cat("*Note: No GSEA Ridgeplot generated (requires >= 2 significant pathways).* \n\n")
         }
         
-      
+        # 6. GSEA EMAP PLOT
+        if (!is.null(res$plots$gsea_emap)) {
+          print(res$plots$gsea_emap)
+          cat("\n\n")
+        } else {
+          cat("*Note: No GSEA EMAP generated (requires >= 2 significant pathways).* \n\n")
+        }
       }
     }
     cat("\n\n")
