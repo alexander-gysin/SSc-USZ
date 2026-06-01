@@ -284,6 +284,11 @@ setDT(raw_lipid)
 # Extract lipid names and clean the matrix
 lipid_names <- raw_lipid[[1]] 
 raw_lipid_mat <- as.matrix(raw_lipid[, -1, with = FALSE])
+
+# Convert all values to numeric
+raw_lipid_mat <- apply(raw_lipid_mat, 2, as.numeric)
+
+# Restore row names
 rownames(raw_lipid_mat) <- lipid_names
 
 # Import Mapping file (Links Sample ID to EUSTAR ID)
