@@ -380,10 +380,10 @@ div.tocify {
       <a href="03c_proteomics_clustering.html">Clustering</a>
     </li>
     <li>
-      <a href="03c_proteomics_subgroups.html">Subgroups</a>
+      <a href="03d_proteomics_subgroups.html">Subgroups</a>
     </li>
     <li>
-      <a href="03e_proteomics_clinical_correlations.html">Correlations</a>
+      <a href="03e_proteomics_correlations.html">Correlations</a>
     </li>
   </ul>
 </li>
@@ -398,7 +398,7 @@ div.tocify {
       <a href="z01_sideproject_ellen.html">Vascular</a>
     </li>
     <li>
-      <a href="z02_sideproject_ellen_2.html">Vascular 2</a>
+      <a href="z02_sideproject_vascular_2.html">Vascular 2</a>
     </li>
   </ul>
 </li>
@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">01 May, 2026</h4>
+<h4 class="date">01 June, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-05-01
+<strong>Last updated:</strong> 2026-06-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree622eecbdf025e01c2a78ce24ef05f8b8b29e92bctargetblank622eecba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/622eecbdf025e01c2a78ce24ef05f8b8b29e92bc" target="_blank">622eecb</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1115ac7726fa3c9b93e5bac4872668137a3362b0targetblank1115ac7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree622eecbdf025e01c2a78ce24ef05f8b8b29e92bctargetblank622eecba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1115ac7726fa3c9b93e5bac4872668137a3362b0" target="_blank">1115ac7</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/622eecbdf025e01c2a78ce24ef05f8b8b29e92bc" target="_blank">622eecb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -633,28 +633,34 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    output/01_data_import_and_qc/
     Ignored:    output/01a_data_import_and_qc/
     Ignored:    output/01b_clinical_feature_engineering/
     Ignored:    output/02_cohort_characterization/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/03d_proteomics_subgroups/
+    Ignored:    output/03e_proteomics_correlations/
+    Ignored:    output/04a_lipidomics_topography/
     Ignored:    output/randomizer/
     Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  analysis/03c_proteomics_clustering.Rmd
-    Untracked:  analysis/03d_proteomics_subgroups.Rmd
-    Untracked:  analysis/03e_proteomics_correlations.Rmd
-    Untracked:  analysis/z02_sideproject_ellen_2.Rmd
+    Untracked:  analysis/04a_lipidomics_topography.Rmd
+    Untracked:  analysis/04b_lipidomics_differential.Rmd
+    Untracked:  analysis/04c_lipidomics_aggregation.Rmd
+    Untracked:  code/00_lipid_engines.R
+    Untracked:  code/clinical_master_mapping_creation.R
     Untracked:  code/randomizer.R
     Untracked:  core
 
 Unstaged changes:
-    Modified:   analysis/_site.yml
+    Modified:   analysis/03c_proteomics_clustering.Rmd
+    Modified:   code/00_config.R
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -700,6 +706,74 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/622eecbdf025e01c2a78ce24ef05f8b8b29e92bc/analysis/01a_data_import_and_qc.Rmd" target="_blank">622eecb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-01
+</td>
+<td>
+wflow_publish("analysis/01a_data_import_and_qc.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/25890d75682e25ec54d6a51e1e8da9d8ce62b6ba/analysis/01a_data_import_and_qc.Rmd" target="_blank">25890d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-29
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/3e72845d6cb76f459007cce2a9eddf3adc747c11/analysis/01a_data_import_and_qc.Rmd" target="_blank">3e72845</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2bb3054d79ec891779fae3112632412b05fd000e/docs/01a_data_import_and_qc.html" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -863,14 +937,18 @@ script.
 <pre class="r"><code># 1. Global File Paths ---------------------------------------------------------
 file_paths &lt;- list(
   clinical_raw  = &quot;clinical_data.xlsx&quot;,
-  id_map        = &quot;Samples for OLink submitted_final_0226.xlsx&quot;,
-  olink_raw     = &quot;pre_quant.csv&quot;
+  id_map        = &quot;Samples for OLink submitted_final_0226_modified.xlsx&quot;,
+  olink_raw     = &quot;pre_quant.csv&quot;,
+  lipid_raw     = &quot;Dr Gabriela Kaina and Dr Amela Hurka aLipid Mediator Profiling raw data.xlsx&quot;,
+  lipid_map     = &quot;Samples for SPM profiling_final export_081225.xlsx&quot;,
+  lipid_lod     = &quot;Lipidomics_LOD.xlsx&quot;
 )
 
 # 2. Global QC Thresholds &amp; Protected Columns ----------------------------------
 qc_config &lt;- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
+  max_missing_pct_lipid = 0.60,
   selected_col         = &quot;SELECTED&quot;, 
   
   max_missingness_clin_var = 0.20, 
@@ -1031,10 +1109,9 @@ cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
 NA.</p></li>
 <li><p>Pruning: Dropped 224 columns for having &gt; 20% missingness in
 the SSc cohort.</p></li>
-<li><p>Clinical Spine Dimensions: 131 rows x 152 columns.</p></li>
+<li><p>Clinical Spine Dimensions: 131 rows x 156 columns.</p></li>
 </ul>
-<pre class="r"><code>cat(&quot;\n\n&lt;br&gt;\n\n&quot;)</code></pre>
-<p><br></p>
+<pre class="r"><code>cat(&quot;\n\n&quot;)</code></pre>
 <pre class="r"><code>if (dropped_html != &quot;&quot;) cat(dropped_html)</code></pre>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
@@ -2868,7 +2945,7 @@ Patients included
 </tr>
 <tr>
 <td style="text-align:left;">
-Physicians global assessment of disease activity VAS…283
+Physicians global assessment of disease activity VAS?
 </td>
 <td style="text-align:left;">
 34.4%
@@ -2924,7 +3001,7 @@ PAPsys (on echo)?
 </tr>
 <tr>
 <td style="text-align:left;">
-Patients global assessment of disease activity VAS…281
+Patients global assessment of disease activity VAS
 </td>
 <td style="text-align:left;">
 29.2%
@@ -3110,6 +3187,112 @@ required. Post-QC Matrix: 1034 Proteins | 131 Samples</p></li>
 <p><br></p>
 <pre class="r"><code>if (impute_html != &quot;&quot;) cat(impute_html)</code></pre>
 </div>
+<div id="lipidomics-data" class="section level1">
+<h1>Lipidomics Data</h1>
+<pre class="r"><code># 1. Ingestion and ID Translation 
+audit_log_lipid &lt;- c(&quot;Lipidomics QC Log\n&quot;)
+
+# Import the data
+raw_lipid &lt;- read_excel(here::here(&quot;data&quot;, file_paths$lipid_raw), sheet = &quot;Clean&quot;, na = &quot;*&quot;)
+setDT(raw_lipid)
+
+# Extract lipid names and clean the matrix
+lipid_names &lt;- raw_lipid[[1]] 
+raw_lipid_mat &lt;- as.matrix(raw_lipid[, -1, with = FALSE])
+
+# Convert all values to numeric
+raw_lipid_mat &lt;- apply(raw_lipid_mat, 2, as.numeric)
+
+# Restore row names
+rownames(raw_lipid_mat) &lt;- lipid_names
+
+# Import Mapping file (Links Sample ID to EUSTAR ID)
+id_map_lipid &lt;- read_excel(here::here(&quot;data&quot;, file_paths$lipid_map))
+setDT(id_map_lipid)
+
+# Translation Strategy:
+# 1. Identify which Lipidomics columns map to which EUSTAR ID
+# 2. Match those EUSTAR IDs against the &#39;raw_spine&#39; to get the definitive Subject_ID
+tech_ids &lt;- colnames(raw_lipid_mat)
+
+# Create a lookup for EUSTAR ID based on Sample ID
+eustar_lookup &lt;- setNames(id_map_lipid$`Subject ID (EUSTAR)`, id_map_lipid$`Sample ID (Plasma)`)
+
+# Get the EUSTAR IDs for our current samples
+corresponding_eustar &lt;- eustar_lookup[tech_ids]
+
+# Now, match the EUSTAR IDs to the Subject_IDs present in our pre-processed clinical spine
+# We assume &#39;Subject-ID (EUSTAR)&#39; is the column name in raw_spine
+eustar_to_subject_lookup &lt;- setNames(raw_spine$Subject_ID, raw_spine$`inCentraxx`)
+
+# Perform the translation: Sample ID -&gt; EUSTAR -&gt; Subject_ID
+final_subject_ids &lt;- eustar_to_subject_lookup[corresponding_eustar]
+
+# Identify columns that failed to map (either no match in ID map or no match in clinical spine)
+unmatched &lt;- is.na(final_subject_ids)
+
+if(any(unmatched)) {
+  audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- Dropping %d unmatched samples.&quot;, sum(unmatched)))
+  raw_lipid_mat &lt;- raw_lipid_mat[, !unmatched, drop = FALSE]
+  final_subject_ids &lt;- final_subject_ids[!unmatched]
+}
+
+# Rename matrix columns to the definitive Subject_IDs
+colnames(raw_lipid_mat) &lt;- final_subject_ids
+
+# 2. Missingness Filtering 
+# Applying the 50% threshold as requested
+miss_lipids &lt;- rowMeans(is.na(raw_lipid_mat))
+valid_lipids &lt;- miss_lipids &lt; qc_config$max_missing_pct_lipid
+
+audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- Initial Matrix: %d Lipids | %d Samples&quot;, nrow(raw_lipid_mat), ncol(raw_lipid_mat)))
+audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- Dropped %d Lipids (&gt;= 50%% missing). Which corresponds to %.1f%%&quot;, 
+                                              sum(!valid_lipids), 100*sum(!valid_lipids)/nrow(raw_lipid_mat)))
+
+qc_mat_lipid &lt;- raw_lipid_mat[valid_lipids, , drop = FALSE]
+
+# 3. LOD Imputation (LOD / 5)
+# Create a named vector of LODs for quick lookup
+# Assumes &#39;Mediator&#39; and &#39;LOD_Matrix&#39; columns in the LOD file
+lod_df &lt;- read_excel(here::here(&quot;data&quot;, file_paths$lipid_lod), sheet = &quot;Master&quot;)
+lod_vec &lt;- setNames(lod_df$LOD_Matrix, lod_df$Mediator)
+
+# Identify missing values
+na_coords &lt;- which(is.na(qc_mat_lipid), arr.ind = TRUE)
+
+if(nrow(na_coords) &gt; 0) {
+  # For each missing value, extract the lipid name (row index) and apply LOD/5
+  lipid_row_names &lt;- rownames(qc_mat_lipid)[na_coords[, &quot;row&quot;]]
+  imputed_vals &lt;- lod_vec[lipid_row_names] / 5
+  
+  # Update matrix
+  qc_mat_lipid[na_coords] &lt;- imputed_vals
+  
+  audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- LOD Imputation Complete: %d values imputed.&quot;, nrow(na_coords)))
+} else {
+  audit_log_lipid &lt;- c(audit_log_lipid, &quot;- No missing values found; imputation not required.&quot;)
+}
+
+# 4. Final Sync 
+# Ensure Lipidomics samples are synced with the existing clinical spine
+qc_mat_lipid &lt;- qc_mat_lipid[, colnames(qc_mat_lipid) %in% raw_spine$Subject_ID, drop = FALSE]
+raw_spine &lt;- raw_spine[Subject_ID %in% colnames(qc_mat_lipid)]
+
+# Cleanup
+rm(raw_lipid, id_map_lipid, lod_df, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names)
+invisible(gc())
+
+# Print output
+cat(paste(audit_log_lipid, collapse = &quot;\n\n&quot;))</code></pre>
+<pre><code>Lipidomics QC Log
+
+
+- Initial Matrix: 50 Lipids | 132 Samples
+
+- Dropped 47 Lipids (&gt;= 50% missing). Which corresponds to 94.0%
+
+- LOD Imputation Complete: 163 values imputed.</code></pre>
+</div>
 <div id="export" class="section level1">
 <h1>Export</h1>
 <div class="info-box">
@@ -3124,6 +3307,8 @@ downstream biological engineering in Script 01b.
 <pre class="r"><code># Save the RAW but mathematically synced and filtered files
 saveRDS(raw_spine, file.path(output_dir_data, &quot;raw_filtered_spine.rds&quot;))
 saveRDS(qc_mat, file.path(output_dir_data, &quot;clean_olink_matrix.rds&quot;))
+saveRDS(qc_mat_lipid, file.path(output_dir_data, &quot;clean_lipid_matrix.rds&quot;))
+saveRDS(raw_lipid_mat, file.path(output_dir_data, &quot;raw_lipid_matrix.rds&quot;))
 
 cat(&quot;Script 01a Complete!\n&quot;)</code></pre>
 <pre><code>Script 01a Complete!</code></pre>
