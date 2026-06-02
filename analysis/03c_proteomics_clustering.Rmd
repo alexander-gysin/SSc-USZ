@@ -57,7 +57,7 @@ total_features <- nrow(olink_mat)
 
 # Configurations
 `r what_this_does("Configured the Matrix Factory, Algorithm Optimization, Clustering, and dual Phenotyping (Clinical & Feature) parameters.")`
-
+## Clustering
 ```{r config}
 # 0. Data Dictionary Shield & Base Excludes
 unstable_vars <- data_dictionary %>% filter(grepl("ZERO VARIANCE", toupper(QC_Flag))) %>% pull(Variable)
@@ -134,12 +134,21 @@ diagnostic_configs <- list(
   correlate_vars = c("cohort_group", "Age", "Sex")
 )
 
-# 6. Clinical Phenotyping Targets
+```
+
+## Phenotyping
+```{r conf_pheno}
+# 6. Clinical Phenotyping Targets ---------
 # , "hclust","louvain"
 #Note: For the value argument, I used %in% under the hood instead of ==, so you can even pass multiple values like value = c("Nonactive", "Mildly Active") if you ever need to group ordinal tiers together!
-clin_vars_to_highlight <- c("Age", "Sex", "cohort_group", "Major vascular", "Immunosuppressants", "Steroids", "Other_medication",
-                            "ILD diagnosed via HRCT", "Digital ulcer", "Puffy Fingers")
-clin_vars_to_include <- unique(c(ssc_clinical_parameters, "Age", "Sex", "cohort_group", clinical_domains$Medications))
+clin_vars_to_highlight <- list(
+  "SSc clinical parameters" = ssc_clinical_parameters,
+  "Medication" = clinical_domains$Medications
+)
+
+clin_vars_to_include <- list(
+  "Exploratory" = c(clinical_domains$Demographics_and_Scores, clinical_domains$Pulmonary, clinical_domains$Cardiac, clinical_domains$Labs_and_Biomarkers, clinical_domains$Cutaneous_and_Vascular, clinical_domains$Musculoskeletal, clinical_domains$Gastrointestinal) 
+)
 
 pheno_configs <- list(
   pheno_svc = list(
@@ -150,33 +159,14 @@ pheno_configs <- list(
     variables = clin_vars_to_include,
     highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
-    must_include_vars = c("Age", "Sex", "cohort_group")
-  ),
-  
-  pheno_svc_act = list(
-    target_job = "job_svc",
-    title = "Age Regressed AvC DEA PCA Clustering Active only",
-    target_algorithms = c("kmeans"),
-    subset_filter = list(column = "cohort_group", value = c("Active")),
-    variables = clin_vars_to_include,
-    highlight_variables = clin_vars_to_highlight ,
-    p_cutoff = 0.05,
-    must_include_vars = c("Age", "Sex", "cohort_group")
-  ),
-  
-  pheno_svc_nonact = list(
-    target_job = "job_svc",
-    title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
-    target_algorithms = c("kmeans"),
-    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
-    variables = clin_vars_to_include,
-    highlight_variables = clin_vars_to_highlight ,
-    p_cutoff = 0.05,
-    must_include_vars = c("Age", "Sex", "cohort_group")
+    must_include_vars = c("cohort_group")
   )
+
+
 )
 
-# 7.a Feature Phenotyping Targets (DEA)
+
+# 7.a Feature Phenotyping Targets (DEA) ------
 feature_configs <- list(
   feat_svc = list(
     target_job = "job_svc",
@@ -195,45 +185,9 @@ feature_configs <- list(
     ),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
-  ),
-  
-  feat_svc_act = list(
-    target_job = "job_svc",
-    title = "Age Regressed SvC DEA Clustering Active only",
-    input_matrix = "raw", 
-    covariates = c("Age"),
-    # Algorithms are now the primary key to enable contrast-per-algorithm
-    algorithms = list(
-      kmeans = list(
-        contrasts = list(
-          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Active only", desc = "Both mixed active and nonacctive", 
-                          target=c("Cluster 1"), ref=c("Cluster 2"),
-                          subset_filter = list(column = "cohort_group", value = c("Active")))
-        )
-      )
-    ),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.58
-  ),
-  
-  feat_svc_nonact = list(
-    target_job = "job_svc",
-    title = "Age Regressed SvC DEA Clustering Nonactive only",
-    input_matrix = "raw", 
-    covariates = c("Age"),
-    # Algorithms are now the primary key to enable contrast-per-algorithm
-    algorithms = list(
-      kmeans = list(
-        contrasts = list(
-          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Nonactive only", desc = "Both mixed active and nonacctive", 
-                          target=c("Cluster 1"), ref=c("Cluster 2"),
-                          subset_filter = list(column = "cohort_group", value = c("Non-Active")))
-        )
-      )
-    ),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.58
   )
+
+
 )
 
 # 7.b DEA Heatmap Configs
@@ -251,6 +205,7 @@ omics_config <- list(
   network_p_cutoff = 0.1
 )
 ```
+
 
 # Matrix Factory
 `r analysis_decision("Employed three distinct matrix transformations to isolate the disease signature from the Age confounder. The baseline matrix remains unmodified. The pruned matrix surgically removes features correlating heavily with Age (Spearman rho > 0.4). The residualized matrix uses linear modeling to mathematically regress Age out of the coordinate space.")` 
@@ -523,13 +478,13 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
 # Clinical Phenotyping {.tabset}
 `r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
 
-`r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes.")`
+`r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes. Uses nested categories for streamlined visual profiling.")`
 
-```{r clinical_phenotyping, fig.height=14, fig.width=14, warning=FALSE, results='asis'}
+```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis'}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
-  # Assuming you have the job name mapped, or just print conf$target_job
   cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  
   payload <- global_cluster_payloads[[conf$target_job]]
   if (is.null(payload)) next
   
@@ -537,10 +492,11 @@ for (p_id in names(pheno_configs)) {
   
   if (res$status == "success") {
     for (algo in names(res$plots)) {
-      # Inject Markdown Header for the Tabset
-      cat(sprintf("\n\n### %s\n\n", toupper(algo)))
+      # Inject Markdown Header for the Algorithm Tabset
+      cat(sprintf("\n\n### %s {.tabset}\n\n", toupper(algo)))
       
-      # Print Table (Converted to kableExtra for consistent HTML styling)
+      # Print Master Table
+      cat("\n\n#### Summary Table\n\n")
       if (!is.null(res$tables[[algo]])) {
         tbl <- res$tables[[algo]] %>% 
           gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
@@ -549,16 +505,22 @@ for (p_id in names(pheno_configs)) {
         cat("\n\n")
       }
       
-      # Print Heatmap (Using ComplexHeatmap::draw)
-      if (!is.null(res$plots[[algo]]$heatmap)) {
-        ComplexHeatmap::draw(res$plots[[algo]]$heatmap)
-        cat("\n\n")
+      # --- NEW: Loop through nested Heatmaps ---
+      if (length(res$plots[[algo]]$heatmap) > 0) {
+        for (h_name in names(res$plots[[algo]]$heatmap)) {
+          cat(sprintf("\n\n#### Heatmap: %s\n\n", gsub("_", " ", h_name)))
+          ComplexHeatmap::draw(res$plots[[algo]]$heatmap[[h_name]])
+          cat("\n\n")
+        }
       }
       
-      # Print Grid
-      if (!is.null(res$plots[[algo]]$highlights)) {
-        print(res$plots[[algo]]$highlights)
-        cat("\n\n")
+      # --- NEW: Loop through nested Highlight Grids ---
+      if (length(res$plots[[algo]]$highlights) > 0) {
+        for (g_name in names(res$plots[[algo]]$highlights)) {
+          cat(sprintf("\n\n#### Grid: %s\n\n", gsub("_", " ", g_name)))
+          print(res$plots[[algo]]$highlights[[g_name]])
+          cat("\n\n")
+        }
       }
     }
   }
@@ -734,3 +696,68 @@ for (f_id in names(feature_configs)) {
 ```{r complete}
 cat("Script 03c Complete! \n")
 ```
+
+```{r legacy, include=FALSE}
+# Legacy Clin Config ----  
+  # pheno_svc_act = list(
+  #   target_job = "job_svc",
+  #   title = "Age Regressed AvC DEA PCA Clustering Active only",
+  #   target_algorithms = c("kmeans"),
+  #   subset_filter = list(column = "cohort_group", value = c("Active")),
+  #   variables = clin_vars_to_include,
+  #   highlight_variables = clin_vars_to_highlight ,
+  #   p_cutoff = 0.05,
+  #   must_include_vars = c("cohort_group")
+  # ),
+  # 
+  # pheno_svc_nonact = list(
+  #   target_job = "job_svc",
+  #   title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
+  #   target_algorithms = c("kmeans"),
+  #   subset_filter = list(column = "cohort_group", value = c("Non-Active")),
+  #   variables = clin_vars_to_include,
+  #   highlight_variables = clin_vars_to_highlight ,
+  #   p_cutoff = 0.05,
+  #   must_include_vars = c("cohort_group")
+  # )
+  
+# Legacy Feature Config ----
+  # feat_svc_act = list(
+  #   target_job = "job_svc",
+  #   title = "Age Regressed SvC DEA Clustering Active only",
+  #   input_matrix = "raw", 
+  #   covariates = c("Age"),
+  #   # Algorithms are now the primary key to enable contrast-per-algorithm
+  #   algorithms = list(
+  #     kmeans = list(
+  #       contrasts = list(
+  #         c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Active only", desc = "Both mixed active and nonacctive", 
+  #                         target=c("Cluster 1"), ref=c("Cluster 2"),
+  #                         subset_filter = list(column = "cohort_group", value = c("Active")))
+  #       )
+  #     )
+  #   ),
+  #   dea_p_cutoff = 0.05,
+  #   dea_fc_cutoff = 0.58
+  # ),
+  # 
+  # feat_svc_nonact = list(
+  #   target_job = "job_svc",
+  #   title = "Age Regressed SvC DEA Clustering Nonactive only",
+  #   input_matrix = "raw", 
+  #   covariates = c("Age"),
+  #   # Algorithms are now the primary key to enable contrast-per-algorithm
+  #   algorithms = list(
+  #     kmeans = list(
+  #       contrasts = list(
+  #         c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Nonactive only", desc = "Both mixed active and nonacctive", 
+  #                         target=c("Cluster 1"), ref=c("Cluster 2"),
+  #                         subset_filter = list(column = "cohort_group", value = c("Non-Active")))
+  #       )
+  #     )
+  #   ),
+  #   dea_p_cutoff = 0.05,
+  #   dea_fc_cutoff = 0.58
+  # )
+```
+

@@ -110,11 +110,11 @@ clinical_domains <- list(
     "Telangiectasia", "Telangiectasia (any)", "Abnormal Capillaroscopy", "Capillaroscopy Score",
     "Capillaroscopy Pattern", "Giant capillaries", "Hemorrhages", "Capillary loss", "Ramified bushy capillaries",
     "Puffy Fingers", "Sclerodactyly", "Skin Thickening (Ext. MCP)", "Skin Thickening (Prox. MCP)",
-    "Subcutaneous Calcinosis", "Gangrene"
+    "Subcutaneous Calcinosis", "Gangrene", "log_Modified_rodnan_skin_score"
   ),
   Musculoskeletal = c(
     "Joint involvement", "Joint Contractures", "Tendon friction rubs",
-    "Proximal muscle weakness", "Myalgia", "Muscle atrophy", "Arthritis Activity (NA)"
+    "Proximal muscle weakness", "Myalgia", "Muscle atrophy", "Activity of arthritis during the past week"
   ),
   Pulmonary = c(
     "PAH/ILD", "ILD diagnosed via HRCT", "FVC %pred", "Forced Vital Capacity (ml)",
@@ -123,23 +123,30 @@ clinical_domains <- list(
     "Dyspnea NYHA Stage", "Max Borg Dyspnea", "Distance in m", "New PAH"
   ),
   Cardiac = c(
-    "New Cardiac Manifest.", "Does the patient have pulmonary arterial hypertension since the last visit?",
+    "New Cardiac Manifest.",
     "Right bundle branch block", "Right axis deviation", "Right ventricular hypertrophy",
     "Ventricular arrhythmias", "Auricular arrhythmias", "Conduction blocks", "Arrhythmias requiring therapy",
     "Right atrium area (cm2)", "Right ventricular area (cm2)", "TAPSE (cm)",
-    "Pericardial effusion on echo", "PAPsys (on echo)?", "Diastolic Dysf. (Echo)", "LVEF %"
+    "Pericardial effusion on echo", "PAPsys (on echo)?", "Diastolic Dysf. (Echo)", "LVEF %","log_Right_atrium_area__cm2", "log_TAPSE__cm"
   ),
   Gastrointestinal = c(
     "Stomach Symptoms", "GAVE", "Intestinal Symptoms", "Malabsorption syndrome", "Proximal Dysphagia"
   ),
   Labs_and_Biomarkers = c(
     "CRP", "Creatinine", "NT-proBNP (pg/ml)", "Uric Acid (mg/dl)",
-    "Hemoglobin (g/dl)", "CK value in serum (U/U/L)", "Proteinuria (>300mg/d)",
-    "SSc Antibodies", "SSc Antibody Score", "log_creatinine", "log_NT_ProBNP", "log_Distance_in_m"
+    "Hemoglobin (g/dl)", "CK value in serum (U/L)", "Proteinuria (>300mg/d)",
+    "SSc Antibodies", "SSc Antibody Score",  "log_CRP",
+    "log_CK_value_in_serum__U_L", "log_Creatinine", "log_NT_proBNP__pg_ml", "log_Uric_Acid__mg_dl"
   ),
   Medications = c(
-    "Med_rituximab", "Med_tocilizumab", "Med_MMF", "Med_MTX", "Med_JAKi", "Med_abatacept", "Med_PPI", "Med_ACEi", "Med_nintedanib",
-    "Med_ASA", "Med_CCB", "Med_ARB", "Med_nintadanib", "Med_OAC", "Med_nintetanib", "Immunosuppressants", "Major vascular", "Steroids", "Other_medication"
+    "Med_rituximab",
+    "Med_tocilizumab",                            "Med_mmf",                                    "Med_mtx",
+    "Med_jaki",                                   "Med_abatacept",                              "Med_sildenafil",
+    "Med_tadalafil",                              "Med_bosentan",                               "Med_iloprost",
+    "Med_macitentan",                             "Med_ambrisentan",                            "Med_ppi",
+    "Med_acei",                                   "Med_nintedanib",                             "Med_asa",
+    "Med_ccb",                                    "Med_arb",                                    "Med_nintadanib",
+    "Med_oac",                                    "Med_nintetanib","Immunosuppressants", "Major vascular", "Steroids", "Other_medication"
     )
 )
 
