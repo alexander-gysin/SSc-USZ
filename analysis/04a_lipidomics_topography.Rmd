@@ -1,0 +1,172 @@
+---
+title: "Lipidomics Topography & Missingness"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Setup and Import
+
+`r what_this_does("Loaded required bioinformatics and visualization packages (UpSetR for missingness intersections).", "Imported the pre-cleaned clinical spine , imputed and sparse lipidomics matrix.", "Sourced the new lipid_engines.R file designed specifically for sparse mass spectrometry data.")`
+```{r setup_and_import}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(kableExtra)
+library(UpSetR) # Highly recommended for missingness topography
+library(readxl)      # Reading messy Excel files
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "04a_lipidomics_topography"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines (Assuming we start the new file here!)
+source(here::here("code", "00_lipid_engines.R"))
+
+# Load Pre-Cleaned Data
+# Assuming 01c or similar contains your raw/imputed lipid data
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+lipid_mat_imputed <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_lipid_matrix.rds"))
+lipid_mat_unimputed <- readRDS(here::here("output", "01a_data_import_and_qc", "raw_lipid_matrix.rds"))
+clin_dict <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
+lod_df <- read_excel(here::here("data", "Lipidomics_LOD.xlsx"), sheet = "Master")
+```
+
+# Configurations
+`r what_this_does("Defined thresholds for categorizing lipids based on missingness to dynamically route them into different statistical pipelines (DEA vs. Binarization).", "Configured visualization parameters for the missingness overview and topographical histograms.")`
+
+```{r conf}
+# 1. Nested Visualization & Analysis Configuration
+topography_config <- list(
+  # Base Missingness Settings
+  missingness = list(
+    hist_bins = 20,
+    log_transform_viz = TRUE
+  ),
+  
+  # Phenotype Evaluation Settings (Fully Parameterized)
+  phenotype = list(
+    vars_to_test = c("cohort_group", "Sex", "Age"), # Add or remove spine columns here!
+    continuous_bins = 3                             # e.g., 3 = Tertiles for numeric vars
+  ),
+  
+  # Global Export Settings
+  export = list(
+    width = 10,
+    height = 6,
+    dpi = 300
+  )
+)
+```
+
+# Topography
+`r what_this_does("Evaluated global matrix missingness and generated corresponding topographies (Barplots, Heatmaps, LOD scatter).", "Exported generated plots to the output directory to preserve visual artifacts.")`
+```{r topography, fig.width=12, fig.height=10, results='asis'}
+# 1. Execute Wrapper 
+missingness_res <- wrap_missingness_topography(
+  lipid_mat = lipid_mat_unimputed,
+  config = topography_config,
+  output_dir = output_dir_data,
+  lod_df = lod_df
+)
+
+# 2. Print Diagnostics and Plots natively
+cat("### Global Matrix Diagnostics\n\n")
+cat(sprintf("* **Total Lipids Evaluated:** %d\n\n", missingness_res$diagnostics$total_lipids))
+
+cat("### Global Missingness Distribution\n\n")
+print(missingness_res$plots$missingness_bars)
+cat("\n\n")
+
+if(!is.null(missingness_res$plots$co_missingness_heatmap)) {
+  cat("### Missingness Intersections (Heatmap)\n\n")
+  cat("*Note: Co-Missingness evaluates how often lipid 'i' AND lipid 'j' are missing in the same patient.*\n\n")
+  print(missingness_res$plots$co_missingness_heatmap)
+  cat("\n\n")
+}
+
+if(!is.null(missingness_res$plots$lod_range)) {
+  cat("### Limit of Detection (LOD) Range\n\n")
+  print(missingness_res$plots$lod_range)
+  cat("\n\n")
+}
+
+# 3. RAM Cleanup
+#rm(missingness_res)
+```
+Comissingess: How many times are lipid 'i' AND lipid 'j' missing in the same patient?
+The diagonal displays the overall missingness of that lipid.
+
+# Distribution Signatures
+`r what_this_does("Generated and exported topographical histograms for all strictly measured lipids.", "Flagged ultra-sparse lipids (n=1) with text annotations.")`
+`r analysis_decision("Zeros and NAs were explicitly excluded here to accurately evaluate the underlying continuous variance of successfully measured samples, necessary to assess structural validity for continuous models.")`
+```{r execution_engine_histograms, fig.width=14, fig.height=10, results='asis'}
+# 1. Execute Wrapper
+hist_res <- wrap_distribution_signatures(
+  lipid_mat = lipid_mat_unimputed,
+  config = topography_config,
+  output_dir = output_dir_data,
+  project_colors_func = get_project_colors,
+  lod_df = lod_df
+)
+
+# 2. Print Output natively
+cat("\n\n*Note: Zeros/NAs are excluded here to evaluate the underlying continuous distribution of successfully measured samples.*\n\n")
+print(hist_res$plots$hists)
+cat("\n\n")
+
+# 3. RAM Cleanup
+rm(hist_res)
+```
+# Clinical Phenotype Missingness {.tabset}
+`r what_this_does("Evaluated missingness percentages dynamically partitioned by parameterized clinical variables.", "Exported generated bar charts dynamically.")`
+`r analysis_decision("Continuous clinical variables were dynamically identified via the data dictionary and binned into quantiles to assess categorical biological dropout trends, justifying Fisher's Exact binarization.")`
+```{r execution_engine_phenotype, fig.width=15, fig.height=6, results='asis'}
+# 1. Execute Wrapper
+pheno_res <- wrap_phenotype_completeness(
+  lipid_mat = lipid_mat_unimputed,
+  clin_df = master_spine,
+  clin_dict = clin_dict,
+  config = topography_config,
+  output_dir = output_dir_data
+)
+
+# 2. Dynamically Print Tabset Headers and Plots
+if(length(pheno_res$plots) == 0) {
+  cat("**WARNING:** No clinical variables successfully mapped. Check configuration and spine.\n\n")
+} else {
+  for (p_name in names(pheno_res$plots)) {
+    cat(sprintf("\n\n## %s\n\n", p_name))
+    print(pheno_res$plots[[p_name]])
+    cat("\n\n")
+  }
+}
+
+# 3. RAM Cleanup
+rm(pheno_res)
+```
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the custom lipid omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+
+```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script 04a Complete! \n")
+```
+
