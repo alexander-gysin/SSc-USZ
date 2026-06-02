@@ -438,7 +438,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">01 June, 2026</h4>
+<h4 class="date">02 June, 2026</h4>
 
 </div>
 
@@ -467,7 +467,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-01
+<strong>Last updated:</strong> 2026-06-02
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree622eecbdf025e01c2a78ce24ef05f8b8b29e92bctargetblank622eecba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree3c2e69816aab0dac00bdf1b97b0f6f7c3da90cfftargetblank3c2e698a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/622eecbdf025e01c2a78ce24ef05f8b8b29e92bc" target="_blank">622eecb</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/3c2e69816aab0dac00bdf1b97b0f6f7c3da90cff" target="_blank">3c2e698</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree622eecbdf025e01c2a78ce24ef05f8b8b29e92bctargetblank622eecba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree3c2e69816aab0dac00bdf1b97b0f6f7c3da90cfftargetblank3c2e698a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/622eecbdf025e01c2a78ce24ef05f8b8b29e92bc" target="_blank">622eecb</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/3c2e69816aab0dac00bdf1b97b0f6f7c3da90cff" target="_blank">3c2e698</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -706,6 +706,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/3c2e69816aab0dac00bdf1b97b0f6f7c3da90cff/analysis/01a_data_import_and_qc.Rmd" target="_blank">3c2e698</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+<td>
+wflow_publish("analysis/01a_data_import_and_qc.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/0b86981aa8704b189604d59c20aab6db97a4605e/docs/01a_data_import_and_qc.html" target="_blank">0b86981</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3252,20 +3286,34 @@ audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- Dropped %d Lipids (&gt;
 qc_mat_lipid &lt;- raw_lipid_mat[valid_lipids, , drop = FALSE]
 
 # 3. LOD Imputation (LOD / 5)
-# Create a named vector of LODs for quick lookup
-# Assumes &#39;Mediator&#39; and &#39;LOD_Matrix&#39; columns in the LOD file
-lod_df &lt;- read_excel(here::here(&quot;data&quot;, file_paths$lipid_lod), sheet = &quot;Master&quot;)
-lod_vec &lt;- setNames(lod_df$LOD_Matrix, lod_df$Mediator)
+# Load Raw LOD Data
+lod_raw &lt;- readxl::read_excel(here::here(&quot;data&quot;, file_paths$lipid_lod), sheet = &quot;Master&quot;)
 
-# Identify missing values
+# Aggregate Technical Replicates
+mean_lod_df &lt;- lod_raw %&gt;%
+  dplyr::group_by(Mediator) %&gt;%
+  dplyr::summarise(
+    LOD_Matrix = mean(LOD_Matrix, na.rm = TRUE),
+    n_replicates = dplyr::n(),
+    .groups = &quot;drop&quot;
+  )
+
+# Export Mean LOD for Downstream Scripts (e.g., Script 04a)
+saveRDS(mean_lod_df, file.path(output_dir_data, &quot;lipid_mean_lod.rds&quot;))
+audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- LOD Aggregation: %d unique lipids averaged from technical replicates.&quot;, nrow(mean_lod_df)))
+
+#Create a Named Vector for Fast Matrix Lookup
+lod_vec &lt;- setNames(mean_lod_df$LOD_Matrix, mean_lod_df$Mediator)
+
+# Execute Imputation
 na_coords &lt;- which(is.na(qc_mat_lipid), arr.ind = TRUE)
 
 if(nrow(na_coords) &gt; 0) {
-  # For each missing value, extract the lipid name (row index) and apply LOD/5
+  # Map missing rows to lipid names, fetch LOD/5
   lipid_row_names &lt;- rownames(qc_mat_lipid)[na_coords[, &quot;row&quot;]]
   imputed_vals &lt;- lod_vec[lipid_row_names] / 5
   
-  # Update matrix
+  # Inject imputed values
   qc_mat_lipid[na_coords] &lt;- imputed_vals
   
   audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- LOD Imputation Complete: %d values imputed.&quot;, nrow(na_coords)))
@@ -3279,7 +3327,8 @@ qc_mat_lipid &lt;- qc_mat_lipid[, colnames(qc_mat_lipid) %in% raw_spine$Subject_
 raw_spine &lt;- raw_spine[Subject_ID %in% colnames(qc_mat_lipid)]
 
 # Cleanup
-rm(raw_lipid, id_map_lipid, lod_df, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names)
+rm(raw_lipid, id_map_lipid, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names, 
+   na_coords, lipid_row_names, imputed_vals)
 invisible(gc())
 
 # Print output
@@ -3290,6 +3339,8 @@ cat(paste(audit_log_lipid, collapse = &quot;\n\n&quot;))</code></pre>
 - Initial Matrix: 50 Lipids | 132 Samples
 
 - Dropped 47 Lipids (&gt;= 50% missing). Which corresponds to 94.0%
+
+- LOD Aggregation: 39 unique lipids averaged from technical replicates.
 
 - LOD Imputation Complete: 163 values imputed.</code></pre>
 </div>
@@ -3312,6 +3363,20 @@ saveRDS(raw_lipid_mat, file.path(output_dir_data, &quot;raw_lipid_matrix.rds&quo
 
 cat(&quot;Script 01a Complete!\n&quot;)</code></pre>
 <pre><code>Script 01a Complete!</code></pre>
+<pre class="r"><code># Extract the lipid names from both sources
+matrix_lipids &lt;- rownames(raw_lipid_mat)
+lod_lipids &lt;- mean_lod_df$Mediator # (or lod_raw$Mediator depending on which object is in your environment)
+
+# Find lipids in the matrix that are missing from the LOD file
+missing_from_lod &lt;- setdiff(matrix_lipids, lod_lipids)
+
+# Print the results
+cat(sprintf(&quot;There are %d lipids in your matrix missing from or named differently in the LOD file:\n&quot;, length(missing_from_lod)))</code></pre>
+<pre><code>There are 11 lipids in your matrix missing from or named differently in the LOD file:</code></pre>
+<pre class="r"><code>sort(missing_from_lod)</code></pre>
+<pre><code> [1] &quot;15-epi-LXB4&quot;   &quot;17R-RvD3&quot;      &quot;20-COOH-LTB4&quot;  &quot;22-OH-PD1&quot;    
+ [5] &quot;5S,15S-diHETE&quot; &quot;MaR1n-3 DPA&quot;   &quot;MaR2n-3 DPA&quot;   &quot;RvD2n-3 DPA&quot;  
+ [9] &quot;RvD6&quot;          &quot;RvE3&quot;          &quot;RvT3&quot;         </code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
