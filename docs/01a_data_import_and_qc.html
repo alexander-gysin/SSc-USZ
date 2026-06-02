@@ -598,15 +598,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree3c2e69816aab0dac00bdf1b97b0f6f7c3da90cfftargetblank3c2e698a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6fc1ee3c2490a6036a8bcc9c438ad830455925b3targetblank6fc1ee3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/3c2e69816aab0dac00bdf1b97b0f6f7c3da90cff" target="_blank">3c2e698</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6fc1ee3c2490a6036a8bcc9c438ad830455925b3" target="_blank">6fc1ee3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree3c2e69816aab0dac00bdf1b97b0f6f7c3da90cfftargetblank3c2e698a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree6fc1ee3c2490a6036a8bcc9c438ad830455925b3targetblank6fc1ee3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -616,7 +616,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/3c2e69816aab0dac00bdf1b97b0f6f7c3da90cff" target="_blank">3c2e698</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/6fc1ee3c2490a6036a8bcc9c438ad830455925b3" target="_blank">6fc1ee3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -706,6 +706,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6fc1ee3c2490a6036a8bcc9c438ad830455925b3/analysis/01a_data_import_and_qc.Rmd" target="_blank">6fc1ee3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+<td>
+wflow_publish("analysis/01a_data_import_and_qc.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c862f3958c26964b7741d21e031ea9b3b5a68811/docs/01a_data_import_and_qc.html" target="_blank">c862f39</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -984,8 +1018,8 @@ qc_config &lt;- list(
   max_missing_pct_pat  = 0.05,
   max_missing_pct_lipid = 0.60,
   selected_col         = &quot;SELECTED&quot;, 
-  
-  max_missingness_clin_var = 0.20, 
+  max_missingness_clin_var = 0.20,
+  tech_ids_to_remove = c(&quot;FS93796088&quot;),
   
   # Protect these from the 20% NA filter because Script 01b needs them to engineer features
   protected_raw_vars = c(
@@ -3230,6 +3264,21 @@ audit_log_lipid &lt;- c(&quot;Lipidomics QC Log\n&quot;)
 raw_lipid &lt;- read_excel(here::here(&quot;data&quot;, file_paths$lipid_raw), sheet = &quot;Clean&quot;, na = &quot;*&quot;)
 setDT(raw_lipid)
 
+# Filter out configured tech_ids_to_exclude (e.g., orphaned follow-ups)
+# Note: Using idiomatic data.table syntax (:= NULL) to delete by reference and save RAM
+cols_to_drop &lt;- intersect(qc_config$tech_ids_to_remove, names(raw_lipid))
+
+if (length(cols_to_drop) &gt; 0) {
+  raw_lipid[, (cols_to_drop) := NULL]
+  audit_log_lipid &lt;- c(
+    audit_log_lipid, 
+    sprintf(&quot;- Dropped %d manually configured tech_ids (%s).&quot;, 
+            length(cols_to_drop), paste(cols_to_drop, collapse = &quot;, &quot;))
+  )
+} else {
+  audit_log_lipid &lt;- c(audit_log_lipid, &quot;- Manual QC: No configured tech_ids found to drop.&quot;)
+}
+
 # Extract lipid names and clean the matrix
 lipid_names &lt;- raw_lipid[[1]] 
 raw_lipid_mat &lt;- as.matrix(raw_lipid[, -1, with = FALSE])
@@ -3299,7 +3348,6 @@ mean_lod_df &lt;- lod_raw %&gt;%
   )
 
 # Export Mean LOD for Downstream Scripts (e.g., Script 04a)
-saveRDS(mean_lod_df, file.path(output_dir_data, &quot;lipid_mean_lod.rds&quot;))
 audit_log_lipid &lt;- c(audit_log_lipid, sprintf(&quot;- LOD Aggregation: %d unique lipids averaged from technical replicates.&quot;, nrow(mean_lod_df)))
 
 #Create a Named Vector for Fast Matrix Lookup
@@ -3336,13 +3384,15 @@ cat(paste(audit_log_lipid, collapse = &quot;\n\n&quot;))</code></pre>
 <pre><code>Lipidomics QC Log
 
 
-- Initial Matrix: 50 Lipids | 132 Samples
+- Dropped 1 manually configured tech_ids (FS93796088).
+
+- Initial Matrix: 50 Lipids | 131 Samples
 
 - Dropped 47 Lipids (&gt;= 50% missing). Which corresponds to 94.0%
 
 - LOD Aggregation: 39 unique lipids averaged from technical replicates.
 
-- LOD Imputation Complete: 163 values imputed.</code></pre>
+- LOD Imputation Complete: 161 values imputed.</code></pre>
 </div>
 <div id="export" class="section level1">
 <h1>Export</h1>
@@ -3360,6 +3410,7 @@ saveRDS(raw_spine, file.path(output_dir_data, &quot;raw_filtered_spine.rds&quot;
 saveRDS(qc_mat, file.path(output_dir_data, &quot;clean_olink_matrix.rds&quot;))
 saveRDS(qc_mat_lipid, file.path(output_dir_data, &quot;clean_lipid_matrix.rds&quot;))
 saveRDS(raw_lipid_mat, file.path(output_dir_data, &quot;raw_lipid_matrix.rds&quot;))
+saveRDS(mean_lod_df, file.path(output_dir_data, &quot;lipid_mean_lod.rds&quot;))
 
 cat(&quot;Script 01a Complete!\n&quot;)</code></pre>
 <pre><code>Script 01a Complete!</code></pre>
