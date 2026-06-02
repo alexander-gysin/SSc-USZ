@@ -337,20 +337,34 @@ audit_log_lipid <- c(audit_log_lipid, sprintf("- Dropped %d Lipids (>= 50%% miss
 qc_mat_lipid <- raw_lipid_mat[valid_lipids, , drop = FALSE]
 
 # 3. LOD Imputation (LOD / 5)
-# Create a named vector of LODs for quick lookup
-# Assumes 'Mediator' and 'LOD_Matrix' columns in the LOD file
-lod_df <- read_excel(here::here("data", file_paths$lipid_lod), sheet = "Master")
-lod_vec <- setNames(lod_df$LOD_Matrix, lod_df$Mediator)
+# Load Raw LOD Data
+lod_raw <- readxl::read_excel(here::here("data", file_paths$lipid_lod), sheet = "Master")
 
-# Identify missing values
+# Aggregate Technical Replicates
+mean_lod_df <- lod_raw %>%
+  dplyr::group_by(Mediator) %>%
+  dplyr::summarise(
+    LOD_Matrix = mean(LOD_Matrix, na.rm = TRUE),
+    n_replicates = dplyr::n(),
+    .groups = "drop"
+  )
+
+# Export Mean LOD for Downstream Scripts (e.g., Script 04a)
+saveRDS(mean_lod_df, file.path(output_dir_data, "lipid_mean_lod.rds"))
+audit_log_lipid <- c(audit_log_lipid, sprintf("- LOD Aggregation: %d unique lipids averaged from technical replicates.", nrow(mean_lod_df)))
+
+#Create a Named Vector for Fast Matrix Lookup
+lod_vec <- setNames(mean_lod_df$LOD_Matrix, mean_lod_df$Mediator)
+
+# Execute Imputation
 na_coords <- which(is.na(qc_mat_lipid), arr.ind = TRUE)
 
 if(nrow(na_coords) > 0) {
-  # For each missing value, extract the lipid name (row index) and apply LOD/5
+  # Map missing rows to lipid names, fetch LOD/5
   lipid_row_names <- rownames(qc_mat_lipid)[na_coords[, "row"]]
   imputed_vals <- lod_vec[lipid_row_names] / 5
   
-  # Update matrix
+  # Inject imputed values
   qc_mat_lipid[na_coords] <- imputed_vals
   
   audit_log_lipid <- c(audit_log_lipid, sprintf("- LOD Imputation Complete: %d values imputed.", nrow(na_coords)))
@@ -364,7 +378,8 @@ qc_mat_lipid <- qc_mat_lipid[, colnames(qc_mat_lipid) %in% raw_spine$Subject_ID,
 raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat_lipid)]
 
 # Cleanup
-rm(raw_lipid, id_map_lipid, lod_df, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names)
+rm(raw_lipid, id_map_lipid, map_match, tech_ids, unmatched, miss_lipids, valid_lipids, lipid_names, 
+   na_coords, lipid_row_names, imputed_vals)
 invisible(gc())
 
 # Print output
@@ -385,4 +400,17 @@ saveRDS(raw_lipid_mat, file.path(output_dir_data, "raw_lipid_matrix.rds"))
 cat("Script 01a Complete!\n")
 ```
 
+```{r}
+# Extract the lipid names from both sources
+matrix_lipids <- rownames(raw_lipid_mat)
+lod_lipids <- mean_lod_df$Mediator # (or lod_raw$Mediator depending on which object is in your environment)
+
+# Find lipids in the matrix that are missing from the LOD file
+missing_from_lod <- setdiff(matrix_lipids, lod_lipids)
+
+# Print the results
+cat(sprintf("There are %d lipids in your matrix missing from or named differently in the LOD file:\n", length(missing_from_lod)))
+sort(missing_from_lod)
+
+```
 
