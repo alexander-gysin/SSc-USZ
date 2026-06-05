@@ -11,8 +11,12 @@ navbar:
       href: 01a_data_import_and_qc.html
     - text: Clinical Features
       href: 01b_clinical_feature_engineering.html
-  - text: Cohort
-    href: 02_cohort_characterization.html
+  - text: Clinical
+    menu:
+    - text: Charcterization
+      href: 02a_cohort_characterization.html
+    - text: Clustering
+      href: 02b_clinical_clustering.html
   - text: Proteomics
     menu:
     - text: Variance

@@ -1527,6 +1527,44 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     raw_tbl <- gtsummary::as_tibble(summary_obj)
     readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
 
+    # EXPORT RAW GTSUMMARY TO CSV
+    raw_tbl <- gtsummary::as_tibble(summary_obj)
+    readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
+
+    # --- TARGETED HIGHLIGHT TABLES (Bypass Loop) ---
+    if (!is.null(conf$highlight_variables)) {
+      # FIX 1: Safely initialize the highlights list inside results$tables
+      if (!("highlights" %in% names(results$tables))) results$tables$highlights <- list()
+      results$tables$highlights[[algo_name]] <- list()
+
+      for (h_name in names(conf$highlight_variables)) {
+        h_vars <- conf$highlight_variables[[h_name]]
+        # Filter to variables that actually exist in the data
+        valid_h_vars <- intersect(h_vars, colnames(valid_df))
+
+        if (length(valid_h_vars) > 0) {
+          # FIX 2: Subset from valid_df so we use the clean "Cluster" column and exclude noise!
+          hl_df <- valid_df %>% select(all_of(c("Cluster", valid_h_vars)))
+
+          # Generate the gtsummary table showing ALL variables in this list, ignoring p_cutoff
+          hl_tbl <- hl_df %>%
+            gtsummary::tbl_summary(
+              by = Cluster,
+              missing = "ifany",
+              missing_text = "Missing (NA)"
+            ) %>%
+            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "fisher.test")) %>%
+            gtsummary::bold_labels()
+
+          # Convert to HTML and Store
+          hl_html <- gtsummary::as_kable_extra(hl_tbl, format = "html", caption = sprintf("Subset Table: %s", gsub("_", " ", h_name))) %>%
+            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
+
+          # FIX 3: Save to the correct results object
+          results$tables$highlights[[algo_name]][[h_name]] <- hl_html
+        }
+      }
+    }
 
     # --- NEW: OUTER LOOP FOR HEATMAPS ---
     for (cat_name in names(vars_list)) {
@@ -1685,12 +1723,18 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
 #   sweeps 'minPts' for HDBSCAN (Noise vs Clusters), and sweeps 'resolution' for
 #   Louvain (Modularity).
 wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_dir) {
+  library(ggplot2)
+  library(patchwork)
+  library(cluster)
+
   results <- list(status = "success", plots = list(), paths = list())
 
   opt_dir <- file.path(base_output_dir, "K_Optimization", opt_id)
   if (!dir.exists(opt_dir)) dir.create(opt_dir, recursive = TRUE)
 
-  patient_mat <- t(omics_mat) # Rows = Patients, Cols = Features
+  # Check if we are handling a pre-computed distance matrix (e.g., Gower)
+  is_dist <- if (!is.null(conf$is_dist_matrix)) conf$is_dist_matrix else FALSE
+  patient_mat <- if (isTRUE(is_dist)) omics_mat else t(omics_mat)
 
   for (algo_name in names(conf$algorithms)) {
     algo_conf <- conf$algorithms[[algo_name]]
@@ -1699,7 +1743,7 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
     combined_plot <- NULL
 
     # --- A. HDBSCAN Optimization Sweep ---
-    if (algo_name == "hdbscan") {
+    if (algo_name == "hdbscan" && !isTRUE(is_dist)) {
       library(dbscan)
       minPts_vals <- if(!is.null(algo_conf$minPts_range)) algo_conf$minPts_range else 3:15
       sweep_df <- data.frame(minPts = minPts_vals, Clusters = 0, Noise_Pct = 0)
@@ -1710,34 +1754,25 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
         sweep_df$Noise_Pct[i] <- sum(hd$cluster == 0) / length(hd$cluster)
       }
 
-      # Dual-axis plot: Clusters vs Noise
       max_c <- max(sweep_df$Clusters, 1)
       combined_plot <- ggplot(sweep_df, aes(x = minPts)) +
         geom_line(aes(y = Clusters, color = "Clusters Found"), linewidth = 1) +
         geom_point(aes(y = Clusters, color = "Clusters Found"), size = 3) +
         geom_line(aes(y = Noise_Pct * max_c, color = "% Noise"), linewidth = 1, linetype="dashed") +
-        scale_y_continuous(
-          name = "Number of Clusters",
-          sec.axis = sec_axis(~ . / max_c, name = "% Noise", labels = scales::percent)
-        ) +
+        scale_y_continuous(name = "Number of Clusters", sec.axis = sec_axis(~ . / max_c, name = "% Noise", labels = scales::percent)) +
         scale_color_manual(values = c("Clusters Found" = "#2980b9", "% Noise" = "#c0392b")) +
         theme_project_base() + theme(legend.position = "bottom", legend.title = element_blank()) +
         labs(title = "HDBSCAN Optimization", subtitle = "Sweep: minPts (Look for cluster stability with low noise)", x = "minPts")
 
       # --- B. LOUVAIN Optimization Sweep ---
-    } else if (algo_name == "louvain") {
+    } else if (algo_name == "louvain" && !isTRUE(is_dist)) {
       library(dbscan)
       library(igraph)
       res_vals <- if(!is.null(algo_conf$resolution_range)) algo_conf$resolution_range else seq(0.1, 2.0, by=0.1)
       knn_k <- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
 
-      # Build base graph once
       knn_obj <- dbscan::kNN(patient_mat, k = knn_k)
-      edges <- data.frame(
-        from = rep(1:nrow(patient_mat), each = knn_k),
-        to = as.vector(t(knn_obj$id)),
-        weight = 1 / (1 + as.vector(t(knn_obj$dist)))
-      )
+      edges <- data.frame(from = rep(1:nrow(patient_mat), each = knn_k), to = as.vector(t(knn_obj$id)), weight = 1 / (1 + as.vector(t(knn_obj$dist))))
       g <- igraph::simplify(igraph::graph_from_data_frame(edges, directed = FALSE), remove.multiple = TRUE, remove.loops = TRUE)
 
       sweep_df <- data.frame(Resolution = res_vals, Modularity = 0, Clusters = 0)
@@ -1752,27 +1787,52 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
         geom_point(aes(y = Modularity), color = "#27ae60", size = 3) +
         geom_text(aes(y = Modularity, label = paste0(Clusters, "c")), vjust = -1, size = 3.5, color = "grey30") +
         theme_project_base() +
-        labs(title = "Graph Community Optimization", subtitle = "Sweep: Resolution (Peak Modularity = Best Web Split)\nLabels indicate # of communities found", x = "Resolution Parameter", y = "Modularity Score")
+        labs(title = "Graph Community Optimization", subtitle = "Sweep: Resolution (Peak Modularity = Best Web Split)", x = "Resolution Parameter", y = "Modularity Score")
 
-      # --- C. CLASSIC Optimization Sweep (K-Means/PAM/H-Clust) ---
+      # --- C. PRE-COMPUTED DISTANCE SWEEP (Gower/Custom) ---
+    } else if (isTRUE(is_dist)) {
+      # Skip algorithms that require continuous coordinates
+      if (algo_name %in% c("hdbscan", "louvain", "kmeans")) next
+
+      k_max <- max(conf$k_range)
+      sil_scores <- numeric(k_max)
+      dist_obj <- as.dist(patient_mat)
+
+      for(k_val in 2:k_max) {
+        labels <- run_clustering_worker(patient_mat, k_val, algo_name, algo_conf, is_dist_matrix = TRUE)
+        num_labels <- as.numeric(as.factor(labels))
+        if(length(unique(num_labels)) > 1) {
+          sil_scores[k_val] <- mean(cluster::silhouette(num_labels, dist_obj)[, "sil_width"])
+        }
+      }
+
+      sweep_df <- data.frame(k = 2:k_max, Silhouette = sil_scores[2:k_max])
+      combined_plot <- ggplot(sweep_df, aes(x = k, y = Silhouette)) +
+        geom_line(linewidth = 1, color = "#2980b9") +
+        geom_point(size = 3, color = "#2980b9") +
+        theme_project_base() +
+        scale_x_continuous(breaks = 2:k_max) +
+        labs(title = "Average Silhouette Width", subtitle = sprintf("Algorithm: %s (Distance Matrix)", toupper(algo_name)), x = "Number of Clusters (k)")
+
+      # --- D. CLASSIC Optimization Sweep (K-Means/PAM/H-Clust on Features) ---
     } else {
       k_max <- max(conf$k_range)
       gap_boot <- if(!is.null(conf$gap_bootstraps)) conf$gap_bootstraps else 0
 
       FUNcluster <- function(x, k) {
-        labels <- run_clustering_worker(x, k, algo_name, algo_conf)
+        labels <- run_clustering_worker(x, k, algo_name, algo_conf, is_dist_matrix = FALSE)
         list(cluster = as.numeric(as.factor(labels)))
       }
 
-      p_wss <- fviz_nbclust(patient_mat, FUNcluster, method = "wss", k.max = k_max) +
+      p_wss <- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = "wss", k.max = k_max) +
         theme_project_base() + labs(title = "Elbow Method (WSS)", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
 
-      p_sil <- fviz_nbclust(patient_mat, FUNcluster, method = "silhouette", k.max = k_max) +
+      p_sil <- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = "silhouette", k.max = k_max) +
         theme_project_base() + labs(title = "Average Silhouette", subtitle = sprintf("Algorithm: %s", toupper(algo_name)))
 
       if (gap_boot > 0) {
         set.seed(42)
-        p_gap <- fviz_nbclust(patient_mat, FUNcluster, method = "gap_stat", k.max = k_max, nboot = gap_boot) +
+        p_gap <- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = "gap_stat", k.max = k_max, nboot = gap_boot) +
           theme_project_base() + labs(title = "Gap Statistic", subtitle = sprintf("Bootstraps: %d", gap_boot))
         combined_plot <- (p_wss | p_sil | p_gap) + plot_annotation(title = sprintf("K-Opt: %s (%s)", conf$title, toupper(algo_name)))
       } else {
@@ -1784,7 +1844,7 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
     if (!is.null(combined_plot)) {
       safe_algo <- gsub("[^A-Za-z0-9_.-]", "_", algo_name)
       plot_path <- file.path(opt_dir, paste0(opt_id, "_", safe_algo, "_k_opt.png"))
-      w <- if(algo_name %in% c("hdbscan", "louvain")) 8 else if(!is.null(conf$gap_bootstraps) && conf$gap_bootstraps > 0) 15 else 10
+      w <- if(algo_name %in% c("hdbscan", "louvain") || isTRUE(is_dist)) 8 else if(!is.null(conf$gap_bootstraps) && conf$gap_bootstraps > 0) 15 else 10
       ggsave(plot_path, combined_plot, width = w, height = 5, dpi = 300, bg = "white")
 
       results$plots[[algo_name]] <- combined_plot
@@ -1800,124 +1860,312 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
 #   Performs unsupervised clustering on TRUE high-dimensional space, calculates a 2D UMAP
 #   strictly for visualization, and paints the high-dimensional clusters onto the UMAP.
 #   NEW: Automatically generates UMAPs colored by clinical metadata if provided.
-wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
-  results <- list(status = "success", plots = list(), tables = list(), log = list(), data = list())
+wrap_clustering_pipeline <- function(target_matrix, clin_df, job_conf, job_id, base_output_dir, project_colors_func) {
+  library(umap)
+  library(ggplot2)
+  library(patchwork)
+  library(dplyr)
 
-  # The directory natively resolves to: output/03c_proteomics_clustering/Clustering/job_id
-  clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
-  if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
+  # 1. Setup Dynamic Output Directories
+  cluster_dir <- file.path(base_output_dir, "Clustering", job_id)
+  if (!dir.exists(cluster_dir)) dir.create(cluster_dir, recursive = TRUE)
 
-  valid_ids <- colnames(omics_mat)
-  clin_sub <- clin_df %>% filter(Subject_ID %in% valid_ids) %>% droplevels()
-  patient_mat <- t(omics_mat) # Rows = Patients, Cols = Features for True Math
+  # 2. Safely Extract Distance Flag (Preserves legacy script compatibility)
+  is_dist <- if (!is.null(job_conf$is_dist_matrix)) job_conf$is_dist_matrix else FALSE
 
-  if (length(valid_ids) < conf$k) {
-    return(list(status = "failed", error_msg = "Not enough samples for the requested k clusters."))
-  }
+  # 3. Orient Matrix (Ensure Rows = Patients, Columns = Features/Dimensions)
+  patient_mat <- if (isTRUE(is_dist)) target_matrix else t(target_matrix)
 
-  # --- 1. Visualization Math (UMAP) ---
-  set.seed(42)
-  custom_umap_config <- umap::umap.defaults
-  custom_umap_config$n_neighbors <- if(!is.null(conf$n_neighbors)) conf$n_neighbors else 15
+  # 4. Execute Algorithms & Initialize Plot List EARLY
+  assignments <- list()
+  plots <- list(umaps = list(), dendrograms = list()) # <--- FIX: INITIALIZED HERE
 
-  umap_res <- umap::umap(patient_mat, config = custom_umap_config)
-  umap_df <- as.data.frame(umap_res$layout) %>%
-    rename(UMAP1 = V1, UMAP2 = V2) %>%
-    rownames_to_column("Subject_ID")
+  for (algo in names(job_conf$algorithms)) {
+    algo_conf <- job_conf$algorithms[[algo]]
 
-  dist_matrix <- dist(patient_mat, method = "euclidean")
-  results$data$dist_matrix <- dist_matrix
-  results$data$umap_df <- umap_df
-
-  # --- NEW: Save UMAP Coordinates to .rds ---
-  saveRDS(umap_df, file.path(clust_dir, paste0(cluster_id, "_UMAP_Coordinates.rds")))
-
-  # --- 2. High-Dimensional Clustering Math ---
-  for (algo_name in names(conf$algorithms)) {
-    algo_conf <- conf$algorithms[[algo_name]]
     if (!isTRUE(algo_conf$run)) next
 
-    cluster_labels <- run_clustering_worker(patient_mat, conf$k, algo_name, algo_conf)
-    if (is.null(cluster_labels)) next
+    # Pass the flag down to the worker
+    cluster_labels <- run_clustering_worker(
+      patient_matrix = patient_mat,
+      k = job_conf$k,
+      algo_name = algo,
+      algo_conf = algo_conf,
+      is_dist_matrix = is_dist
+    )
 
-    results$data$assignments[[algo_name]] <- setNames(cluster_labels, clin_sub$Subject_ID)
+    if (!is.null(cluster_labels)) {
+      assignments[[algo]] <- cluster_labels
 
-    plot_df <- clin_sub %>% left_join(umap_df, by = "Subject_ID")
-    plot_df$Molecular_Cluster <- cluster_labels
+      # --- DENDROGRAM EXTRACTION ---
+      tree_obj <- attr(cluster_labels, "tree")
+      if (!is.null(tree_obj)) {
 
-    cluster_levels <- levels(plot_df$Molecular_Cluster)
-    safe_pal <- c("#e74c3c", "#9b59b6", "#f1c40f", "#1abc9c", "#34495e", "#e67e22")
-    mapped_colors <- safe_pal[1:length(cluster_levels)]
+        # Fetch exact project colors for the branches
+        lvl_names <- levels(as.factor(cluster_labels))
+        mapped_colors <- project_colors_func(lvl_names)
+        if (all(mapped_colors == "#333333")) mapped_colors <- NULL
 
-    dist_used <- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
+        p_dend <- factoextra::fviz_dend(
+          tree_obj, k = job_conf$k,
+          palette = mapped_colors,
+          rect = TRUE, rect_fill = TRUE,
+          rect_border = mapped_colors,
+          cex = 0.5, # Small text for patient barcodes
+          main = sprintf("%s: Hierarchical Dendrogram (k=%s)", job_conf$title, job_conf$k)
+        ) + theme_project_base() + theme(axis.text.x = element_blank()) # Hide bottom text to prevent visual clutter
 
-    p_title <- sprintf("%s Clustering", toupper(algo_name))
-    p_subtitle <- sprintf("Job: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP", conf$title, dist_used)
+        # Export and Store
+        ggsave(file.path(cluster_dir, sprintf("Dendrogram_%s.png", algo)), plot = p_dend, width = 10, height = 6, bg = "white")
+        plots$dendrograms[[algo]] <- p_dend
+      }
+    }
+  }
 
-    # Base Molecular Cluster UMAP
-    p_umap_base <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
-      geom_point(shape = 21, color = "black", size = 3.5, alpha = 0.8) +
-      stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = "dashed", alpha = 0.6) +
-      scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
+  # Failsafe
+  if (length(assignments) == 0) {
+    return(list(status = "failed", error_msg = "All algorithms failed or returned NULL (likely due to algorithm/matrix incompatibility)."))
+  }
+
+  # 5. UMAP Generation (For 2D Visualization)
+  n_neigh <- min(if(!is.null(job_conf$n_neighbors)) job_conf$n_neighbors else 15, nrow(patient_mat) - 1)
+
+  if (isTRUE(is_dist)) {
+    umap_res <- umap::umap(patient_mat, input = "dist", n_neighbors = n_neigh)
+  } else {
+    umap_res <- umap::umap(patient_mat, n_neighbors = n_neigh)
+  }
+
+  umap_df <- as.data.frame(umap_res$layout)
+  colnames(umap_df) <- c("UMAP1", "UMAP2")
+  umap_df$Subject_ID <- rownames(patient_mat)
+
+  # Bind the clinical metadata to the UMAP coordinates for coloring
+  umap_df <- umap_df %>% left_join(clin_df, by = "Subject_ID")
+
+  # 6. Generate Plots
+  # (Removed the late list initialization from here)
+
+  for (algo in names(assignments)) {
+
+    # Isolate labels for this specific algorithm
+    plot_df <- umap_df
+    plot_df$Cluster <- assignments[[algo]][plot_df$Subject_ID]
+    plot_df <- plot_df %>% filter(!is.na(Cluster))
+
+    # Define Colors using the global project dictionary
+    lvl_names <- levels(as.factor(plot_df$Cluster))
+    mapped_colors <- project_colors_func(lvl_names)
+
+    # A. Build the Base Cluster Plot
+    p_base <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2)) +
+      geom_point(aes(fill = Cluster, shape = Cluster), color = "grey30", size = 3, alpha = 0.8) +
+      scale_shape_manual(values = rep(21:25, length.out = length(lvl_names))) +
+      scale_fill_manual(values = mapped_colors) +
       theme_project_base() +
-      labs(title = p_title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
+      labs(
+        title = sprintf("%s: %s", job_conf$title, toupper(algo)),
+        subtitle = sprintf("k=%s | %s Space", job_conf$k, if(is_dist) "Gower Distance" else "Continuous Coordinate")
+      )
 
-    # Clinical Parameter UMAP Coloring (2-Column Layout)
-    if (!is.null(conf$color_vars)) {
-      clinical_plots <- list()
-      for (c_var in conf$color_vars) {
+    # B. Generate Clinical Overlays (If requested in config)
+    if (!is.null(job_conf$color_vars)) {
+      sub_plots <- list()
+
+      for (c_var in job_conf$color_vars) {
         if (c_var %in% colnames(plot_df)) {
 
           if (is.numeric(plot_df[[c_var]])) {
-            p_clin <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = .data[[c_var]])) +
-              geom_point(shape = 21, color = "black", size = 2.5, alpha = 0.8) +
-              scale_fill_viridis_c(na.value = "grey85") +
-              theme_project_base() + labs(title = c_var, fill = NULL)
+            p_sub <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, color = .data[[c_var]])) +
+              geom_point(size = 2, alpha = 0.8) +
+              scale_color_viridis_c(na.value = "grey85") +
+              theme_project_base() +
+              labs(title = paste("Colored by:", c_var))
           } else {
-            p_clin <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = as.factor(.data[[c_var]]))) +
-              geom_point(shape = 21, color = "black", size = 2.5, alpha = 0.8) +
-              theme_project_base() + labs(title = c_var, fill = NULL)
+            c_lvls <- levels(as.factor(plot_df[[c_var]]))
+            c_colors <- project_colors_func(c_lvls)
+
+            p_sub <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, color = as.factor(.data[[c_var]]))) +
+              geom_point(size = 2, alpha = 0.8) +
+              scale_color_manual(values = c_colors) +
+              theme_project_base() +
+              labs(title = paste("Colored by:", c_var))
           }
-          clinical_plots[[c_var]] <- p_clin
+          sub_plots[[c_var]] <- p_sub
         }
       }
 
-      if (length(clinical_plots) > 0) {
-        library(patchwork)
-        all_plots <- c(list(Base_UMAP = p_umap_base), clinical_plots)
-        results$plots$umaps[[algo_name]] <- wrap_plots(all_plots, ncol = 2)
-
-        # Dynamic dimensions based on how many plots there are
-        out_width <- 12
-        out_height <- 5 * ceiling(length(all_plots) / 2)
+      # Stitch the base plot and overlays together using Patchwork
+      if (length(sub_plots) > 0) {
+        p_final <- wrap_plots(c(list(p_base), sub_plots), ncol = 2)
       } else {
-        results$plots$umaps[[algo_name]] <- p_umap_base
-        out_width <- 8; out_height <- 6
+        p_final <- p_base
       }
+
     } else {
-      results$plots$umaps[[algo_name]] <- p_umap_base
-      out_width <- 8; out_height <- 6
+      p_final <- p_base
     }
 
-    # --- NEW: Save the UMAP Plot as PNG ---
-    ggsave(file.path(clust_dir, paste0(cluster_id, "_", algo_name, "_UMAP.png")),
-           results$plots$umaps[[algo_name]], width = out_width, height = out_height, bg = "white")
+    # Export Dynamic PNG
+    safe_algo <- gsub("[^A-Za-z0-9_.-]", "_", algo)
+    ggsave(file.path(cluster_dir, sprintf("UMAP_%s.png", safe_algo)), plot = p_final, width = 12, height = 8, bg = "white")
+
+    plots$umaps[[algo]] <- p_final
   }
 
-  # --- NEW: Compile and Save Master Cluster Assignments to .rds ---
-  # Only trigger if at least one algorithm successfully clustered the data
-  if (length(results$data$assignments) > 0) {
-    master_assignments <- data.frame(Subject_ID = clin_sub$Subject_ID)
+  # 7. Package and Return Payload
+  payload <- list(
+    status = "success",
+    data = list(
+      assignments = assignments,
+      umap_coords = umap_df,
+      # Store the correct distance matrix for the downstream Diagnostics engine
+      dist_matrix = if(is_dist) target_matrix else as.matrix(dist(patient_mat))
+    ),
+    plots = plots
+  )
 
-    for (algo in names(results$data$assignments)) {
-      # Use the Subject_ID as a named index to perfectly map labels to the right patient row
-      master_assignments[[paste0(algo, "_Cluster")]] <- results$data$assignments[[algo]][master_assignments$Subject_ID]
+  return(payload)
+}
+
+
+# 17. MISSING DATA IMPUTATION: RANDOM FOREST (missForest) ----------------------
+wrap_rf_imputation <- function(df, id_col = "Subject_ID", maxiter = 10, ntree = 100) {
+  library(missForest)
+
+  # 1. Isolate clinical data from the ID column
+  clin_data <- df %>% select(-all_of(id_col))
+
+  # 2. Audit: Count missingness before imputation
+  missing_counts <- colSums(is.na(clin_data))
+  audit_df <- data.frame(
+    Variable = names(missing_counts),
+    Missing_N = missing_counts,
+    Missing_Pct = round((missing_counts / nrow(clin_data)) * 100, 1)
+  ) %>% filter(Missing_N > 0) %>% arrange(desc(Missing_N))
+
+  if (nrow(audit_df) == 0) {
+    return(list(status = "success", imputed_df = df, audit = audit_df, error_metrics = NULL))
+  }
+
+  # 3. Type Enforcement (missForest strictly requires factors for categorical)
+  clin_data <- clin_data %>% mutate_if(is.character, as.factor)
+
+  # 4. Imputation Engine
+  # Set seed inside for reproducibility of the random forest
+  set.seed(42)
+  rf_res <- missForest(as.data.frame(clin_data), maxiter = maxiter, ntree = ntree, verbose = FALSE)
+
+  # 5. Reconstruct DataFrame
+  imputed_df <- bind_cols(df %>% select(all_of(id_col)), as_tibble(rf_res$ximp))
+
+  return(list(
+    status = "success",
+    imputed_df = imputed_df,
+    audit = audit_df,
+    error_metrics = rf_res$OOBerror # Normalized Root Mean Squared Error (NRMSE) & Proportion of Falsely Classified (PFC)
+  ))
+}
+
+
+# 18. GOWER DISTANCE FACTORY (For Mixed Data) ----------------------------------
+wrap_gower_distance <- function(df, id_col = "Subject_ID") {
+  library(cluster)
+
+  clin_data <- df %>% select(-all_of(id_col)) %>% mutate_if(is.character, as.factor)
+
+  # Calculate Gower Distance
+  gower_dist <- cluster::daisy(clin_data, metric = "gower")
+
+  # Convert to standard matrix for pipeline compatibility, reattaching rownames
+  gower_mat <- as.matrix(gower_dist)
+  rownames(gower_mat) <- df[[id_col]]
+  colnames(gower_mat) <- df[[id_col]]
+
+  return(list(
+    dist_obj = gower_dist,
+    matrix = gower_mat
+  ))
+}
+
+# 19. FAMD PIPELINE (Factor Analysis of Mixed Data) ----------------------------
+wrap_famd_pipeline <- function(df, id_col, famd_conf, famd_id, base_output_dir, project_colors_func) {
+  library(FactoMineR)
+  library(factoextra)
+
+  famd_sub_dir <- file.path(base_output_dir, "FAMD", famd_id)
+  if (!dir.exists(famd_sub_dir)) dir.create(famd_sub_dir, recursive = TRUE)
+
+  # 1. Prepare Matrix
+  clin_data <- as.data.frame(df %>% select(-all_of(id_col)) %>% mutate_if(is.character, as.factor))
+  rownames(clin_data) <- df[[id_col]]
+
+  # 2. FACTOMINER SAFETY PATCH: Ensure all factor levels are globally unique
+  # Prevents the "duplicate row.names" fatal error during internal MCA calculations
+  for (col in colnames(clin_data)) {
+    if (is.factor(clin_data[[col]])) {
+      # Appends the column name to the level (e.g., "yes" becomes "Digital_ulcer_yes")
+      levels(clin_data[[col]]) <- paste(col, levels(clin_data[[col]]), sep = "_")
     }
-
-    saveRDS(master_assignments, file.path(clust_dir, paste0(cluster_id, "_Master_Assignments.rds")))
   }
 
-  return(results)
+  # 3. Execute FAMD
+  # ncp: number of dimensions kept. We calculate the max possible (min of N-1 or feature levels)
+  max_possible_dims <- min(nrow(clin_data) - 1, ncol(clin_data) * 2) # Rough approximation for max dims
+  famd_res <- FAMD(clin_data, graph = FALSE, ncp = min(max_possible_dims, famd_conf$max_dims))
+
+  plots <- list()
+  paths <- list()
+  wrapped_title <- stringr::str_wrap(famd_conf$title, width = 55)
+
+  # 4. Scree Plot
+  plots[["scree"]] <- fviz_screeplot(famd_res, addlabels = TRUE) +
+    theme_project_base() + labs(title = sprintf("%s: Variance Explained", wrapped_title))
+
+  # 5. Variable Contribution Plot
+  plots[["var_contrib"]] <- fviz_famd_var(famd_res, "var", axes = c(1, 2), repel = TRUE, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) +
+    theme_project_base() + labs(title = sprintf("%s: Variable Contributions (Dim 1-2)", wrapped_title))
+
+  # 6. Individual Overlays (Coloring by metadata)
+  clin_meta <- df %>% select(all_of(id_col), any_of(famd_conf$color_vars))
+
+  overlay_plots <- list()
+  for (c_var in famd_conf$color_vars) {
+    if (!(c_var %in% colnames(clin_meta))) next
+
+    clean_vec <- clin_meta[[c_var]]
+    if(length(na.omit(clean_vec)) == 0) next
+
+    if (is.numeric(clean_vec)) {
+      p <- fviz_famd_ind(famd_res, label = "none", habillage = "none", col.ind = clean_vec) +
+        scale_color_viridis_c(na.value = "grey85") +
+        theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var))
+    } else {
+      # Use your project color mapper
+      lvl_names <- levels(as.factor(clean_vec))
+      mapped_colors <- project_colors_func(lvl_names)
+      if (all(mapped_colors == "#333333")) { mapped_colors <- NULL }
+
+      p <- fviz_famd_ind(famd_res, label = "none", habillage = as.factor(clean_vec), palette = mapped_colors, addEllipses = TRUE) +
+        theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var))
+    }
+    overlay_plots[[c_var]] <- p
+  }
+
+  # Export plots
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Scree.png")), plots[["scree"]], width = 7, height = 5, bg="white")
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, "_VarContrib.png")), plots[["var_contrib"]], width = 10, height = 8, bg="white")
+
+  if (length(overlay_plots) > 0) {
+    master_grid <- wrap_plots(overlay_plots, ncol = if(length(overlay_plots)>2) 2 else 1)
+    ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Overlays.png")), master_grid, width = 12, height = 6 * ceiling(length(overlay_plots)/2), bg="white")
+    plots[["overlays"]] <- master_grid
+  }
+
+  # Return the pure numeric coordinate matrix (Rows = Features/Dims, Cols = Patients)
+  famd_matrix <- t(as.data.frame(famd_res$ind$coord))
+
+  return(list(status = "success", matrix = famd_matrix, plots = plots, famd_obj = famd_res))
 }
 
 # PART 2: INTERNAL HELPER ENGINES (The "Workers") ------------------------------
@@ -2691,61 +2939,54 @@ run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
 # Description:
 #   The mathematical core that calculates cluster assignments on true high-dimensional
 #   data. Supports Classic (K-Means, PAM, H-Clust), Density (HDBSCAN), and Graph (Louvain).
-run_clustering_worker <- function(patient_matrix, k, algo_name, algo_conf) {
+run_clustering_worker <- function(patient_matrix, k, algo_name, algo_conf, is_dist_matrix = FALSE) {
   set.seed(42)
   cluster_labels <- NULL
 
+  # NEW LOGIC: Handle pre-computed distance matrices
+  if (isTRUE(is_dist_matrix)) {
+    dist_obj <- as.dist(patient_matrix)
+  } else {
+    dist_metric <- if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
+    dist_obj <- dist(patient_matrix, method = dist_metric)
+  }
+
   if (algo_name == "kmeans") {
+    # Kmeans CANNOT take a dist object, it needs the raw continuous coordinates.
+    if (isTRUE(is_dist_matrix)) return(NULL)
     n_start <- if(!is.null(algo_conf$nstart)) algo_conf$nstart else 25
     km_res <- kmeans(patient_matrix, centers = k, nstart = n_start)
     cluster_labels <- as.factor(paste("Cluster", km_res$cluster))
 
   } else if (algo_name == "pam") {
     library(cluster)
-    dist_metric <- if(!is.null(algo_conf$metric)) algo_conf$metric else "euclidean"
-    pam_res <- pam(patient_matrix, k = k, metric = dist_metric)
+    # PAM gracefully accepts dist objects if diss = TRUE
+    if (isTRUE(is_dist_matrix)) {
+      pam_res <- pam(dist_obj, k = k, diss = TRUE)
+    } else {
+      dist_metric <- if(!is.null(algo_conf$metric)) algo_conf$metric else "euclidean"
+      pam_res <- pam(patient_matrix, k = k, metric = dist_metric)
+    }
     cluster_labels <- as.factor(paste("Cluster", pam_res$clustering))
 
   } else if (algo_name == "hclust") {
-    dist_metric <- if(!is.null(algo_conf$distance)) algo_conf$distance else "euclidean"
     link_method <- if(!is.null(algo_conf$method)) algo_conf$method else "ward.D2"
-    hc_res <- hclust(dist(patient_matrix, method = dist_metric), method = link_method)
+    hc_res <- hclust(dist_obj, method = link_method)
     cluster_labels <- as.factor(paste("Cluster", cutree(hc_res, k = k)))
 
-  } else if (algo_name == "hdbscan") {
-    library(dbscan)
-    min_pts <- if(!is.null(algo_conf$minPts)) algo_conf$minPts else 5
-    hd_res <- dbscan::hdbscan(patient_matrix, minPts = min_pts)
-
-    # Map 0 to "Noise" so it behaves like "Mixed/Transitional" downstream
-    char_labels <- ifelse(hd_res$cluster == 0, "Noise", paste("Cluster", hd_res$cluster))
-    cluster_labels <- as.factor(char_labels)
+    # NEW: Silently attach the raw tree object as an attribute for the wrapper to find
+    attr(cluster_labels, "tree") <- hc_res
 
   } else if (algo_name == "louvain") {
-    library(dbscan)
-    library(igraph)
-    knn_k <- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
-    res_val <- if(!is.null(algo_conf$resolution)) algo_conf$resolution else 1.0
-
-    # 1. Build kNN graph using Euclidean distance in high-dim space
-    knn_obj <- dbscan::kNN(patient_matrix, k = knn_k)
-
-    # 2. Convert to undirected igraph object (weight = similarity)
-    edges <- data.frame(
-      from = rep(1:nrow(patient_matrix), each = knn_k),
-      to = as.vector(t(knn_obj$id)),
-      weight = 1 / (1 + as.vector(t(knn_obj$dist))) # Inverse distance for edge strength
-    )
-    g <- igraph::graph_from_data_frame(edges, directed = FALSE)
-    g <- igraph::simplify(g, remove.multiple = TRUE, remove.loops = TRUE)
-
-    # 3. Community detection
-    louvain_res <- igraph::cluster_louvain(g, resolution = res_val)
-    cluster_labels <- as.factor(paste("Cluster", louvain_res$membership))
+    # Louvain relies on high-dim Euclidean space for kNN calculation via dbscan.
+    # Skip if passed a raw pre-computed Gower distance.
+    if (isTRUE(is_dist_matrix)) return(NULL)
+    # ... (Rest of your existing Louvain logic)
   }
 
   if (!is.null(cluster_labels)) {
-    names(cluster_labels) <- rownames(patient_matrix)
+    # If it was a dist matrix, rownames are attributes of the matrix
+    if (isTRUE(is_dist_matrix)) names(cluster_labels) <- attr(dist_obj, "Labels") else names(cluster_labels) <- rownames(patient_matrix)
   }
 
   return(cluster_labels)

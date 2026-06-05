@@ -47,7 +47,7 @@ omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink
 pathway_dbs <- list(
   "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
   "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
-  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7"),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
   "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
 )
 ```
@@ -177,14 +177,14 @@ master_gsea_results <- list()
 
 for (c_name in names(contrast_configs)) {
   
-  # Run Master Pipeline
+  # Run Master Pipeline (go_db passed as NULL since engine uses pathway_dbs from global env)
   res <- wrap_dea_pipeline(
     omics_mat           = omics_mat, 
     clin_df             = master_spine, 
     dea_conf            = contrast_configs[[c_name]], 
     dea_id              = c_name, 
     base_output_dir     = output_dir_data, 
-    go_db               = go_genesets, 
+    go_db               = NULL, 
     omics_config        = omics_config, 
     heatmap_config      = heatmap_config, 
     project_colors_func = get_project_colors
@@ -200,31 +200,49 @@ for (c_name in names(contrast_configs)) {
     next
   }
   
+  # Store Master Results
   master_dea_results[[c_name]] <- res$data$dea
-  master_gsea_results[[c_name]] <- res$data$gsea
+  
+  # Extract primary GO_BP database for downstream trajectory plotting to satisfy the flat-dataframe requirement
+  if (!is.null(res$data$gsea[["GO_BP"]])) {
+    master_gsea_results[[c_name]] <- res$data$gsea[["GO_BP"]]
+  } else if (length(res$data$gsea) > 0) {
+    master_gsea_results[[c_name]] <- res$data$gsea[[1]]
+  }
 
-  # 2. Render Plots
+  # 2. Render Volcano
   print(res$plots$volcano)
   cat("\n\n")
   
-  # 3. Render Table (Fixed to inject raw HTML natively with a Scroll Box!)
+  # 3. Render Table
   if(nrow(res$tables$significant_proteins) > 0) {
     cat(sprintf("Significant Proteins (%d total)\n\n", nrow(res$tables$significant_proteins)))
     
     html_table <- kbl(res$tables$significant_proteins, format = "html", digits = 4, align = "c", 
               caption = sprintf("Significant Results: %s", contrast_configs[[c_name]]$title)) %>%
           kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
-          scroll_box(width = "100%", height = "500px") # <-- NEW: Scrollable box added!
+          scroll_box(width = "100%", height = "500px")
     
     cat(as.character(html_table))
     cat("\n\n")
   }
 
+  # 4. Render Heatmap
   draw(res$plots$heatmap)
   cat("\n\n")
 
-  if(!is.null(res$plots$gsea_dotplot)) { print(res$plots$gsea_dotplot); cat("\n\n") }
-  if(!is.null(res$plots$gsea_ridge)) { print(res$plots$gsea_ridge); cat("\n\n") }
+  # 5. Render Nested GSEA Plots (Loops through databases dynamically)
+  if (!is.null(res$plots$gsea)) {
+    for (db_name in names(res$plots$gsea)) {
+      db_plots <- res$plots$gsea[[db_name]]
+      
+      if (!is.null(db_plots)) {
+        if(!is.null(db_plots$dotplot)) { print(db_plots$dotplot); cat("\n\n") }
+        if(!is.null(db_plots$ridgeplot)) { print(db_plots$ridgeplot); cat("\n\n") }
+        if(!is.null(db_plots$emap)) { print(db_plots$emap); cat("\n\n") }
+      }
+    }
+  }
 }
 ```
 

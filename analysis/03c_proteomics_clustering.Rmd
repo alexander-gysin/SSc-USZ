@@ -186,8 +186,6 @@ feature_configs <- list(
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
   )
-
-
 )
 
 # 7.b DEA Heatmap Configs
