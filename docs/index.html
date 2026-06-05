@@ -277,8 +277,20 @@ $(document).ready(function () {
     </li>
   </ul>
 </li>
-<li>
-  <a href="02_cohort_characterization.html">Cohort</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Clinical
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="02a_cohort_characterization.html">Charcterization</a>
+    </li>
+    <li>
+      <a href="02b_clinical_clustering.html">Clustering</a>
+    </li>
+  </ul>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -445,15 +457,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1ec690bd3aa04d4592f8256f326e0ec9bf6810c4targetblank1ec690ba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree213610529653222fa4397e85662e6126879f4624targetblank2136105a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1ec690bd3aa04d4592f8256f326e0ec9bf6810c4" target="_blank">1ec690b</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/213610529653222fa4397e85662e6126879f4624" target="_blank">2136105</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree1ec690bd3aa04d4592f8256f326e0ec9bf6810c4targetblank1ec690ba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree213610529653222fa4397e85662e6126879f4624targetblank2136105a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -463,7 +475,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/1ec690bd3aa04d4592f8256f326e0ec9bf6810c4" target="_blank">1ec690b</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/213610529653222fa4397e85662e6126879f4624" target="_blank">2136105</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -480,9 +492,11 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01a_data_import_and_qc/
     Ignored:    output/01b_clinical_feature_engineering/
     Ignored:    output/02_cohort_characterization/
+    Ignored:    output/02b_clinical_clustering/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_clustering/
@@ -497,20 +511,12 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
+    Untracked:  analysis/02a_cohort_characterization.Rmd
+    Untracked:  analysis/02b_clincal_clustering.Rmd
     Untracked:  analysis/04b_lipidomics_differential.Rmd
     Untracked:  analysis/04c_lipidomics_aggregation.Rmd
     Untracked:  code/clinical_master_mapping_creation.R
     Untracked:  core
-
-Unstaged changes:
-    Modified:   analysis/01b_clinical_feature_engineering.Rmd
-    Modified:   code/00_config.R
-    Modified:   code/00_omics_engines.R
-    Modified:   renv.lock
-
-Staged changes:
-    New:        code/00_lipid_engines.R
-    New:        code/randomizer.R
 
 </code></pre>
 <p>
@@ -554,6 +560,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/daf88c326b050ebb4a0be3a805a237a5bbedb0fc/docs/index.html" target="_blank">daf88c3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
