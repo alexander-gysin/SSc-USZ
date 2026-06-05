@@ -78,6 +78,7 @@ qc_bypass_conf <- c("cohort_group", "Subject_ID", "inCentraxx", "Geburtsdatum", 
 
 # Clinical variables to remove at the end
 vars_to_remove = c("Geburtsdatum", "Birth_Year", "Geschlecht")
+
 ```
 
 # Schema & Mapping Enforcement
@@ -258,6 +259,7 @@ curated_spine <- curated_spine %>%
 
 cat(paste(audit_log, collapse = "\n\n"))
 ```
+
 
 # Numeric Spine Generation
 `r what_this_does("Generated a parallel curated_spine_numeric by mapping severity rankings (e.g., 'none', 'rare', 'moderate') into mathematical ordinal scales (0-3).", "Explicitly binarized the Sex and Cohort Group variables.", "Output a visual tracker to audit exactly which mappings were applied to which variables.")`

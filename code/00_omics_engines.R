@@ -1803,6 +1803,7 @@ wrap_k_optimization_pipeline <- function(omics_mat, conf, opt_id, base_output_di
 wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
   results <- list(status = "success", plots = list(), tables = list(), log = list(), data = list())
 
+  # The directory natively resolves to: output/03c_proteomics_clustering/Clustering/job_id
   clust_dir <- file.path(base_output_dir, "Clustering", cluster_id)
   if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
 
@@ -1827,6 +1828,9 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
   dist_matrix <- dist(patient_mat, method = "euclidean")
   results$data$dist_matrix <- dist_matrix
   results$data$umap_df <- umap_df
+
+  # --- NEW: Save UMAP Coordinates to .rds ---
+  saveRDS(umap_df, file.path(clust_dir, paste0(cluster_id, "_UMAP_Coordinates.rds")))
 
   # --- 2. High-Dimensional Clustering Math ---
   for (algo_name in names(conf$algorithms)) {
@@ -1858,13 +1862,12 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
       theme_project_base() +
       labs(title = p_title, subtitle = p_subtitle, fill = "Endotype", color = "Endotype")
 
-    # --- NEW: Clinical Parameter UMAP Coloring (2-Column Layout) ---
+    # Clinical Parameter UMAP Coloring (2-Column Layout)
     if (!is.null(conf$color_vars)) {
       clinical_plots <- list()
       for (c_var in conf$color_vars) {
         if (c_var %in% colnames(plot_df)) {
 
-          # Check if the variable is numeric for a continuous gradient, else discrete
           if (is.numeric(plot_df[[c_var]])) {
             p_clin <- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = .data[[c_var]])) +
               geom_point(shape = 21, color = "black", size = 2.5, alpha = 0.8) +
@@ -1879,17 +1882,39 @@ wrap_clustering_pipeline <- function(omics_mat, clin_df, conf, cluster_id, base_
         }
       }
 
-      # Combine Base UMAP with Clinical UMAPs into a single 2-column layout
       if (length(clinical_plots) > 0) {
         library(patchwork)
         all_plots <- c(list(Base_UMAP = p_umap_base), clinical_plots)
         results$plots$umaps[[algo_name]] <- wrap_plots(all_plots, ncol = 2)
+
+        # Dynamic dimensions based on how many plots there are
+        out_width <- 12
+        out_height <- 5 * ceiling(length(all_plots) / 2)
       } else {
         results$plots$umaps[[algo_name]] <- p_umap_base
+        out_width <- 8; out_height <- 6
       }
     } else {
       results$plots$umaps[[algo_name]] <- p_umap_base
+      out_width <- 8; out_height <- 6
     }
+
+    # --- NEW: Save the UMAP Plot as PNG ---
+    ggsave(file.path(clust_dir, paste0(cluster_id, "_", algo_name, "_UMAP.png")),
+           results$plots$umaps[[algo_name]], width = out_width, height = out_height, bg = "white")
+  }
+
+  # --- NEW: Compile and Save Master Cluster Assignments to .rds ---
+  # Only trigger if at least one algorithm successfully clustered the data
+  if (length(results$data$assignments) > 0) {
+    master_assignments <- data.frame(Subject_ID = clin_sub$Subject_ID)
+
+    for (algo in names(results$data$assignments)) {
+      # Use the Subject_ID as a named index to perfectly map labels to the right patient row
+      master_assignments[[paste0(algo, "_Cluster")]] <- results$data$assignments[[algo]][master_assignments$Subject_ID]
+    }
+
+    saveRDS(master_assignments, file.path(clust_dir, paste0(cluster_id, "_Master_Assignments.rds")))
   }
 
   return(results)

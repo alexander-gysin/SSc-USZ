@@ -3,6 +3,13 @@
 # Project: Systemic Sclerosis Disease Activity Multi-Omics
 # ==============================================================================
 
+# 0. wflow publish, commit and push
+wflow_sync <- function() {
+  wflow_git_commit(all = TRUE)
+  wflow_publish(paste0("analysis/", current_file, ".Rmd"))
+  wflow_git_push(username = "alexander-gysin")
+}
+
 # 1. GLOBAL LIBRARIES REQUIRED FOR CONFIG
 library(ggplot2)
 
