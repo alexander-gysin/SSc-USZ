@@ -360,8 +360,20 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li>
-  <a href="02_cohort_characterization.html">Cohort</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Clinical
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="02a_cohort_characterization.html">Charcterization</a>
+    </li>
+    <li>
+      <a href="02b_clinical_clustering.html">Clustering</a>
+    </li>
+  </ul>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -457,7 +469,7 @@ Missingness</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">02 June, 2026</h4>
+<h4 class="date">08 June, 2026</h4>
 
 </div>
 
@@ -486,7 +498,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-02
+<strong>Last updated:</strong> 2026-06-08
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -617,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree742261e6a9c270c20c72ab149bf327a457dc7370targetblank742261ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/742261e6a9c270c20c72ab149bf327a457dc7370" target="_blank">742261e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree742261e6a9c270c20c72ab149bf327a457dc7370targetblank742261ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -635,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/742261e6a9c270c20c72ab149bf327a457dc7370" target="_blank">742261e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -655,12 +667,14 @@ Ignored files:
     Ignored:    output/01a_data_import_and_qc/
     Ignored:    output/01b_clinical_feature_engineering/
     Ignored:    output/02_cohort_characterization/
+    Ignored:    output/02b_clinical_clustering/
     Ignored:    output/03a_proteomics_variance/
     Ignored:    output/03b_proteomics_differential/
     Ignored:    output/03c_proteomics_clustering/
     Ignored:    output/03d_proteomics_subgroups/
     Ignored:    output/03e_proteomics_correlations/
     Ignored:    output/04a_lipidomics_topography/
+    Ignored:    output/04b_lipidomics_differential/
     Ignored:    output/randomizer/
     Ignored:    output/z01_sideproject_ellen/
     Ignored:    output/z02_sideproject_vascular_2/
@@ -668,17 +682,9 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  analysis/04b_lipidomics_differential.Rmd
-    Untracked:  analysis/04c_lipidomics_aggregation.Rmd
-    Untracked:  code/00_lipid_engines.R
-    Untracked:  code/clinical_master_mapping_creation.R
-    Untracked:  code/randomizer.R
     Untracked:  core
 
 Unstaged changes:
-    Modified:   analysis/03c_proteomics_clustering.Rmd
-    Modified:   analysis/_site.yml
-    Modified:   code/00_config.R
     Modified:   code/00_omics_engines.R
 
 </code></pre>
@@ -725,6 +731,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/04a_lipidomics_topography.html" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -922,6 +945,43 @@ cat(&quot;### Global Matrix Diagnostics\n\n&quot;)</code></pre>
 <h3>Global Missingness Distribution</h3>
 <pre class="r"><code>print(missingness_res$plots$missingness_bars)</code></pre>
 <p><img src="figure/04a_lipidomics_topography.Rmd/topography-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-topography-1">
+Past versions of topography-1.png
+</button>
+</p>
+<div id="fig-topography-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/topography-1.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cat(&quot;\n\n&quot;)</code></pre>
 <pre class="r"><code>if(!is.null(missingness_res$plots$co_missingness_heatmap)) {
   cat(&quot;### Missingness Intersections (Heatmap)\n\n&quot;)
@@ -935,6 +995,43 @@ cat(&quot;### Global Matrix Diagnostics\n\n&quot;)</code></pre>
 <p><em>Note: Co-Missingness evaluates how often lipid ‘i’ AND lipid ‘j’
 are missing in the same patient.</em></p>
 <p><img src="figure/04a_lipidomics_topography.Rmd/topography-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-topography-2">
+Past versions of topography-2.png
+</button>
+</p>
+<div id="fig-topography-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/topography-2.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>if(!is.null(missingness_res$plots$lod_range)) {
   cat(&quot;### Limit of Detection (LOD) Range\n\n&quot;)
   print(missingness_res$plots$lod_range)
@@ -944,6 +1041,43 @@ are missing in the same patient.</em></p>
 <div id="limit-of-detection-lod-range" class="section level3">
 <h3>Limit of Detection (LOD) Range</h3>
 <p><img src="figure/04a_lipidomics_topography.Rmd/topography-3.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-topography-3">
+Past versions of topography-3.png
+</button>
+</p>
+<div id="fig-topography-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/topography-3.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># 3. RAM Cleanup
 #rm(missingness_res)</code></pre>
 <p>Comissingess: How many times are lipid ‘i’ AND lipid ‘j’ missing in
@@ -990,6 +1124,43 @@ cat(&quot;\n\n*Note: Zeros/NAs are excluded here to evaluate the underlying cont
 continuous distribution of successfully measured samples.</em></p>
 <pre class="r"><code>print(hist_res$plots$hists)</code></pre>
 <p><img src="figure/04a_lipidomics_topography.Rmd/execution_engine_histograms-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_histograms-1">
+Past versions of execution_engine_histograms-1.png
+</button>
+</p>
+<div id="fig-execution_engine_histograms-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/execution_engine_histograms-1.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cat(&quot;\n\n&quot;)</code></pre>
 <pre class="r"><code># 3. RAM Cleanup
 rm(hist_res)</code></pre>
@@ -1040,14 +1211,125 @@ if(length(pheno_res$plots) == 0) {
 <div id="cohort_group" class="section level2">
 <h2>cohort_group</h2>
 <p><img src="figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-1.png" alt="" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_phenotype-1">
+Past versions of execution_engine_phenotype-1.png
+</button>
+</p>
+<div id="fig-execution_engine_phenotype-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-1.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="sex" class="section level2">
 <h2>Sex</h2>
 <p><img src="figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-2.png" alt="" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_phenotype-2">
+Past versions of execution_engine_phenotype-2.png
+</button>
+</p>
+<div id="fig-execution_engine_phenotype-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-2.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="age" class="section level2">
 <h2>Age</h2>
 <p><img src="figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-3.png" alt="" width="1440" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_phenotype-3">
+Past versions of execution_engine_phenotype-3.png
+</button>
+</p>
+<div id="fig-execution_engine_phenotype-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/43d25dbf1570305fb0af9ff643d00e832a397ed8/docs/figure/04a_lipidomics_topography.Rmd/execution_engine_phenotype-3.png" target="_blank">43d25db</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># 3. RAM Cleanup
 rm(pheno_res)</code></pre>
 </div>
@@ -2593,6 +2875,45 @@ wrap_clinical_phenotyping &lt;- function(clustering_payload, clin_df, dict_df, c
     raw_tbl &lt;- gtsummary::as_tibble(summary_obj)
     readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, &quot;_&quot;, algo_name, &quot;_Clinical_Table.csv&quot;)))
 
+    # EXPORT RAW GTSUMMARY TO CSV
+    raw_tbl &lt;- gtsummary::as_tibble(summary_obj)
+    readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, &quot;_&quot;, algo_name, &quot;_Clinical_Table.csv&quot;)))
+
+    # --- TARGETED HIGHLIGHT TABLES (Bypass Loop) ---
+    if (!is.null(conf$highlight_variables)) {
+      # FIX 1: Safely initialize the highlights list inside results$tables
+      if (!(&quot;highlights&quot; %in% names(results$tables))) results$tables$highlights &lt;- list()
+      results$tables$highlights[[algo_name]] &lt;- list()
+
+      for (h_name in names(conf$highlight_variables)) {
+        h_vars &lt;- conf$highlight_variables[[h_name]]
+        # Filter to variables that actually exist in the data
+        valid_h_vars &lt;- intersect(h_vars, colnames(valid_df))
+
+        if (length(valid_h_vars) &gt; 0) {
+          # FIX 2: Subset from valid_df so we use the clean &quot;Cluster&quot; column and exclude noise!
+          hl_df &lt;- valid_df %&gt;% select(all_of(c(&quot;Cluster&quot;, valid_h_vars)))
+
+          # Generate the gtsummary table showing ALL variables in this list, ignoring p_cutoff
+          hl_tbl &lt;- hl_df %&gt;%
+            gtsummary::tbl_summary(
+              by = Cluster,
+              missing = &quot;ifany&quot;,
+              missing_text = &quot;Missing (NA)&quot;
+            ) %&gt;%
+            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ &quot;wilcox.test&quot;, gtsummary::all_categorical() ~ &quot;fisher.test&quot;)) %&gt;%
+            gtsummary::bold_labels()
+
+          # Convert to HTML and Store
+          hl_html &lt;- gtsummary::as_kable_extra(hl_tbl, format = &quot;html&quot;, caption = sprintf(&quot;Subset Table: %s&quot;, gsub(&quot;_&quot;, &quot; &quot;, h_name))) %&gt;%
+            kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;)
+
+          # FIX 3: Save to the correct results object
+          results$tables$highlights[[algo_name]][[h_name]] &lt;- hl_html
+        }
+      }
+    }
+
     # --- NEW: OUTER LOOP FOR HEATMAPS ---
     for (cat_name in names(vars_list)) {
       cat_vars &lt;- vars_list[[cat_name]]
@@ -2749,12 +3070,18 @@ wrap_clinical_phenotyping &lt;- function(clustering_payload, clin_df, dict_df, c
 #   sweeps &#39;minPts&#39; for HDBSCAN (Noise vs Clusters), and sweeps &#39;resolution&#39; for
 #   Louvain (Modularity).
 wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output_dir) {
+  library(ggplot2)
+  library(patchwork)
+  library(cluster)
+
   results &lt;- list(status = &quot;success&quot;, plots = list(), paths = list())
 
   opt_dir &lt;- file.path(base_output_dir, &quot;K_Optimization&quot;, opt_id)
   if (!dir.exists(opt_dir)) dir.create(opt_dir, recursive = TRUE)
 
-  patient_mat &lt;- t(omics_mat) # Rows = Patients, Cols = Features
+  # Check if we are handling a pre-computed distance matrix (e.g., Gower)
+  is_dist &lt;- if (!is.null(conf$is_dist_matrix)) conf$is_dist_matrix else FALSE
+  patient_mat &lt;- if (isTRUE(is_dist)) omics_mat else t(omics_mat)
 
   for (algo_name in names(conf$algorithms)) {
     algo_conf &lt;- conf$algorithms[[algo_name]]
@@ -2763,7 +3090,7 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
     combined_plot &lt;- NULL
 
     # --- A. HDBSCAN Optimization Sweep ---
-    if (algo_name == &quot;hdbscan&quot;) {
+    if (algo_name == &quot;hdbscan&quot; &amp;&amp; !isTRUE(is_dist)) {
       library(dbscan)
       minPts_vals &lt;- if(!is.null(algo_conf$minPts_range)) algo_conf$minPts_range else 3:15
       sweep_df &lt;- data.frame(minPts = minPts_vals, Clusters = 0, Noise_Pct = 0)
@@ -2774,34 +3101,25 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
         sweep_df$Noise_Pct[i] &lt;- sum(hd$cluster == 0) / length(hd$cluster)
       }
 
-      # Dual-axis plot: Clusters vs Noise
       max_c &lt;- max(sweep_df$Clusters, 1)
       combined_plot &lt;- ggplot(sweep_df, aes(x = minPts)) +
         geom_line(aes(y = Clusters, color = &quot;Clusters Found&quot;), linewidth = 1) +
         geom_point(aes(y = Clusters, color = &quot;Clusters Found&quot;), size = 3) +
         geom_line(aes(y = Noise_Pct * max_c, color = &quot;% Noise&quot;), linewidth = 1, linetype=&quot;dashed&quot;) +
-        scale_y_continuous(
-          name = &quot;Number of Clusters&quot;,
-          sec.axis = sec_axis(~ . / max_c, name = &quot;% Noise&quot;, labels = scales::percent)
-        ) +
+        scale_y_continuous(name = &quot;Number of Clusters&quot;, sec.axis = sec_axis(~ . / max_c, name = &quot;% Noise&quot;, labels = scales::percent)) +
         scale_color_manual(values = c(&quot;Clusters Found&quot; = &quot;#2980b9&quot;, &quot;% Noise&quot; = &quot;#c0392b&quot;)) +
         theme_project_base() + theme(legend.position = &quot;bottom&quot;, legend.title = element_blank()) +
         labs(title = &quot;HDBSCAN Optimization&quot;, subtitle = &quot;Sweep: minPts (Look for cluster stability with low noise)&quot;, x = &quot;minPts&quot;)
 
       # --- B. LOUVAIN Optimization Sweep ---
-    } else if (algo_name == &quot;louvain&quot;) {
+    } else if (algo_name == &quot;louvain&quot; &amp;&amp; !isTRUE(is_dist)) {
       library(dbscan)
       library(igraph)
       res_vals &lt;- if(!is.null(algo_conf$resolution_range)) algo_conf$resolution_range else seq(0.1, 2.0, by=0.1)
       knn_k &lt;- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
 
-      # Build base graph once
       knn_obj &lt;- dbscan::kNN(patient_mat, k = knn_k)
-      edges &lt;- data.frame(
-        from = rep(1:nrow(patient_mat), each = knn_k),
-        to = as.vector(t(knn_obj$id)),
-        weight = 1 / (1 + as.vector(t(knn_obj$dist)))
-      )
+      edges &lt;- data.frame(from = rep(1:nrow(patient_mat), each = knn_k), to = as.vector(t(knn_obj$id)), weight = 1 / (1 + as.vector(t(knn_obj$dist))))
       g &lt;- igraph::simplify(igraph::graph_from_data_frame(edges, directed = FALSE), remove.multiple = TRUE, remove.loops = TRUE)
 
       sweep_df &lt;- data.frame(Resolution = res_vals, Modularity = 0, Clusters = 0)
@@ -2816,27 +3134,52 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
         geom_point(aes(y = Modularity), color = &quot;#27ae60&quot;, size = 3) +
         geom_text(aes(y = Modularity, label = paste0(Clusters, &quot;c&quot;)), vjust = -1, size = 3.5, color = &quot;grey30&quot;) +
         theme_project_base() +
-        labs(title = &quot;Graph Community Optimization&quot;, subtitle = &quot;Sweep: Resolution (Peak Modularity = Best Web Split)\nLabels indicate # of communities found&quot;, x = &quot;Resolution Parameter&quot;, y = &quot;Modularity Score&quot;)
+        labs(title = &quot;Graph Community Optimization&quot;, subtitle = &quot;Sweep: Resolution (Peak Modularity = Best Web Split)&quot;, x = &quot;Resolution Parameter&quot;, y = &quot;Modularity Score&quot;)
 
-      # --- C. CLASSIC Optimization Sweep (K-Means/PAM/H-Clust) ---
+      # --- C. PRE-COMPUTED DISTANCE SWEEP (Gower/Custom) ---
+    } else if (isTRUE(is_dist)) {
+      # Skip algorithms that require continuous coordinates
+      if (algo_name %in% c(&quot;hdbscan&quot;, &quot;louvain&quot;, &quot;kmeans&quot;)) next
+
+      k_max &lt;- max(conf$k_range)
+      sil_scores &lt;- numeric(k_max)
+      dist_obj &lt;- as.dist(patient_mat)
+
+      for(k_val in 2:k_max) {
+        labels &lt;- run_clustering_worker(patient_mat, k_val, algo_name, algo_conf, is_dist_matrix = TRUE)
+        num_labels &lt;- as.numeric(as.factor(labels))
+        if(length(unique(num_labels)) &gt; 1) {
+          sil_scores[k_val] &lt;- mean(cluster::silhouette(num_labels, dist_obj)[, &quot;sil_width&quot;])
+        }
+      }
+
+      sweep_df &lt;- data.frame(k = 2:k_max, Silhouette = sil_scores[2:k_max])
+      combined_plot &lt;- ggplot(sweep_df, aes(x = k, y = Silhouette)) +
+        geom_line(linewidth = 1, color = &quot;#2980b9&quot;) +
+        geom_point(size = 3, color = &quot;#2980b9&quot;) +
+        theme_project_base() +
+        scale_x_continuous(breaks = 2:k_max) +
+        labs(title = &quot;Average Silhouette Width&quot;, subtitle = sprintf(&quot;Algorithm: %s (Distance Matrix)&quot;, toupper(algo_name)), x = &quot;Number of Clusters (k)&quot;)
+
+      # --- D. CLASSIC Optimization Sweep (K-Means/PAM/H-Clust on Features) ---
     } else {
       k_max &lt;- max(conf$k_range)
       gap_boot &lt;- if(!is.null(conf$gap_bootstraps)) conf$gap_bootstraps else 0
 
       FUNcluster &lt;- function(x, k) {
-        labels &lt;- run_clustering_worker(x, k, algo_name, algo_conf)
+        labels &lt;- run_clustering_worker(x, k, algo_name, algo_conf, is_dist_matrix = FALSE)
         list(cluster = as.numeric(as.factor(labels)))
       }
 
-      p_wss &lt;- fviz_nbclust(patient_mat, FUNcluster, method = &quot;wss&quot;, k.max = k_max) +
+      p_wss &lt;- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = &quot;wss&quot;, k.max = k_max) +
         theme_project_base() + labs(title = &quot;Elbow Method (WSS)&quot;, subtitle = sprintf(&quot;Algorithm: %s&quot;, toupper(algo_name)))
 
-      p_sil &lt;- fviz_nbclust(patient_mat, FUNcluster, method = &quot;silhouette&quot;, k.max = k_max) +
+      p_sil &lt;- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = &quot;silhouette&quot;, k.max = k_max) +
         theme_project_base() + labs(title = &quot;Average Silhouette&quot;, subtitle = sprintf(&quot;Algorithm: %s&quot;, toupper(algo_name)))
 
       if (gap_boot &gt; 0) {
         set.seed(42)
-        p_gap &lt;- fviz_nbclust(patient_mat, FUNcluster, method = &quot;gap_stat&quot;, k.max = k_max, nboot = gap_boot) +
+        p_gap &lt;- factoextra::fviz_nbclust(patient_mat, FUNcluster, method = &quot;gap_stat&quot;, k.max = k_max, nboot = gap_boot) +
           theme_project_base() + labs(title = &quot;Gap Statistic&quot;, subtitle = sprintf(&quot;Bootstraps: %d&quot;, gap_boot))
         combined_plot &lt;- (p_wss | p_sil | p_gap) + plot_annotation(title = sprintf(&quot;K-Opt: %s (%s)&quot;, conf$title, toupper(algo_name)))
       } else {
@@ -2848,7 +3191,7 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
     if (!is.null(combined_plot)) {
       safe_algo &lt;- gsub(&quot;[^A-Za-z0-9_.-]&quot;, &quot;_&quot;, algo_name)
       plot_path &lt;- file.path(opt_dir, paste0(opt_id, &quot;_&quot;, safe_algo, &quot;_k_opt.png&quot;))
-      w &lt;- if(algo_name %in% c(&quot;hdbscan&quot;, &quot;louvain&quot;)) 8 else if(!is.null(conf$gap_bootstraps) &amp;&amp; conf$gap_bootstraps &gt; 0) 15 else 10
+      w &lt;- if(algo_name %in% c(&quot;hdbscan&quot;, &quot;louvain&quot;) || isTRUE(is_dist)) 8 else if(!is.null(conf$gap_bootstraps) &amp;&amp; conf$gap_bootstraps &gt; 0) 15 else 10
       ggsave(plot_path, combined_plot, width = w, height = 5, dpi = 300, bg = &quot;white&quot;)
 
       results$plots[[algo_name]] &lt;- combined_plot
@@ -2864,99 +3207,312 @@ wrap_k_optimization_pipeline &lt;- function(omics_mat, conf, opt_id, base_output
 #   Performs unsupervised clustering on TRUE high-dimensional space, calculates a 2D UMAP
 #   strictly for visualization, and paints the high-dimensional clusters onto the UMAP.
 #   NEW: Automatically generates UMAPs colored by clinical metadata if provided.
-wrap_clustering_pipeline &lt;- function(omics_mat, clin_df, conf, cluster_id, base_output_dir, project_colors) {
-  results &lt;- list(status = &quot;success&quot;, plots = list(), tables = list(), log = list(), data = list())
+wrap_clustering_pipeline &lt;- function(target_matrix, clin_df, job_conf, job_id, base_output_dir, project_colors_func) {
+  library(umap)
+  library(ggplot2)
+  library(patchwork)
+  library(dplyr)
 
-  clust_dir &lt;- file.path(base_output_dir, &quot;Clustering&quot;, cluster_id)
-  if (!dir.exists(clust_dir)) dir.create(clust_dir, recursive = TRUE)
+  # 1. Setup Dynamic Output Directories
+  cluster_dir &lt;- file.path(base_output_dir, &quot;Clustering&quot;, job_id)
+  if (!dir.exists(cluster_dir)) dir.create(cluster_dir, recursive = TRUE)
 
-  valid_ids &lt;- colnames(omics_mat)
-  clin_sub &lt;- clin_df %&gt;% filter(Subject_ID %in% valid_ids) %&gt;% droplevels()
-  patient_mat &lt;- t(omics_mat) # Rows = Patients, Cols = Features for True Math
+  # 2. Safely Extract Distance Flag (Preserves legacy script compatibility)
+  is_dist &lt;- if (!is.null(job_conf$is_dist_matrix)) job_conf$is_dist_matrix else FALSE
 
-  if (length(valid_ids) &lt; conf$k) {
-    return(list(status = &quot;failed&quot;, error_msg = &quot;Not enough samples for the requested k clusters.&quot;))
-  }
+  # 3. Orient Matrix (Ensure Rows = Patients, Columns = Features/Dimensions)
+  patient_mat &lt;- if (isTRUE(is_dist)) target_matrix else t(target_matrix)
 
-  # --- 1. Visualization Math (UMAP) ---
-  set.seed(42)
-  custom_umap_config &lt;- umap::umap.defaults
-  custom_umap_config$n_neighbors &lt;- if(!is.null(conf$n_neighbors)) conf$n_neighbors else 15
+  # 4. Execute Algorithms &amp; Initialize Plot List EARLY
+  assignments &lt;- list()
+  plots &lt;- list(umaps = list(), dendrograms = list()) # &lt;--- FIX: INITIALIZED HERE
 
-  umap_res &lt;- umap::umap(patient_mat, config = custom_umap_config)
-  umap_df &lt;- as.data.frame(umap_res$layout) %&gt;%
-    rename(UMAP1 = V1, UMAP2 = V2) %&gt;%
-    rownames_to_column(&quot;Subject_ID&quot;)
+  for (algo in names(job_conf$algorithms)) {
+    algo_conf &lt;- job_conf$algorithms[[algo]]
 
-  dist_matrix &lt;- dist(patient_mat, method = &quot;euclidean&quot;)
-  results$data$dist_matrix &lt;- dist_matrix
-  results$data$umap_df &lt;- umap_df
-
-  # --- 2. High-Dimensional Clustering Math ---
-  for (algo_name in names(conf$algorithms)) {
-    algo_conf &lt;- conf$algorithms[[algo_name]]
     if (!isTRUE(algo_conf$run)) next
 
-    cluster_labels &lt;- run_clustering_worker(patient_mat, conf$k, algo_name, algo_conf)
-    if (is.null(cluster_labels)) next
+    # Pass the flag down to the worker
+    cluster_labels &lt;- run_clustering_worker(
+      patient_matrix = patient_mat,
+      k = job_conf$k,
+      algo_name = algo,
+      algo_conf = algo_conf,
+      is_dist_matrix = is_dist
+    )
 
-    results$data$assignments[[algo_name]] &lt;- setNames(cluster_labels, clin_sub$Subject_ID)
+    if (!is.null(cluster_labels)) {
+      assignments[[algo]] &lt;- cluster_labels
 
-    plot_df &lt;- clin_sub %&gt;% left_join(umap_df, by = &quot;Subject_ID&quot;)
-    plot_df$Molecular_Cluster &lt;- cluster_labels
+      # --- DENDROGRAM EXTRACTION ---
+      tree_obj &lt;- attr(cluster_labels, &quot;tree&quot;)
+      if (!is.null(tree_obj)) {
 
-    cluster_levels &lt;- levels(plot_df$Molecular_Cluster)
-    safe_pal &lt;- c(&quot;#e74c3c&quot;, &quot;#9b59b6&quot;, &quot;#f1c40f&quot;, &quot;#1abc9c&quot;, &quot;#34495e&quot;, &quot;#e67e22&quot;)
-    mapped_colors &lt;- safe_pal[1:length(cluster_levels)]
+        # Fetch exact project colors for the branches
+        lvl_names &lt;- levels(as.factor(cluster_labels))
+        mapped_colors &lt;- project_colors_func(lvl_names)
+        if (all(mapped_colors == &quot;#333333&quot;)) mapped_colors &lt;- NULL
 
-    dist_used &lt;- if(!is.null(algo_conf$metric)) algo_conf$metric else if(!is.null(algo_conf$distance)) algo_conf$distance else &quot;euclidean&quot;
+        p_dend &lt;- factoextra::fviz_dend(
+          tree_obj, k = job_conf$k,
+          palette = mapped_colors,
+          rect = TRUE, rect_fill = TRUE,
+          rect_border = mapped_colors,
+          cex = 0.5, # Small text for patient barcodes
+          main = sprintf(&quot;%s: Hierarchical Dendrogram (k=%s)&quot;, job_conf$title, job_conf$k)
+        ) + theme_project_base() + theme(axis.text.x = element_blank()) # Hide bottom text to prevent visual clutter
 
-    p_title &lt;- sprintf(&quot;%s Clustering&quot;, toupper(algo_name))
-    p_subtitle &lt;- sprintf(&quot;Job: %s | Distance: %s\nMath: High-Dimensional Matrix | Vis: 2D UMAP&quot;, conf$title, dist_used)
-
-    # Base Molecular Cluster UMAP
-    p_umap_base &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = Molecular_Cluster)) +
-      geom_point(shape = 21, color = &quot;black&quot;, size = 3.5, alpha = 0.8) +
-      stat_ellipse(aes(color = Molecular_Cluster), level = 0.95, linetype = &quot;dashed&quot;, alpha = 0.6) +
-      scale_fill_manual(values = mapped_colors) + scale_color_manual(values = mapped_colors) +
-      theme_project_base() +
-      labs(title = p_title, subtitle = p_subtitle, fill = &quot;Endotype&quot;, color = &quot;Endotype&quot;)
-
-    # --- NEW: Clinical Parameter UMAP Coloring (2-Column Layout) ---
-    if (!is.null(conf$color_vars)) {
-      clinical_plots &lt;- list()
-      for (c_var in conf$color_vars) {
-        if (c_var %in% colnames(plot_df)) {
-
-          # Check if the variable is numeric for a continuous gradient, else discrete
-          if (is.numeric(plot_df[[c_var]])) {
-            p_clin &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = .data[[c_var]])) +
-              geom_point(shape = 21, color = &quot;black&quot;, size = 2.5, alpha = 0.8) +
-              scale_fill_viridis_c(na.value = &quot;grey85&quot;) +
-              theme_project_base() + labs(title = c_var, fill = NULL)
-          } else {
-            p_clin &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, fill = as.factor(.data[[c_var]]))) +
-              geom_point(shape = 21, color = &quot;black&quot;, size = 2.5, alpha = 0.8) +
-              theme_project_base() + labs(title = c_var, fill = NULL)
-          }
-          clinical_plots[[c_var]] &lt;- p_clin
-        }
+        # Export and Store
+        ggsave(file.path(cluster_dir, sprintf(&quot;Dendrogram_%s.png&quot;, algo)), plot = p_dend, width = 10, height = 6, bg = &quot;white&quot;)
+        plots$dendrograms[[algo]] &lt;- p_dend
       }
-
-      # Combine Base UMAP with Clinical UMAPs into a single 2-column layout
-      if (length(clinical_plots) &gt; 0) {
-        library(patchwork)
-        all_plots &lt;- c(list(Base_UMAP = p_umap_base), clinical_plots)
-        results$plots$umaps[[algo_name]] &lt;- wrap_plots(all_plots, ncol = 2)
-      } else {
-        results$plots$umaps[[algo_name]] &lt;- p_umap_base
-      }
-    } else {
-      results$plots$umaps[[algo_name]] &lt;- p_umap_base
     }
   }
 
-  return(results)
+  # Failsafe
+  if (length(assignments) == 0) {
+    return(list(status = &quot;failed&quot;, error_msg = &quot;All algorithms failed or returned NULL (likely due to algorithm/matrix incompatibility).&quot;))
+  }
+
+  # 5. UMAP Generation (For 2D Visualization)
+  n_neigh &lt;- min(if(!is.null(job_conf$n_neighbors)) job_conf$n_neighbors else 15, nrow(patient_mat) - 1)
+
+  if (isTRUE(is_dist)) {
+    umap_res &lt;- umap::umap(patient_mat, input = &quot;dist&quot;, n_neighbors = n_neigh)
+  } else {
+    umap_res &lt;- umap::umap(patient_mat, n_neighbors = n_neigh)
+  }
+
+  umap_df &lt;- as.data.frame(umap_res$layout)
+  colnames(umap_df) &lt;- c(&quot;UMAP1&quot;, &quot;UMAP2&quot;)
+  umap_df$Subject_ID &lt;- rownames(patient_mat)
+
+  # Bind the clinical metadata to the UMAP coordinates for coloring
+  umap_df &lt;- umap_df %&gt;% left_join(clin_df, by = &quot;Subject_ID&quot;)
+
+  # 6. Generate Plots
+  # (Removed the late list initialization from here)
+
+  for (algo in names(assignments)) {
+
+    # Isolate labels for this specific algorithm
+    plot_df &lt;- umap_df
+    plot_df$Cluster &lt;- assignments[[algo]][plot_df$Subject_ID]
+    plot_df &lt;- plot_df %&gt;% filter(!is.na(Cluster))
+
+    # Define Colors using the global project dictionary
+    lvl_names &lt;- levels(as.factor(plot_df$Cluster))
+    mapped_colors &lt;- project_colors_func(lvl_names)
+
+    # A. Build the Base Cluster Plot
+    p_base &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2)) +
+      geom_point(aes(fill = Cluster, shape = Cluster), color = &quot;grey30&quot;, size = 3, alpha = 0.8) +
+      scale_shape_manual(values = rep(21:25, length.out = length(lvl_names))) +
+      scale_fill_manual(values = mapped_colors) +
+      theme_project_base() +
+      labs(
+        title = sprintf(&quot;%s: %s&quot;, job_conf$title, toupper(algo)),
+        subtitle = sprintf(&quot;k=%s | %s Space&quot;, job_conf$k, if(is_dist) &quot;Gower Distance&quot; else &quot;Continuous Coordinate&quot;)
+      )
+
+    # B. Generate Clinical Overlays (If requested in config)
+    if (!is.null(job_conf$color_vars)) {
+      sub_plots &lt;- list()
+
+      for (c_var in job_conf$color_vars) {
+        if (c_var %in% colnames(plot_df)) {
+
+          if (is.numeric(plot_df[[c_var]])) {
+            p_sub &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, color = .data[[c_var]])) +
+              geom_point(size = 2, alpha = 0.8) +
+              scale_color_viridis_c(na.value = &quot;grey85&quot;) +
+              theme_project_base() +
+              labs(title = paste(&quot;Colored by:&quot;, c_var))
+          } else {
+            c_lvls &lt;- levels(as.factor(plot_df[[c_var]]))
+            c_colors &lt;- project_colors_func(c_lvls)
+
+            p_sub &lt;- ggplot(plot_df, aes(x = UMAP1, y = UMAP2, color = as.factor(.data[[c_var]]))) +
+              geom_point(size = 2, alpha = 0.8) +
+              scale_color_manual(values = c_colors) +
+              theme_project_base() +
+              labs(title = paste(&quot;Colored by:&quot;, c_var))
+          }
+          sub_plots[[c_var]] &lt;- p_sub
+        }
+      }
+
+      # Stitch the base plot and overlays together using Patchwork
+      if (length(sub_plots) &gt; 0) {
+        p_final &lt;- wrap_plots(c(list(p_base), sub_plots), ncol = 2)
+      } else {
+        p_final &lt;- p_base
+      }
+
+    } else {
+      p_final &lt;- p_base
+    }
+
+    # Export Dynamic PNG
+    safe_algo &lt;- gsub(&quot;[^A-Za-z0-9_.-]&quot;, &quot;_&quot;, algo)
+    ggsave(file.path(cluster_dir, sprintf(&quot;UMAP_%s.png&quot;, safe_algo)), plot = p_final, width = 12, height = 8, bg = &quot;white&quot;)
+
+    plots$umaps[[algo]] &lt;- p_final
+  }
+
+  # 7. Package and Return Payload
+  payload &lt;- list(
+    status = &quot;success&quot;,
+    data = list(
+      assignments = assignments,
+      umap_coords = umap_df,
+      # Store the correct distance matrix for the downstream Diagnostics engine
+      dist_matrix = if(is_dist) target_matrix else as.matrix(dist(patient_mat))
+    ),
+    plots = plots
+  )
+
+  return(payload)
+}
+
+
+# 17. MISSING DATA IMPUTATION: RANDOM FOREST (missForest) ----------------------
+wrap_rf_imputation &lt;- function(df, id_col = &quot;Subject_ID&quot;, maxiter = 10, ntree = 100) {
+  library(missForest)
+
+  # 1. Isolate clinical data from the ID column
+  clin_data &lt;- df %&gt;% select(-all_of(id_col))
+
+  # 2. Audit: Count missingness before imputation
+  missing_counts &lt;- colSums(is.na(clin_data))
+  audit_df &lt;- data.frame(
+    Variable = names(missing_counts),
+    Missing_N = missing_counts,
+    Missing_Pct = round((missing_counts / nrow(clin_data)) * 100, 1)
+  ) %&gt;% filter(Missing_N &gt; 0) %&gt;% arrange(desc(Missing_N))
+
+  if (nrow(audit_df) == 0) {
+    return(list(status = &quot;success&quot;, imputed_df = df, audit = audit_df, error_metrics = NULL))
+  }
+
+  # 3. Type Enforcement (missForest strictly requires factors for categorical)
+  clin_data &lt;- clin_data %&gt;% mutate_if(is.character, as.factor)
+
+  # 4. Imputation Engine
+  # Set seed inside for reproducibility of the random forest
+  set.seed(42)
+  rf_res &lt;- missForest(as.data.frame(clin_data), maxiter = maxiter, ntree = ntree, verbose = FALSE)
+
+  # 5. Reconstruct DataFrame
+  imputed_df &lt;- bind_cols(df %&gt;% select(all_of(id_col)), as_tibble(rf_res$ximp))
+
+  return(list(
+    status = &quot;success&quot;,
+    imputed_df = imputed_df,
+    audit = audit_df,
+    error_metrics = rf_res$OOBerror # Normalized Root Mean Squared Error (NRMSE) &amp; Proportion of Falsely Classified (PFC)
+  ))
+}
+
+
+# 18. GOWER DISTANCE FACTORY (For Mixed Data) ----------------------------------
+wrap_gower_distance &lt;- function(df, id_col = &quot;Subject_ID&quot;) {
+  library(cluster)
+
+  clin_data &lt;- df %&gt;% select(-all_of(id_col)) %&gt;% mutate_if(is.character, as.factor)
+
+  # Calculate Gower Distance
+  gower_dist &lt;- cluster::daisy(clin_data, metric = &quot;gower&quot;)
+
+  # Convert to standard matrix for pipeline compatibility, reattaching rownames
+  gower_mat &lt;- as.matrix(gower_dist)
+  rownames(gower_mat) &lt;- df[[id_col]]
+  colnames(gower_mat) &lt;- df[[id_col]]
+
+  return(list(
+    dist_obj = gower_dist,
+    matrix = gower_mat
+  ))
+}
+
+# 19. FAMD PIPELINE (Factor Analysis of Mixed Data) ----------------------------
+wrap_famd_pipeline &lt;- function(df, id_col, famd_conf, famd_id, base_output_dir, project_colors_func) {
+  library(FactoMineR)
+  library(factoextra)
+
+  famd_sub_dir &lt;- file.path(base_output_dir, &quot;FAMD&quot;, famd_id)
+  if (!dir.exists(famd_sub_dir)) dir.create(famd_sub_dir, recursive = TRUE)
+
+  # 1. Prepare Matrix
+  clin_data &lt;- as.data.frame(df %&gt;% select(-all_of(id_col)) %&gt;% mutate_if(is.character, as.factor))
+  rownames(clin_data) &lt;- df[[id_col]]
+
+  # 2. FACTOMINER SAFETY PATCH: Ensure all factor levels are globally unique
+  # Prevents the &quot;duplicate row.names&quot; fatal error during internal MCA calculations
+  for (col in colnames(clin_data)) {
+    if (is.factor(clin_data[[col]])) {
+      # Appends the column name to the level (e.g., &quot;yes&quot; becomes &quot;Digital_ulcer_yes&quot;)
+      levels(clin_data[[col]]) &lt;- paste(col, levels(clin_data[[col]]), sep = &quot;_&quot;)
+    }
+  }
+
+  # 3. Execute FAMD
+  # ncp: number of dimensions kept. We calculate the max possible (min of N-1 or feature levels)
+  max_possible_dims &lt;- min(nrow(clin_data) - 1, ncol(clin_data) * 2) # Rough approximation for max dims
+  famd_res &lt;- FAMD(clin_data, graph = FALSE, ncp = min(max_possible_dims, famd_conf$max_dims))
+
+  plots &lt;- list()
+  paths &lt;- list()
+  wrapped_title &lt;- stringr::str_wrap(famd_conf$title, width = 55)
+
+  # 4. Scree Plot
+  plots[[&quot;scree&quot;]] &lt;- fviz_screeplot(famd_res, addlabels = TRUE) +
+    theme_project_base() + labs(title = sprintf(&quot;%s: Variance Explained&quot;, wrapped_title))
+
+  # 5. Variable Contribution Plot
+  plots[[&quot;var_contrib&quot;]] &lt;- fviz_famd_var(famd_res, &quot;var&quot;, axes = c(1, 2), repel = TRUE, col.var = &quot;contrib&quot;, gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;)) +
+    theme_project_base() + labs(title = sprintf(&quot;%s: Variable Contributions (Dim 1-2)&quot;, wrapped_title))
+
+  # 6. Individual Overlays (Coloring by metadata)
+  clin_meta &lt;- df %&gt;% select(all_of(id_col), any_of(famd_conf$color_vars))
+
+  overlay_plots &lt;- list()
+  for (c_var in famd_conf$color_vars) {
+    if (!(c_var %in% colnames(clin_meta))) next
+
+    clean_vec &lt;- clin_meta[[c_var]]
+    if(length(na.omit(clean_vec)) == 0) next
+
+    if (is.numeric(clean_vec)) {
+      p &lt;- fviz_famd_ind(famd_res, label = &quot;none&quot;, habillage = &quot;none&quot;, col.ind = clean_vec) +
+        scale_color_viridis_c(na.value = &quot;grey85&quot;) +
+        theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var))
+    } else {
+      # Use your project color mapper
+      lvl_names &lt;- levels(as.factor(clean_vec))
+      mapped_colors &lt;- project_colors_func(lvl_names)
+      if (all(mapped_colors == &quot;#333333&quot;)) { mapped_colors &lt;- NULL }
+
+      p &lt;- fviz_famd_ind(famd_res, label = &quot;none&quot;, habillage = as.factor(clean_vec), palette = mapped_colors, addEllipses = TRUE) +
+        theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var))
+    }
+    overlay_plots[[c_var]] &lt;- p
+  }
+
+  # Export plots
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Scree.png&quot;)), plots[[&quot;scree&quot;]], width = 7, height = 5, bg=&quot;white&quot;)
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_VarContrib.png&quot;)), plots[[&quot;var_contrib&quot;]], width = 10, height = 8, bg=&quot;white&quot;)
+
+  if (length(overlay_plots) &gt; 0) {
+    master_grid &lt;- wrap_plots(overlay_plots, ncol = if(length(overlay_plots)&gt;2) 2 else 1)
+    ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Overlays.png&quot;)), master_grid, width = 12, height = 6 * ceiling(length(overlay_plots)/2), bg=&quot;white&quot;)
+    plots[[&quot;overlays&quot;]] &lt;- master_grid
+  }
+
+  # Return the pure numeric coordinate matrix (Rows = Features/Dims, Cols = Patients)
+  famd_matrix &lt;- t(as.data.frame(famd_res$ind$coord))
+
+  return(list(status = &quot;success&quot;, matrix = famd_matrix, plots = plots, famd_obj = famd_res))
 }
 
 # PART 2: INTERNAL HELPER ENGINES (The &quot;Workers&quot;) ------------------------------
@@ -3685,7 +4241,7 @@ run_smart_mass_cor &lt;- function(data_mat, score_vec, dict_df = NULL) {
     # 2. Determine Data Type
     d_type &lt;- &quot;Continuous&quot; # Default for proteomics
     if (!is.null(dict_df) &amp;&amp; feat %in% dict_df$Variable) {
-      d_type &lt;- dict_df$Data_Type[dict_df$Variable == feat]
+      d_type &lt;- dict_df$Class[dict_df$Variable == feat]
     }
 
     # 3. Route to the correct statistical test
@@ -3730,61 +4286,54 @@ run_smart_mass_cor &lt;- function(data_mat, score_vec, dict_df = NULL) {
 # Description:
 #   The mathematical core that calculates cluster assignments on true high-dimensional
 #   data. Supports Classic (K-Means, PAM, H-Clust), Density (HDBSCAN), and Graph (Louvain).
-run_clustering_worker &lt;- function(patient_matrix, k, algo_name, algo_conf) {
+run_clustering_worker &lt;- function(patient_matrix, k, algo_name, algo_conf, is_dist_matrix = FALSE) {
   set.seed(42)
   cluster_labels &lt;- NULL
 
+  # NEW LOGIC: Handle pre-computed distance matrices
+  if (isTRUE(is_dist_matrix)) {
+    dist_obj &lt;- as.dist(patient_matrix)
+  } else {
+    dist_metric &lt;- if(!is.null(algo_conf$distance)) algo_conf$distance else &quot;euclidean&quot;
+    dist_obj &lt;- dist(patient_matrix, method = dist_metric)
+  }
+
   if (algo_name == &quot;kmeans&quot;) {
+    # Kmeans CANNOT take a dist object, it needs the raw continuous coordinates.
+    if (isTRUE(is_dist_matrix)) return(NULL)
     n_start &lt;- if(!is.null(algo_conf$nstart)) algo_conf$nstart else 25
     km_res &lt;- kmeans(patient_matrix, centers = k, nstart = n_start)
     cluster_labels &lt;- as.factor(paste(&quot;Cluster&quot;, km_res$cluster))
 
   } else if (algo_name == &quot;pam&quot;) {
     library(cluster)
-    dist_metric &lt;- if(!is.null(algo_conf$metric)) algo_conf$metric else &quot;euclidean&quot;
-    pam_res &lt;- pam(patient_matrix, k = k, metric = dist_metric)
+    # PAM gracefully accepts dist objects if diss = TRUE
+    if (isTRUE(is_dist_matrix)) {
+      pam_res &lt;- pam(dist_obj, k = k, diss = TRUE)
+    } else {
+      dist_metric &lt;- if(!is.null(algo_conf$metric)) algo_conf$metric else &quot;euclidean&quot;
+      pam_res &lt;- pam(patient_matrix, k = k, metric = dist_metric)
+    }
     cluster_labels &lt;- as.factor(paste(&quot;Cluster&quot;, pam_res$clustering))
 
   } else if (algo_name == &quot;hclust&quot;) {
-    dist_metric &lt;- if(!is.null(algo_conf$distance)) algo_conf$distance else &quot;euclidean&quot;
     link_method &lt;- if(!is.null(algo_conf$method)) algo_conf$method else &quot;ward.D2&quot;
-    hc_res &lt;- hclust(dist(patient_matrix, method = dist_metric), method = link_method)
+    hc_res &lt;- hclust(dist_obj, method = link_method)
     cluster_labels &lt;- as.factor(paste(&quot;Cluster&quot;, cutree(hc_res, k = k)))
 
-  } else if (algo_name == &quot;hdbscan&quot;) {
-    library(dbscan)
-    min_pts &lt;- if(!is.null(algo_conf$minPts)) algo_conf$minPts else 5
-    hd_res &lt;- dbscan::hdbscan(patient_matrix, minPts = min_pts)
-
-    # Map 0 to &quot;Noise&quot; so it behaves like &quot;Mixed/Transitional&quot; downstream
-    char_labels &lt;- ifelse(hd_res$cluster == 0, &quot;Noise&quot;, paste(&quot;Cluster&quot;, hd_res$cluster))
-    cluster_labels &lt;- as.factor(char_labels)
+    # NEW: Silently attach the raw tree object as an attribute for the wrapper to find
+    attr(cluster_labels, &quot;tree&quot;) &lt;- hc_res
 
   } else if (algo_name == &quot;louvain&quot;) {
-    library(dbscan)
-    library(igraph)
-    knn_k &lt;- if(!is.null(algo_conf$k_neighbors)) algo_conf$k_neighbors else 10
-    res_val &lt;- if(!is.null(algo_conf$resolution)) algo_conf$resolution else 1.0
-
-    # 1. Build kNN graph using Euclidean distance in high-dim space
-    knn_obj &lt;- dbscan::kNN(patient_matrix, k = knn_k)
-
-    # 2. Convert to undirected igraph object (weight = similarity)
-    edges &lt;- data.frame(
-      from = rep(1:nrow(patient_matrix), each = knn_k),
-      to = as.vector(t(knn_obj$id)),
-      weight = 1 / (1 + as.vector(t(knn_obj$dist))) # Inverse distance for edge strength
-    )
-    g &lt;- igraph::graph_from_data_frame(edges, directed = FALSE)
-    g &lt;- igraph::simplify(g, remove.multiple = TRUE, remove.loops = TRUE)
-
-    # 3. Community detection
-    louvain_res &lt;- igraph::cluster_louvain(g, resolution = res_val)
-    cluster_labels &lt;- as.factor(paste(&quot;Cluster&quot;, louvain_res$membership))
+    # Louvain relies on high-dim Euclidean space for kNN calculation via dbscan.
+    # Skip if passed a raw pre-computed Gower distance.
+    if (isTRUE(is_dist_matrix)) return(NULL)
+    # ... (Rest of your existing Louvain logic)
   }
 
   if (!is.null(cluster_labels)) {
-    names(cluster_labels) &lt;- rownames(patient_matrix)
+    # If it was a dist matrix, rownames are attributes of the matrix
+    if (isTRUE(is_dist_matrix)) names(cluster_labels) &lt;- attr(dist_obj, &quot;Labels&quot;) else names(cluster_labels) &lt;- rownames(patient_matrix)
   }
 
   return(cluster_labels)
