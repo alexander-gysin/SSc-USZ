@@ -1,0 +1,15 @@
+---
+title: "04c_lipidomics_aggregation"
+author: "alexander-gysin"
+date: "2026-06-01"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+
+```
+

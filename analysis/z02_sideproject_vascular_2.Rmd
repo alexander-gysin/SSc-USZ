@@ -32,7 +32,8 @@ library(kableExtra)
 library(ComplexHeatmap)
 library(circlize)
 library(writexl)
-library(ggrepel) 
+library(ggrepel)
+library(msigdbr)
 
 # Knitr Config
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -53,6 +54,14 @@ olink_mat     <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_o
 
 # Load Global Vascular DEA (from Script 03b)
 global_vascular_dea <- readRDS(here::here("output", "03b_proteomics_differential", "full_vascular_dea_results.rds"))
+
+# GSEA Datasets
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
 ```
 
 # Configurations
@@ -87,7 +96,11 @@ plot_color_vars <- c("vascular_active", "Inflamm_active", "cohort_group")
 audit_vars      <- c("Age", "Sex", "log_Creatinine", "SSc Antibodies")
 
 # 5. Global Omics Thresholds
-omics_config <- list(gsea_p_cutoff = 0.20, gsea_min_size = 3)
+omics_config <- list(
+  gsea_p_cutoff    = 0.20, 
+  gsea_min_size    = 3,
+  network_p_cutoff = 0.10  
+)
 heatmap_config <- list(top_n = 30, split_by_group = TRUE, row_font_size = 8)
 
 # 6. Correlation Discovery Thresholds

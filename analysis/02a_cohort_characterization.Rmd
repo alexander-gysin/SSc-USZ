@@ -1,0 +1,982 @@
+---
+title: "Cohort Characterization"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  workflowr::wflow_html:
+    code_folding: hide
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+# Introduction
+This script describes the cohors by showing the distributions of technical and clinical parameters.
+
+# Setup
+`r what_this_does("Loaded required utility packages (tidyverse, gtsummary, corrplot, heatmaply, etc.).", "Created dynamic output directories to safely store Script 02 results and figures.", "Sourced global configurations and loaded the twin clinical spines generated in Phase 1b.")`
+
+```{r setup_import, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(gtsummary)
+library(here)
+library(patchwork)
+library(ggpubr)
+library(gt)
+library(kableExtra)
+library(corrplot)
+library(heatmaply)
+library(UpSetR)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  collapse = TRUE # Helps prevent code chunk fragmentation
+)
+
+# Output paths
+current_file <- "02_cohort_characterization"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Public Asset Paths (Pushed to GitHub for the Website)
+public_heatmap_dir <- here::here("docs", "assets", "02_cohort_characterization", "heatmaps")
+if (!dir.exists(file.path(public_heatmap_dir, "intra"))) dir.create(file.path(public_heatmap_dir, "intra"), recursive = TRUE)
+if (!dir.exists(file.path(public_heatmap_dir, "inter"))) dir.create(file.path(public_heatmap_dir, "inter"), recursive = TRUE)
+
+# Input paths (Updated to 01b!)
+input_paths <- list(
+  clinical_spine = here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"),
+  numeric_spine  = here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds")
+)
+
+# Load the twin clinical spines from Script 01b
+master_spine <- readRDS(input_paths$clinical_spine)
+numeric_spine <- readRDS(input_paths$numeric_spine)
+```
+
+# Configuration
+
+`r what_this_does("Defined statistical thresholds for normality (Shapiro-Wilk) and variance (Bartlett) testing.", "Configured correlation matrix parameters including sparsity filters and targeted anchor variables.", "Constructed dynamic configuration lists to dictate Table 1 and Figure layouts using the pre-engineered master_spine.")`
+
+```{r configuration}
+# 1. Global Variables & Feature Engineering ------------------------------------
+stat_config <- list(
+  shapiro_alpha  = 0.05, 
+  variance_alpha = 0.05, 
+  p_cutoff       = 0.05
+)
+
+corr_config <- list(
+  min_required_obs  = 10,   
+  p_cutoff          = 0.05, 
+  strong_rho_cutoff = 0.7,
+  label_font_size   = 0.7 
+)
+
+candidate_vars <- list(
+  set1 = c("Creatinine", "NT-proBNP (pg/ml)", "Age", "DLCO (SB) (% predicted)")
+)
+
+# Helper function to determine parametric status -------------------------------
+check_parametric <- function(df, var_col, group_col, config) { 
+  test_vec <- df[[var_col]][!is.na(df[[var_col]])]
+  group_vec <- df[[group_col]][!is.na(df[[var_col]])]
+  
+  if (length(unique(group_vec)) < 2 || length(test_vec) < 3) return(FALSE)
+  
+  shapiro_p <- tryCatch(shapiro.test(test_vec)$p.value, error = function(e) 0)
+  bartlett_p <- tryCatch(bartlett.test(test_vec ~ group_vec)$p.value, error = function(e) 0)
+  
+  return(shapiro_p > config$shapiro_alpha && bartlett_p > config$variance_alpha)
+}
+
+# 3. Table Configurations ------------------------------------------------------
+table_configs <- list(
+  table_1 = list(
+    title = "Demographic and Clinical Characteristics",
+    group_by = "cohort_group",
+    pairwise = TRUE, 
+    variables = c("Age", "Sex", "CRP", "Creatinine", "Sample_Age", "NT-proBNP (pg/ml)", "DLCO (SB) (% predicted)"),
+    labels = list(
+      Age = "Patient Age (Years)",
+      Sex = "Biological Sex",
+      CRP = "CRP (mg/dl)",
+      Creatinine = "Serum Creatinine (µmol/L)",
+      Sample_Age = "Sample Storage Time (Years)"
+    )
+  )
+)
+
+# 4. Figure Configurations -----------------------------------------------------
+figure_configs <- list(
+  figure_1 = list(
+    figure_title = "Demografic and Technical Distributions", 
+    plots = list(
+      plot_1 = list(
+        title = "Age and Sex Distribution", 
+        type = "stacked_histogram",
+        x_var = "Age",
+        fill_var = "Sex",
+        fill_palette = get_project_colors(c(SEX_FEMALE, SEX_MALE)), 
+        facet_by = "cohort_group",
+        bins = 10  
+      ),
+      plot_2 = list(
+        title = "Sample Storage Age", 
+        type = "violin",
+        y_var = "Sample_Age",
+        x_var = "cohort_group",
+        y_label = "Sample Storage Time (Years)", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      )
+    )
+  ),
+  
+  figure_2 = list(
+    figure_title = "Baseline Laboratory and Spirometry Values", 
+    plots = list(
+      plot_3 = list(
+        title = "Baseline CRP", 
+        type = "violin",
+        y_var = "log_CRP", 
+        x_var = "cohort_group",
+        y_label = "CRP (mg/dl) [Log10 Scale]",  
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_4 = list(
+        title = "Baseline Creatinine", 
+        type = "violin",
+        y_var = "log_Creatinine", 
+        x_var = "cohort_group",
+        y_label = "Serum Creatinine (µmol/L) [Log10 Scale]", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      ),
+      plot_5 = list(
+        title = "Baseline NT-proBNP (pg/ml)", 
+        type = "violin",
+        y_var = "log_NT_proBNP__pg_ml", 
+        x_var = "cohort_group",
+        y_label = "Serum NT-proBNP (pg/ml) [Log10 Scale]", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
+      )
+    )
+  )
+)
+
+# 5. Custom Correlation Heatmaps -----------------------------------------------
+custom_heatmap_configs <- list(
+  core_metadata = list(
+    title = "Core Metadata Correlations",
+    y_vars = c("Age", "Sex", "Sample_Age", "cohort_group", "Creatinine", "Inflamm_active", "vascular_active", "fibrotic_active", ssc_clinical_parameters),
+    x_vars = NULL
+  ),
+  classification_vs_clinical = list(
+    title = "Classification vs. Clinical",
+    y_vars = c("cohort_group", "Inflamm_active", "vascular_active", "fibrotic_active"),
+    x_vars = c(ssc_clinical_parameters)
+  ),
+  var_candidates_vs_contrasts = list(
+    title = "Var. Candidates vs Contrasts",
+    y_vars = c("cohort_group", "Inflamm_active", "vascular_active", "fibrotic_active"),
+    x_vars = c(candidate_vars$set1)
+  )
+)
+
+# 6. Upset Plots ---------------------------------------------------------------
+upset_configs <- list(
+  phenotype_overlap = list(
+    title = "Patient Overlap: Phenotypes vs Global Activity",
+    variables = list(
+      # TYPE-AGNOSTIC TARGETS: It doesn't matter if the spine holds text, factors, or math. 
+      # If the patient has any of these values, they are securely counted.
+      "Active"       = list(col = "cohort_group", target = c(GRP_ACTIVE, "Active", 2, "2")),
+      "Non_Active"   = list(col = "cohort_group", target = c(GRP_NON_ACTIVE, "Non-Active", 1, "1")),
+      "Inflammatory" = list(col = "Inflamm_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
+      "Vascular"     = list(col = "vascular_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
+      "Fibrotic"     = list(col = "fibrotic_active", target = c(1, "1", "yes", "Yes", "active", "Active"))
+    )
+  )
+)
+```
+
+# Tables
+
+`r what_this_does("Dynamically evaluated each clinical variable to select appropriate parametric (ANOVA/t-test) or non-parametric (Kruskal-Wallis/Wilcoxon) statistical tests.", "Generated comprehensive baseline demographic tables using the gtsummary package.", "Calculated and appended both global and pairwise group comparison p-values.", "Exported standard tables as CSV files and rendered interactive HTML equivalents.")`
+
+```{r table_engine, results='asis', warning=FALSE}
+generated_tables <- list()
+
+for (tbl_name in names(table_configs)) {
+  conf <- table_configs[[tbl_name]]
+  cat(sprintf("### %s\n\n", conf$title))
+  
+  tbl_data <- master_spine %>% select(all_of(c(conf$variables, conf$group_by)))
+  
+  gtsum_stats <- list(); gtsum_global_tests <- list(); gtsum_pairwise_tests <- list() 
+  for (var in conf$variables) {
+    if (is.numeric(tbl_data[[var]])) {
+      # FIX: Removed the obsolete 'transform = NULL' argument!
+      is_parametric <- check_parametric(tbl_data, var, conf$group_by, stat_config) 
+      if (is_parametric) {
+        gtsum_stats[[var]] <- "{mean} ({sd})"; gtsum_global_tests[[var]] <- "aov"; gtsum_pairwise_tests[[var]] <- "t.test" 
+      } else {
+        gtsum_stats[[var]] <- "{median} ({p25}, {p75})"; gtsum_global_tests[[var]] <- "kruskal.test"; gtsum_pairwise_tests[[var]] <- "wilcox.test" 
+      }
+    }
+  }
+  
+  tbl_global <- tbl_data %>%
+    tbl_summary(by = all_of(conf$group_by), statistic = gtsum_stats, missing = "ifany", missing_text = "Missing (NA)") %>%
+    add_p(test = gtsum_global_tests) %>% modify_header(p.value = "**Global p-value**")
+  
+  if (isTRUE(conf$pairwise)) {
+    valid_groups <- tbl_data %>% group_by(!!sym(conf$group_by)) %>% summarise(n = n(), .groups = "drop") %>% filter(n >= 2) %>% pull(!!sym(conf$group_by)) %>% as.character()
+    all_comparisons <- combn(valid_groups, 2, simplify = FALSE)
+    pairwise_tbls <- list()
+    for (comp in all_comparisons) {
+      comp_data <- tbl_data %>% filter(!!sym(conf$group_by) %in% comp) %>% mutate(!!sym(conf$group_by) := droplevels(factor(!!sym(conf$group_by))))
+      ptbl <- comp_data %>% tbl_summary(by = all_of(conf$group_by), statistic = gtsum_stats, missing = "no") %>% add_p(test = gtsum_pairwise_tests) %>% modify_header(p.value = sprintf("**%s vs %s**", comp[1], comp[2])) %>% modify_column_hide(all_stat_cols()) 
+      pairwise_tbls <- append(pairwise_tbls, list(ptbl))
+    }
+    gtsum_obj <- tbl_merge(tbls = append(list(tbl_global), pairwise_tbls), tab_spanner = FALSE)
+  } else {
+    gtsum_obj <- tbl_global
+  }
+  
+  gtsum_obj <- gtsum_obj %>% bold_labels() %>% modify_header(label = "**Variable**")
+  write_csv(as_tibble(gtsum_obj), file.path(output_dir_data, paste0(tbl_name, ".csv")))
+  
+  tbl_html <- as_kable_extra(gtsum_obj, format = "html") %>% kable_styling(bootstrap_options = c("hover", "condensed"), full_width = FALSE, position = "left") %>% row_spec(0, extra_css = "white-space: nowrap;") 
+  print(tbl_html)
+  cat("\n---\n\n")
+  generated_tables[[tbl_name]] <- gtsum_obj
+}
+
+# Clean Memory
+rm(tbl_data, gtsum_stats, gtsum_global_tests, gtsum_pairwise_tests, tbl_global, gtsum_obj, tbl_html, conf)
+invisible(gc())
+```
+
+# Figures
+
+`r what_this_does("Generated dynamic clinical visualizations (stacked histograms, violin plots) based on the configuration dictionary.", "Automatically applied appropriate parametric or non-parametric pairwise statistical comparisons to the plots.", "Assembled individual plots into comprehensive multi-panel figure layouts using patchwork.")`
+
+```{r figure_engine}
+group_levels <- levels(master_spine$cohort_group) 
+plot_colors <- get_project_colors(group_levels) 
+
+individual_plots <- list()
+stitched_figures <- list()
+
+generate_base_plot <- function(conf) {
+  if (conf$type == "stacked_histogram") {
+    hist_bins <- if (!is.null(conf$bins)) conf$bins else 30
+    p <- ggplot(master_spine, aes(x = .data[[conf$x_var]], fill = .data[[conf$fill_var]])) + 
+      geom_histogram(bins = hist_bins, color = "white", alpha = 0.8) +
+      scale_fill_manual(values = conf$fill_palette) + 
+      labs(title = conf$title, x = conf$x_var, y = "Count", fill = conf$fill_var)
+    if (!is.null(conf$facet_by)) p <- p + facet_wrap(vars(!!sym(conf$facet_by)))
+    
+  } else if (conf$type == "violin") {
+    plot_data <- master_spine %>% filter(!is.na(.data[[conf$y_var]]))
+    actual_y_label <- if (!is.null(conf$y_label)) conf$y_label else conf$y_var
+    
+    p <- ggplot(plot_data, aes(x = .data[[conf$x_var]], y = .data[[conf$y_var]])) + 
+      geom_violin(aes(fill = .data[[conf$x_var]]), alpha = 0.4, color = "transparent") +
+      geom_boxplot(width = 0.2, fill = "white", color = "grey30", outlier.shape = NA) +
+      geom_jitter(aes(color = .data[[conf$x_var]]), width = 0.15, alpha = 0.6) +
+      scale_fill_manual(values = plot_colors) + scale_color_manual(values = plot_colors) +
+      labs(title = conf$title, x = "Cohort Group", y = actual_y_label) + theme(legend.position = "none") +
+      scale_y_continuous(expand = expansion(mult = c(0.05, 0.40)))
+    
+    if (isTRUE(conf$add_stat_test)) {
+      is_parametric <- check_parametric(plot_data, conf$y_var, conf$x_var, stat_config) 
+      dyn_pairwise_method <- if (is_parametric) "t.test" else "wilcox.test"
+      dyn_global_method <- if (is_parametric) "anova" else "kruskal.test"
+      
+      if (isTRUE(conf$pairwise)) {
+        valid_groups <- plot_data %>% group_by(!!sym(conf$x_var)) %>% summarise(n = n(), .groups = "drop") %>% filter(n >= 2) %>% pull(!!sym(conf$x_var)) %>% as.character()
+        if (length(valid_groups) >= 2) {
+          all_comparisons <- combn(valid_groups, 2, simplify = FALSE)
+          sig_comparisons <- list()
+          for (comp in all_comparisons) {
+            g1 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[1]]
+            g2 <- plot_data[[conf$y_var]][plot_data[[conf$x_var]] == comp[2]]
+            if (length(g1) >= 2 && length(g2) >= 2) {
+              p_val <- tryCatch({
+                if (dyn_pairwise_method == "t.test") t.test(g1, g2)$p.value else wilcox.test(g1, g2, exact = FALSE)$p.value 
+              }, error = function(e) 1) 
+              if (isTRUE(p_val < stat_config$p_cutoff)) sig_comparisons <- append(sig_comparisons, list(comp))
+            }
+          }
+          if (length(sig_comparisons) > 0) p <- p + stat_compare_means(comparisons = sig_comparisons, method = dyn_pairwise_method, label = "p.signif", hide.ns = TRUE, step.increase = 0.1)
+        }
+      } else {
+        p <- p + stat_compare_means(method = dyn_global_method, label.y.npc = "top")
+      }
+    }
+  }
+  p <- p + theme_project_base()
+  return(p)
+}
+
+for (fig_name in names(figure_configs)) {
+  fig_conf <- figure_configs[[fig_name]]
+  patchwork_ready_plots <- list()
+  plot_names <- names(fig_conf$plots)
+  for (i in seq_along(plot_names)) {
+    p_name <- plot_names[i]
+    p_conf <- fig_conf$plots[[p_name]]
+    pure_plot <- generate_base_plot(p_conf)
+    individual_plots[[p_name]] <- pure_plot
+    abc_title <- sprintf("%s. %s", LETTERS[i], p_conf$title)
+    patchwork_ready_plots[[i]] <- pure_plot + labs(title = abc_title)
+  }
+  stitched_figures[[fig_name]] <- wrap_plots(patchwork_ready_plots, ncol = 2) + plot_annotation(title = fig_conf$figure_title, theme = theme(plot.title = element_text(size = 16, face = "bold")))
+}
+
+# Clean Memory
+rm(pure_plot, patchwork_ready_plots, p_name, p_conf, abc_title, fig_conf, plot_names, i)
+invisible(gc())
+```
+
+## Merged Figures
+
+`r what_this_does("Rendered the assembled multi-panel figures for the HTML report.", "Exported high-resolution PNG copies of the merged figures to the output directory.")`
+
+```{r print_figures, fig.width=12, fig.height=10}
+for (fig_name in names(stitched_figures)) {
+  print(stitched_figures[[fig_name]])
+  ggsave(filename = file.path(output_dir_data, paste0(fig_name, ".png")), plot = stitched_figures[[fig_name]], width = 12, height = 8, dpi = 300, bg = "white")
+}
+```
+
+## Individual Plots {.tabset}
+
+`r what_this_does("Generated tabbed sections in the HTML report for easy navigation of individual plots.", "Exported standalone high-resolution PNGs for each individual plot.")`
+
+```{r print_individual_plots, results='asis', fig.width=7, fig.height=5.5}
+for (p_name in names(individual_plots)) {
+  tab_title <- individual_plots[[p_name]]$labels$title
+  if (is.null(tab_title)) tab_title <- p_name
+  
+  cat(sprintf("\n\n### %s\n\n", tab_title))
+  print(individual_plots[[p_name]])
+  cat("\n\n")
+  ggsave(filename = file.path(output_dir_data, paste0(p_name, ".png")), plot = individual_plots[[p_name]], width = 7, height = 5.5, dpi = 300, bg = "white")
+}
+```
+
+# Matrix Correlation
+## Data Prep and Matrix Calculation
+
+`r analysis_decision("Filtered out sparse variables with < 10 observations to ensure robust correlation metrics.", "Standardized categorical data into ordinal ranks utilizing the pre-computed numeric spine.", "Applied a global NA-to-Zero fill on the correlation matrix to stabilize hierarchical clustering.")`
+
+`r what_this_does("Injected the curated numeric spine directly into the matrix calculation engine.", "Implemented a global NA-to-Zero fill to ensure mathematical stability during hierarchical clustering.", "Generated transparent audit tables documenting variable exclusion for clinical validation.", "Exported the finalized correlation matrix to CSV and cleared intermediate variables from RAM.")`
+
+```{r mat_corr_calc, warning=FALSE, results='asis'}
+heatmap_dir <- file.path(output_dir_data, "heatmaps")
+if (!dir.exists(heatmap_dir)) dir.create(heatmap_dir, recursive = TRUE)
+
+# 1. Direct Numeric Injection --------------------------------------------------
+# We simply extract all numeric columns from the pre-computed math spine
+cor_data_prep <- numeric_spine %>% select(where(is.numeric))
+
+# 2. Audit Table: Exclusions ---------------------------------------------------
+valid_counts <- colSums(!is.na(cor_data_prep))
+dropped_cols <- names(valid_counts)[valid_counts < corr_config$min_required_obs]
+
+exclusion_audit_df <- data.frame(
+  Variable = names(valid_counts),
+  Observations = as.numeric(valid_counts),
+  Status = if_else(names(valid_counts) %in% dropped_cols, "DROPPED", "KEPT"),
+  Reason = if_else(names(valid_counts) %in% dropped_cols, 
+                   sprintf("Sparse data (< %d obs)", corr_config$min_required_obs), 
+                   "Passed Sparsity Filter"),
+  stringsAsFactors = FALSE
+) %>% filter(Status == "DROPPED")
+
+cor_mat_final <- cor_data_prep %>% select(all_of(names(valid_counts)[valid_counts >= corr_config$min_required_obs]))
+
+# SANITY CHECK: Ensure we have enough columns to run a correlation matrix
+stopifnot("FATAL: Insufficient columns remaining for correlation matrix." = ncol(cor_mat_final) >= 2)
+
+# 3. Math Engine ---------------------------------------------------------------
+cor_matrix <- cor(cor_mat_final, use = "pairwise.complete.obs", method = "spearman")
+cor_matrix[is.na(cor_matrix)] <- 0 
+
+p_matrix <- matrix(1, ncol(cor_mat_final), ncol(cor_mat_final), 
+                   dimnames = list(colnames(cor_mat_final), colnames(cor_mat_final)))
+
+for (i in 1:(ncol(cor_mat_final) - 1)) {
+  for (j in (i + 1):ncol(cor_mat_final)) {
+    if(sum(complete.cases(cor_mat_final[[i]], cor_mat_final[[j]])) >= 3) {
+      p_matrix[i, j] <- p_matrix[j, i] <- tryCatch({ cor.test(cor_mat_final[[i]], cor_mat_final[[j]], method="spearman")$p.value }, error=function(e) 1)
+    }
+  }
+}
+
+# 4. Export Matrices for Downstream Use (Script 03a/04) -----------------------
+# Save CSV for human readability (preserving rownames as a column)
+write_csv(as.data.frame(cor_matrix) %>% rownames_to_column("Variable"), 
+          file.path(output_dir_data, "clinical_spearman_rho.csv"))
+
+# Save serialized RDS for strict programmatic use
+saveRDS(list(rho = cor_matrix, p = p_matrix), 
+        file.path(output_dir_data, "clinical_correlation_matrices.rds"))
+
+# 5. Render Audit Tables -------------------------------------------------------
+if(nrow(exclusion_audit_df) > 0) {
+  print(exclusion_audit_df %>% 
+    kableExtra::kbl(caption = "Variable Exclusion Log (Sparsity Filter)", format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left"))
+} else {
+  cat("#### Variable Exclusion Log\n\n- No variables were dropped due to sparsity.\n")
+}
+
+# Clear Memory
+rm(cor_data_prep, valid_counts, dropped_cols, exclusion_audit_df)
+invisible(gc())
+```
+
+## Custom Correlation Heatmaps {.tabset}
+
+`r what_this_does("Dynamically evaluates custom correlation configurations to generate either symmetrical or asymmetrical hierarchically clustered heatmaps.", "Automatically de-duplicates variables and securely filters out any features that failed sparsity checks.", "Calculates dynamic image dimensions based on variable count and exports high-resolution PNGs.")`
+
+```{r custom_correlation_heatmaps, fig.width=10, fig.height=8, out.width="100%", results='asis'}
+# 1. Local Function: Custom Heatmap Engine -------------------------------------
+generate_custom_cor_heatmap <- function(conf, cor_mat, p_mat) {
+  
+  # A. Safely extract and de-duplicate variables
+  req_y <- unique(conf$y_vars)
+  req_x <- if (!is.null(conf$x_vars)) unique(conf$x_vars) else req_y
+  
+  valid_y <- intersect(req_y, colnames(cor_mat))
+  valid_x <- intersect(req_x, colnames(cor_mat))
+  
+  if (length(valid_y) < 2 || length(valid_x) < 2) {
+    return(list(status = "failed", msg = "Insufficient surviving variables for clustering."))
+  }
+  
+  # B. Determine plot type (Symmetrical vs Asymmetrical)
+  is_symmetrical <- setequal(valid_y, valid_x)
+  
+  sub_cor <- cor_mat[valid_y, valid_x, drop = FALSE]
+  sub_p   <- p_mat[valid_y, valid_x, drop = FALSE]
+  
+  # C. Hierarchical Clustering & Reshaping
+  if (is_symmetrical) {
+    dist_mat <- as.dist(1 - sub_cor)
+    hc <- hclust(dist_mat, method = "ward.D2")
+    ordered_vars <- valid_y[hc$order]
+    
+    cor_long <- as.data.frame(sub_cor) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="Correlation")
+    p_long   <- as.data.frame(sub_p) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="P_Value")
+    
+    plot_df <- cor_long %>% left_join(p_long, by=c("Var1", "Var2")) %>%
+      mutate(idx_1 = match(Var1, ordered_vars), idx_2 = match(Var2, ordered_vars)) %>%
+      filter(idx_2 > idx_1) %>% # Keep ONLY upper triangle
+      mutate(
+        Var2 = factor(Var2, levels = ordered_vars),
+        Var1 = factor(Var1, levels = rev(ordered_vars)),
+        Is_Sig = P_Value < corr_config$p_cutoff,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      )
+    subtitle_text <- sprintf("Upper triangle. Blank/Grey indicates non-significance (p ≥ %s)", corr_config$p_cutoff)
+    
+  } else {
+    hc_y <- hclust(dist(sub_cor), method = "ward.D2")
+    hc_x <- hclust(dist(t(sub_cor)), method = "ward.D2")
+    
+    ordered_y <- valid_y[hc_y$order]
+    ordered_x <- valid_x[hc_x$order]
+    
+    cor_long <- as.data.frame(sub_cor) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="Correlation")
+    p_long   <- as.data.frame(sub_p) %>% rownames_to_column("Var1") %>% pivot_longer(-Var1, names_to="Var2", values_to="P_Value")
+    
+    plot_df <- cor_long %>% left_join(p_long, by=c("Var1", "Var2")) %>%
+      mutate(
+        Var2 = factor(Var2, levels = ordered_x),
+        Var1 = factor(Var1, levels = rev(ordered_y)),
+        Is_Sig = P_Value < corr_config$p_cutoff,
+        Plot_Cor = if_else(Is_Sig, Correlation, NA_real_)
+      )
+    subtitle_text <- sprintf("Blank/Grey indicates non-significance (p ≥ %s)", corr_config$p_cutoff)
+  }
+  
+  # D. Build the ggplot
+  p <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    scale_x_discrete(position = "top") +
+    scale_y_discrete(position = "right") +
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = "gray93", 
+      name = "Spearman Rho\n"
+    ) +
+    labs(title = conf$title, subtitle = subtitle_text) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(0.7)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(0.75)),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = "left",
+      legend.key.height = unit(1.5, "cm"), 
+      legend.key.width = unit(0.5, "cm")
+    ) + coord_fixed() 
+  
+  # E. Dynamic Sizing Math
+  dyn_w <- max(8, length(unique(plot_df$Var2)) * 0.35 + 4)
+  dyn_h <- max(6, length(unique(plot_df$Var1)) * 0.35 + 3)
+  
+  return(list(status = "success", plot = p, width = dyn_w, height = dyn_h))
+}
+
+# 2. Execution Loop ------------------------------------------------------------
+for (h_id in names(custom_heatmap_configs)) {
+  conf <- custom_heatmap_configs[[h_id]]
+  
+  res <- generate_custom_cor_heatmap(conf, cor_matrix, p_matrix)
+  
+  if (res$status == "success") {
+    
+    # Export Dynamic PNG
+    safe_name <- gsub("[^A-Za-z0-9_.-]", "_", conf$title)
+    ggsave(file.path(output_dir_data, "heatmaps", paste0("Custom_", safe_name, ".png")), 
+           plot = res$plot, width = res$width, height = res$height, dpi = 300, bg = "white")
+    
+    # Print to HTML (Added \n\n to front!)
+    cat(sprintf("\n\n### %s\n\n", conf$title))
+    print(res$plot)
+    cat("\n\n")
+    
+  } else {
+    cat(sprintf("\n\n### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
+  }
+}
+
+# 3. Cleanup
+rm(h_id, conf, res, generate_custom_cor_heatmap)
+invisible(gc())
+```
+
+## Intra Domain Correlation Matrix
+
+`r what_this_does("Visualized correlations within clinical domains using hierarchical clustering.", "Optimized text scaling and margins for maximum legibility.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.", "Implemented HTML dropdowns to cleanly navigate the results.")`
+
+<p>Select a clinical domain to visualize internal correlations:</p>
+<select id="intraSelector" onchange="switchIntraPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">
+  <option value="">-- Select Domain --</option>
+  <option value="Demographics_and_Scores">Demographics and Scores</option>
+  <option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+  <option value="Musculoskeletal">Musculoskeletal</option>
+  <option value="Pulmonary">Pulmonary</option>
+  <option value="Cardiac">Cardiac</option>
+  <option value="Gastrointestinal">Gastrointestinal</option>
+  <option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+</select>
+
+<div id="intraPlotContainer">
+  <img id="intraImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;">
+</div>
+
+<script>
+function switchIntraPlot() {
+  var val = document.getElementById("intraSelector").value;
+  var img = document.getElementById("intraImage");
+  if (val) {
+    // Corrected path pointing into the specific script's asset folder
+    img.src = "assets/02_cohort_characterization/heatmaps/intra/Intra_" + val + ".png";
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+}
+</script>
+
+```{r intra_corr_plots, fig.width=10, fig.height=8, out.width="100%", results='hide'}
+# Iterate through each defined clinical domain to create a targeted heatmap
+for (d_name in names(clinical_domains)) {
+  
+  # 1. Variable Validation & Variance Filtering --------------------------------
+  raw_vars <- clinical_domains[[d_name]]
+  existing_vars <- intersect(raw_vars, colnames(cor_matrix))
+  
+  if (length(existing_vars) < 2) next
+
+  # Check for zero-variance to prevent mathematical failure in hclust
+  v_vals <- sapply(cor_mat_final[, existing_vars, with=FALSE], function(x) var(x, na.rm=TRUE))
+  valid_vars <- names(v_vals)[!is.na(v_vals) & v_vals > 0]
+  
+  clean_title <- gsub("_", " ", d_name)
+  
+  if (length(valid_vars) < 2) next
+
+  # 2. Subset Matrices ---------------------------------------------------------
+  sym_cor <- cor_matrix[valid_vars, valid_vars, drop = FALSE]
+  sym_p   <- p_matrix[valid_vars, valid_vars, drop = FALSE]
+  
+  # 3. Hierarchical Clustering -------------------------------------------------
+  dist_mat <- as.dist(1 - sym_cor)
+  hc <- hclust(dist_mat, method = "ward.D2")
+  ordered_vars <- valid_vars[hc$order]
+
+  # 4. Reshape and Filter for Upper Triangle -----------------------------------
+  cor_long <- as.data.frame(sym_cor) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+  p_long <- as.data.frame(sym_p) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "P_Value")
+
+  plot_df <- cor_long %>%
+    left_join(p_long, by = c("Var1", "Var2")) %>%
+    mutate(
+      idx_1 = match(Var1, ordered_vars),
+      idx_2 = match(Var2, ordered_vars)
+    ) %>%
+    filter(idx_2 > idx_1) %>% # Keep only the upper triangle
+    mutate(
+      Var2 = factor(Var2, levels = ordered_vars),
+      Var1 = factor(Var1, levels = rev(ordered_vars)),
+      Is_Significant = P_Value < corr_config$p_cutoff,
+      Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
+    )
+
+  # 5. Build the ggplot --------------------------------------------------------
+  p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    
+    scale_x_discrete(position = "top") +
+    scale_y_discrete(position = "right") +
+    
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = "gray93", 
+      name = "Spearman Rho\n"
+    ) +
+    labs(title = clean_title, 
+         subtitle = sprintf("Upper triangle. Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff)) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(1.1)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(1.1)),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = "left",
+      legend.key.height = unit(1.5, "cm"), 
+      legend.key.width = unit(0.5, "cm")
+    ) +
+    coord_fixed() 
+
+  # 6. Export and Print --------------------------------------------------------
+  dyn_width  <- max(6, length(valid_vars) * 0.35 + 4)
+  dyn_height <- max(5, length(valid_vars) * 0.35 + 3)
+  
+  ggsave(file.path(public_heatmap_dir, "intra", paste0("Intra_", d_name, ".png")), 
+         plot = p_heatmap, width = 10, height = 8, dpi = 300, bg = "white")
+
+  # Print interactively in RStudio so you can see it while coding
+  if (interactive()) {
+    print(p_heatmap)
+  }
+}
+
+# 7. Cleanup -------------------------------------------------------------------
+rm(raw_vars, existing_vars, v_vals, valid_vars, clean_title, sym_cor, sym_p, dist_mat, hc, ordered_vars, cor_long, p_long, plot_df, p_heatmap, dyn_width, dyn_height)
+invisible(gc())
+```
+
+## Interdomain Combinations
+
+`r what_this_does("Visualized correlations between different biological systems using non-square matrices.", "Dynamically saved high-resolution PNGs to the heatmap output subfolder.", "Implemented dual-dropdown UI for cross-domain selection.")`
+
+<p>Select two domains to visualize their cross-correlations:</p>
+
+<div style="display: flex; gap: 20px; margin-bottom: 20px;">
+  <select id="domainA" onchange="switchInterPlot()" class="form-control" style="width: auto;">
+    <option value="">-- Domain A --</option>
+    <option value="Demographics_and_Scores">Demographics and Scores</option>
+    <option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+    <option value="Musculoskeletal">Musculoskeletal</option>
+    <option value="Pulmonary">Pulmonary</option>
+    <option value="Cardiac">Cardiac</option>
+    <option value="Gastrointestinal">Gastrointestinal</option>
+    <option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+  </select>
+
+  <div style="align-self: center; font-weight: bold;">vs</div>
+
+  <select id="domainB" onchange="switchInterPlot()" class="form-control" style="width: auto;">
+    <option value="">-- Domain B --</option>
+    <option value="Demographics_and_Scores">Demographics and Scores</option>
+    <option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+    <option value="Musculoskeletal">Musculoskeletal</option>
+    <option value="Pulmonary">Pulmonary</option>
+    <option value="Cardiac">Cardiac</option>
+    <option value="Gastrointestinal">Gastrointestinal</option>
+    <option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+  </select>
+</div>
+
+<div id="interPlotContainer" style="text-align: center;">
+  <p id="interPlaceholder" style="color: #999;">Select two different domains to view correlation.</p>
+  <img id="interImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;">
+</div>
+
+<script>
+function switchInterPlot() {
+  var a = document.getElementById("domainA").value;
+  var b = document.getElementById("domainB").value;
+  var img = document.getElementById("interImage");
+  var placeholder = document.getElementById("interPlaceholder");
+
+  if (a && b && a !== b) {
+    placeholder.style.display = "none";
+    img.style.display = "block";
+    
+    // Corrected paths pointing into the specific script's asset folder
+    var path1 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + a + "_vs_" + b + ".png";
+    var path2 = "assets/02_cohort_characterization/heatmaps/inter/Inter_" + b + "_vs_" + a + ".png";
+    
+    img.src = path1;
+    
+    // Fallback logic in case 'combn' chose the reverse alphabetical order
+    img.onerror = function() {
+      this.src = path2;
+      this.onerror = null; // prevent infinite loop
+    };
+  } else {
+    img.style.display = "none";
+    placeholder.style.display = "block";
+    placeholder.innerHTML = (a === b && a !== "") ? "Please select two different domains." : "Select two different domains to view correlation.";
+  }
+}
+</script>
+
+```{r inter_domain, fig.width=12, fig.height=8, out.width="100%", results='hide'}
+# 1. Regenerate the safe plot list (ensuring names exist in the matrix)
+plotting_domains <- list()
+for (n in names(clinical_domains)) {
+  v <- intersect(clinical_domains[[n]], colnames(cor_matrix))
+  if (length(v) >= 1) plotting_domains[[n]] <- v
+}
+
+domain_combos <- combn(names(plotting_domains), 2, simplify = FALSE)
+
+# 2. Iterate through each combination ------------------------------------------
+for (combo in domain_combos) {
+  d1_name <- combo[1]; d2_name <- combo[2]
+  v1_raw <- plotting_domains[[d1_name]]; v2_raw <- plotting_domains[[d2_name]]
+  
+  # Safety Filters & Variance Check
+  v1_vals <- sapply(cor_mat_final[, v1_raw, with=FALSE], function(x) var(x, na.rm=TRUE))
+  v1_valid <- names(v1_vals)[!is.na(v1_vals) & v1_vals > 0]
+  
+  v2_vals <- sapply(cor_mat_final[, v2_raw, with=FALSE], function(x) var(x, na.rm=TRUE))
+  v2_valid <- names(v2_vals)[!is.na(v2_vals) & v2_vals > 0]
+  
+  # Require at least 2 variables per domain to run hierarchical clustering
+  if (length(v1_valid) < 2 || length(v2_valid) < 2) next 
+  
+  # 3. Dynamic Orientation (Force longer axis to X) ----------------------------
+  if (length(v1_valid) >= length(v2_valid)) {
+    var_x <- v1_valid;   var_y <- v2_valid
+    lab_x <- d1_name;    lab_y <- d2_name
+  } else {
+    var_x <- v2_valid;   var_y <- v1_valid
+    lab_x <- d2_name;    lab_y <- d1_name
+  }
+
+  sub_cor <- cor_matrix[var_y, var_x, drop = FALSE] # Rows = Y, Cols = X
+  sub_p   <- p_matrix[var_y, var_x, drop = FALSE]
+
+  # 4. Dual Hierarchical Clustering --------------------------------------------
+  hc_x <- hclust(dist(t(sub_cor)), method = "ward.D2")
+  hc_y <- hclust(dist(sub_cor), method = "ward.D2")
+
+  ordered_x <- var_x[hc_x$order]
+  ordered_y <- var_y[hc_y$order]
+
+  # 5. Reshape Data ------------------------------------------------------------
+  cor_long <- as.data.frame(sub_cor) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+  p_long <- as.data.frame(sub_p) %>%
+    rownames_to_column("Var1") %>%
+    pivot_longer(cols = -Var1, names_to = "Var2", values_to = "P_Value")
+
+  plot_df <- cor_long %>%
+    left_join(p_long, by = c("Var1", "Var2")) %>%
+    mutate(
+      Var2 = factor(Var2, levels = ordered_x),
+      Var1 = factor(Var1, levels = rev(ordered_y)),
+      Is_Significant = P_Value < corr_config$p_cutoff,
+      Plot_Cor = if_else(Is_Significant, Correlation, NA_real_)
+    )
+
+  # Titles Formatting
+  clean_lab_x <- gsub("_", " ", lab_x)
+  clean_lab_y <- gsub("_", " ", lab_y)
+  clean_title <- sprintf("%s vs %s", clean_lab_x, clean_lab_y)
+
+  # 6. Build the ggplot --------------------------------------------------------
+  p_heatmap <- ggplot(plot_df, aes(x = Var2, y = Var1, fill = Plot_Cor)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    
+    scale_x_discrete(position = "top") +
+    scale_y_discrete(position = "right") +
+    
+    scale_fill_gradientn(
+      colors = c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH),
+      limits = c(-1, 1),
+      na.value = "gray93", 
+      name = "Spearman Rho\n"
+    ) +
+    labs(
+      title = clean_title, 
+      subtitle = sprintf("Blank/Grey squares indicate non-significance (p ≥ %s)", corr_config$p_cutoff),
+      x = clean_lab_x,
+      y = clean_lab_y
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      axis.text.x.top = element_text(angle = 45, hjust = 0, vjust = 0.01, margin = margin(b = -2), face = "bold", color = "black", size = rel(1)),
+      axis.text.y.right = element_text(hjust = 0, margin = margin(l = 2), face = "bold", color = "black", size = rel(1.1)),
+      axis.title.x.top = element_text(face = "bold", size = rel(1.4), margin = margin(b = 15)),
+      axis.title.y.right = element_text(face = "bold", size = rel(1.4), margin = margin(l = 15), angle = -90),
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.subtitle = element_text(color = "grey40", size = 14, margin = margin(b = 15), hjust = 0.5),
+      legend.position = "left",
+      legend.key.height = unit(1.5, "cm"), 
+      legend.key.width = unit(0.5, "cm")
+    ) +
+    coord_fixed() 
+
+  # 7. Export and Print --------------------------------------------------------
+  dyn_width  <- max(8, length(ordered_x) * 0.35 + 4)
+  dyn_height <- max(6, length(ordered_y) * 0.35 + 3)
+  
+  ggsave(file.path(public_heatmap_dir, "inter", paste0("Inter_", lab_x, "_vs_", lab_y, ".png")), 
+         plot = p_heatmap, width = 12, height = 8, dpi = 300, bg = "white")
+
+  # Print interactively in RStudio so you can see it while coding
+  if (interactive()) {
+    print(p_heatmap)
+  }
+}
+
+# 8. Cleanup -------------------------------------------------------------------
+rm(plotting_domains, domain_combos, d1_name, d2_name, v1_raw, v2_raw, v1_vals, v1_valid, v2_vals, v2_valid, var_x, var_y, lab_x, lab_y, sub_cor, sub_p, hc_x, hc_y, ordered_x, ordered_y, cor_long, p_long, plot_df, clean_lab_x, clean_lab_y, clean_title, p_heatmap, dyn_width, dyn_height, combo, n, v)
+invisible(gc())
+```
+
+# Upset Plots
+`r what_this_does("Creates the UpSet Plots specified in the configuration part")`
+
+```{r upset_engine}
+generate_upset_plot <- function(conf, df) {
+  set_names <- names(conf$variables)
+  
+  # Inject a Dummy_ID to act as a "metadata" column so UpSetR doesn't crash on an all-binary matrix
+  plot_df <- data.frame(Dummy_ID = 1:nrow(df))
+  
+  for (s in set_names) {
+    col <- conf$variables[[s]]$col
+    target <- conf$variables[[s]]$target
+    
+    if (!(col %in% colnames(df))) {
+      return(list(status = "failed", msg = sprintf("Column '%s' not found in clinical spine.", col)))
+    }
+    
+    # TYPE-AGNOSTIC FIX: Use %in% to catch any valid iteration of the target
+    plot_df[[s]] <- as.integer(ifelse(!is.na(df[[col]]) & (df[[col]] %in% target), 1, 0))
+  }
+  
+  # Check if matrix is entirely empty (ignoring the Dummy_ID)
+  if (sum(rowSums(plot_df[, -1, drop = FALSE])) == 0) {
+    return(list(status = "failed", msg = "No patients match any target criteria."))
+  }
+  
+  # Find the largest category
+  max_group_size <- max(colSums(plot_df[, -1, drop = FALSE]))
+  
+  # Generate Plot
+  p <- upset(
+    plot_df, 
+    sets = set_names,
+    keep.order = TRUE,
+    order.by = "freq",
+    mainbar.y.label = "Number of Patients in Intersection",
+    set_size.scale_max = max_group_size * 1.35,
+    sets.x.label = "Total Patients per Category",
+    text.scale = c(1.3, 1.3, 1, 1, 1.2, 1.2),
+    set_size.show = TRUE
+  )
+  
+  return(list(status = "success", plot = p, data = plot_df))
+}
+```
+
+```{r upset_execution, fig.width=9, fig.height=6}
+upset_dir <- file.path(output_dir_data, "upset-plots")
+if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
+
+# PRE-FILTER: Remove healthy controls so the UpSet totals match your Table 1 exactly
+ssc_only_spine <- master_spine %>% filter(cohort_group != GRP_CONTROL)
+
+for (u_id in names(upset_configs)) {
+  conf <- upset_configs[[u_id]]
+  
+  # Feed the engine the filtered human-readable spine
+  res <- generate_upset_plot(conf, ssc_only_spine)
+  
+  if (res$status == "success") {
+    cat(sprintf("\n\n### %s\n\n", conf$title))
+    
+    # Print for HTML / Interactive Viewer
+    print(res$plot)
+    cat("\n\n")
+    
+    # Export High-Res PNG (UpSetR requires png/dev.off pipeline)
+    safe_name <- gsub("[^A-Za-z0-9_.-]", "_", conf$title)
+    png(file.path(upset_dir, paste0("UpSet_", safe_name, ".png")), 
+        width = 10, height = 7, units = "in", res = 300, bg = "white")
+    print(res$plot)
+    invisible(dev.off())
+    
+  } else {
+    cat(sprintf("\n\n### %s\n\n> **SKIPPED:** %s\n\n", conf$title, res$msg))
+  }
+}
+
+# Cleanup
+rm(u_id, conf, res, upset_dir, safe_name, ssc_only_spine)
+invisible(gc())
+```
+
+`r key_insight("The groups Firotic, Vascular and Inflammatory largely share the patients, for example only 6 of the 33 fibrotic patients are not part of any other group", "Comparing the groups between each other (for example fibrotic vs vascular) does not make sense since they largely overlap")`
+
+```{r finish_message}
+cat("Script 02 Complete!")
+```

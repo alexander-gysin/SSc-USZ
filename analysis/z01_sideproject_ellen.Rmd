@@ -50,8 +50,12 @@ if(file.exists(full_dea_path)) {
   full_vascular_dea <- NULL
 }
 
-# Fetch GO Biological Processes Database for GSEA (Engine requirement)
-go_genesets <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol)
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
 ```
 
 # Configuration
@@ -91,8 +95,9 @@ contrast_5v5 <- list(
 
 # 4. Engine Configs
 omics_config <- list(
-  gsea_p_cutoff  = 0.20, 
-  gsea_min_size  = 3    
+  gsea_p_cutoff    = 0.20, 
+  gsea_min_size    = 3,
+  network_p_cutoff = 0.10  
 )
 
 heatmap_config <- list(
@@ -105,8 +110,13 @@ heatmap_config <- list(
 # By overwriting the function globally in this script, the internal engine is tricked 
 # into pulling our custom Red/Blue colors for the phenotype_group annotations!
 original_get_project_colors <- get_project_colors
-get_project_colors <- function(requested_levels) {
-  cols <- original_get_project_colors(requested_levels)
+
+# The signature MUST match the original exactly (including custom_map)
+get_project_colors <- function(requested_levels, custom_map = NULL) {
+  # Pass BOTH arguments down to the original function
+  cols <- original_get_project_colors(requested_levels, custom_map)
+  
+  # Apply our local overrides
   cols[names(cols) == "Vascular_Active"] <- "#e74c3c"   # Red
   cols[names(cols) == "Vascular_Inactive"] <- "#3498db" # Blue
   return(cols)

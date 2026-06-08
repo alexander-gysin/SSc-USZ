@@ -296,7 +296,27 @@ na_ids <- score_master$Subject_ID
 prot_mat_na <- olink_mat[, na_ids]
 
 clin_df_na <- numeric_spine %>% filter(Subject_ID %in% na_ids)
-clin_mat_na <- t(clin_df_na %>% column_to_rownames("Subject_ID") %>% select(where(is.numeric)))
+
+# 1. Filter clinical matrix (Our first successful fix)
+valid_clin_vars <- intersect(colnames(clin_df_na), data_dict$Variable)
+
+clin_mat_na <- t(clin_df_na %>% 
+                   column_to_rownames("Subject_ID") %>% 
+                   select(all_of(valid_clin_vars)) %>% 
+                   select(where(is.numeric)))
+
+# --- THE NEW FIX: Create a Master Dictionary ---
+# Find a known continuous clinical variable (Age) to act as our template
+ref_row <- data_dict %>% filter(Variable == "Age") %>% head(1)
+if(nrow(ref_row) == 0) ref_row <- data_dict[1, ] # Fallback just in case
+
+# Clone this row for all 3,000 proteins and insert the protein names
+dummy_prot_dict <- ref_row[rep(1, nrow(prot_mat_na)), ]
+dummy_prot_dict$Variable <- rownames(prot_mat_na)
+
+# Staple them together so the engine finds every single feature
+master_dict <- bind_rows(data_dict, dummy_prot_dict)
+# -----------------------------------------------
 
 score_targets <- c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score")
 modalities <- list(proteomics = prot_mat_na, clinical = clin_mat_na)
@@ -312,7 +332,9 @@ for (mod_name in names(modalities)) {
     
     # Calculate using Smart Engine
     score_vec <- setNames(score_master[[score_name]], score_master$Subject_ID)
-    res_df <- run_smart_mass_cor(modalities[[mod_name]], score_vec, dict_df = data_dict)
+    
+    # Pass our new master_dict for BOTH modalities so it never hits a dead end
+    res_df <- run_smart_mass_cor(modalities[[mod_name]], score_vec, dict_df = master_dict)
     
     # Export full dataset
     export_name <- sprintf("Drivers_%s_vs_%s.csv", tools::toTitleCase(mod_name), score_name)
@@ -361,7 +383,7 @@ for (mod_name in names(modalities)) {
 if (!interactive()) cat(html_out)
 
 # Cleanup RAM
-rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out)
+rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out, master_dict, dummy_prot_dict)
 ```
 
 ## Phenotypic Alignment Heatmaps {.tabset}
