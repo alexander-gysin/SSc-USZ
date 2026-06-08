@@ -55,10 +55,11 @@ pathway_dbs <- list(
 # Analysis Configurator
 `r what_this_does("Defined global mathematical thresholds for Gene Set Enrichment Analysis (GSEA).", "Configured targeted Differential Expression Analysis (DEA) contrasts, specifying reference groups, target groups, and required covariates (e.g., Age, Sex, Sample_Age).", "Established Trajectory mapping rules to compare protein and pathway shifts across multiple distinct contrasts.")`
 ```{r analysis_config}
-# 1. Global Mathematical Thresholds
+# 1. Global Mathematical Thresholds (apply to GSEA)
 omics_config <- list(
-  gsea_p_cutoff  = 0.20, 
-  gsea_min_size  = 3     
+  gsea_p_cutoff    = 0.20, 
+  gsea_min_size    = 3,
+  network_p_cutoff = 0.10  
 )
 
 
