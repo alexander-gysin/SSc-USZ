@@ -203,18 +203,9 @@ if (length(assessment_dates) > 0 && "Entnahmedatum_Clean" %in% names(curated_spi
   audit_log <- c(audit_log, sprintf("- Calculated %d temporal Delta variables against blood draw date.", length(assessment_dates)))
 }
 
-# 5. Subset One-Hot Encoding
-if ("Subset_diffuse" %in% names(curated_spine)) {
-  curated_spine <- curated_spine %>%
-    mutate(
-      Subset_Diffuse = if_else(tolower(`Subset_diffuse`) == "diffuse cutaneous", 1, 0),
-      Subset_Limited = if_else(tolower(`Subset_diffuse`) == "limited cutaneous", 1, 0),
-      Subset_Sine    = if_else(tolower(`Subset_diffuse`) == "sine scleroderma", 1, 0)
-    ) %>% select(-`Subset_diffuse`)
-  audit_log <- c(audit_log, "- Applied One-Hot Encoding to SSc Disease Subsets.")
-}
 
-# 6. Medication Re-engineering (Explosion & One-Hot)
+
+# 5. Medication Re-engineering (Explosion & One-Hot)
 med_cols <- c("Immunosuppressants", "Major vascular", "Steroids", "Other_medication")
 actual_med_cols <- intersect(med_cols, names(curated_spine))
 
@@ -250,8 +241,19 @@ if (length(actual_med_cols) > 0) {
   audit_log <- c(audit_log, sprintf("- Parsed medication strings: Extracted %d specific drugs into one-hot variables and binarized parent classes.", length(all_drugs)))
 }
 
-# 7. Biological Failsafes
+# 6. Biological Failsafes
 if("CRP" %in% names(curated_spine)) curated_spine[CRP <= 0, CRP := NA_real_]
+
+#7. Official Eustar active/inactive
+if ("eustarAI" %in% names(curated_spine)) {
+  curated_spine[, eustar_group := fcase(
+    eustarAI >= 2.5, "Active", 
+    eustarAI < 2.5, "Inactive",   
+    default = NA_character_
+  )]
+  curated_spine[, eustar_group := factor(eustar_group, levels = c("Active", "Inactive"))]
+  audit_log <- c(audit_log, "- Created 'eustar_group' based on eustarAI 2.5 cutoff.")
+}
 
 # Remove redundant clinical variables
 curated_spine <- curated_spine %>%
@@ -292,7 +294,11 @@ for (col in scan_cols) {
   } else if (col == "Sex") {
     curated_spine_numeric[[col]] <- ifelse(curated_spine[[col]] == SEX_FEMALE, 1, 0)
     ordinal_log_df <- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = "Explicit Binary (Male=0, Female=1)"))
-    
+  
+  } else if (col == "eustar_group") {
+    curated_spine_numeric[[col]] <- ifelse(curated_spine[[col]] == "Active", 1, 0)
+    ordinal_log_df <- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = "Explicit Binary eustar_group (Active=1, Inactive=0)"))
+      
   } else if (col == "cohort_group") {
     curated_spine_numeric[[col]] <- case_when(
       curated_spine[[col]] == GRP_CONTROL ~ 0,
