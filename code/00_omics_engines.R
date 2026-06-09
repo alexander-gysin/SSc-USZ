@@ -2894,7 +2894,7 @@ run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
     # 2. Determine Data Type
     d_type <- "Continuous" # Default for proteomics
     if (!is.null(dict_df) && feat %in% dict_df$Variable) {
-      d_type <- dict_df$Data_Type[dict_df$Variable == feat]
+      d_type <- dict_df$Class[dict_df$Variable == feat]
     }
 
     # 3. Route to the correct statistical test
