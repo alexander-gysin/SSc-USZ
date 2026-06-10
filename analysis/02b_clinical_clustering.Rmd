@@ -481,7 +481,7 @@ for (p_id in names(pheno_configs)) {
 
 `r what_this_does("Filters the clinical spine to the targeted clinical clusters.", "Executes rigorous Differential Expression Analysis (DEA) between Cluster 1 and Cluster 2.", "Generates volcano plots, top protein tables, and supervised heatmaps to visualize the molecular footprint of the clinical phenotypes.")`
 
-```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis'}
+```{r feature_phenotyping, fig.width=12, fig.height=12, results='asis'}
 for (f_id in names(feature_configs)) {
   conf <- feature_configs[[f_id]]
   payload <- global_cluster_payloads[[conf$target_job]]
