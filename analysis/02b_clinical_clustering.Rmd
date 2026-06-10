@@ -240,7 +240,7 @@ if (imp_res$status == "success") {
   
   # Audit Report
   if (!is.null(imp_res$audit) && nrow(imp_res$audit) > 0) {
-    cat("### Imputation Audit\n\n")
+    cat("#### Imputation Audit\n\n")
     print(
       imp_res$audit %>%
         kableExtra::kbl(format = "html", caption = "Missing Values Resolved via Random Forest") %>%
@@ -266,7 +266,7 @@ invisible(gc())
 
 `r what_this_does("Executes wrap_gower_distance to generate a patient-to-patient similarity matrix.", "Executes wrap_famd_pipeline to generate PCA-like continuous coordinates.", "Generates a Scree Plot and a ComplexHeatmap detailing the top clinical drivers of each selected dimension.")`
 
-```{r dimensionality_reduction, fig.height=8, fig.width=16}
+```{r dimensionality_reduction, fig.height=8, fig.width=16, results='asis'}
 # 1. Gower Distance Matrix
 prepared_matrices <- list()
 gower_res <- wrap_gower_distance(clean_clin_df, id_col = "Subject_ID")
@@ -338,7 +338,7 @@ for (opt_id in names(k_opt_configs)) {
 # Unsupervised Clustering {.tabset}
 `r what_this_does("Ingests the matrices.", "Runs the specified algorithms at the requested number of clusters.", "Generates 2D UMAPs to visualize the discovered clusters.")`
 
-```{r unsupervised_clustering, fig.width=10, fig.height=8}
+```{r unsupervised_clustering, fig.width=10, fig.height=8, results='asis'}
 global_cluster_payloads <- list()
 
 for (c_id in names(clustering_configs)) {
@@ -439,7 +439,9 @@ for (p_id in names(pheno_configs)) {
       if (!is.null(res$tables[[algo]])) {
         tbl <- res$tables[[algo]] %>% 
           gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
-          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
+          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+          kableExtra::scroll_box(width = "100%", height = "500px") # Adjust height as needed
+          
         print(tbl)
         cat("\n\n")
       }
