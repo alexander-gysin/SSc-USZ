@@ -19,7 +19,7 @@ This script performs unsupervised clustering on clinical baseline characteristic
 # Setup and Import
 `r what_this_does("Loaded FactoMineR for mixed-data dimensionality reduction and missForest for Random Forest imputation.", "Imported the pre-cleaned clinical master spine.", "Sourced the custom omics clustering engines.")`
 
-```{r setup_and_import}
+```{r setup_and_import, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(patchwork)
 library(here)
@@ -225,7 +225,7 @@ go_genesets <- list() # Assuming no explicit GSEA in this clinical script, but r
 
 `r what_this_does("Subsets the master spine to the active and non-active SSc patients.", "Executes the wrap_rf_imputation engine to generate a gapless clinical matrix.", "Outputs a clear audit table displaying the degree of missingness resolved by the algorithm.")`
 
-```{r preprocessing_and_imputation}
+```{r preprocessing_and_imputation, results='asis'}
 # 1. Filter Cohort & Select Variables
 # We only want to cluster the SSc patients, so we drop controls.
 ssc_only <- master_spine %>% 
