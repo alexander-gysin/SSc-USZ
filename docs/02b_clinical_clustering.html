@@ -629,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree747a7bb2777278011262c5a9f841b6f3775c2622targetblank747a7bba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedcc2ba6ddffad51c6fb03850277ac9fba2e73788targetblankdcc2ba6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/747a7bb2777278011262c5a9f841b6f3775c2622" target="_blank">747a7bb</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dcc2ba6ddffad51c6fb03850277ac9fba2e73788" target="_blank">dcc2ba6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree747a7bb2777278011262c5a9f841b6f3775c2622targetblank747a7bba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedcc2ba6ddffad51c6fb03850277ac9fba2e73788targetblankdcc2ba6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -647,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/747a7bb2777278011262c5a9f841b6f3775c2622" target="_blank">747a7bb</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dcc2ba6ddffad51c6fb03850277ac9fba2e73788" target="_blank">dcc2ba6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -728,6 +728,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/dcc2ba6ddffad51c6fb03850277ac9fba2e73788/analysis/02b_clinical_clustering.Rmd" target="_blank">dcc2ba6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+fixed 02b feature phenotyping
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/02b_clinical_clustering.html" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -830,25 +864,13 @@ Sourced the custom omics clustering engines.
 </li>
 </ul>
 </div>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ lubridate 1.9.5     ✔ tibble    3.3.1
-✔ purrr     1.2.1     ✔ tidyr     1.3.2
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(patchwork)
-library(here)</code></pre>
-<pre><code>here() starts at /home/alexgy/SSc-USZ</code></pre>
-<pre class="r"><code>library(missForest) # Random Forest Imputation
+<pre class="r"><code>library(tidyverse)
+library(patchwork)
+library(here)
+library(missForest) # Random Forest Imputation
 library(FactoMineR) # FAMD
-library(factoextra) # FAMD Visuals</code></pre>
-<pre><code>Welcome to factoextra!
-Want to learn more? See two factoextra-related books at https://www.datanovia.com/en/product/practical-guide-to-principal-component-methods-in-r/</code></pre>
-<pre class="r"><code>library(cluster)    # Gower &amp; PAM
+library(factoextra) # FAMD Visuals
+library(cluster)    # Gower &amp; PAM
 library(gtsummary)  # Clinical Tables
 library(msigdbr)
 
@@ -861,117 +883,9 @@ output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 # Source Configuration &amp; Engines
-source(here::here(&quot;code&quot;, &quot;00_omics_engines.R&quot;))</code></pre>
-<pre><code>
-clusterProfiler v4.18.4 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
+source(here::here(&quot;code&quot;, &quot;00_omics_engines.R&quot;))
 
-Please cite:
-
-S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang,
-W Xie, T Wu, L Xie, G Yu. Using clusterProfiler to characterize
-multiomics data. Nature Protocols. 2024, 19(11):3292-3320
-
-Attaching package: &#39;clusterProfiler&#39;
-
-The following object is masked from &#39;package:purrr&#39;:
-
-    simplify
-
-The following object is masked from &#39;package:stats&#39;:
-
-    filter
-
-enrichplot v1.30.5 Learn more at https://yulab-smu.top/contribution-knowledge-mining/
-
-Please cite:
-
-T Wu, E Hu, S Xu, M Chen, P Guo, Z Dai, T Feng, L Zhou, W Tang, L Zhan,
-X Fu, S Liu, X Bo, and G Yu. clusterProfiler 4.0: A universal
-enrichment tool for interpreting omics data. The Innovation. 2021,
-2(3):100141
-Loading required package: grid
-========================================
-ComplexHeatmap version 2.26.1
-Bioconductor page: http://bioconductor.org/packages/ComplexHeatmap/
-Github page: https://github.com/jokergoo/ComplexHeatmap
-Documentation: http://jokergoo.github.io/ComplexHeatmap-reference
-
-If you use it in published research, please cite either one:
-- Gu, Z. Complex Heatmap Visualization. iMeta 2022.
-- Gu, Z. Complex heatmaps reveal patterns and correlations in multidimensional 
-    genomic data. Bioinformatics 2016.
-
-
-The new InteractiveComplexHeatmap package can directly export static 
-complex heatmaps into an interactive Shiny app with zero effort. Have a try!
-
-This message can be suppressed by:
-  suppressPackageStartupMessages(library(ComplexHeatmap))
-========================================
-! pheatmap() has been masked by ComplexHeatmap::pheatmap(). Most of the arguments
-   in the original pheatmap() are identically supported in the new function. You 
-   can still use the original function by explicitly calling pheatmap::pheatmap().
-
-
-Attaching package: &#39;ComplexHeatmap&#39;
-
-The following object is masked from &#39;package:pheatmap&#39;:
-
-    pheatmap
-
-Loading required package: Matrix
-
-Attaching package: &#39;Matrix&#39;
-
-The following objects are masked from &#39;package:tidyr&#39;:
-
-    expand, pack, unpack
-
-Loaded glmnet 4.1-10
-========================================
-circlize version 0.4.18
-CRAN page: https://cran.r-project.org/package=circlize
-Github page: https://github.com/jokergoo/circlize
-Documentation: https://jokergoo.github.io/circlize_book/book/
-
-If you use it in published research, please cite:
-Gu, Z. circlize implements and enhances circular visualization
-  in R. Bioinformatics 2014.
-
-This message can be suppressed by:
-  suppressPackageStartupMessages(library(circlize))
-========================================
-
-
-Attaching package: &#39;ggVennDiagram&#39;
-
-The following object is masked from &#39;package:tidyr&#39;:
-
-    unite
-
-Loading required package: BiocParallel
-
-Attaching package: &#39;variancePartition&#39;
-
-The following objects are masked from &#39;package:limma&#39;:
-
-    eBayes, topTable
-
-Loading required package: carData
-Registered S3 method overwritten by &#39;car&#39;:
-  method           from
-  na.action.merMod lme4
-
-Attaching package: &#39;car&#39;
-
-The following object is masked from &#39;package:dplyr&#39;:
-
-    recode
-
-The following object is masked from &#39;package:purrr&#39;:
-
-    some</code></pre>
-<pre class="r"><code># Load Pre-Cleaned Data
+# Load Pre-Cleaned Data
 master_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine.rds&quot;))
 data_dictionary &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;clinical_data_dictionary.rds&quot;))
 olink_mat &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;clean_olink_matrix.rds&quot;))
@@ -983,16 +897,6 @@ pathway_dbs &lt;- list(
   &quot;Immunologic_Signature&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C7&quot;) %&gt;% select(gs_name, gene_symbol),
   &quot;Reactome&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C2&quot;, subcategory = &quot;CP:REACTOME&quot;) %&gt;% select(gs_name, gene_symbol)
 )</code></pre>
-<pre><code>Warning: The `category` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
-ℹ Please use the `collection` argument instead.
-This warning is displayed once per session.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
-<pre><code>Warning: The `subcategory` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
-ℹ Please use the `subcollection` argument instead.
-This warning is displayed once per session.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
 </div>
 <div id="configuration" class="section level1">
 <h1>Configuration</h1>
@@ -1231,118 +1135,246 @@ if (imp_res$status == &quot;success&quot;) {
 } else {
   stop(&quot;Imputation failed.&quot;)
 }</code></pre>
-<pre><code>### Imputation Audit
-
-&lt;table class=&quot;table table-striped table-hover table-condensed&quot; style=&quot;width: auto !important; margin-left: auto; margin-right: auto;&quot;&gt;
-&lt;caption&gt;Missing Values Resolved via Random Forest&lt;/caption&gt;
- &lt;thead&gt;
-  &lt;tr&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt;   &lt;/th&gt;
-   &lt;th style=&quot;text-align:left;&quot;&gt; Variable &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;&quot;&gt; Missing_N &lt;/th&gt;
-   &lt;th style=&quot;text-align:right;&quot;&gt; Missing_Pct &lt;/th&gt;
-  &lt;/tr&gt;
- &lt;/thead&gt;
-&lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-RNA polymerase III &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-RNA polymerase III &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 7 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 7.4 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Proximal muscle weakness &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Proximal muscle weakness &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 6 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 6.3 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Muscle atrophy &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Muscle atrophy &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 6 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 6.3 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-centromere (ACA) &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-centromere (ACA) &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 4 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 4.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-Scl70 &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Anti-Scl70 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 4 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 4.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Stomach Symptoms &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Stomach Symptoms &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 3 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 3.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; ILD diagnosed via HRCT &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; ILD diagnosed via HRCT &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 3 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 3.2 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Raynaud phenomenon &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Raynaud phenomenon &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Joint Contractures &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Joint Contractures &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Proteinuria (&amp;gt;300mg/d) &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Proteinuria (&amp;gt;300mg/d) &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; FVC %pred &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; FVC %pred &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 2.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Esophageal symptom at the time of visit &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Esophageal symptom at the time of visit &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Intestinal Symptoms &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Intestinal Symptoms &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Joint involvement &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; Joint involvement &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1.1 &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; CK value in serum (U/L) &lt;/td&gt;
-   &lt;td style=&quot;text-align:left;&quot;&gt; CK value in serum (U/L) &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1 &lt;/td&gt;
-   &lt;td style=&quot;text-align:right;&quot;&gt; 1.1 &lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-**OOB Imputation Error:**
-- Continuous (NRMSE): 0.656
-- Categorical (PFC): 0.137</code></pre>
+<div id="imputation-audit" class="section level3">
+<h3>Imputation Audit</h3>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Missing Values Resolved via Random Forest
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Missing_N
+</th>
+<th style="text-align:right;">
+Missing_Pct
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Anti-RNA polymerase III
+</td>
+<td style="text-align:left;">
+Anti-RNA polymerase III
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+7.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal muscle weakness
+</td>
+<td style="text-align:left;">
+Proximal muscle weakness
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+6.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Muscle atrophy
+</td>
+<td style="text-align:left;">
+Muscle atrophy
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+6.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud phenomenon
+</td>
+<td style="text-align:left;">
+Raynaud phenomenon
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proteinuria (&gt;300mg/d)
+</td>
+<td style="text-align:left;">
+Proteinuria (&gt;300mg/d)
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FVC %pred
+</td>
+<td style="text-align:left;">
+FVC %pred
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Intestinal Symptoms
+</td>
+<td style="text-align:left;">
+Intestinal Symptoms
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint involvement
+</td>
+<td style="text-align:left;">
+Joint involvement
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CK value in serum (U/L)
+</td>
+<td style="text-align:left;">
+CK value in serum (U/L)
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.1
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>OOB Imputation Error:</strong> - Continuous (NRMSE): 0.656 -
+Categorical (PFC): 0.137</p>
 <pre class="r"><code># Clean workspace
 rm(ssc_only, imp_res)
 invisible(gc())</code></pre>
+</div>
 </div>
 <div id="dimensionality-reduction" class="section level1">
 <h1>Dimensionality Reduction</h1>
@@ -1422,6 +1454,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1468,6 +1511,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-2.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1493,14 +1547,125 @@ for (c_var in famd_configs$famd_clinical$color_vars) {
 }</code></pre>
 <pre><code>#### Overlay: cohort_group</code></pre>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-3.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-3">
+Past versions of dimensionality_reduction-3.png
+</button>
+</p>
+<div id="fig-dimensionality_reduction-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-3.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 
 #### Overlay: Sex</code></pre>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-4.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-4">
+Past versions of dimensionality_reduction-4.png
+</button>
+</p>
+<div id="fig-dimensionality_reduction-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-4.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 
 #### Overlay: Age</code></pre>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-5.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-5">
+Past versions of dimensionality_reduction-5.png
+</button>
+</p>
+<div id="fig-dimensionality_reduction-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/dimensionality_reduction-5.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Clean Workspace
 rm(gower_res, famd_res)
 invisible(gc())</code></pre>
@@ -1563,6 +1728,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1604,6 +1780,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-2.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1640,6 +1827,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-3.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-3.png" target="_blank">f62a095</a>
@@ -1680,6 +1878,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-4.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-4.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1716,6 +1925,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-5.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/algorithm_optimization-5.png" target="_blank">f62a095</a>
@@ -1811,6 +2031,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -1850,6 +2081,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/unsupervised_clustering-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/unsupervised_clustering-2.png" target="_blank">f62a095</a>
@@ -1990,6 +2232,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -2028,6 +2281,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-2.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -2064,6 +2328,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-3.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/clustering_diagnostic-3.png" target="_blank">f62a095</a>
@@ -4385,6 +4660,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/phenotyping-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/phenotyping-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -5038,6 +5324,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/phenotyping-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/phenotyping-2.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -5226,6 +5523,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-1.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-1.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -5262,6 +5570,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-2.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-2.png" target="_blank">f62a095</a>
@@ -5306,6 +5625,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-3.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-3.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -5344,6 +5674,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-4.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f62a0959a50f6ee227991b7a538a2c61bfc7016d/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-4.png" target="_blank">f62a095</a>
 </td>
 <td>
@@ -5361,18 +5702,277 @@ alexander-gysin
 <div id="go_bp" class="section level6">
 <h6>GO_BP</h6>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-5.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-5">
+Past versions of feature_phenotyping-5.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-5.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-6.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-6">
+Past versions of feature_phenotyping-6.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-6.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-7.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-7">
+Past versions of feature_phenotyping-7.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-7.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="immunologic_signature" class="section level6">
 <h6>Immunologic_Signature</h6>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-8.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-8">
+Past versions of feature_phenotyping-8.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-8.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-9.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-9">
+Past versions of feature_phenotyping-9.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-9.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-10.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-10">
+Past versions of feature_phenotyping-10.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-10.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="reactome" class="section level6">
 <h6>Reactome</h6>
 <p><img src="figure/02b_clinical_clustering.Rmd/feature_phenotyping-11.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-11">
+Past versions of feature_phenotyping-11.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a2f3637984533c1ca21d0070a50aad6f09b12310/docs/figure/02b_clinical_clustering.Rmd/feature_phenotyping-11.png" target="_blank">a2f3637</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
