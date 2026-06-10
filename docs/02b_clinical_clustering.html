@@ -629,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedcc2ba6ddffad51c6fb03850277ac9fba2e73788targetblankdcc2ba6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecf497daf78557a1f8152cf0737b77849608f4a97targetblankcf497daa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dcc2ba6ddffad51c6fb03850277ac9fba2e73788" target="_blank">dcc2ba6</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cf497daf78557a1f8152cf0737b77849608f4a97" target="_blank">cf497da</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedcc2ba6ddffad51c6fb03850277ac9fba2e73788targetblankdcc2ba6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecf497daf78557a1f8152cf0737b77849608f4a97targetblankcf497daa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -647,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/dcc2ba6ddffad51c6fb03850277ac9fba2e73788" target="_blank">dcc2ba6</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cf497daf78557a1f8152cf0737b77849608f4a97" target="_blank">cf497da</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -728,6 +728,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/cf497daf78557a1f8152cf0737b77849608f4a97/analysis/02b_clinical_clustering.Rmd" target="_blank">cf497da</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+fixed 02b feature phenotyping
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/ccbda41f9504d1ee093df45566cf07bd6d67ab23/docs/02b_clinical_clustering.html" target="_blank">ccbda41</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1121,7 +1155,7 @@ if (imp_res$status == &quot;success&quot;) {
   
   # Audit Report
   if (!is.null(imp_res$audit) &amp;&amp; nrow(imp_res$audit) &gt; 0) {
-    cat(&quot;### Imputation Audit\n\n&quot;)
+    cat(&quot;#### Imputation Audit\n\n&quot;)
     print(
       imp_res$audit %&gt;%
         kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Missing Values Resolved via Random Forest&quot;) %&gt;%
@@ -1135,8 +1169,8 @@ if (imp_res$status == &quot;success&quot;) {
 } else {
   stop(&quot;Imputation failed.&quot;)
 }</code></pre>
-<div id="imputation-audit" class="section level3">
-<h3>Imputation Audit</h3>
+<div id="imputation-audit" class="section level4">
+<h4>Imputation Audit</h4>
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 Missing Values Resolved via Random Forest
@@ -1427,7 +1461,8 @@ prepared_matrices[[&quot;mat_famd&quot;]] &lt;- famd_res$matrix
 
 # Print FAMD Diagnostics
 cat(&quot;### FAMD Diagnostics\n\n&quot;)</code></pre>
-<pre><code>### FAMD Diagnostics</code></pre>
+<div id="famd-diagnostics" class="section level3">
+<h3>FAMD Diagnostics</h3>
 <pre class="r"><code>print(famd_res$plots$scree | famd_res$plots$var_contrib)</code></pre>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-1.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
 <p>
@@ -1485,7 +1520,8 @@ if (!is.null(famd_res$plots$drivers_heatmap)) {
   ComplexHeatmap::draw(famd_res$plots$drivers_heatmap)
   cat(&quot;\n\n&quot;)
 }</code></pre>
-<pre><code>#### Top Dimension Drivers (FAMD)</code></pre>
+<div id="top-dimension-drivers-famd" class="section level4">
+<h4>Top Dimension Drivers (FAMD)</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-2.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-2">
@@ -1545,7 +1581,9 @@ for (c_var in famd_configs$famd_clinical$color_vars) {
     cat(&quot;\n\n&quot;)
   }
 }</code></pre>
-<pre><code>#### Overlay: cohort_group</code></pre>
+</div>
+<div id="overlay-cohort_group" class="section level4">
+<h4>Overlay: cohort_group</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-3.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-3">
@@ -1584,9 +1622,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<pre><code>
-
-#### Overlay: Sex</code></pre>
+</div>
+<div id="overlay-sex" class="section level4">
+<h4>Overlay: Sex</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-4.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-4">
@@ -1625,9 +1663,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<pre><code>
-
-#### Overlay: Age</code></pre>
+</div>
+<div id="overlay-age" class="section level4">
+<h4>Overlay: Age</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/dimensionality_reduction-5.png" alt="" width="1536" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dimensionality_reduction-5">
@@ -1669,6 +1707,8 @@ alexander-gysin
 <pre class="r"><code># Clean Workspace
 rm(gower_res, famd_res)
 invisible(gc())</code></pre>
+</div>
+</div>
 </div>
 <div id="algorithm-optimization" class="section level1">
 <h1>Algorithm Optimization</h1>
@@ -1998,14 +2038,12 @@ for (c_id in names(clustering_configs)) {
     }
   } 
 }</code></pre>
-<pre><code>
-
-## FAMD Coordinate Clustering {.tabset}</code></pre>
-<pre><code>
-
-### HCLUST
-
-#### Hierarchical Dendrogram</code></pre>
+<div id="famd-coordinate-clustering" class="section level2 tabset">
+<h2 class="tabset">FAMD Coordinate Clustering</h2>
+<div id="hclust" class="section level3">
+<h3>HCLUST</h3>
+<div id="hierarchical-dendrogram" class="section level4">
+<h4>Hierarchical Dendrogram</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/unsupervised_clustering-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unsupervised_clustering-1">
@@ -2055,9 +2093,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<pre><code>
-
-#### UMAP Projection</code></pre>
+</div>
+<div id="umap-projection" class="section level4">
+<h4>UMAP Projection</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/unsupervised_clustering-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unsupervised_clustering-2">
@@ -2108,6 +2146,9 @@ alexander-gysin
 </div>
 </div>
 <pre class="r"><code>cat(&quot;\n\n&quot;)</code></pre>
+</div>
+</div>
+</div>
 </div>
 <div id="clustering-diagnostic" class="section level1 tabset">
 <h1 class="tabset">Clustering Diagnostic</h1>
@@ -2162,7 +2203,7 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
     }
   }
 }</code></pre>
-<div id="famd-coordinate-clustering" class="section level2">
+<div id="famd-coordinate-clustering-1" class="section level2">
 <h2>FAMD Coordinate Clustering</h2>
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -2400,7 +2441,9 @@ grids for streamlined visual profiling.
       if (!is.null(res$tables[[algo]])) {
         tbl &lt;- res$tables[[algo]] %&gt;% 
           gtsummary::as_kable_extra(caption = sprintf(&quot;Clinical Summary: %s&quot;, toupper(algo))) %&gt;%
-          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)
+          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
+          kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;) # Adjust height as needed
+          
         print(tbl)
         cat(&quot;\n\n&quot;)
       }
@@ -2438,26 +2481,28 @@ grids for streamlined visual profiling.
 <div id="clinical-phenotypes-famd-clustering"
 class="section level2 tabset">
 <h2 class="tabset">Clinical Phenotypes: FAMD Clustering</h2>
-<div id="hclust" class="section level3 tabset">
+<div id="hclust-1" class="section level3 tabset">
 <h3 class="tabset">HCLUST</h3>
 <div id="summary-table" class="section level4">
 <h4>Summary Table</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <caption>
 Clinical Summary: HCLUST
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Characteristic
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 1 <br>N = 68
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 2 <br>N = 27
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 p-value
 </th>
 </tr>
@@ -4633,6 +4678,7 @@ Fisher’s exact test; NA
 </tfoot>
 </table>
 </div>
+</div>
 <div id="heatmap-exploratory" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/02b_clinical_clustering.Rmd/phenotyping-1.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
@@ -5489,7 +5535,7 @@ visualize the molecular footprint of the clinical phenotypes.
 <div id="feature-phenotypes-famd-clustering"
 class="section level2 tabset">
 <h2 class="tabset">Feature Phenotypes: FAMD Clustering</h2>
-<div id="hclust-1" class="section level3 tabset">
+<div id="hclust-2" class="section level3 tabset">
 <h3 class="tabset">HCLUST</h3>
 <div id="cluster-1-vs-cluster-2-ssc-only" class="section level4">
 <h4>Cluster 1 vs Cluster 2 Ssc only</h4>
