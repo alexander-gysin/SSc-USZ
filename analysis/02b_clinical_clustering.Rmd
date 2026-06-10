@@ -31,7 +31,7 @@ library(gtsummary)  # Clinical Tables
 library(msigdbr)
 
 # Knitr Config
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, collapse = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Output paths
 current_file <- "02b_clinical_clustering"
@@ -95,7 +95,8 @@ sobanski_vars <- c(
 
   # Demographics / covariates
   "Age",
-  "Sex"
+  "Sex",
+  "cohort_group"
 )
 
 # Filter variables to ensure they actually exist in your master_spine
@@ -105,8 +106,9 @@ valid_clustering_vars <- intersect(sobanski_vars, colnames(master_spine))
 famd_configs <- list(
   famd_clinical = list(
     title = "FAMD: Clinical Baseline Sobanski Variables",
-    max_dims = 10, # Will cap at the mathematical limit if features < 10
-    color_vars = c("cohort_group", "Sex")
+    max_dims = 10,  # Calculates up to 10 dims for the scree plot context
+    top_dim = 5,    # NEW: Strictly subsets the matrix to 5 dims for clustering
+    color_vars = c("cohort_group", "Sex", "Age")
   )
 )
 
@@ -136,39 +138,24 @@ k_opt_configs <- list(
   )
 )
 
-# 4. Clustering Configs (Targeting k=2 split first)
+# 4. Clustering Configs
 clustering_configs <- list(
-  
-  job_gower_k2 = list(
-    title = "Gower Distance Clustering (k=2)",
-    input_matrix = "mat_gower", # Defined below in the execution chunk
-    k = 2, 
-    n_neighbors = 10,
-    is_dist_matrix = TRUE, # <--- NEW FLAG FOR ENGINE
-    algorithms = list(
-      pam = list(run=TRUE), 
-      hclust = list(run=TRUE, method="ward.D2")
-    )
-  ),
-  
-  job_famd_k2 = list(
-    title = "FAMD Coordinate Clustering (k=2)",
+
+  job_famd = list(
+    title = "FAMD Coordinate Clustering",
     input_matrix = "mat_famd", # Defined below
     k = 2, 
     n_neighbors = 10,
     is_dist_matrix = FALSE,
     algorithms = list(
-      kmeans = list(run=TRUE, nstart=25), 
-      pam = list(run=TRUE, metric="euclidean"), 
-      hclust = list(run=TRUE, distance="euclidean", method="ward.D2"), 
-      louvain = list(run=TRUE, k_neighbors=4, resolution=0.8) 
+      hclust = list(run=TRUE, distance="euclidean", method="ward.D2") 
     )
   )
 )
 
 # 5. Diagnostic Configs
 diagnostic_configs <- list(
-  evaluate_jobs = c("job_gower_k2", "job_famd_k2"),
+  evaluate_jobs = c("job_famd"),
   correlate_vars = c("cohort_group", "Age", "Sex")
 )
 
@@ -189,18 +176,8 @@ clin_vars_to_include <- list(
 )
 
 pheno_configs <- list(
-  pheno_gower = list(
-    target_job = "job_gower_k2",
-    title = "Clinical Phenotypes: Gower Distance",
-    target_algorithms = c("hclust", "pam"),
-    subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
-    variables = clin_vars_to_include,
-    highlight_variables = clin_vars_to_highlight,
-    p_cutoff = 0.05,
-    must_include_vars = c("cohort_group", "Sex", "Age")
-  ),
   pheno_famd = list(
-    target_job = "job_famd_k2",
+    target_job = "job_famd",
     title = "Clinical Phenotypes: FAMD Clustering",
     target_algorithms = c("hclust", "pam", "kmeans"), # You can evaluate multiple algorithms at once!
     subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
@@ -214,28 +191,10 @@ pheno_configs <- list(
 
 # 7. Proteomics Feature Phenotyping (DEA)
 feature_configs <- list(
-  feat_gower_k2 = list(
-    target_job = "job_gower_k2",
-    title = "Gower dist matrix k2",
-    input_matrix = "raw", 
-    covariates = c("Age"),
-    # Algorithms are now the primary key to enable contrast-per-algorithm
-    algorithms = list(
-      hclust = list(
-        contrasts = list(
-          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "", 
-                          target=c("Cluster 1"), ref=c("Cluster 2"),
-                          subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")))
-        )
-      )
-    ),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.58
-  ),
   
   feat_famd_k2 = list(
-    target_job = "job_famd_k2",
-    title = "FAMD k2",
+    target_job = "job_famd",
+    title = "Feature Phenotypes: FAMD Clustering",
     input_matrix = "raw", 
     covariates = c("Age"),
     # Algorithms are now the primary key to enable contrast-per-algorithm
@@ -303,14 +262,13 @@ invisible(gc())
 
 
 # Dimensionality Reduction
-`r analysis_decision("Calculated two distinct mathematical coordinate spaces. Gower distance preserves the raw scaling and binary nature of categorical variables. Factor Analysis of Mixed Data (FAMD) balances and extracts continuous dimensions of variance across both data types.")`
+`r analysis_decision("Calculated two distinct mathematical coordinate spaces. Gower distance preserves the raw scaling and binary nature of categorical variables.", "Factor Analysis of Mixed Data (FAMD) extracts continuous dimensions of variance. We strictly subsetted FAMD to the top 5 dimensions to aggressively strip statistical noise before downstream clustering.")`
 
-`r what_this_does("Executes wrap_gower_distance to generate a patient-to-patient similarity matrix.", "Executes wrap_famd_pipeline to generate PCA-like continuous coordinates.", "Stores both matrices globally for the downstream clustering algorithms.")`
+`r what_this_does("Executes wrap_gower_distance to generate a patient-to-patient similarity matrix.", "Executes wrap_famd_pipeline to generate PCA-like continuous coordinates.", "Generates a Scree Plot and a ComplexHeatmap detailing the top clinical drivers of each selected dimension.")`
 
 ```{r dimensionality_reduction, fig.height=8, fig.width=16}
-prepared_matrices <- list()
-
 # 1. Gower Distance Matrix
+prepared_matrices <- list()
 gower_res <- wrap_gower_distance(clean_clin_df, id_col = "Subject_ID")
 prepared_matrices[["mat_gower"]] <- gower_res$matrix
 
@@ -327,16 +285,33 @@ famd_res <- wrap_famd_pipeline(
 prepared_matrices[["mat_famd"]] <- famd_res$matrix
 
 # Print FAMD Diagnostics
+cat("### FAMD Diagnostics\n\n")
 print(famd_res$plots$scree | famd_res$plots$var_contrib)
+cat("\n\n")
 
-if (!is.null(famd_res$plots$overlays)) {
-  print(famd_res$plots$overlays)
+# Print the new Top Drivers Heatmap
+if (!is.null(famd_res$plots$drivers_heatmap)) {
+  cat("#### Top Dimension Drivers (FAMD)\n\n")
+  ComplexHeatmap::draw(famd_res$plots$drivers_heatmap)
+  cat("\n\n")
+}
+
+# Print Individual Overlays
+for (c_var in famd_configs$famd_clinical$color_vars) {
+  plot_key <- paste0("overlay_", c_var)
+  
+  if (!is.null(famd_res$plots[[plot_key]])) {
+    cat(sprintf("#### Overlay: %s\n\n", c_var))
+    print(famd_res$plots[[plot_key]])
+    cat("\n\n")
+  }
 }
 
 # Clean Workspace
 rm(gower_res, famd_res)
 invisible(gc())
 ```
+
 # Algorithm Optimization
 `r what_this_does("Executes algorithm-aware hyperparameter sweeps to evaluate multiple numbers of clusters.", "Evaluates Silhouette boundaries manually for Gower distance and via factored coordinate variance for FAMD.")`
 
@@ -363,7 +338,7 @@ for (opt_id in names(k_opt_configs)) {
 # Unsupervised Clustering {.tabset}
 `r what_this_does("Ingests the matrices.", "Runs the specified algorithms at the requested number of clusters.", "Generates 2D UMAPs to visualize the discovered clusters.")`
 
-```{r unsupervised_clustering}
+```{r unsupervised_clustering, fig.width=10, fig.height=8}
 global_cluster_payloads <- list()
 
 for (c_id in names(clustering_configs)) {
@@ -519,7 +494,7 @@ for (f_id in names(feature_configs)) {
   for (algo_name in names(conf$algorithms)) {
     cat(sprintf("\n\n### %s {.tabset}\n\n", toupper(algo_name)))
     
-    # 1. Inject cluster labels dynamically
+    # Inject cluster labels
     temp_spine <- master_spine
     temp_spine$Dynamic_Cluster <- as.character(payload$data$assignments[[algo_name]][match(temp_spine$Subject_ID, names(payload$data$assignments[[algo_name]]))])
     temp_spine <- temp_spine %>% filter(!is.na(Dynamic_Cluster), Dynamic_Cluster != "Noise")
@@ -533,20 +508,22 @@ for (f_id in names(feature_configs)) {
       cat(sprintf("**Description:** %s\n\n", c_conf$desc))
 
       contrast_df <- temp_spine
-
-      # 2. Build Limma DEA config
+      
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
         target_groups = c_conf$target, 
-        ref_groups = c_conf$ref,       
+        ref_groups = c_conf$ref,        
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
-      # 3. Execute Limma Wrapper
-      res <- wrap_dea_pipeline(target_matrix, contrast_df, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
+      # Explicitly define the DEA ID string so it can be reused locally
+      current_dea_id <- sprintf("%s_%s_%s", f_id, algo_name, contrast_name)
+      
+      # Execute Limma Wrapper using the defined variable
+      res <- wrap_dea_pipeline(target_matrix, contrast_df, dea_conf, current_dea_id, output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
       
       if (res$status == "success") {
         
@@ -568,11 +545,40 @@ for (f_id in names(feature_configs)) {
           cat("\n\n") 
         }
         
-        # C. Heatmap 
+        # C. Heatmap (Direct Draw for Interactive Viewing)
         if (!is.null(res$plots$heatmap)) {
-          ComplexHeatmap::draw(res$plots$heatmap)
-          cat("\n\n") 
+          ComplexHeatmap::draw(res$plots$heatmap, newpage = TRUE)
+          cat("\n\n")
         }
+        
+        # D. Pathway Analysis (GSEA)
+        if (length(res$plots$gsea) > 0) {
+          cat("\n\n##### Pathway Analysis {.tabset}\n\n")
+          
+          for (db_name in names(res$plots$gsea)) {
+            cat(sprintf("\n\n###### %s\n\n", db_name))
+            
+            p_obj <- res$plots$gsea[[db_name]]
+            
+            if (!is.null(p_obj$dotplot)) {
+              print(p_obj$dotplot)
+              cat("\n\n")
+            }
+            
+            if (!is.null(p_obj$ridgeplot)) {
+              print(p_obj$ridgeplot)
+              cat("\n\n")
+            }
+            
+            if (!is.null(p_obj$emap)) {
+              print(p_obj$emap)
+              cat("\n\n")
+            }
+          }
+        } else {
+          cat("> **Note:** No pathways passed criteria for visualization.\n\n")
+        }
+        
       } else {
         cat(sprintf("> **DEA Failed:** %s\n\n", res$error_msg))
       }
@@ -593,6 +599,46 @@ cat("Script 02b Complete! \n")
 ```
 
 ```{r legacy}
+  # job_gower_k2 = list(
+  #   title = "Gower Distance Clustering (k=2)",
+  #   input_matrix = "mat_gower", # Defined below in the execution chunk
+  #   k = 2, 
+  #   n_neighbors = 10,
+  #   is_dist_matrix = TRUE, # <--- NEW FLAG FOR ENGINE
+  #   algorithms = list(
+  #     pam = list(run=TRUE), 
+  #     hclust = list(run=TRUE, method="ward.D2")
+  #   )
+  # )
 
+  # pheno_gower = list(
+  #   target_job = "job_gower_k2",
+  #   title = "Clinical Phenotypes: Gower Distance",
+  #   target_algorithms = c("hclust", "pam"),
+  #   subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
+  #   variables = clin_vars_to_include,
+  #   highlight_variables = clin_vars_to_highlight,
+  #   p_cutoff = 0.05,
+  #   must_include_vars = c("cohort_group", "Sex", "Age")
+  # ),
+  # 
+  # feat_gower_k2 = list(
+  #   target_job = "job_gower_k2",
+  #   title = "Gower dist matrix k2",
+  #   input_matrix = "raw", 
+  #   covariates = c("Age"),
+  #   # Algorithms are now the primary key to enable contrast-per-algorithm
+  #   algorithms = list(
+  #     hclust = list(
+  #       contrasts = list(
+  #         c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "", 
+  #                         target=c("Cluster 1"), ref=c("Cluster 2"),
+  #                         subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")))
+  #       )
+  #     )
+  #   ),
+  #   dea_p_cutoff = 0.05,
+  #   dea_fc_cutoff = 0.58
+  # ),
 ```
 

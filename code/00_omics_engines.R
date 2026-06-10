@@ -250,7 +250,6 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
                                               split_by_group = heatmap_config$split_by_group,
                                               split_col = dea_conf$group_col,
                                               custom_color_map = custom_map,
-                                              # NEW: Link the config to the engine!
                                               annotation_vars = heatmap_config$annotation_vars)
 
   png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
@@ -259,7 +258,7 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
   dev.off()
 
   # D. Multi-Database GSEA
-  results$plots$gsea <- list() # Initialize a nested list for GSEA plots
+  results$plots$gsea <- list()
   results$data$gsea <- list()
 
   for (db_name in names(pathway_dbs)) {
@@ -270,9 +269,8 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
 
     if (!is.null(gsea_res)) {
       results$data$gsea[[db_name]] <- gsea_res$data
-      results$plots$gsea[[db_name]] <- gsea_res # Store the whole object (dot, ridge, emap)
+      results$plots$gsea[[db_name]] <- gsea_res
 
-      # Save exports with the db_name injected into the filename
       write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Results.csv")))
       ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
 
@@ -1900,6 +1898,7 @@ wrap_clustering_pipeline <- function(target_matrix, clin_df, job_conf, job_id, b
       # --- DENDROGRAM EXTRACTION ---
       tree_obj <- attr(cluster_labels, "tree")
       if (!is.null(tree_obj)) {
+        if (!exists("dendrograms", where = plots)) plots$dendrograms <- list()
 
         # Fetch exact project colors for the branches
         lvl_names <- levels(as.factor(cluster_labels))
@@ -1913,10 +1912,20 @@ wrap_clustering_pipeline <- function(target_matrix, clin_df, job_conf, job_id, b
           rect_border = mapped_colors,
           cex = 0.5, # Small text for patient barcodes
           main = sprintf("%s: Hierarchical Dendrogram (k=%s)", job_conf$title, job_conf$k)
-        ) + theme_project_base() + theme(axis.text.x = element_blank()) # Hide bottom text to prevent visual clutter
+        ) +
+          theme_project_base() +
+          theme(axis.text.x = element_blank()) +
+          guides(size = "none") # <--- FIX 1: Destroys the black square dummy legend!
+
+        # <--- FIX 2: Intercept the ggplot layers and forcefully inject modern linewidth!
+        for (i in seq_along(p_dend$layers)) {
+          if (inherits(p_dend$layers[[i]]$geom, "GeomSegment")) {
+            p_dend$layers[[i]]$aes_params$linewidth <- 1 # Adjust this exact number for thickness
+          }
+        }
 
         # Export and Store
-        ggsave(file.path(cluster_dir, sprintf("Dendrogram_%s.png", algo)), plot = p_dend, width = 10, height = 6, bg = "white")
+        ggsave(file.path(cluster_dir, sprintf("Dendrogram_%s.png", algo)), plot = p_dend, width = 10, height = 6, bg = "white", dpi = 300)
         plots$dendrograms[[algo]] <- p_dend
       }
     }
@@ -2090,81 +2099,79 @@ wrap_gower_distance <- function(df, id_col = "Subject_ID") {
 
 # 19. FAMD PIPELINE (Factor Analysis of Mixed Data) ----------------------------
 wrap_famd_pipeline <- function(df, id_col, famd_conf, famd_id, base_output_dir, project_colors_func) {
-  library(FactoMineR)
-  library(factoextra)
 
   famd_sub_dir <- file.path(base_output_dir, "FAMD", famd_id)
   if (!dir.exists(famd_sub_dir)) dir.create(famd_sub_dir, recursive = TRUE)
 
-  # 1. Prepare Matrix
   clin_data <- as.data.frame(df %>% select(-all_of(id_col)) %>% mutate_if(is.character, as.factor))
   rownames(clin_data) <- df[[id_col]]
 
-  # 2. FACTOMINER SAFETY PATCH: Ensure all factor levels are globally unique
-  # Prevents the "duplicate row.names" fatal error during internal MCA calculations
+  # FACTOMINER SAFETY PATCH: Ensure globally unique factor levels
   for (col in colnames(clin_data)) {
-    if (is.factor(clin_data[[col]])) {
-      # Appends the column name to the level (e.g., "yes" becomes "Digital_ulcer_yes")
-      levels(clin_data[[col]]) <- paste(col, levels(clin_data[[col]]), sep = "_")
-    }
+    if (is.factor(clin_data[[col]])) levels(clin_data[[col]]) <- paste(col, levels(clin_data[[col]]), sep = "_")
   }
 
-  # 3. Execute FAMD
-  # ncp: number of dimensions kept. We calculate the max possible (min of N-1 or feature levels)
-  max_possible_dims <- min(nrow(clin_data) - 1, ncol(clin_data) * 2) # Rough approximation for max dims
+  max_possible_dims <- min(nrow(clin_data) - 1, ncol(clin_data) * 2)
   famd_res <- FAMD(clin_data, graph = FALSE, ncp = min(max_possible_dims, famd_conf$max_dims))
 
-  plots <- list()
-  paths <- list()
+  plots <- list(); paths <- list()
   wrapped_title <- stringr::str_wrap(famd_conf$title, width = 55)
 
-  # 4. Scree Plot
-  plots[["scree"]] <- fviz_screeplot(famd_res, addlabels = TRUE) +
-    theme_project_base() + labs(title = sprintf("%s: Variance Explained", wrapped_title))
+  t_dim <- if(!is.null(famd_conf$top_dim)) min(famd_conf$top_dim, ncol(famd_res$ind$coord)) else 5
+  cum_var <- famd_res$eig[t_dim, 3]
 
-  # 5. Variable Contribution Plot
+  plots[["scree"]] <- fviz_screeplot(famd_res, addlabels = TRUE) +
+    theme_project_base() +
+    geom_vline(xintercept = t_dim + 0.5, linetype = "dashed", color = "firebrick", linewidth = 1) +
+    annotate("text", x = t_dim + 0.3, y = max(famd_res$eig[, 2]) * 0.8, label = sprintf("Cutoff (Dim %d)\nIncluded Var: %.1f%%", t_dim, cum_var), color = "firebrick", fontface = "bold", hjust = 0) +
+    labs(title = sprintf("%s: Variance Explained", wrapped_title))
+
   plots[["var_contrib"]] <- fviz_famd_var(famd_res, "var", axes = c(1, 2), repel = TRUE, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) +
     theme_project_base() + labs(title = sprintf("%s: Variable Contributions (Dim 1-2)", wrapped_title))
 
-  # 6. Individual Overlays (Coloring by metadata)
-  clin_meta <- df %>% select(all_of(id_col), any_of(famd_conf$color_vars))
+  # Top Drivers Heatmap
+  contrib_mat <- famd_res$var$contrib[, 1:t_dim, drop = FALSE]
+  top_vars <- unique(as.vector(sapply(1:t_dim, function(i) head(rownames(contrib_mat)[order(contrib_mat[, i], decreasing = TRUE)], 5))))
+  plot_mat <- contrib_mat[top_vars, , drop = FALSE]
+  col_fun <- colorRamp2(c(0, max(plot_mat)), c("white", "firebrick4"))
 
-  overlay_plots <- list()
+  ht <- Heatmap(plot_mat, name = "Contribution (%)", column_title = sprintf("Top Drivers across First %d FAMD Dimensions", t_dim), col = col_fun, cluster_columns = FALSE, cluster_rows = TRUE, show_row_dend = TRUE, row_names_gp = grid::gpar(fontsize = 10), column_names_gp = grid::gpar(fontsize = 10, fontface = "bold"), rect_gp = grid::gpar(col = "grey85", lwd = 0.5))
+  plots[["drivers_heatmap"]] <- ht
+
+  # Individual Overlays (Pure ggplot to bypass factoextra bug)
+  coord_df <- as.data.frame(famd_res$ind$coord[, 1:2])
+  colnames(coord_df) <- c("Dim1", "Dim2")
+  coord_df[[id_col]] <- rownames(coord_df)
+  plot_df <- coord_df %>% left_join(df %>% select(all_of(id_col), any_of(famd_conf$color_vars)), by = id_col)
+
   for (c_var in famd_conf$color_vars) {
-    if (!(c_var %in% colnames(clin_meta))) next
-
-    clean_vec <- clin_meta[[c_var]]
-    if(length(na.omit(clean_vec)) == 0) next
+    if (!(c_var %in% colnames(plot_df))) next
+    clean_vec <- plot_df[[c_var]]
+    if(all(is.na(clean_vec))) next
 
     if (is.numeric(clean_vec)) {
-      p <- fviz_famd_ind(famd_res, label = "none", habillage = "none", col.ind = clean_vec) +
-        scale_color_viridis_c(na.value = "grey85") +
-        theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var))
+      p <- ggplot(plot_df, aes(x = Dim1, y = Dim2, color = .data[[c_var]])) + geom_point(size = 3, alpha = 0.8) + scale_color_viridis_c(na.value = "grey85") + theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var), x = "Dimension 1", y = "Dimension 2")
     } else {
-      # Use your project color mapper
-      lvl_names <- levels(as.factor(clean_vec))
-      mapped_colors <- project_colors_func(lvl_names)
-      if (all(mapped_colors == "#333333")) { mapped_colors <- NULL }
+      lvl_names <- levels(as.factor(clean_vec)); mapped_colors <- project_colors_func(lvl_names)
+      if (all(mapped_colors == "#333333")) { safe_pal <- if(exists("FALLBACK_CAT_PALETTE")) FALLBACK_CAT_PALETTE else c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#0072B2"); mapped_colors <- colorRampPalette(safe_pal)(length(lvl_names)); names(mapped_colors) <- lvl_names }
 
-      p <- fviz_famd_ind(famd_res, label = "none", habillage = as.factor(clean_vec), palette = mapped_colors, addEllipses = TRUE) +
-        theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var))
+      p <- ggplot(plot_df, aes(x = Dim1, y = Dim2, color = as.factor(.data[[c_var]]))) + geom_point(size = 3, alpha = 0.8) + stat_ellipse(type = "norm", linetype = 2, show.legend = FALSE, alpha = 0.5) + scale_color_manual(values = mapped_colors) + theme_project_base() + labs(title = wrapped_title, subtitle = paste("Colored by:", c_var), x = "Dimension 1", y = "Dimension 2", color = c_var)
     }
-    overlay_plots[[c_var]] <- p
+
+    # Save individually instead of stitching
+    safe_c_var <- gsub("[^A-Za-z0-9_.-]", "_", c_var)
+    ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Overlay_", safe_c_var, ".png")), p, width = 7, height = 6, bg="white")
+
+    # Store individually in the plots list
+    plots[[paste0("overlay_", c_var)]] <- p
   }
 
-  # Export plots
-  ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Scree.png")), plots[["scree"]], width = 7, height = 5, bg="white")
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Scree.png")), plots[["scree"]], width = 8, height = 6, bg="white")
   ggsave(file.path(famd_sub_dir, paste0(famd_id, "_VarContrib.png")), plots[["var_contrib"]], width = 10, height = 8, bg="white")
+  png(file.path(famd_sub_dir, paste0(famd_id, "_Top_Drivers_Heatmap.png")), width=8, height=8, units="in", res=300); draw(ht); dev.off()
 
-  if (length(overlay_plots) > 0) {
-    master_grid <- wrap_plots(overlay_plots, ncol = if(length(overlay_plots)>2) 2 else 1)
-    ggsave(file.path(famd_sub_dir, paste0(famd_id, "_Overlays.png")), master_grid, width = 12, height = 6 * ceiling(length(overlay_plots)/2), bg="white")
-    plots[["overlays"]] <- master_grid
-  }
-
-  # Return the pure numeric coordinate matrix (Rows = Features/Dims, Cols = Patients)
-  famd_matrix <- t(as.data.frame(famd_res$ind$coord))
-
+  # Return Subsetted Matrix
+  famd_matrix <- t(as.data.frame(famd_res$ind$coord[, 1:t_dim, drop = FALSE]))
   return(list(status = "success", matrix = famd_matrix, plots = plots, famd_obj = famd_res))
 }
 
@@ -2265,7 +2272,7 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
   set.seed(42)
 
-  # Calculate GSEA for ALL pathways (pvalueCutoff = 1) to preserve the exploratory dataframe
+  # Calculate GSEA for ALL pathways
   gsea_res <- clusterProfiler::GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
@@ -2273,9 +2280,14 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
   res_df <- as.data.frame(gsea_res) %>% mutate(Status = ifelse(NES > 0, "Up-regulated", "Down-regulated"))
 
   warning_tag <- if(sum(res_df$p.adjust < omics_config$gsea_p_cutoff) == 0) "\n(Exploratory: No paths passed FDR)" else ""
-  plot_df <- res_df %>% group_by(Status) %>% slice_max(abs(NES), n = 10) %>% ungroup()
 
-  # --- NEW: Injecting the Database Name into all titles ---
+  # Wrap long geneset names for the Dotplot
+  plot_df <- res_df %>%
+    group_by(Status) %>%
+    slice_max(abs(NES), n = 10) %>%
+    ungroup() %>%
+    mutate(Description = stringr::str_wrap(Description, width = 45))
+
   main_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
   full_title <- paste0(main_title, warning_tag)
 
@@ -2288,30 +2300,41 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
     theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
     labs(title = full_title, y = NULL)
 
-  # STRICT BIOLOGICAL PRE-FILTERING (FDR < 0.1) for Networks
+  # STRICT BIOLOGICAL PRE-FILTERING (FDR < cutoff) for Networks
   gsea_sig <- gsea_res
   gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < omics_config$network_p_cutoff)
+
+  # NOTE: simplify() has been permanently bypassed here due to generic GSEA() incompatibility.
 
   gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
 
   # 2. Ridgeplot
   ridge_title <- str_wrap(sprintf("Pathways (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
-  p_ridge <- if(!is.null(gsea_sim)) {
-    enrichplot::ridgeplot(gsea_sim, showCategory = 15) +
+  p_ridge <- if(nrow(gsea_sig@result) > 0) {
+    enrichplot::ridgeplot(gsea_sig, showCategory = 15) +
+      scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 40)) +
       theme_project_base() +
       labs(title = ridge_title)
   } else NULL
 
-  # 3. Enrichment Map
-  emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
-  p_emap <- if(!is.null(gsea_sim)) {
-    enrichplot::emapplot(
-      gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
-      size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
-    ) +
-      theme_project_base() +
-      labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes")
-  } else NULL
+  # 3. Enrichment Map (MATH SHIELD ACTIVATED)
+  p_emap <- NULL
+  if(!is.null(gsea_sim)) {
+    sim_mat <- gsea_sim@termsim
+    if (!is.null(sim_mat) && nrow(sim_mat) > 1) {
+      valid_edges <- sum(sim_mat[upper.tri(sim_mat)] >= 0.3, na.rm = TRUE)
+
+      if (valid_edges > 0) {
+        emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
+        p_emap <- enrichplot::emapplot(
+          gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
+          size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
+        ) +
+          theme_project_base() +
+          labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes")
+      }
+    }
+  }
 
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge, emap = p_emap))
 }
@@ -2340,6 +2363,7 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
   if (length(top_feats) < 2) return(NULL) # Safety catch
 
   plot_mat <- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
+
 
   # 1. Determine which variables to extract for the top annotation
   if (is.null(annotation_vars)) {
@@ -2370,15 +2394,17 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
     col_list[["cohort_group"]] <- get_project_colors(as.character(unique(clin_sub[["cohort_group"]])))
   }
 
-  # Explicit Trap: Sex
+  # Explicit Trap: Sex (Now correctly utilizing get_project_colors)
   if ("Sex" %in% valid_vars) {
-    col_list[["Sex"]] <- setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male"))
+    col_list[["Sex"]] <- get_project_colors(as.character(unique(clin_sub[["Sex"]])))
   }
 
   # Explicit Trap: Age
   if ("Age" %in% valid_vars) {
     col_list[["Age"]] <- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
   }
+
+
 
   # 4. Construct the HeatmapAnnotation object dynamically
   if (ncol(anno_df) > 0) {
