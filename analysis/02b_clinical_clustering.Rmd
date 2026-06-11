@@ -56,7 +56,7 @@ pathway_dbs <- list(
 ```
 
 # Configuration
-`r what_this_does("Defined the exact 24 clinical variables mandated by  Sobanski's publication.", "Configured the FAMD parameters to extract the top components representing the mixed-data variance.", "Established dual clustering jobs")`
+`r what_this_does("Defined the exact 24 clinical variables used by  Sobanski's publication.", "Configured the FAMD parameters to extract the top components representing the mixed-data variance.", "Defined clustering jobs")`
 
 ## Clustering
 
@@ -262,7 +262,6 @@ invisible(gc())
 
 
 # Dimensionality Reduction
-`r analysis_decision("Calculated two distinct mathematical coordinate spaces. Gower distance preserves the raw scaling and binary nature of categorical variables.", "Factor Analysis of Mixed Data (FAMD) extracts continuous dimensions of variance. We strictly subsetted FAMD to the top 5 dimensions to aggressively strip statistical noise before downstream clustering.")`
 
 `r what_this_does("Executes wrap_gower_distance to generate a patient-to-patient similarity matrix.", "Executes wrap_famd_pipeline to generate PCA-like continuous coordinates.", "Generates a Scree Plot and a ComplexHeatmap detailing the top clinical drivers of each selected dimension.")`
 
@@ -333,7 +332,7 @@ for (opt_id in names(k_opt_configs)) {
   }
 }
 ```
-
+`r key_insight("H-Clustering performes the best", "2 Clusters seems to be the optimal despite weak clustering", "FAMD seems to provide a better clustering matrix than Gower")`
 
 # Unsupervised Clustering {.tabset}
 `r what_this_does("Ingests the matrices.", "Runs the specified algorithms at the requested number of clusters.", "Generates 2D UMAPs to visualize the discovered clusters.")`
@@ -372,7 +371,7 @@ cat("\n\n")
 ```
 
 # Clustering Diagnostic {.tabset}
-`r what_this_does("Calculates Silhouette scores to determine which dimensionality approach (Gower vs FAMD) and which algorithm generated the most mathematically distinct boundaries.", "Plots prediction confidence against key clinical variables to ensure the algorithm isn't biased by covariates like Age or Sex.")`
+`r what_this_does("Calculates Silhouette scores to determine which dimensionality approach and which algorithm generated the most mathematically distinct boundaries.", "Plots prediction confidence against key clinical variables to ensure the algorithm isn't biased by covariates like Age or Sex.")`
 
 ```{r clustering_diagnostic, results='asis', fig.width=10, fig.height=5}
 global_diagnostic_payloads <- list()
@@ -479,7 +478,7 @@ for (p_id in names(pheno_configs)) {
 ```
 
 # Feature Phenotyping {.tabset}
-`r analysis_decision("Projected the mathematically discovered clinical endotypes onto the Olink proteomics matrix to identify underlying molecular drivers.", "Applied Limma modeling controlling for Age and Sex to ensure the protein fold-changes are strictly tied to the phenotype.")`
+`r analysis_decision("Applied Limma modeling controlling for Age and Sex to ensure the protein fold-changes are strictly tied to the phenotype.")`
 
 `r what_this_does("Filters the clinical spine to the targeted clinical clusters.", "Executes rigorous Differential Expression Analysis (DEA) between Cluster 1 and Cluster 2.", "Generates volcano plots, top protein tables, and supervised heatmaps to visualize the molecular footprint of the clinical phenotypes.")`
 
@@ -588,7 +587,7 @@ for (f_id in names(feature_configs)) {
   }
 }
 ```
-
+`r key_insight("No significantly differentially expressed proteins")`
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom predictive engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
