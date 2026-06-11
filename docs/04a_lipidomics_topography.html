@@ -469,7 +469,7 @@ Missingness</h1>
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">08 June, 2026</h4>
+<h4 class="date">11 June, 2026</h4>
 
 </div>
 
@@ -498,7 +498,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-08
+<strong>Last updated:</strong> 2026-06-11
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -629,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree86f7929634baab4f477d0053575fde88aa664708targetblank86f7929a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/86f7929634baab4f477d0053575fde88aa664708" target="_blank">86f7929</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree86f7929634baab4f477d0053575fde88aa664708targetblank86f7929a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -647,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/86f7929634baab4f477d0053575fde88aa664708" target="_blank">86f7929</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -685,7 +685,7 @@ Untracked files:
     Untracked:  core
 
 Unstaged changes:
-    Modified:   code/00_omics_engines.R
+    Modified:   analysis/04b_lipidomics_differential.Rmd
 
 </code></pre>
 <p>
@@ -731,6 +731,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/86f7929634baab4f477d0053575fde88aa664708/analysis/04a_lipidomics_topography.Rmd" target="_blank">86f7929</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-11
+</td>
+<td>
+fixed setup and import display
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/04a_lipidomics_topography.html" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -791,27 +825,11 @@ mass spectrometry data.
 </li>
 </ul>
 </div>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.2.1     ✔ readr     2.2.0
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ lubridate 1.9.5     ✔ tibble    3.3.1
-✔ purrr     1.2.1     ✔ tidyr     1.3.2
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>library(patchwork)
-library(here)</code></pre>
-<pre><code>here() starts at /home/alexgy/SSc-USZ</code></pre>
-<pre class="r"><code>library(kableExtra)</code></pre>
-<pre><code>
-Attaching package: &#39;kableExtra&#39;
-
-The following object is masked from &#39;package:dplyr&#39;:
-
-    group_rows</code></pre>
-<pre class="r"><code>library(UpSetR) # Highly recommended for missingness topography
+<pre class="r"><code>library(tidyverse)
+library(patchwork)
+library(here)
+library(kableExtra)
+library(UpSetR) # Highly recommended for missingness topography
 library(readxl)      # Reading messy Excel files
 
 # Knitr Config
@@ -826,43 +844,9 @@ output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 # Source Engines (Assuming we start the new file here!)
-source(here::here(&quot;code&quot;, &quot;00_lipid_engines.R&quot;))</code></pre>
-<pre><code>Loading required package: grid
-========================================
-ComplexHeatmap version 2.26.1
-Bioconductor page: http://bioconductor.org/packages/ComplexHeatmap/
-Github page: https://github.com/jokergoo/ComplexHeatmap
-Documentation: http://jokergoo.github.io/ComplexHeatmap-reference
+source(here::here(&quot;code&quot;, &quot;00_lipid_engines.R&quot;))
 
-If you use it in published research, please cite either one:
-- Gu, Z. Complex Heatmap Visualization. iMeta 2022.
-- Gu, Z. Complex heatmaps reveal patterns and correlations in multidimensional 
-    genomic data. Bioinformatics 2016.
-
-
-The new InteractiveComplexHeatmap package can directly export static 
-complex heatmaps into an interactive Shiny app with zero effort. Have a try!
-
-This message can be suppressed by:
-  suppressPackageStartupMessages(library(ComplexHeatmap))
-========================================
-
-
-Attaching package: &#39;data.table&#39;
-
-The following objects are masked from &#39;package:lubridate&#39;:
-
-    hour, isoweek, isoyear, mday, minute, month, quarter, second, wday,
-    week, yday, year
-
-The following objects are masked from &#39;package:dplyr&#39;:
-
-    between, first, last
-
-The following object is masked from &#39;package:purrr&#39;:
-
-    transpose</code></pre>
-<pre class="r"><code># Load Pre-Cleaned Data
+# Load Pre-Cleaned Data
 # Assuming 01c or similar contains your raw/imputed lipid data
 master_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01b_clinical_feature_engineering&quot;, &quot;curated_clinical_spine.rds&quot;))
 lipid_mat_imputed &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;clean_lipid_matrix.rds&quot;))
@@ -1598,7 +1582,6 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
                                               split_by_group = heatmap_config$split_by_group,
                                               split_col = dea_conf$group_col,
                                               custom_color_map = custom_map,
-                                              # NEW: Link the config to the engine!
                                               annotation_vars = heatmap_config$annotation_vars)
 
   png(file.path(dea_sub_dir, paste0(dea_id, &quot;_Heatmap_Top&quot;, heatmap_config$top_n, &quot;.png&quot;)),
@@ -1607,7 +1590,7 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
   dev.off()
 
   # D. Multi-Database GSEA
-  results$plots$gsea &lt;- list() # Initialize a nested list for GSEA plots
+  results$plots$gsea &lt;- list()
   results$data$gsea &lt;- list()
 
   for (db_name in names(pathway_dbs)) {
@@ -1618,9 +1601,8 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
 
     if (!is.null(gsea_res)) {
       results$data$gsea[[db_name]] &lt;- gsea_res$data
-      results$plots$gsea[[db_name]] &lt;- gsea_res # Store the whole object (dot, ridge, emap)
+      results$plots$gsea[[db_name]] &lt;- gsea_res
 
-      # Save exports with the db_name injected into the filename
       write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Results.csv&quot;)))
       ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Dotplot.png&quot;)), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg=&quot;white&quot;)
 
@@ -3247,6 +3229,7 @@ wrap_clustering_pipeline &lt;- function(target_matrix, clin_df, job_conf, job_id
       # --- DENDROGRAM EXTRACTION ---
       tree_obj &lt;- attr(cluster_labels, &quot;tree&quot;)
       if (!is.null(tree_obj)) {
+        if (!exists(&quot;dendrograms&quot;, where = plots)) plots$dendrograms &lt;- list()
 
         # Fetch exact project colors for the branches
         lvl_names &lt;- levels(as.factor(cluster_labels))
@@ -3260,10 +3243,20 @@ wrap_clustering_pipeline &lt;- function(target_matrix, clin_df, job_conf, job_id
           rect_border = mapped_colors,
           cex = 0.5, # Small text for patient barcodes
           main = sprintf(&quot;%s: Hierarchical Dendrogram (k=%s)&quot;, job_conf$title, job_conf$k)
-        ) + theme_project_base() + theme(axis.text.x = element_blank()) # Hide bottom text to prevent visual clutter
+        ) +
+          theme_project_base() +
+          theme(axis.text.x = element_blank()) +
+          guides(size = &quot;none&quot;) # &lt;--- FIX 1: Destroys the black square dummy legend!
+
+        # &lt;--- FIX 2: Intercept the ggplot layers and forcefully inject modern linewidth!
+        for (i in seq_along(p_dend$layers)) {
+          if (inherits(p_dend$layers[[i]]$geom, &quot;GeomSegment&quot;)) {
+            p_dend$layers[[i]]$aes_params$linewidth &lt;- 1 # Adjust this exact number for thickness
+          }
+        }
 
         # Export and Store
-        ggsave(file.path(cluster_dir, sprintf(&quot;Dendrogram_%s.png&quot;, algo)), plot = p_dend, width = 10, height = 6, bg = &quot;white&quot;)
+        ggsave(file.path(cluster_dir, sprintf(&quot;Dendrogram_%s.png&quot;, algo)), plot = p_dend, width = 10, height = 6, bg = &quot;white&quot;, dpi = 300)
         plots$dendrograms[[algo]] &lt;- p_dend
       }
     }
@@ -3437,81 +3430,79 @@ wrap_gower_distance &lt;- function(df, id_col = &quot;Subject_ID&quot;) {
 
 # 19. FAMD PIPELINE (Factor Analysis of Mixed Data) ----------------------------
 wrap_famd_pipeline &lt;- function(df, id_col, famd_conf, famd_id, base_output_dir, project_colors_func) {
-  library(FactoMineR)
-  library(factoextra)
 
   famd_sub_dir &lt;- file.path(base_output_dir, &quot;FAMD&quot;, famd_id)
   if (!dir.exists(famd_sub_dir)) dir.create(famd_sub_dir, recursive = TRUE)
 
-  # 1. Prepare Matrix
   clin_data &lt;- as.data.frame(df %&gt;% select(-all_of(id_col)) %&gt;% mutate_if(is.character, as.factor))
   rownames(clin_data) &lt;- df[[id_col]]
 
-  # 2. FACTOMINER SAFETY PATCH: Ensure all factor levels are globally unique
-  # Prevents the &quot;duplicate row.names&quot; fatal error during internal MCA calculations
+  # FACTOMINER SAFETY PATCH: Ensure globally unique factor levels
   for (col in colnames(clin_data)) {
-    if (is.factor(clin_data[[col]])) {
-      # Appends the column name to the level (e.g., &quot;yes&quot; becomes &quot;Digital_ulcer_yes&quot;)
-      levels(clin_data[[col]]) &lt;- paste(col, levels(clin_data[[col]]), sep = &quot;_&quot;)
-    }
+    if (is.factor(clin_data[[col]])) levels(clin_data[[col]]) &lt;- paste(col, levels(clin_data[[col]]), sep = &quot;_&quot;)
   }
 
-  # 3. Execute FAMD
-  # ncp: number of dimensions kept. We calculate the max possible (min of N-1 or feature levels)
-  max_possible_dims &lt;- min(nrow(clin_data) - 1, ncol(clin_data) * 2) # Rough approximation for max dims
+  max_possible_dims &lt;- min(nrow(clin_data) - 1, ncol(clin_data) * 2)
   famd_res &lt;- FAMD(clin_data, graph = FALSE, ncp = min(max_possible_dims, famd_conf$max_dims))
 
-  plots &lt;- list()
-  paths &lt;- list()
+  plots &lt;- list(); paths &lt;- list()
   wrapped_title &lt;- stringr::str_wrap(famd_conf$title, width = 55)
 
-  # 4. Scree Plot
-  plots[[&quot;scree&quot;]] &lt;- fviz_screeplot(famd_res, addlabels = TRUE) +
-    theme_project_base() + labs(title = sprintf(&quot;%s: Variance Explained&quot;, wrapped_title))
+  t_dim &lt;- if(!is.null(famd_conf$top_dim)) min(famd_conf$top_dim, ncol(famd_res$ind$coord)) else 5
+  cum_var &lt;- famd_res$eig[t_dim, 3]
 
-  # 5. Variable Contribution Plot
+  plots[[&quot;scree&quot;]] &lt;- fviz_screeplot(famd_res, addlabels = TRUE) +
+    theme_project_base() +
+    geom_vline(xintercept = t_dim + 0.5, linetype = &quot;dashed&quot;, color = &quot;firebrick&quot;, linewidth = 1) +
+    annotate(&quot;text&quot;, x = t_dim + 0.3, y = max(famd_res$eig[, 2]) * 0.8, label = sprintf(&quot;Cutoff (Dim %d)\nIncluded Var: %.1f%%&quot;, t_dim, cum_var), color = &quot;firebrick&quot;, fontface = &quot;bold&quot;, hjust = 0) +
+    labs(title = sprintf(&quot;%s: Variance Explained&quot;, wrapped_title))
+
   plots[[&quot;var_contrib&quot;]] &lt;- fviz_famd_var(famd_res, &quot;var&quot;, axes = c(1, 2), repel = TRUE, col.var = &quot;contrib&quot;, gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;)) +
     theme_project_base() + labs(title = sprintf(&quot;%s: Variable Contributions (Dim 1-2)&quot;, wrapped_title))
 
-  # 6. Individual Overlays (Coloring by metadata)
-  clin_meta &lt;- df %&gt;% select(all_of(id_col), any_of(famd_conf$color_vars))
+  # Top Drivers Heatmap
+  contrib_mat &lt;- famd_res$var$contrib[, 1:t_dim, drop = FALSE]
+  top_vars &lt;- unique(as.vector(sapply(1:t_dim, function(i) head(rownames(contrib_mat)[order(contrib_mat[, i], decreasing = TRUE)], 5))))
+  plot_mat &lt;- contrib_mat[top_vars, , drop = FALSE]
+  col_fun &lt;- colorRamp2(c(0, max(plot_mat)), c(&quot;white&quot;, &quot;firebrick4&quot;))
 
-  overlay_plots &lt;- list()
+  ht &lt;- Heatmap(plot_mat, name = &quot;Contribution (%)&quot;, column_title = sprintf(&quot;Top Drivers across First %d FAMD Dimensions&quot;, t_dim), col = col_fun, cluster_columns = FALSE, cluster_rows = TRUE, show_row_dend = TRUE, row_names_gp = grid::gpar(fontsize = 10), column_names_gp = grid::gpar(fontsize = 10, fontface = &quot;bold&quot;), rect_gp = grid::gpar(col = &quot;grey85&quot;, lwd = 0.5))
+  plots[[&quot;drivers_heatmap&quot;]] &lt;- ht
+
+  # Individual Overlays (Pure ggplot to bypass factoextra bug)
+  coord_df &lt;- as.data.frame(famd_res$ind$coord[, 1:2])
+  colnames(coord_df) &lt;- c(&quot;Dim1&quot;, &quot;Dim2&quot;)
+  coord_df[[id_col]] &lt;- rownames(coord_df)
+  plot_df &lt;- coord_df %&gt;% left_join(df %&gt;% select(all_of(id_col), any_of(famd_conf$color_vars)), by = id_col)
+
   for (c_var in famd_conf$color_vars) {
-    if (!(c_var %in% colnames(clin_meta))) next
-
-    clean_vec &lt;- clin_meta[[c_var]]
-    if(length(na.omit(clean_vec)) == 0) next
+    if (!(c_var %in% colnames(plot_df))) next
+    clean_vec &lt;- plot_df[[c_var]]
+    if(all(is.na(clean_vec))) next
 
     if (is.numeric(clean_vec)) {
-      p &lt;- fviz_famd_ind(famd_res, label = &quot;none&quot;, habillage = &quot;none&quot;, col.ind = clean_vec) +
-        scale_color_viridis_c(na.value = &quot;grey85&quot;) +
-        theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var))
+      p &lt;- ggplot(plot_df, aes(x = Dim1, y = Dim2, color = .data[[c_var]])) + geom_point(size = 3, alpha = 0.8) + scale_color_viridis_c(na.value = &quot;grey85&quot;) + theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var), x = &quot;Dimension 1&quot;, y = &quot;Dimension 2&quot;)
     } else {
-      # Use your project color mapper
-      lvl_names &lt;- levels(as.factor(clean_vec))
-      mapped_colors &lt;- project_colors_func(lvl_names)
-      if (all(mapped_colors == &quot;#333333&quot;)) { mapped_colors &lt;- NULL }
+      lvl_names &lt;- levels(as.factor(clean_vec)); mapped_colors &lt;- project_colors_func(lvl_names)
+      if (all(mapped_colors == &quot;#333333&quot;)) { safe_pal &lt;- if(exists(&quot;FALLBACK_CAT_PALETTE&quot;)) FALLBACK_CAT_PALETTE else c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;, &quot;#0072B2&quot;); mapped_colors &lt;- colorRampPalette(safe_pal)(length(lvl_names)); names(mapped_colors) &lt;- lvl_names }
 
-      p &lt;- fviz_famd_ind(famd_res, label = &quot;none&quot;, habillage = as.factor(clean_vec), palette = mapped_colors, addEllipses = TRUE) +
-        theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var))
+      p &lt;- ggplot(plot_df, aes(x = Dim1, y = Dim2, color = as.factor(.data[[c_var]]))) + geom_point(size = 3, alpha = 0.8) + stat_ellipse(type = &quot;norm&quot;, linetype = 2, show.legend = FALSE, alpha = 0.5) + scale_color_manual(values = mapped_colors) + theme_project_base() + labs(title = wrapped_title, subtitle = paste(&quot;Colored by:&quot;, c_var), x = &quot;Dimension 1&quot;, y = &quot;Dimension 2&quot;, color = c_var)
     }
-    overlay_plots[[c_var]] &lt;- p
+
+    # Save individually instead of stitching
+    safe_c_var &lt;- gsub(&quot;[^A-Za-z0-9_.-]&quot;, &quot;_&quot;, c_var)
+    ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Overlay_&quot;, safe_c_var, &quot;.png&quot;)), p, width = 7, height = 6, bg=&quot;white&quot;)
+
+    # Store individually in the plots list
+    plots[[paste0(&quot;overlay_&quot;, c_var)]] &lt;- p
   }
 
-  # Export plots
-  ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Scree.png&quot;)), plots[[&quot;scree&quot;]], width = 7, height = 5, bg=&quot;white&quot;)
+  ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Scree.png&quot;)), plots[[&quot;scree&quot;]], width = 8, height = 6, bg=&quot;white&quot;)
   ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_VarContrib.png&quot;)), plots[[&quot;var_contrib&quot;]], width = 10, height = 8, bg=&quot;white&quot;)
+  png(file.path(famd_sub_dir, paste0(famd_id, &quot;_Top_Drivers_Heatmap.png&quot;)), width=8, height=8, units=&quot;in&quot;, res=300); draw(ht); dev.off()
 
-  if (length(overlay_plots) &gt; 0) {
-    master_grid &lt;- wrap_plots(overlay_plots, ncol = if(length(overlay_plots)&gt;2) 2 else 1)
-    ggsave(file.path(famd_sub_dir, paste0(famd_id, &quot;_Overlays.png&quot;)), master_grid, width = 12, height = 6 * ceiling(length(overlay_plots)/2), bg=&quot;white&quot;)
-    plots[[&quot;overlays&quot;]] &lt;- master_grid
-  }
-
-  # Return the pure numeric coordinate matrix (Rows = Features/Dims, Cols = Patients)
-  famd_matrix &lt;- t(as.data.frame(famd_res$ind$coord))
-
+  # Return Subsetted Matrix
+  famd_matrix &lt;- t(as.data.frame(famd_res$ind$coord[, 1:t_dim, drop = FALSE]))
   return(list(status = &quot;success&quot;, matrix = famd_matrix, plots = plots, famd_obj = famd_res))
 }
 
@@ -3612,7 +3603,7 @@ run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title, db_name) {
   ranked_vec &lt;- setNames(dea_res$t, dea_res$Feature) %&gt;% sort(decreasing = TRUE)
   set.seed(42)
 
-  # Calculate GSEA for ALL pathways (pvalueCutoff = 1) to preserve the exploratory dataframe
+  # Calculate GSEA for ALL pathways
   gsea_res &lt;- clusterProfiler::GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
@@ -3620,9 +3611,14 @@ run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title, db_name) {
   res_df &lt;- as.data.frame(gsea_res) %&gt;% mutate(Status = ifelse(NES &gt; 0, &quot;Up-regulated&quot;, &quot;Down-regulated&quot;))
 
   warning_tag &lt;- if(sum(res_df$p.adjust &lt; omics_config$gsea_p_cutoff) == 0) &quot;\n(Exploratory: No paths passed FDR)&quot; else &quot;&quot;
-  plot_df &lt;- res_df %&gt;% group_by(Status) %&gt;% slice_max(abs(NES), n = 10) %&gt;% ungroup()
 
-  # --- NEW: Injecting the Database Name into all titles ---
+  # Wrap long geneset names for the Dotplot
+  plot_df &lt;- res_df %&gt;%
+    group_by(Status) %&gt;%
+    slice_max(abs(NES), n = 10) %&gt;%
+    ungroup() %&gt;%
+    mutate(Description = stringr::str_wrap(Description, width = 45))
+
   main_title &lt;- str_wrap(sprintf(&quot;GSEA (%s): %s&quot;, db_name, title), width = 60)
   full_title &lt;- paste0(main_title, warning_tag)
 
@@ -3635,30 +3631,41 @@ run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title, db_name) {
     theme(plot.title.position = &quot;plot&quot;, plot.title = element_text(hjust = 0)) +
     labs(title = full_title, y = NULL)
 
-  # STRICT BIOLOGICAL PRE-FILTERING (FDR &lt; 0.1) for Networks
+  # STRICT BIOLOGICAL PRE-FILTERING (FDR &lt; cutoff) for Networks
   gsea_sig &lt;- gsea_res
   gsea_sig@result &lt;- gsea_sig@result %&gt;% filter(p.adjust &lt; omics_config$network_p_cutoff)
+
+  # NOTE: simplify() has been permanently bypassed here due to generic GSEA() incompatibility.
 
   gsea_sim &lt;- if(nrow(gsea_sig@result) &gt;= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
 
   # 2. Ridgeplot
   ridge_title &lt;- str_wrap(sprintf(&quot;Pathways (%s): %s | FDR cutoff: %.2f&quot;, db_name, title, omics_config$network_p_cutoff), width = 60)
-  p_ridge &lt;- if(!is.null(gsea_sim)) {
-    enrichplot::ridgeplot(gsea_sim, showCategory = 15) +
+  p_ridge &lt;- if(nrow(gsea_sig@result) &gt; 0) {
+    enrichplot::ridgeplot(gsea_sig, showCategory = 15) +
+      scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 40)) +
       theme_project_base() +
       labs(title = ridge_title)
   } else NULL
 
-  # 3. Enrichment Map
-  emap_title &lt;- str_wrap(sprintf(&quot;Enrichment Map (%s): %s | FDR cutoff: %.2f&quot;, db_name, title, omics_config$network_p_cutoff), width = 60)
-  p_emap &lt;- if(!is.null(gsea_sim)) {
-    enrichplot::emapplot(
-      gsea_sim, color = &quot;NES&quot;, showCategory = 40, node_label_size = 2.5,
-      size_category = 0.8, size_edge = 0.1, color_edge = &quot;grey60&quot;, min_edge = 0.3
-    ) +
-      theme_project_base() +
-      labs(title = emap_title, subtitle = &quot;Nodes = Pathways | Edges = Shared Genes&quot;)
-  } else NULL
+  # 3. Enrichment Map (MATH SHIELD ACTIVATED)
+  p_emap &lt;- NULL
+  if(!is.null(gsea_sim)) {
+    sim_mat &lt;- gsea_sim@termsim
+    if (!is.null(sim_mat) &amp;&amp; nrow(sim_mat) &gt; 1) {
+      valid_edges &lt;- sum(sim_mat[upper.tri(sim_mat)] &gt;= 0.3, na.rm = TRUE)
+
+      if (valid_edges &gt; 0) {
+        emap_title &lt;- str_wrap(sprintf(&quot;Enrichment Map (%s): %s | FDR cutoff: %.2f&quot;, db_name, title, omics_config$network_p_cutoff), width = 60)
+        p_emap &lt;- enrichplot::emapplot(
+          gsea_sim, color = &quot;NES&quot;, showCategory = 40, node_label_size = 2.5,
+          size_category = 0.8, size_edge = 0.1, color_edge = &quot;grey60&quot;, min_edge = 0.3
+        ) +
+          theme_project_base() +
+          labs(title = emap_title, subtitle = &quot;Nodes = Pathways | Edges = Shared Genes&quot;)
+      }
+    }
+  }
 
   return(list(data = res_df, dotplot = p_dot, ridgeplot = p_ridge, emap = p_emap))
 }
@@ -3687,6 +3694,7 @@ run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_b
   if (length(top_feats) &lt; 2) return(NULL) # Safety catch
 
   plot_mat &lt;- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
+
 
   # 1. Determine which variables to extract for the top annotation
   if (is.null(annotation_vars)) {
@@ -3717,15 +3725,17 @@ run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_b
     col_list[[&quot;cohort_group&quot;]] &lt;- get_project_colors(as.character(unique(clin_sub[[&quot;cohort_group&quot;]])))
   }
 
-  # Explicit Trap: Sex
+  # Explicit Trap: Sex (Now correctly utilizing get_project_colors)
   if (&quot;Sex&quot; %in% valid_vars) {
-    col_list[[&quot;Sex&quot;]] &lt;- setNames(c(COLOR_FEMALE, COLOR_MALE), c(&quot;Female&quot;, &quot;Male&quot;))
+    col_list[[&quot;Sex&quot;]] &lt;- get_project_colors(as.character(unique(clin_sub[[&quot;Sex&quot;]])))
   }
 
   # Explicit Trap: Age
   if (&quot;Age&quot; %in% valid_vars) {
     col_list[[&quot;Age&quot;]] &lt;- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
   }
+
+
 
   # 4. Construct the HeatmapAnnotation object dynamically
   if (ncol(anno_df) &gt; 0) {
