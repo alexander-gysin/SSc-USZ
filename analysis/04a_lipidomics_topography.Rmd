@@ -14,7 +14,7 @@ source(here::here("code", "00_config.R"))
 # Setup and Import
 
 `r what_this_does("Loaded required bioinformatics and visualization packages (UpSetR for missingness intersections).", "Imported the pre-cleaned clinical spine , imputed and sparse lipidomics matrix.", "Sourced the new lipid_engines.R file designed specifically for sparse mass spectrometry data.")`
-```{r setup_and_import}
+```{r setup_and_import, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(patchwork)
 library(here)
