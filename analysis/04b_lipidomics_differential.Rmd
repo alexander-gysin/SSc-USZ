@@ -12,6 +12,7 @@ source(here::here("code", "00_config.R"))
 ```
 
 # Setup and Import
+
 `r what_this_does("Loaded statistical packages including logistf for Firths penalized regression.", "Imported the pre-cleaned clinical spine, clinical data dictionary, and sparse lipidomics matrix.", "Sourced custom lipid omics engines.")`
 
 ```{r setup_and_import, warning=FALSE, message=FALSE}
@@ -47,6 +48,7 @@ total_features <- nrow(lipid_mat)
 ```
 
 # Configurations
+
 `r what_this_does("Configured the Sparsity Triage thresholds and parameterized the Differential Expression routing logic, including the continuous binning toggle.")`
 
 ```{r configurations}
@@ -107,6 +109,7 @@ plot_configs <- list(
 ```
 
 # Sparsity Triage & Binarization
+
 `r what_this_does("Evaluates global missingness across the matrix. Binarizes the data into Presence/Absence and quarantines ultra-sparse features to save statistical power, reserving them for downstream family-level aggregation.")`
 
 ```{r sparsity_triage_and_binarization, results='asis'}
@@ -127,8 +130,9 @@ detection_rates <- rowMeans(binary_mat, na.rm = TRUE)
 testable_lipids <- names(detection_rates[detection_rates >= conf$min_detect_rate])
 ultra_sparse_lipids <- names(detection_rates[detection_rates < conf$min_detect_rate])
 
-# 4. Create final working matrix
+# 4. Create final working matrices
 mat_testable <- binary_mat[testable_lipids, , drop = FALSE]
+mat_testable_raw <- lipid_mat[testable_lipids, , drop = FALSE] 
 
 # 5. Export ultra-sparse list for later Lipid Set Enrichment (LSEA)
 saveRDS(ultra_sparse_lipids, file.path(output_dir_data, "ultra_sparse_lipids_for_LSEA.rds"))
@@ -143,6 +147,7 @@ rm(detection_rates, conf)
 ```
 
 # Differential {.tabset}
+
 `r what_this_does("Dynamically queries the Data Dictionary to determine metadata classes. Routes categorical/binned variables to Fisher's Exact Test and continuous variables to Firth's Penalized Regression. Compiles unified Volcano Plots and saves independent stat modules.")`
 
 ```{r Differential, results='asis'}
@@ -152,17 +157,14 @@ ranked_results_list <- list()
 for (job_id in names(dea_configs)) {
   job <- dea_configs[[job_id]]
   
-  # The Level 2 Header remains normal so it shows up in the TOC!
   cat(sprintf("\n\n## %s\n\n", job$title))
   
   # 1. External Data Injection ---------------------------
   temp_spine <- master_spine
   if (!is.null(job$external_data)) {
     ext_df <- readRDS(job$external_data$file_path)
-    # Strict inner_join ensures we don't accidentally add "ghost" patients
     temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
     
-    # Prevent duplicate binding when running the chunk multiple times
     if (!(job$test_var %in% data_dictionary$Variable)) {
       data_dictionary <- bind_rows(data_dictionary, data.frame(Variable = job$test_var, Class = "Categorical"))
     }
@@ -175,7 +177,6 @@ for (job_id in names(dea_configs)) {
   temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
   target_engine <- "fisher"
   
-  # FIX: Used {.unlisted .unnumbered} to completely banish it from the TOC
   cat(sprintf("### Overview: %s {.unlisted .unnumbered}\n\n", job$title))
   
   if (var_class %in% c("numeric", "integer", "double", "continuous")) {
@@ -224,40 +225,21 @@ for (job_id in names(dea_configs)) {
     
     cat(sprintf("### Volcano Plot: %s {.unlisted .unnumbered}\n\n", job$title))
     if (!is.null(res$plots$volcano)) { 
-      if (interactive()) {
-        # Prints inline in RStudio Viewer
-        print(res$plots$volcano)
-        cat("\n\n")
-      } else {
-        # Injects image link for workflowr HTML output
-        cat(sprintf("<img src='assets/%s/%s_volcano.png' width='100%%' />\n\n", current_file, job_id))
-        cat("\n\n")
-      }
+      if (interactive()) { print(res$plots$volcano); cat("\n\n")
+      } else { cat(sprintf("<img src='assets/%s/%s_volcano.png' width='100%%' />\n\n", current_file, job_id)); cat("\n\n") }
     }
     
     cat(sprintf("### Heatmap: %s {.unlisted .unnumbered}\n\n", job$title))
     if (!is.null(res$plots$heatmap)) { 
-      if (interactive()) {
-        # Prints inline in RStudio Viewer
-        ComplexHeatmap::draw(res$plots$heatmap)
-        cat("\n\n")
-      } else {
-        # Injects image link for workflowr HTML output
-        cat(sprintf("<img src='assets/%s/%s_heatmap.png' width='100%%' />\n\n", current_file, job_id))
-        cat("\n\n")
-      }
+      if (interactive()) { ComplexHeatmap::draw(res$plots$heatmap); cat("\n\n")
+      } else { cat(sprintf("<img src='assets/%s/%s_heatmap.png' width='100%%' />\n\n", current_file, job_id)); cat("\n\n") }
     }
     
-    # Render Exclusion Report
     cat(sprintf("### Exclusion Report: %s {.unlisted .unnumbered}\n\n", job$title))
     cat(sprintf("Out of the %d globally testable lipids, the following were excluded from this specific contrast due to zero mathematical variance between groups.\n\n", nrow(mat_testable)))
-    
     if (nrow(res$tables$failed_features) > 0) {
-      excl_tbl <- res$tables$failed_features %>% 
-        select(Lipid, Method) %>%
-        rename(Failure_Reason = Method) %>%
-        kableExtra::kbl(format = "html") %>% 
-        kableExtra::kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) %>%
+      excl_tbl <- res$tables$failed_features %>% select(Lipid, Method) %>% rename(Failure_Reason = Method) %>%
+        kableExtra::kbl(format = "html") %>% kableExtra::kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) %>%
         kableExtra::scroll_box(height = "300px")
       print(excl_tbl)
       cat("\n\n")
@@ -272,7 +254,63 @@ for (job_id in names(dea_configs)) {
 }
 ```
 
-# Export 
+# Raw Feature Abundances
+`r what_this_does("Generates standalone, high-resolution patchwork grids displaying the raw, log10-transformed intensity distributions for every testable lipid across the requested clinical contrasts. Sorted alphabetically for standardized reference.")`
+
+```{r raw_abundances, fig.width=16, fig.height=15, results='asis'}
+for (job_id in names(dea_configs)) {
+  job <- dea_configs[[job_id]]
+  
+  cat(sprintf("\n\n## %s\n\n", job$title))
+  
+  # 1. External Data Injection
+  temp_spine <- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df <- readRDS(job$external_data$file_path)
+    temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # 2. Filter NAs and handle binning
+  temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
+  }
+  
+  cat(sprintf("### Jitter Distributions: %s {.unlisted .unnumbered}\n\n", job$title))
+  
+  # 3. Execute Plotting Wrapper
+  res <- wrap_raw_abundances(
+    mat_raw = mat_testable_raw, 
+    clin_df = temp_spine, 
+    config = job, 
+    job_name = job_id,
+    out_dir = output_dir_data,
+    assets_dir = assets_dir,
+    project_colors_func = get_project_colors
+  )
+  
+  if (res$status == "success") {
+    if (!is.null(res$plot)) { 
+      if (interactive()) { 
+        print(res$plot)
+        cat("\n\n")
+      } else { 
+        cat(sprintf("<img src='assets/%s/%s_raw_intensities.png' width='100%%' />\n\n", current_file, job_id))
+        cat("\n\n") 
+      }
+    } else {
+      cat("*No valid data to plot.* \n\n")
+    }
+  } else {
+    cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
+  }
+}
+```
+
+
+# Export
+
 `r what_this_does("Aggregates all continuous and categorical statistical outputs, combining them with the quarantined ultra-sparse features, and exports a unified ranked database for structural family-level enrichment analysis.")`
 
 ```{r export}
@@ -292,6 +330,7 @@ saveRDS(lsea_payload, export_path)
 ```
 
 # Appendix
+
 `r what_this_does("Appended the raw underlying R code from the custom lipid omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
 ```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
@@ -301,5 +340,3 @@ saveRDS(lsea_payload, export_path)
 ```{r complete}
 cat("Script 04a Complete! \n")
 ```
-
-
