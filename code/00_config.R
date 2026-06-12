@@ -1,7 +1,5 @@
-# ==============================================================================
 # GLOBAL CONFIGURATION FILE (00_config.R)
 # Project: Systemic Sclerosis Disease Activity Multi-Omics
-# ==============================================================================
 
 # 0. wflow publish, commit and push
 wflow_sync <- function() {
@@ -157,9 +155,7 @@ clinical_domains <- list(
     )
 )
 
-# ------------------------------------------------------------------------------
 # NEW: MASTER COLOR DICTIONARY
-# ------------------------------------------------------------------------------
 # A single, unified function that can map colors for any variable in the project
 get_project_colors <- function(requested_levels, custom_map = NULL) {
   requested_levels <- as.character(requested_levels)
@@ -191,9 +187,7 @@ get_project_colors <- function(requested_levels, custom_map = NULL) {
   return(out_colors)
 }
 
-# ------------------------------------------------------------------------------
 # GLOBAL GGPLOT THEME OVERRIDE
-# ------------------------------------------------------------------------------
 theme_project_base <- function(base_size = 14) {
   theme_minimal(base_size = base_size) +
     theme(

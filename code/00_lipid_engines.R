@@ -401,90 +401,91 @@ worker_plot_phenotype_completeness <- function(mat, clin_df, clin_dict, config, 
 #' Wrapper: Sparse Differential Expression Analysis
 #' Orchestrates the binarized statistical testing, handles FDR correction,
 #' and dynamically routes output creation.
-wrap_sparse_dea <- function(mat, clin_df, config, engine, job_name, out_dir) {
+wrap_sparse_dea <- function(mat_bin, clin_df, config, engine, job_name, out_dir, assets_dir, project_colors_func) {
 
-  # --- NEW: Explicitly isolate the requested contrast groups ---
   if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
     clin_df <- clin_df %>%
       dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
   }
 
-  # 1. Subject Alignment & Validation
-  common_samples <- intersect(colnames(mat), clin_df$Subject_ID)
+  common_samples <- intersect(colnames(mat_bin), clin_df$Subject_ID)
 
   if (length(common_samples) < 10) {
     return(list(status = "error", error_msg = "Fewer than 10 overlapping subjects found."))
   }
 
-  mat_sub <- mat[, common_samples, drop = FALSE]
+  mat_bin_sub <- mat_bin[, common_samples, drop = FALSE]
+
   clin_sub <- clin_df %>% filter(Subject_ID %in% common_samples)
-
-  # Ensure exact ordering to prevent metadata mismatch
   clin_sub <- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
-  clin_vec <- clin_sub[[config$test_var]]
 
-  # 2. Iterate and Execute Statistical Workers
-  results_list <- lapply(rownames(mat_sub), function(lipid) {
-    lipid_vec <- mat_sub[lipid, ]
-
-    # Route to the correct mathematical engine
-    if (engine == "fisher") {
-      res <- worker_run_fishers_exact(lipid_vec, clin_vec)
-    } else if (engine == "firth") {
-      res <- worker_run_firth_logistic(lipid_vec, clin_vec)
-    } else {
-      stop("Unknown statistical engine requested.")
-    }
-
-    # Prepend Lipid name
-    res <- cbind(Lipid = lipid, res)
-    return(res)
-  })
-
-  # 3. Post-Processing & Multiple Testing Correction
-  results_df <- do.call(rbind, results_list) %>%
-    # Drop lipids that failed mathematically (e.g., zero variance in this specific slice)
-    dplyr::filter(!is.na(P_Value)) %>%
-    dplyr::mutate(
-      FDR = p.adjust(P_Value, method = "BH")
-    ) %>%
-    dplyr::arrange(P_Value)
-
-  sig_df <- results_df %>% dplyr::filter(FDR < config$p_cutoff)
-
-  # 4. Visualization Routing
-  p_volc <- worker_plot_volcano(results_df, config, job_name)
-
-  # 5. Dynamic Export
-  write.csv(results_df, file.path(out_dir, paste0(job_name, "_full_results.csv")), row.names = FALSE)
-
-  if (!is.null(p_volc)) {
-    ggsave(
-      filename = file.path(out_dir, paste0(job_name, "_volcano.png")),
-      plot = p_volc,
-      width = 8, height = 6, dpi = 300, bg = "white"
-    )
+  if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
+    clin_vec_stat <- ifelse(clin_sub[[config$test_var]] %in% config$target_groups, "Target", "Reference")
+  } else {
+    clin_vec_stat <- clin_sub[[config$test_var]]
   }
 
-  # 6. Compile Output
+  clin_vec_plot <- clin_sub[[config$test_var]]
+
+  results_list <- lapply(rownames(mat_bin_sub), function(lipid) {
+    lipid_vec <- mat_bin_sub[lipid, ]
+    if (engine == "fisher") res <- worker_run_fishers_exact(lipid_vec, clin_vec_stat)
+    else if (engine == "firth") res <- worker_run_firth_logistic(lipid_vec, clin_vec_stat)
+
+    return(cbind(Lipid = lipid, res))
+  })
+
+  raw_results_df <- do.call(rbind, results_list)
+  failed_df <- raw_results_df %>% dplyr::filter(is.na(P_Value))
+
+  results_df <- raw_results_df %>%
+    dplyr::filter(!is.na(P_Value)) %>%
+    dplyr::mutate(FDR = p.adjust(P_Value, method = "BH")) %>%
+    dplyr::arrange(P_Value)
+
+  fc_thresh <- if(!is.null(config$fc_cutoff)) config$fc_cutoff else 0
+  sig_df <- results_df %>% dplyr::filter(FDR < config$fdr_cutoff & abs(Log2OR) >= fc_thresh)
+
+  p_volc <- worker_plot_volcano(results_df, config, config$title)
+
+  p_heat <- worker_plot_dea_heatmap(
+    mat = mat_bin_sub,
+    clin_vec = clin_vec_plot,
+    clin_var_name = config$test_var,
+    results_df = results_df,
+    project_colors_func = project_colors_func,
+    job_title = config$title
+  )
+
+  write.csv(results_df, file.path(out_dir, paste0(job_name, "_full_results.csv")), row.names = FALSE)
+  write.csv(failed_df, file.path(out_dir, paste0(job_name, "_exclusion_report.csv")), row.names = FALSE)
+
+  if (!is.null(p_volc)) {
+    ggsave(file.path(out_dir, paste0(job_name, "_volcano.png")), plot = p_volc, width = 8, height = 6, dpi = 300, bg = "white")
+    ggsave(file.path(assets_dir, paste0(job_name, "_volcano.png")), plot = p_volc, width = 8, height = 6, dpi = 300, bg = "white")
+  }
+
+
+  png(file.path(out_dir, paste0(job_name, "_heatmap.png")), width = 8, height = 8, units = "in", res = 300)
+  ComplexHeatmap::draw(p_heat)
+  invisible(dev.off())
+
+  png(file.path(assets_dir, paste0(job_name, "_heatmap.png")), width = 8, height = 8, units = "in", res = 300)
+  ComplexHeatmap::draw(p_heat)
+  invisible(dev.off())
+
   return(list(
     status = "success",
-    tables = list(
-      full_results = results_df,
-      significant_features = sig_df
-    ),
-    plots = list(volcano = p_volc)
+    tables = list(full_results = results_df, significant_features = sig_df, failed_features = failed_df),
+    plots = list(volcano = p_volc, heatmap = p_heat)
   ))
 }
 
-
-# PART 4: WORKERS (Statistical Engines & DEA Plots) ----------------------------
+# PART 4: WORKERS  -----------------------------------------------------------
 
 #' Worker: Fisher's Exact Test
-#' Calculates probability for categorical clinical variables vs binarized lipids.
 worker_run_fishers_exact <- function(lipid_vec, clin_vec) {
 
-  # Ensure factors drop unrepresented levels to strictly enforce 2x2 if filtered
   clin_vec <- droplevels(as.factor(clin_vec))
 
   if (length(unique(na.omit(clin_vec))) < 2 || length(unique(na.omit(lipid_vec))) < 2) {
@@ -496,13 +497,12 @@ worker_run_fishers_exact <- function(lipid_vec, clin_vec) {
 
   p_val <- ft$p.value
 
-  # --- NEW: Safely extract odds ratio ONLY if it exists (2x2 tables) ---
   if (!is.null(ft$estimate)) {
     or_val <- as.numeric(ft$estimate)
     log2_or <- log2(or_val + 1e-9)
   } else {
-    or_val <- NA_real_     # Fallback for >2x2 tables
-    log2_or <- NA_real_    # Fallback for >2x2 tables
+    or_val <- NA_real_
+    log2_or <- NA_real_
   }
 
   return(data.frame(
@@ -514,19 +514,14 @@ worker_run_fishers_exact <- function(lipid_vec, clin_vec) {
 }
 
 #' Worker: Firth's Penalized Logistic Regression
-#' Calculates probability for continuous clinical variables, penalizing likelihood to prevent
-#' infinite standard errors caused by quasi-separation in sparse features.
 worker_run_firth_logistic <- function(lipid_vec, clin_vec) {
 
-  # Combine and clean NAs for modeling
   df <- data.frame(Y = as.numeric(lipid_vec), X = as.numeric(clin_vec)) %>% na.omit()
 
-  # Safeguard: Ensure sufficient N and variance for a likelihood model
   if(nrow(df) < 10 || length(unique(df$Y)) < 2) {
     return(data.frame(P_Value = NA_real_, Estimate_OR = NA_real_, Log2OR = NA_real_, Method = "Firth (Low N/Var)"))
   }
 
-  # Fit Firth's Model inside tryCatch to prevent pipeline crashes on failure to converge
   fit <- tryCatch({
     logistf::logistf(Y ~ X, data = df)
   }, error = function(e) return(NULL))
@@ -535,14 +530,9 @@ worker_run_firth_logistic <- function(lipid_vec, clin_vec) {
     return(data.frame(P_Value = NA_real_, Estimate_OR = NA_real_, Log2OR = NA_real_, Method = "Firth (Convergence Fail)"))
   }
 
-  # Extract P-value (from Profile Likelihood by default in logistf)
   p_val <- unname(fit$prob["X"])
-
-  # Extract Coefficient (which is Natural Log Odds)
   coef_x <- unname(fit$coef["X"])
   or_x <- exp(coef_x)
-
-  # Convert Natural Log Odds to base-2 Log Odds Ratio for standard volcano comparability
   log2_or <- coef_x / log(2)
 
   return(data.frame(
@@ -554,65 +544,251 @@ worker_run_firth_logistic <- function(lipid_vec, clin_vec) {
 }
 
 #' Worker: Standard Volcano Plot
-worker_plot_volcano <- function(res_df, config, job_name) {
+worker_plot_volcano <- function(res_df, config, job_title) {
 
-  # 1. Clean data for plotting
+  fc_thresh  <- if(!is.null(config$fc_cutoff)) config$fc_cutoff else 1.0
+  fdr_thresh <- if(!is.null(config$fdr_cutoff)) config$fdr_cutoff else 0.05
+
   plot_df <- res_df %>%
     dplyr::mutate(
-      # Cap extreme Log2OR values (e.g. infinite separation in Fisher's) for visual scale
       Plot_Log2OR = ifelse(Log2OR > 10, 10, ifelse(Log2OR < -10, -10, Log2OR)),
-      NegLog10P = -log10(P_Value),
-      Is_Significant = ifelse(FDR < config$p_cutoff, "Significant", "Not Significant")
+      NegLog10FDR = -log10(FDR + 1e-300),
+      Is_Significant = ifelse(FDR < fdr_thresh & abs(Log2OR) >= fc_thresh, "Significant", "Not Significant")
     )
 
-  # 2. Extract Top Hits for Labeling
   top_hits <- plot_df %>%
     dplyr::filter(Is_Significant == "Significant") %>%
-    dplyr::slice_min(order_by = P_Value, n = 10) # Top 10 most significant
+    dplyr::slice_max(order_by = NegLog10FDR, n = 10)
 
-  # 3. Build Plot
-  p <- ggplot(plot_df, aes(x = Plot_Log2OR, y = NegLog10P)) +
+  p <- ggplot(plot_df, aes(x = Plot_Log2OR, y = NegLog10FDR)) +
+    geom_point(data = subset(plot_df, Is_Significant == "Not Significant"), color = "grey70", alpha = 0.5, size = 1.5) +
+    geom_point(data = subset(plot_df, Is_Significant == "Significant"), color = "firebrick", alpha = 0.8, size = 2.5) +
 
-    # Background Points (Non-Significant)
-    geom_point(
-      data = subset(plot_df, Is_Significant == "Not Significant"),
-      color = "grey70", alpha = 0.5, size = 1.5
-    ) +
-
-    # Foreground Points (Significant)
-    geom_point(
-      data = subset(plot_df, Is_Significant == "Significant"),
-      color = "firebrick", alpha = 0.8, size = 2.5
-    ) +
-
-    # Threshold Lines
-    geom_hline(
-      yintercept = -log10(max(plot_df$P_Value[plot_df$FDR < config$p_cutoff], na.rm=T)),
-      linetype = "dashed", color = "navy", alpha = 0.6
-    ) +
+    geom_hline(yintercept = -log10(fdr_thresh), linetype = "dashed", color = "navy", alpha = 0.6) +
+    geom_vline(xintercept = c(-fc_thresh, fc_thresh), linetype = "dashed", color = "navy", alpha = 0.6) +
     geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
 
-    # Labels
-    ggrepel::geom_text_repel(
-      data = top_hits,
-      aes(label = Lipid),
-      size = 3.5,
-      box.padding = 0.5,
-      max.overlaps = Inf
-    ) +
+    ggrepel::geom_text_repel(data = top_hits, aes(label = Lipid), size = 3.5, box.padding = 0.5, max.overlaps = Inf) +
 
-    # Formatting
     theme_minimal() +
-    theme(
-      plot.title = element_text(face = "bold", size = 14),
-      axis.title = element_text(size = 12),
-      panel.grid.minor = element_blank()
-    ) +
-    labs(
-      title = paste("Differential Expression:", gsub("_", " ", job_name)),
-      x = "Log2(Odds Ratio)",
-      y = "-Log10(P-Value)"
-    )
+    theme(plot.title = element_text(face = "bold", size = 14), axis.title = element_text(size = 12), panel.grid.minor = element_blank()) +
+
+    # Dynamic Title Injection
+    labs(title = sprintf("Volcano (FDR): %s", job_title), x = "Log2(Odds Ratio)", y = "-Log10(FDR)")
 
   return(p)
+}
+
+#' Worker: Sparse DEA Heatmap
+worker_plot_dea_heatmap <- function(mat, clin_vec, clin_var_name, results_df, project_colors_func, job_title) {
+
+  ranked_lipids <- results_df %>% dplyr::filter(!is.na(P_Value)) %>% dplyr::arrange(P_Value) %>% dplyr::pull(Lipid)
+  ranked_lipids <- intersect(ranked_lipids, rownames(mat))
+  plot_mat <- mat[ranked_lipids, , drop = FALSE]
+
+  if (is.numeric(clin_vec)) {
+    low_col <- if(exists("COLOR_AGE_LOW")) COLOR_AGE_LOW else "white"
+    high_col <- if(exists("COLOR_AGE_HIGH")) COLOR_AGE_HIGH else "purple4"
+    col_map <- circlize::colorRamp2(
+      c(min(clin_vec, na.rm = TRUE), max(clin_vec, na.rm = TRUE)),
+      c(low_col, high_col)
+    )
+  } else {
+    unique_levels <- as.character(na.omit(unique(clin_vec)))
+    col_map <- project_colors_func(unique_levels)
+  }
+
+  ha_col <- ComplexHeatmap::HeatmapAnnotation(
+    df = data.frame(Pheno = clin_vec),
+    col = list(Pheno = col_map),
+    na_col = "grey80",
+    annotation_name_side = "left",
+    annotation_legend_param = list(Pheno = list(title = clin_var_name))
+  )
+
+  col_fun <- circlize::colorRamp2(c(0, 1), c("grey90", "firebrick"))
+
+  ht <- ComplexHeatmap::Heatmap(
+    plot_mat,
+    name = "Detection",
+    col = col_fun,
+    top_annotation = ha_col,
+    show_row_names = TRUE,
+    row_names_gp = grid::gpar(fontsize = 8),
+    show_column_names = FALSE,
+    cluster_columns = TRUE,
+    cluster_rows = TRUE,
+    row_title = sprintf("Tested Lipids (n=%d)", length(ranked_lipids)),
+
+    # Dynamic Title Injection (adds Job Title to the top of the Heatmap footnote)
+    column_title = sprintf("%s\nGrouped by %s\n\n*Note: Lipids with zero variance across groups are excluded.", job_title, clin_var_name),
+    column_title_side = "top",
+    column_title_gp = grid::gpar(fontsize = 10, fontface = "bold"),
+    border = TRUE
+  )
+
+  return(ht)
+}
+
+
+
+# PART 5: WRAPPER & WORKER (Raw Abundances & Mann-Whitney U) -------------------
+
+#' Wrapper: Raw Abundance Plotting
+#' Merges contrast groups, calculates conditional Wilcoxon FDR, and triggers 4-col patchwork.
+wrap_raw_abundances <- function(mat_raw, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
+
+  if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
+    clin_df <- clin_df %>% dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
+  }
+
+  common_samples <- intersect(colnames(mat_raw), clin_df$Subject_ID)
+  if (length(common_samples) < 5) return(list(status = "error", error_msg = "Insufficient subjects."))
+
+  mat_sub <- mat_raw[, common_samples, drop = FALSE]
+  clin_sub <- clin_df %>% filter(Subject_ID %in% common_samples)
+  clin_sub <- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
+
+  is_cont <- is.numeric(clin_sub[[config$test_var]])
+
+  # 1. Group Merging & Formatting
+  if (!is_cont) {
+    target_name <- paste(config$target_groups, collapse = "+")
+    ref_name <- paste(config$ref_groups, collapse = "+")
+
+    clin_sub$Plot_Group <- dplyr::case_when(
+      clin_sub[[config$test_var]] %in% config$target_groups ~ target_name,
+      clin_sub[[config$test_var]] %in% config$ref_groups ~ ref_name,
+      TRUE ~ NA_character_
+    )
+    clin_vec_plot <- clin_sub$Plot_Group
+  } else {
+    target_name <- "High"
+    ref_name <- "Low"
+    clin_vec_plot <- clin_sub[[config$test_var]]
+  }
+
+  # 2. Statistical Testing (Conditional Abundance)
+  stats_list <- lapply(rownames(mat_sub), function(lipid) {
+    val_vec <- mat_sub[lipid, ]
+
+    # Isolate strictly detected data
+    valid_idx <- !is.na(val_vec) & val_vec > 0 & !is.na(clin_vec_plot)
+    v_valid <- val_vec[valid_idx]
+    g_valid <- clin_vec_plot[valid_idx]
+
+    if (!is_cont) {
+      # Mann-Whitney U for Categorical Contasts
+      v_target <- v_valid[g_valid == target_name]
+      v_ref <- v_valid[g_valid == ref_name]
+      if (length(v_target) >= 3 && length(v_ref) >= 3) {
+        p_val <- suppressWarnings(wilcox.test(v_target, v_ref, exact = FALSE)$p.value)
+      } else { p_val <- NA_real_ }
+    } else {
+      # Spearman Correlation for Continuous Contasts
+      if (length(v_valid) >= 5) {
+        p_val <- suppressWarnings(cor.test(v_valid, g_valid, method = "spearman")$p.value)
+      } else { p_val <- NA_real_ }
+    }
+    return(data.frame(Lipid = lipid, P_Value = p_val, stringsAsFactors = FALSE))
+  })
+
+  stats_df <- do.call(rbind, stats_list)
+  stats_df$FDR <- p.adjust(stats_df$P_Value, method = "BH")
+
+  # 3. Call Plotting Worker
+  p_raw <- worker_plot_raw_intensities(
+    mat_raw = mat_sub,
+    clin_vec = clin_vec_plot,
+    stats_df = stats_df,
+    is_cont = is_cont,
+    target_name = target_name,
+    ref_name = ref_name,
+    config = config,
+    project_colors_func = project_colors_func
+  )
+
+  # 4. Save dynamically scaled image (4 columns wide)
+  if (!is.null(p_raw)) {
+    grid_height <- max(4, ceiling(nrow(mat_sub) / 4) * 3.5)
+    file_name <- paste0(job_name, "_raw_intensities.png")
+    ggsave(file.path(out_dir, file_name), plot = p_raw, width = 16, height = grid_height, dpi = 300, bg = "white")
+    ggsave(file.path(assets_dir, file_name), plot = p_raw, width = 16, height = grid_height, dpi = 300, bg = "white")
+  }
+
+  return(list(status = "success", plot = p_raw))
+}
+
+#' Worker: Plot Raw Intensities (Patchwork Grid)
+worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, target_name, ref_name, config, project_colors_func) {
+
+  target_lipids <- sort(rownames(mat_raw))
+  if (length(target_lipids) == 0) return(NULL)
+
+  plot_list <- list()
+
+  if (is_cont) {
+    plot_x <- as.factor(dplyr::ntile(clin_vec, 3))
+    levels(plot_x) <- c("Low", "Mid", "High")
+  } else {
+    plot_x <- factor(clin_vec, levels = c(ref_name, target_name))
+
+    # Safe Color Mapping: Inherit color from the first group in the vector
+    target_col <- project_colors_func(config$target_groups[1])
+    ref_col <- project_colors_func(config$ref_groups[1])
+    col_map <- setNames(c(target_col, ref_col), c(target_name, ref_name))
+  }
+
+  for (lipid in target_lipids) {
+    df <- data.frame(Pheno = plot_x, Value = mat_raw[lipid, ])
+    df_clean <- df %>% dplyr::filter(!is.na(Value) & Value > 0)
+
+    if (nrow(df_clean) == 0) next
+
+    df_clean$Log10Value <- log10(df_clean$Value)
+
+    # Dynamic Headers (FDR + N counts)
+    fdr_val <- stats_df$FDR[stats_df$Lipid == lipid]
+    test_str <- if(is_cont) "Spearman" else "MWU"
+    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2f", test_str, fdr_val)
+
+    if (!is_cont) {
+      g_counts <- table(df_clean$Pheno)
+      n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
+      n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
+      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      p_cols <- col_map
+    } else {
+      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
+    }
+
+    p <- ggplot(df_clean, aes(x = Pheno, y = Log10Value, color = Pheno)) +
+      geom_jitter(width = 0.2, alpha = 0.8, size = 2) +
+      scale_color_manual(values = p_cols) +
+      theme_minimal() +
+      theme(
+        legend.position = "none",
+        plot.title = element_text(size = 13, face = "bold"),
+        plot.subtitle = element_text(size = 11),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 0, size = 12),
+        panel.grid.minor = element_blank()
+      ) +
+      labs(title = lipid, subtitle = sub_str, y = "Log10(Intensity)")
+
+    plot_list[[lipid]] <- p
+  }
+
+  if (length(plot_list) == 0) return(NULL)
+
+  # 4 Column Patchwork Layout
+  grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
+    patchwork::plot_annotation(
+      title = sprintf("Raw Conditional Abundances: %s", config$title),
+      subtitle = "Values log10-transformed after excluding non-detected features.",
+      theme = theme(plot.title = element_text(size = 16, face = "bold"))
+    )
+
+  return(grid_plot)
 }
