@@ -1,6 +1,6 @@
 ---
 title: "Sparse Lipidomics: Differential Expression & LSEA Prep"
-author: "Your Name"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options: 
@@ -14,7 +14,7 @@ source(here::here("code", "00_config.R"))
 # Setup and Import
 `r what_this_does("Loaded statistical packages including logistf for Firths penalized regression.", "Imported the pre-cleaned clinical spine, clinical data dictionary, and sparse lipidomics matrix.", "Sourced custom lipid omics engines.")`
 
-```{r setup_and_import}
+```{r setup_and_import, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(patchwork)
 library(here)
@@ -29,6 +29,10 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 current_file <- "04b_lipidomics_differential"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Asset paths (Public/GitHub accessible)
+assets_dir <- here::here("docs", "assets", current_file)
+if (!dir.exists(assets_dir)) dir.create(assets_dir, recursive = TRUE)
 
 # Source Configuration & Engines
 source(here::here("code", "00_lipid_engines.R"))
@@ -55,29 +59,39 @@ sparsity_configs <- list(
 )
 
 # 2. DEA Routing Configs ---------------------------
-# Note: Engine choice is automatic based on the clinical_data_dictionary Class.
 dea_configs <- list(
   job_active_vs_nonactive = list(
-    title = "ACtive vs. Non-Active",
+    title = "Active vs. Non-Active",
     test_var = "cohort_group",
     target_groups = c("Active"),
     ref_groups = c("Non-Active"),
-    bin_continuous = FALSE,  # N/A for categorical, but safely ignored
-    p_cutoff = 0.05
+    bin_continuous = FALSE,  
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
   ),
   
-  job_age_continuous = list(
-    title = "Age (Firth's)",
-    test_var = "Age",
-    bin_continuous = FALSE,  # Routes to Firth's Penalized Regression
-    p_cutoff = 0.05
+  job_ssc_vs_ctrl = list(
+    title = "SSc vs. Control",
+    test_var = "cohort_group",
+    target_groups = c("Active", "Non-Active"),
+    ref_groups = c("Control"),
+    bin_continuous = FALSE, 
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
   ),
   
-  job_age_binned = list(
-    title = "Age (Fisher's)",
-    test_var = "Age",
-    bin_continuous = TRUE,   # Bins at median, routes to Fisher's
-    p_cutoff = 0.05
+  job_cluster_1_vs_2 = list(
+    title = "Cluster 1 vs Cluster 2",
+    test_var = "kmeans_Cluster",
+    target_groups = c("Cluster 1"),
+    ref_groups = c("Cluster 2"),
+    bin_continuous = FALSE,
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0,
+    external_data = list(
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
+      join_col = "Subject_ID"
+    )
   )
 )
 
@@ -95,7 +109,7 @@ plot_configs <- list(
 # Sparsity Triage & Binarization
 `r what_this_does("Evaluates global missingness across the matrix. Binarizes the data into Presence/Absence and quarantines ultra-sparse features to save statistical power, reserving them for downstream family-level aggregation.")`
 
-```{r}
+```{r sparsity_triage_and_binarization, results='asis'}
 # Triage Math ---------------------------
 conf <- sparsity_configs$global_triage
 
@@ -119,45 +133,58 @@ mat_testable <- binary_mat[testable_lipids, , drop = FALSE]
 # 5. Export ultra-sparse list for later Lipid Set Enrichment (LSEA)
 saveRDS(ultra_sparse_lipids, file.path(output_dir_data, "ultra_sparse_lipids_for_LSEA.rds"))
 
+cat(c(sprintf("### Triage Summary {.unlisted .unnumbered}\n")), 
+    sprintf("* **Total Lipids Input:** %d\n", nrow(lipid_mat)),
+    sprintf("* **Testable Lipids (Passed %.0f%% threshold):** %d\n", conf$min_detect_rate * 100, length(testable_lipids)),
+    sprintf("* **Ultra-Sparse Lipids (Quarantined for LSEA):** %d\n\n", length(ultra_sparse_lipids)))
+
 # Cleanup ---------------------------
 rm(detection_rates, conf)
 ```
 
-# Differential Routing Engine {.tabset}
+# Differential {.tabset}
 `r what_this_does("Dynamically queries the Data Dictionary to determine metadata classes. Routes categorical/binned variables to Fisher's Exact Test and continuous variables to Firth's Penalized Regression. Compiles unified Volcano Plots and saves independent stat modules.")`
 
-```{r Differential}
+```{r Differential, results='asis'}
 # Global storage for LSEA ranking
 ranked_results_list <- list()
 
 for (job_id in names(dea_configs)) {
   job <- dea_configs[[job_id]]
   
+  # The Level 2 Header remains normal so it shows up in the TOC!
   cat(sprintf("\n\n## %s\n\n", job$title))
   
-  # 1. Dictionary Lookup ---------------------------
-  var_class <- data_dictionary %>% 
-    filter(Variable == job$test_var) %>% 
-    pull(Class) %>% 
-    tolower()
+  # 1. External Data Injection ---------------------------
+  temp_spine <- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df <- readRDS(job$external_data$file_path)
+    # Strict inner_join ensures we don't accidentally add "ghost" patients
+    temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
     
-  if (length(var_class) == 0) var_class <- "unknown"
+    # Prevent duplicate binding when running the chunk multiple times
+    if (!(job$test_var %in% data_dictionary$Variable)) {
+      data_dictionary <- bind_rows(data_dictionary, data.frame(Variable = job$test_var, Class = "Categorical"))
+    }
+  }
   
-  # 2. Pre-processing & Engine Assignment ---------------------------
-  temp_spine <- master_spine %>% filter(!is.na(.data[[job$test_var]]))
+  # 2. Dictionary Lookup & Pre-processing ---------------------------
+  var_class <- data_dictionary %>% filter(Variable == job$test_var) %>% pull(Class) %>% tolower()
+  var_class <- if (length(var_class) > 0) var_class[1] else "unknown"
+  
+  temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
   target_engine <- "fisher"
+  
+  # FIX: Used {.unlisted .unnumbered} to completely banish it from the TOC
+  cat(sprintf("### Overview: %s {.unlisted .unnumbered}\n\n", job$title))
   
   if (var_class %in% c("numeric", "integer", "double", "continuous")) {
     if (isTRUE(job$bin_continuous)) {
-      # Binning Continuous -> Fisher
       median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
-      temp_spine <- temp_spine %>%
-        mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
+      temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
       target_engine <- "fisher"
       cat(sprintf("*Note: %s was binned at median (%.2f) and routed to Fisher's Exact Test.*\n\n", job$test_var, median_val))
-      
     } else {
-      # Raw Continuous -> Firth
       target_engine <- "firth"
       cat(sprintf("*Note: %s is continuous and was routed to Firth's Penalized Logistic Regression.*\n\n", job$test_var))
     }
@@ -166,31 +193,28 @@ for (job_id in names(dea_configs)) {
   }
   
   # 3. Execute Statistical Wrapper ---------------------------
-  # (Assuming wrap_sparse_dea calls your worker_run_fishers_exact / worker_run_firth_logistic)
   res <- wrap_sparse_dea(
     mat = mat_testable, 
     clin_df = temp_spine, 
     config = job, 
     engine = target_engine,
     job_name = job_id,
-    out_dir = output_dir_data
+    out_dir = output_dir_data,
+    assets_dir = assets_dir,                  
+    project_colors_func = get_project_colors 
   )
   
   if (res$status == "success") {
     
-    # Store for LSEA 
     ranked_results_list[[job_id]] <- res$tables$full_results
     saveRDS(res$tables$full_results, file.path(output_dir_data, sprintf("%s_full_stats.rds", job_id)))
     
     # Render Output Table
+    cat(sprintf("### Significant Lipids: %s {.unlisted .unnumbered}\n\n", job$title))
     if (nrow(res$tables$significant_features) > 0) {
       tbl <- head(res$tables$significant_features, 15) %>% 
-        mutate(
-          Log2OR = round(Log2OR, 2), 
-          P_Value = formatC(P_Value, format = "e", digits = 2),
-          FDR = formatC(FDR, format = "e", digits = 2)
-        ) %>%
-        kableExtra::kbl(format = "html", caption = sprintf("Top Significant Lipids: %s", job$title)) %>% 
+        mutate(Log2OR = round(Log2OR, 2), P_Value = formatC(P_Value, format = "e", digits = 2), FDR = formatC(FDR, format = "e", digits = 2)) %>%
+        kableExtra::kbl(format = "html", caption = sprintf("Top Hits: %s", job$title)) %>% 
         kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
       print(tbl)
       cat("\n\n") 
@@ -198,18 +222,52 @@ for (job_id in names(dea_configs)) {
       cat("*No significant features survived FDR correction.* \n\n")
     }
     
-    # Render Volcano Plot (Dots)
-    if (!is.null(res$plots$volcano)) {
-      # Standard dot-based volcano plot returned from the worker
-      print(res$plots$volcano)
-      cat("\n\n") 
+    cat(sprintf("### Volcano Plot: %s {.unlisted .unnumbered}\n\n", job$title))
+    if (!is.null(res$plots$volcano)) { 
+      if (interactive()) {
+        # Prints inline in RStudio Viewer
+        print(res$plots$volcano)
+        cat("\n\n")
+      } else {
+        # Injects image link for workflowr HTML output
+        cat(sprintf("<img src='assets/%s/%s_volcano.png' width='100%%' />\n\n", current_file, job_id))
+        cat("\n\n")
+      }
+    }
+    
+    cat(sprintf("### Heatmap: %s {.unlisted .unnumbered}\n\n", job$title))
+    if (!is.null(res$plots$heatmap)) { 
+      if (interactive()) {
+        # Prints inline in RStudio Viewer
+        ComplexHeatmap::draw(res$plots$heatmap)
+        cat("\n\n")
+      } else {
+        # Injects image link for workflowr HTML output
+        cat(sprintf("<img src='assets/%s/%s_heatmap.png' width='100%%' />\n\n", current_file, job_id))
+        cat("\n\n")
+      }
+    }
+    
+    # Render Exclusion Report
+    cat(sprintf("### Exclusion Report: %s {.unlisted .unnumbered}\n\n", job$title))
+    cat(sprintf("Out of the %d globally testable lipids, the following were excluded from this specific contrast due to zero mathematical variance between groups.\n\n", nrow(mat_testable)))
+    
+    if (nrow(res$tables$failed_features) > 0) {
+      excl_tbl <- res$tables$failed_features %>% 
+        select(Lipid, Method) %>%
+        rename(Failure_Reason = Method) %>%
+        kableExtra::kbl(format = "html") %>% 
+        kableExtra::kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE) %>%
+        kableExtra::scroll_box(height = "300px")
+      print(excl_tbl)
+      cat("\n\n")
+    } else {
+      cat("*All lipids possessed sufficient variance to be tested.* \n\n")
     }
     
   } else {
      cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
   }
-  
-  # Cleanup temp spine to save memory
   rm(temp_spine, var_class, target_engine, res)
 }
 ```
@@ -230,7 +288,7 @@ export_path <- file.path(output_dir_data, "LSEA_unified_payload.rds")
 saveRDS(lsea_payload, export_path)
 
 # Cleanup ---------------------------
-rm(lsea_payload, ranked_results_list)
+#rm(lsea_payload, ranked_results_list)
 ```
 
 # Appendix
