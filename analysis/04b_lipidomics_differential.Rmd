@@ -254,7 +254,7 @@ for (job_id in names(dea_configs)) {
 }
 ```
 
-# Raw Feature Abundances
+# Raw Feature Abundances {.tabset}
 `r what_this_does("Generates standalone, high-resolution patchwork grids displaying the raw, log10-transformed intensity distributions for every testable lipid across the requested clinical contrasts. Sorted alphabetically for standardized reference.")`
 
 ```{r raw_abundances, fig.width=16, fig.height=15, results='asis'}
