@@ -629,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9f0bc9e89b8e47b6604187ef0c59068c32c626c9targetblank9f0bc9ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree99456f126e73a7341825f9da289c9cf27dba57aetargetblank99456f1a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9f0bc9e89b8e47b6604187ef0c59068c32c626c9" target="_blank">9f0bc9e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/99456f126e73a7341825f9da289c9cf27dba57ae" target="_blank">99456f1</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9f0bc9e89b8e47b6604187ef0c59068c32c626c9targetblank9f0bc9ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree99456f126e73a7341825f9da289c9cf27dba57aetargetblank99456f1a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -647,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9f0bc9e89b8e47b6604187ef0c59068c32c626c9" target="_blank">9f0bc9e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/99456f126e73a7341825f9da289c9cf27dba57ae" target="_blank">99456f1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -732,6 +732,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/99456f126e73a7341825f9da289c9cf27dba57ae/analysis/04b_lipidomics_differential.Rmd" target="_blank">99456f1</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-12
+</td>
+<td>
+added raw feature abundance plots, not finished yet
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/8a423108e68b1b7e5615b4984dbe88da6d94818d/docs/04b_lipidomics_differential.html" target="_blank">8a42310</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -935,8 +969,9 @@ detection_rates &lt;- rowMeans(binary_mat, na.rm = TRUE)
 testable_lipids &lt;- names(detection_rates[detection_rates &gt;= conf$min_detect_rate])
 ultra_sparse_lipids &lt;- names(detection_rates[detection_rates &lt; conf$min_detect_rate])
 
-# 4. Create final working matrix
+# 4. Create final working matrices
 mat_testable &lt;- binary_mat[testable_lipids, , drop = FALSE]
+mat_testable_raw &lt;- lipid_mat[testable_lipids, , drop = FALSE] 
 
 # 5. Export ultra-sparse list for later Lipid Set Enrichment (LSEA)
 saveRDS(ultra_sparse_lipids, file.path(output_dir_data, &quot;ultra_sparse_lipids_for_LSEA.rds&quot;))
@@ -975,17 +1010,14 @@ ranked_results_list &lt;- list()
 for (job_id in names(dea_configs)) {
   job &lt;- dea_configs[[job_id]]
   
-  # The Level 2 Header remains normal so it shows up in the TOC!
   cat(sprintf(&quot;\n\n## %s\n\n&quot;, job$title))
   
   # 1. External Data Injection ---------------------------
   temp_spine &lt;- master_spine
   if (!is.null(job$external_data)) {
     ext_df &lt;- readRDS(job$external_data$file_path)
-    # Strict inner_join ensures we don&#39;t accidentally add &quot;ghost&quot; patients
     temp_spine &lt;- temp_spine %&gt;% dplyr::inner_join(ext_df, by = job$external_data$join_col)
     
-    # Prevent duplicate binding when running the chunk multiple times
     if (!(job$test_var %in% data_dictionary$Variable)) {
       data_dictionary &lt;- bind_rows(data_dictionary, data.frame(Variable = job$test_var, Class = &quot;Categorical&quot;))
     }
@@ -998,7 +1030,6 @@ for (job_id in names(dea_configs)) {
   temp_spine &lt;- temp_spine %&gt;% filter(!is.na(.data[[job$test_var]]))
   target_engine &lt;- &quot;fisher&quot;
   
-  # FIX: Used {.unlisted .unnumbered} to completely banish it from the TOC
   cat(sprintf(&quot;### Overview: %s {.unlisted .unnumbered}\n\n&quot;, job$title))
   
   if (var_class %in% c(&quot;numeric&quot;, &quot;integer&quot;, &quot;double&quot;, &quot;continuous&quot;)) {
@@ -1047,40 +1078,21 @@ for (job_id in names(dea_configs)) {
     
     cat(sprintf(&quot;### Volcano Plot: %s {.unlisted .unnumbered}\n\n&quot;, job$title))
     if (!is.null(res$plots$volcano)) { 
-      if (interactive()) {
-        # Prints inline in RStudio Viewer
-        print(res$plots$volcano)
-        cat(&quot;\n\n&quot;)
-      } else {
-        # Injects image link for workflowr HTML output
-        cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_volcano.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, job_id))
-        cat(&quot;\n\n&quot;)
-      }
+      if (interactive()) { print(res$plots$volcano); cat(&quot;\n\n&quot;)
+      } else { cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_volcano.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, job_id)); cat(&quot;\n\n&quot;) }
     }
     
     cat(sprintf(&quot;### Heatmap: %s {.unlisted .unnumbered}\n\n&quot;, job$title))
     if (!is.null(res$plots$heatmap)) { 
-      if (interactive()) {
-        # Prints inline in RStudio Viewer
-        ComplexHeatmap::draw(res$plots$heatmap)
-        cat(&quot;\n\n&quot;)
-      } else {
-        # Injects image link for workflowr HTML output
-        cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_heatmap.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, job_id))
-        cat(&quot;\n\n&quot;)
-      }
+      if (interactive()) { ComplexHeatmap::draw(res$plots$heatmap); cat(&quot;\n\n&quot;)
+      } else { cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_heatmap.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, job_id)); cat(&quot;\n\n&quot;) }
     }
     
-    # Render Exclusion Report
     cat(sprintf(&quot;### Exclusion Report: %s {.unlisted .unnumbered}\n\n&quot;, job$title))
     cat(sprintf(&quot;Out of the %d globally testable lipids, the following were excluded from this specific contrast due to zero mathematical variance between groups.\n\n&quot;, nrow(mat_testable)))
-    
     if (nrow(res$tables$failed_features) &gt; 0) {
-      excl_tbl &lt;- res$tables$failed_features %&gt;% 
-        select(Lipid, Method) %&gt;%
-        rename(Failure_Reason = Method) %&gt;%
-        kableExtra::kbl(format = &quot;html&quot;) %&gt;% 
-        kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;condensed&quot;), full_width = FALSE) %&gt;%
+      excl_tbl &lt;- res$tables$failed_features %&gt;% select(Lipid, Method) %&gt;% rename(Failure_Reason = Method) %&gt;%
+        kableExtra::kbl(format = &quot;html&quot;) %&gt;% kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;condensed&quot;), full_width = FALSE) %&gt;%
         kableExtra::scroll_box(height = &quot;300px&quot;)
       print(excl_tbl)
       cat(&quot;\n\n&quot;)
@@ -1192,6 +1204,95 @@ class="section level3 unlisted unnumbered">
 from this specific contrast due to zero mathematical variance between
 groups.</p>
 <p><em>All lipids possessed sufficient variance to be tested.</em></p>
+</div>
+</div>
+</div>
+<div id="raw-feature-abundances" class="section level1">
+<h1>Raw Feature Abundances</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generates standalone, high-resolution patchwork grids displaying the
+raw, log10-transformed intensity distributions for every testable lipid
+across the requested clinical contrasts. Sorted alphabetically for
+standardized reference.
+</li>
+</ul>
+</div>
+<pre class="r"><code>for (job_id in names(dea_configs)) {
+  job &lt;- dea_configs[[job_id]]
+  
+  cat(sprintf(&quot;\n\n## %s\n\n&quot;, job$title))
+  
+  # 1. External Data Injection
+  temp_spine &lt;- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df &lt;- readRDS(job$external_data$file_path)
+    temp_spine &lt;- temp_spine %&gt;% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # 2. Filter NAs and handle binning
+  temp_spine &lt;- temp_spine %&gt;% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val &lt;- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine &lt;- temp_spine %&gt;% mutate(!!job$test_var := ifelse(.data[[job$test_var]] &gt; median_val, &quot;High&quot;, &quot;Low&quot;))
+  }
+  
+  cat(sprintf(&quot;### Jitter Distributions: %s {.unlisted .unnumbered}\n\n&quot;, job$title))
+  
+  # 3. Execute Plotting Wrapper
+  res &lt;- wrap_raw_abundances(
+    mat_raw = mat_testable_raw, 
+    clin_df = temp_spine, 
+    config = job, 
+    job_name = job_id,
+    out_dir = output_dir_data,
+    assets_dir = assets_dir,
+    project_colors_func = get_project_colors
+  )
+  
+  if (res$status == &quot;success&quot;) {
+    if (!is.null(res$plot)) { 
+      if (interactive()) { 
+        print(res$plot)
+        cat(&quot;\n\n&quot;)
+      } else { 
+        cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_raw_intensities.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, job_id))
+        cat(&quot;\n\n&quot;) 
+      }
+    } else {
+      cat(&quot;*No valid data to plot.* \n\n&quot;)
+    }
+  } else {
+    cat(sprintf(&quot;**FAILED:** %s\n\n&quot;, res$error_msg))
+  }
+}</code></pre>
+<div id="active-vs.-non-active-1" class="section level2">
+<h2>Active vs. Non-Active</h2>
+<div id="jitter-distributions-active-vs.-non-active"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Jitter Distributions: Active
+vs. Non-Active</h3>
+<p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_raw_intensities.png' width='100%' /></p>
+</div>
+</div>
+<div id="ssc-vs.-control-1" class="section level2">
+<h2>SSc vs. Control</h2>
+<div id="jitter-distributions-ssc-vs.-control"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Jitter Distributions: SSc
+vs. Control</h3>
+<p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_raw_intensities.png' width='100%' /></p>
+</div>
+</div>
+<div id="cluster-1-vs-cluster-2-1" class="section level2">
+<h2>Cluster 1 vs Cluster 2</h2>
+<div id="jitter-distributions-cluster-1-vs-cluster-2"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Jitter Distributions: Cluster 1 vs
+Cluster 2</h3>
+<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
 </div>
