@@ -160,6 +160,17 @@ pheno_configs <- list(
     highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
     must_include_vars = c("cohort_group")
+  ),
+  
+    pheno_nvn = list(
+    target_job = "job_svc",
+    title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "cohort_group", value = c("Non-Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
+    p_cutoff = 0.05,
+    must_include_vars = c("cohort_group")
   )
 
 
@@ -178,8 +189,27 @@ feature_configs <- list(
       kmeans = list(
         contrasts = list(
           c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "Both mixed active and nonacctive", 
-                          target=c("Cluster 1"), ref=c("Cluster 2"),
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
                           subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")))
+        )
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_svc = list(
+    target_job = "job_svc",
+    title = "Age Regressed SvC DEA Clustering Nonactive only",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "", 
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
+                          subset_filter = list(column = "cohort_group", value = c("Non-Active")))
         )
       )
     ),
@@ -493,17 +523,7 @@ for (p_id in names(pheno_configs)) {
       # Inject Markdown Header for the Algorithm Tabset
       cat(sprintf("\n\n### %s {.tabset}\n\n", toupper(algo)))
       
-      # Print Master Table
-      cat("\n\n#### Summary Table\n\n")
-      if (!is.null(res$tables[[algo]])) {
-        tbl <- res$tables[[algo]] %>% 
-          gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
-          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
-        print(tbl)
-        cat("\n\n")
-      }
-      
-      # --- NEW: Loop through nested Heatmaps ---
+      # Loop through nested Heatmaps
       if (length(res$plots[[algo]]$heatmap) > 0) {
         for (h_name in names(res$plots[[algo]]$heatmap)) {
           cat(sprintf("\n\n#### Heatmap: %s\n\n", gsub("_", " ", h_name)))
@@ -512,13 +532,23 @@ for (p_id in names(pheno_configs)) {
         }
       }
       
-      # --- NEW: Loop through nested Highlight Grids ---
+      # Loop through nested Highlight Grids
       if (length(res$plots[[algo]]$highlights) > 0) {
         for (g_name in names(res$plots[[algo]]$highlights)) {
           cat(sprintf("\n\n#### Grid: %s\n\n", gsub("_", " ", g_name)))
           print(res$plots[[algo]]$highlights[[g_name]])
           cat("\n\n")
         }
+      }
+      
+       # Print Master Table
+      cat("\n\n#### Summary Table\n\n")
+      if (!is.null(res$tables[[algo]])) {
+        tbl <- res$tables[[algo]] %>% 
+          gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
+          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
+        print(tbl)
+        cat("\n\n")
       }
     }
   }
