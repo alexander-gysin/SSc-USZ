@@ -153,7 +153,7 @@ clin_vars_to_include <- list(
 pheno_configs <- list(
   pheno_svc = list(
     target_job = "job_svc",
-    title = "Age Regressed AvC DEA PCA Clustering SSc only",
+    title = "SSc Only",
     target_algorithms = c("kmeans"),
         subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
     variables = clin_vars_to_include,
@@ -164,7 +164,7 @@ pheno_configs <- list(
   
     pheno_nvn = list(
     target_job = "job_svc",
-    title = "Age Regressed AvC DEA PCA Clustering Nonactive only",
+    title = "Nonactive Only",
     target_algorithms = c("kmeans"),
         subset_filter = list(column = "cohort_group", value = c("Non-Active")),
     variables = clin_vars_to_include,
@@ -181,7 +181,7 @@ pheno_configs <- list(
 feature_configs <- list(
   feat_svc = list(
     target_job = "job_svc",
-    title = "Age Regressed SvC DEA Clustering SSc only",
+    title = "SSc Only",
     input_matrix = "raw", 
     covariates = c("Age"),
     # Algorithms are now the primary key to enable contrast-per-algorithm
@@ -198,16 +198,16 @@ feature_configs <- list(
     dea_fc_cutoff = 0.58
   ),
   
-  feat_svc = list(
+  feat_nvn = list(
     target_job = "job_svc",
-    title = "Age Regressed SvC DEA Clustering Nonactive only",
+    title = "Nonactive Only",
     input_matrix = "raw", 
     covariates = c("Age"),
     # Algorithms are now the primary key to enable contrast-per-algorithm
     algorithms = list(
       kmeans = list(
         contrasts = list(
-          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only", desc = "", 
+          c1_vs_c2 = list(title = "Nonactive only", desc = "", 
                           target=c("Cluster 2"), ref=c("Cluster 1"),
                           subset_filter = list(column = "cohort_group", value = c("Non-Active")))
         )
@@ -546,7 +546,8 @@ for (p_id in names(pheno_configs)) {
       if (!is.null(res$tables[[algo]])) {
         tbl <- res$tables[[algo]] %>% 
           gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
-          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)
+          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)%>%
+          kableExtra::scroll_box(width = "100%", height = "300px")
         print(tbl)
         cat("\n\n")
       }
@@ -618,10 +619,11 @@ for (f_id in names(feature_configs)) {
         
         # 1. TABLE
         if (nrow(res$tables$significant_proteins) > 0) {
-          tbl <- head(res$tables$significant_proteins, 10) %>% 
+          tbl <- head(res$tables$significant_proteins, 50) %>% 
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = "e", digits = 2)) %>%
-            kableExtra::kbl(format = "html", caption = "Top 10 Significant Proteins") %>% 
-            kableExtra::kable_styling(bootstrap_options = "striped")
+            kableExtra::kbl(format = "html", caption = "Top 50 Significant Proteins") %>% 
+            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+            kableExtra::scroll_box(width = "100%", height = "300px")
           print(tbl)
           cat("\n\n") 
         }
