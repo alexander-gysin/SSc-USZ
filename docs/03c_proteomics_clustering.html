@@ -628,15 +628,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreefecae7ee796f6b0d6c88d1c037ad698b004431d6targetblankfecae7ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree17513fe803fdb942d628473341b0cc0ae704bc50targetblank17513fea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/fecae7ee796f6b0d6c88d1c037ad698b004431d6" target="_blank">fecae7e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/17513fe803fdb942d628473341b0cc0ae704bc50" target="_blank">17513fe</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreefecae7ee796f6b0d6c88d1c037ad698b004431d6targetblankfecae7ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree17513fe803fdb942d628473341b0cc0ae704bc50targetblank17513fea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -646,7 +646,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/fecae7ee796f6b0d6c88d1c037ad698b004431d6" target="_blank">fecae7e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/17513fe803fdb942d628473341b0cc0ae704bc50" target="_blank">17513fe</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -682,6 +682,9 @@ Ignored files:
 
 Untracked files:
     Untracked:  core
+
+Unstaged changes:
+    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -727,6 +730,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/17513fe803fdb942d628473341b0cc0ae704bc50/analysis/03c_proteomics_clustering.Rmd" target="_blank">17513fe</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+<td>
+mirrored volcano, added nvn, rearrange clin phen output order
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/03c_proteomics_clustering.html" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1303,7 +1340,7 @@ clin_vars_to_include &lt;- list(
 pheno_configs &lt;- list(
   pheno_svc = list(
     target_job = &quot;job_svc&quot;,
-    title = &quot;Age Regressed AvC DEA PCA Clustering SSc only&quot;,
+    title = &quot;SSc Only&quot;,
     target_algorithms = c(&quot;kmeans&quot;),
         subset_filter = list(column = &quot;cohort_group&quot;, value = c(&quot;Active&quot;, &quot;Non-Active&quot;)),
     variables = clin_vars_to_include,
@@ -1314,7 +1351,7 @@ pheno_configs &lt;- list(
   
     pheno_nvn = list(
     target_job = &quot;job_svc&quot;,
-    title = &quot;Age Regressed AvC DEA PCA Clustering Nonactive only&quot;,
+    title = &quot;Nonactive Only&quot;,
     target_algorithms = c(&quot;kmeans&quot;),
         subset_filter = list(column = &quot;cohort_group&quot;, value = c(&quot;Non-Active&quot;)),
     variables = clin_vars_to_include,
@@ -1331,7 +1368,7 @@ pheno_configs &lt;- list(
 feature_configs &lt;- list(
   feat_svc = list(
     target_job = &quot;job_svc&quot;,
-    title = &quot;Age Regressed SvC DEA Clustering SSc only&quot;,
+    title = &quot;SSc Only&quot;,
     input_matrix = &quot;raw&quot;, 
     covariates = c(&quot;Age&quot;),
     # Algorithms are now the primary key to enable contrast-per-algorithm
@@ -1348,16 +1385,16 @@ feature_configs &lt;- list(
     dea_fc_cutoff = 0.58
   ),
   
-  feat_svc = list(
+  feat_nvn = list(
     target_job = &quot;job_svc&quot;,
-    title = &quot;Age Regressed SvC DEA Clustering Nonactive only&quot;,
+    title = &quot;Nonactive Only&quot;,
     input_matrix = &quot;raw&quot;, 
     covariates = c(&quot;Age&quot;),
     # Algorithms are now the primary key to enable contrast-per-algorithm
     algorithms = list(
       kmeans = list(
         contrasts = list(
-          c1_vs_c2 = list(title = &quot;Cluster 1 vs Cluster 2 Ssc only&quot;, desc = &quot;&quot;, 
+          c1_vs_c2 = list(title = &quot;Nonactive only&quot;, desc = &quot;&quot;, 
                           target=c(&quot;Cluster 2&quot;), ref=c(&quot;Cluster 1&quot;),
                           subset_filter = list(column = &quot;cohort_group&quot;, value = c(&quot;Non-Active&quot;)))
         )
@@ -3410,16 +3447,16 @@ visual profiling.
       if (!is.null(res$tables[[algo]])) {
         tbl &lt;- res$tables[[algo]] %&gt;% 
           gtsummary::as_kable_extra(caption = sprintf(&quot;Clinical Summary: %s&quot;, toupper(algo))) %&gt;%
-          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)
+          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)%&gt;%
+          kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
         print(tbl)
         cat(&quot;\n\n&quot;)
       }
     }
   }
 }</code></pre>
-<div id="age-regressed-avc-dea-pca-clustering-ssc-only"
-class="section level2 tabset">
-<h2 class="tabset">Age Regressed AvC DEA PCA Clustering SSc only</h2>
+<div id="ssc-only" class="section level2 tabset">
+<h2 class="tabset">SSc Only</h2>
 <div id="kmeans-1" class="section level3 tabset">
 <h3 class="tabset">KMEANS</h3>
 <div id="heatmap-exploratory" class="section level4">
@@ -3499,6 +3536,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">f364292</a>
@@ -3591,22 +3639,24 @@ alexander-gysin
 </div>
 <div id="summary-table" class="section level4">
 <h4>Summary Table</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
 <table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <caption>
 Clinical Summary: KMEANS
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Characteristic
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 1 <br>N = 45
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 2 <br>N = 50
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 p-value
 </th>
 </tr>
@@ -5784,10 +5834,9 @@ Fisher’s exact test; NA
 </div>
 </div>
 </div>
-<div id="age-regressed-avc-dea-pca-clustering-nonactive-only"
-class="section level2 tabset">
-<h2 class="tabset">Age Regressed AvC DEA PCA Clustering Nonactive
-only</h2>
+</div>
+<div id="nonactive-only" class="section level2 tabset">
+<h2 class="tabset">Nonactive Only</h2>
 <div id="kmeans-2" class="section level3 tabset">
 <h3 class="tabset">KMEANS</h3>
 <div id="heatmap-exploratory-1" class="section level4">
@@ -5815,6 +5864,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" target="_blank">f364292</a>
@@ -5880,6 +5940,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-5.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-5.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -5932,6 +6003,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-6.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-6.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -5959,22 +6041,24 @@ alexander-gysin
 </div>
 <div id="summary-table-1" class="section level4">
 <h4>Summary Table</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
 <table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <caption>
 Clinical Summary: KMEANS
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Characteristic
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 1 <br>N = 28
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Cluster 2 <br>N = 20
 </th>
-<th style="text-align:center;">
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 p-value
 </th>
 </tr>
@@ -8513,6 +8597,7 @@ Chi-squared test
 </div>
 </div>
 </div>
+</div>
 <div id="feature-phenotyping" class="section level1 tabset">
 <h1 class="tabset">Feature Phenotyping</h1>
 <div class="info-box">
@@ -8583,10 +8668,11 @@ algorithmically discovered endotypes.
         
         # 1. TABLE
         if (nrow(res$tables$significant_proteins) &gt; 0) {
-          tbl &lt;- head(res$tables$significant_proteins, 10) %&gt;% 
+          tbl &lt;- head(res$tables$significant_proteins, 50) %&gt;% 
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = &quot;e&quot;, digits = 2)) %&gt;%
-            kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Top 10 Significant Proteins&quot;) %&gt;% 
-            kableExtra::kable_styling(bootstrap_options = &quot;striped&quot;)
+            kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Top 50 Significant Proteins&quot;) %&gt;% 
+            kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;)) %&gt;%
+            kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
           print(tbl)
           cat(&quot;\n\n&quot;) 
         }
@@ -8646,30 +8732,31 @@ algorithmically discovered endotypes.
     cat(&quot;\n\n&quot;)
   }
 }</code></pre>
-<div id="age-regressed-svc-dea-clustering-ssc-only"
-class="section level2 tabset">
-<h2 class="tabset">Age Regressed SvC DEA Clustering SSc only</h2>
+<div id="ssc-only-1" class="section level2 tabset">
+<h2 class="tabset">SSc Only</h2>
 <div id="kmeans-3" class="section level3 tabset">
 <h3 class="tabset">KMEANS</h3>
 <div id="cluster-1-vs-cluster-2-ssc-only" class="section level4">
 <h4>Cluster 1 vs Cluster 2 Ssc only</h4>
 <p><strong>Description:</strong> Both mixed active and nonacctive</p>
-<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
-Top 10 Significant Proteins
+Top 50 Significant Proteins
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Feature
 </th>
-<th style="text-align:right;">
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
 logFC
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 adj.P.Val
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Significance
 </th>
 </tr>
@@ -8815,8 +8902,569 @@ TNFRSF6B
 Up-regulated
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+LAMP3
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:left;">
+1.95e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FKBP15
+</td>
+<td style="text-align:right;">
+0.64
+</td>
+<td style="text-align:left;">
+1.95e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL11
+</td>
+<td style="text-align:right;">
+1.09
+</td>
+<td style="text-align:left;">
+2.03e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL8
+</td>
+<td style="text-align:right;">
+0.89
+</td>
+<td style="text-align:left;">
+2.03e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINB8
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:left;">
+2.07e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LMNB1
+</td>
+<td style="text-align:right;">
+0.88
+</td>
+<td style="text-align:left;">
+3.44e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NACC1
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:left;">
+6.38e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL17
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:left;">
+7.32e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HNRNPUL1
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:left;">
+8.11e-05
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DNM3
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+1.02e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL19
+</td>
+<td style="text-align:right;">
+0.88
+</td>
+<td style="text-align:left;">
+1.26e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL3
+</td>
+<td style="text-align:right;">
+0.65
+</td>
+<td style="text-align:left;">
+1.26e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PRKAB1
+</td>
+<td style="text-align:right;">
+0.66
+</td>
+<td style="text-align:left;">
+1.53e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FKBP4
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+1.90e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HMOX2
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:left;">
+1.94e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BAX
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+2.18e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EGLN1
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:left;">
+2.18e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TNFRSF9
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+2.82e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL9
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:left;">
+3.11e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL18
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:left;">
+3.16e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GRPEL1
+</td>
+<td style="text-align:right;">
+0.75
+</td>
+<td style="text-align:left;">
+3.26e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MMP12
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:left;">
+3.67e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL12A_IL12B
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:left;">
+3.83e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL10
+</td>
+<td style="text-align:right;">
+0.75
+</td>
+<td style="text-align:left;">
+4.51e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARHGEF2
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+<td style="text-align:left;">
+4.64e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NFX1
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+4.64e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+S100A12
+</td>
+<td style="text-align:right;">
+1.05
+</td>
+<td style="text-align:left;">
+4.65e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL7
+</td>
+<td style="text-align:right;">
+1.10
+</td>
+<td style="text-align:left;">
+5.69e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SFTPA2
+</td>
+<td style="text-align:right;">
+0.85
+</td>
+<td style="text-align:left;">
+7.16e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL1
+</td>
+<td style="text-align:right;">
+0.83
+</td>
+<td style="text-align:left;">
+7.20e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RNF213
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:left;">
+7.41e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RIGI
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:left;">
+7.65e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEACAM5
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:left;">
+7.99e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CASP4
+</td>
+<td style="text-align:right;">
+1.38
+</td>
+<td style="text-align:left;">
+8.33e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTX3L
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:left;">
+1.13e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NBN
+</td>
+<td style="text-align:right;">
+0.58
+</td>
+<td style="text-align:left;">
+1.17e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UBE2Z
+</td>
+<td style="text-align:right;">
+0.63
+</td>
+<td style="text-align:left;">
+1.17e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SAMD9L
+</td>
+<td style="text-align:right;">
+0.66
+</td>
+<td style="text-align:left;">
+1.21e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SDHA
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+1.40e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL4
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+1.44e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
 </tbody>
 </table>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-1">
@@ -8840,6 +9488,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">f364292</a>
@@ -8977,6 +9636,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9046,6 +9716,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">f364292</a>
@@ -9128,6 +9809,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">f364292</a>
@@ -9215,6 +9907,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9297,6 +10000,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9377,6 +10091,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">f364292</a>
@@ -9464,6 +10189,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9535,6 +10271,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9604,6 +10351,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">f364292</a>
@@ -9680,6 +10438,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9751,6 +10520,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -9806,14 +10586,13 @@ pathways).</em></p>
 </div>
 </div>
 </div>
-<div id="age-regressed-svc-dea-clustering-ssc-only-1"
-class="section level2 tabset">
-<h2 class="tabset">Age Regressed SvC DEA Clustering SSc only</h2>
+<div id="nonactive-only-1" class="section level2 tabset">
+<h2 class="tabset">Nonactive Only</h2>
 <div id="kmeans-4" class="section level3 tabset">
 <h3 class="tabset">KMEANS</h3>
-<div id="cluster-1-vs-cluster-2-ssc-only-1" class="section level4">
-<h4>Cluster 1 vs Cluster 2 Ssc only</h4>
-<p><strong>Description:</strong> Both mixed active and nonacctive</p>
+<div id="nonactive-only-2" class="section level4">
+<h4>Nonactive only</h4>
+<p><strong>Description:</strong></p>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-14">
@@ -9837,6 +10616,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">f364292</a>
@@ -9885,22 +10675,24 @@ alexander-gysin
 </table>
 </div>
 </div>
-<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
-Top 10 Significant Proteins
+Top 50 Significant Proteins
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Feature
 </th>
-<th style="text-align:right;">
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
 logFC
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 adj.P.Val
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 Significance
 </th>
 </tr>
@@ -9908,83 +10700,13 @@ Significance
 <tbody>
 <tr>
 <td style="text-align:left;">
-IFI30
+NAGK
 </td>
 <td style="text-align:right;">
-0.74
+0.77
 </td>
 <td style="text-align:left;">
-5.05e-08
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MAD1L1
-</td>
-<td style="text-align:right;">
-0.82
-</td>
-<td style="text-align:left;">
-7.09e-08
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DPY30
-</td>
-<td style="text-align:right;">
-0.64
-</td>
-<td style="text-align:left;">
-9.27e-07
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CD300E
-</td>
-<td style="text-align:right;">
-0.70
-</td>
-<td style="text-align:left;">
-1.40e-06
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CAPG
-</td>
-<td style="text-align:right;">
-0.60
-</td>
-<td style="text-align:left;">
-2.13e-06
-</td>
-<td style="text-align:left;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CDCP1
-</td>
-<td style="text-align:right;">
-0.75
-</td>
-<td style="text-align:left;">
-2.18e-06
+4.30e-04
 </td>
 <td style="text-align:left;">
 Up-regulated
@@ -9995,10 +10717,10 @@ Up-regulated
 TPR
 </td>
 <td style="text-align:right;">
-0.84
+0.68
 </td>
 <td style="text-align:left;">
-5.59e-06
+4.30e-04
 </td>
 <td style="text-align:left;">
 Up-regulated
@@ -10006,13 +10728,97 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:left;">
-TNFRSF10B
+MAD1L1
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:left;">
+4.30e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CD300E
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:left;">
+4.30e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BTN3A2
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:left;">
+6.60e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFI30
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:left;">
+6.60e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IDO1
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:left;">
+7.61e-04
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL12
+</td>
+<td style="text-align:right;">
+0.58
+</td>
+<td style="text-align:left;">
+2.89e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL10
 </td>
 <td style="text-align:right;">
 0.61
 </td>
 <td style="text-align:left;">
-7.31e-06
+2.89e-03
 </td>
 <td style="text-align:left;">
 Up-regulated
@@ -10020,13 +10826,27 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:left;">
-CCL2
+CDCP1
 </td>
 <td style="text-align:right;">
-0.60
+0.71
 </td>
 <td style="text-align:left;">
-1.16e-05
+2.89e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL11
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:left;">
+3.18e-03
 </td>
 <td style="text-align:left;">
 Up-regulated
@@ -10037,10 +10857,542 @@ Up-regulated
 TNFRSF6B
 </td>
 <td style="text-align:right;">
-0.89
+0.95
 </td>
 <td style="text-align:left;">
-1.36e-05
+3.23e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL12RB1
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:left;">
+3.75e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RC3H1
+</td>
+<td style="text-align:right;">
+0.63
+</td>
+<td style="text-align:left;">
+3.75e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL1
+</td>
+<td style="text-align:right;">
+1.07
+</td>
+<td style="text-align:left;">
+3.82e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RIGI
+</td>
+<td style="text-align:right;">
+0.81
+</td>
+<td style="text-align:left;">
+6.21e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DHPS
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+<td style="text-align:left;">
+6.21e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL19
+</td>
+<td style="text-align:right;">
+1.12
+</td>
+<td style="text-align:left;">
+6.21e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL11
+</td>
+<td style="text-align:right;">
+0.59
+</td>
+<td style="text-align:left;">
+6.21e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LAG3
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:left;">
+7.02e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DTX3L
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:left;">
+7.17e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SPN
+</td>
+<td style="text-align:right;">
+0.70
+</td>
+<td style="text-align:left;">
+7.38e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL8
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:left;">
+7.60e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SAMD9L
+</td>
+<td style="text-align:right;">
+0.78
+</td>
+<td style="text-align:left;">
+8.01e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL17
+</td>
+<td style="text-align:right;">
+0.63
+</td>
+<td style="text-align:left;">
+9.07e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DNM3
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:left;">
+9.96e-03
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFNG
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:left;">
+1.09e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MKI67
+</td>
+<td style="text-align:right;">
+0.66
+</td>
+<td style="text-align:left;">
+1.09e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CA9
+</td>
+<td style="text-align:right;">
+0.68
+</td>
+<td style="text-align:left;">
+1.21e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GRPEL1
+</td>
+<td style="text-align:right;">
+0.84
+</td>
+<td style="text-align:left;">
+1.21e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARHGEF2
+</td>
+<td style="text-align:right;">
+0.97
+</td>
+<td style="text-align:left;">
+1.26e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFIT3
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:left;">
+1.26e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NACC1
+</td>
+<td style="text-align:right;">
+0.64
+</td>
+<td style="text-align:left;">
+1.58e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NFX1
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:left;">
+1.61e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL18
+</td>
+<td style="text-align:right;">
+0.64
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BAX
+</td>
+<td style="text-align:right;">
+0.77
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LMNB1
+</td>
+<td style="text-align:right;">
+0.69
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CASP4
+</td>
+<td style="text-align:right;">
+1.69
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CSNK1D
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL9
+</td>
+<td style="text-align:right;">
+0.76
+</td>
+<td style="text-align:left;">
+1.76e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL9
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:left;">
+1.81e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCL4
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:left;">
+1.99e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LAIR2
+</td>
+<td style="text-align:right;">
+0.82
+</td>
+<td style="text-align:left;">
+1.99e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HMOX2
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:left;">
+1.99e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IFIT1
+</td>
+<td style="text-align:right;">
+0.66
+</td>
+<td style="text-align:left;">
+2.31e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UBE2Z
+</td>
+<td style="text-align:right;">
+0.77
+</td>
+<td style="text-align:left;">
+2.50e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZC3H12D
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:left;">
+2.64e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RNF213
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:left;">
+2.83e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HDAC5
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:left;">
+2.83e-02
+</td>
+<td style="text-align:left;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CXCL10
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:left;">
+2.83e-02
 </td>
 <td style="text-align:left;">
 Up-regulated
@@ -10048,6 +11400,7 @@ Up-regulated
 </tr>
 </tbody>
 </table>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-15">
@@ -10071,6 +11424,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">f364292</a>
@@ -10142,6 +11506,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">f364292</a>
@@ -10219,6 +11594,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -10290,6 +11676,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -10336,6 +11733,9 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="go_bp-1" class="section level6">
+<h6>GO_BP</h6>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-19">
@@ -10359,6 +11759,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">f364292</a>
@@ -10407,9 +11818,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-<div id="go_bp-1" class="section level6">
-<h6>GO_BP</h6>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-20">
@@ -10433,6 +11841,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">f364292</a>
@@ -10506,6 +11925,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -10552,6 +11982,9 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="immunologic_signature-1" class="section level6">
+<h6>Immunologic_Signature</h6>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-22">
@@ -10575,6 +12008,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">f364292</a>
@@ -10623,9 +12067,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-<div id="immunologic_signature-1" class="section level6">
-<h6>Immunologic_Signature</h6>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-23">
@@ -10649,6 +12090,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">f364292</a>
@@ -10722,6 +12174,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">f364292</a>
 </td>
 <td>
@@ -10768,13 +12231,123 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
 </div>
 <div id="reactome-1" class="section level6">
 <h6>Reactome</h6>
+<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-25">
+Past versions of feature_phenotyping-25.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-25" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-26.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-26">
+Past versions of feature_phenotyping-26.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-26" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-26.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-27.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-28.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-27">
+Past versions of feature_phenotyping-27.png
+</button>
+</p>
+<div id="fig-feature_phenotyping-27" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-27.png" target="_blank">d58f937</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><em>Note: No GSEA Ridgeplot generated (requires &gt;= 2 significant
 pathways).</em></p>
 <p><em>Note: No GSEA EMAP generated (requires &gt;= 2 significant
@@ -13070,7 +14643,7 @@ run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, project_colors) {
 
   p_volc &lt;- ggplot(dea_res, aes(x = logFC, y = -log10(adj.P.Val), color = Significance)) +
     geom_point(alpha = 0.6, size = 1.5) +
-    scale_color_manual(values = c(&quot;Down-regulated&quot; = ref_color, &quot;Not Significant&quot; = &quot;grey85&quot;, &quot;Up-regulated&quot; = target_color)) +
+    scale_color_manual(values = c(&quot;Down-regulated&quot; = HM_Z_LOW, &quot;Not Significant&quot; = &quot;grey85&quot;, &quot;Up-regulated&quot; = HM_Z_HIGH)) +
     geom_text_repel(data = top_labels, aes(label = Feature), size = 3, color = &quot;black&quot;, box.padding = 0.5, max.overlaps = Inf) +
     geom_vline(xintercept = c(-dea_conf$dea_fc_cutoff, dea_conf$dea_fc_cutoff), linetype = &quot;dotted&quot;) +
     geom_hline(yintercept = -log10(dea_conf$dea_p_cutoff), linetype = &quot;dashed&quot;, color = &quot;darkred&quot;) +
