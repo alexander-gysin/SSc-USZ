@@ -2244,7 +2244,7 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
 
   p_volc <- ggplot(dea_res, aes(x = logFC, y = -log10(adj.P.Val), color = Significance)) +
     geom_point(alpha = 0.6, size = 1.5) +
-    scale_color_manual(values = c("Down-regulated" = ref_color, "Not Significant" = "grey85", "Up-regulated" = target_color)) +
+    scale_color_manual(values = c("Down-regulated" = HM_Z_LOW, "Not Significant" = "grey85", "Up-regulated" = HM_Z_HIGH)) +
     geom_text_repel(data = top_labels, aes(label = Feature), size = 3, color = "black", box.padding = 0.5, max.overlaps = Inf) +
     geom_vline(xintercept = c(-dea_conf$dea_fc_cutoff, dea_conf$dea_fc_cutoff), linetype = "dotted") +
     geom_hline(yintercept = -log10(dea_conf$dea_p_cutoff), linetype = "dashed", color = "darkred") +

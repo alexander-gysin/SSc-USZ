@@ -50,8 +50,8 @@ ssc_clinical_parameters <- c("EULAR/ACR 2013 Criteria",
                              "Abnormal Capillaroscopy",
                              "Raynaud phenomenon",
                              "Modified rodnan skin score",
-                             "Subset_Diffuse",
-                             "Puffy Fingers",
+                             "Subset_diffuse",
+                             "Puffy fingers",
                              "Digital ulcer",
                              "Telangiectasia (any)",
                              "Joint involvement",
@@ -76,8 +76,8 @@ ssc_clinical_parameters <- c("EULAR/ACR 2013 Criteria",
 ssc_clinical_parameters_categorical <- c("EULAR/ACR 2013 Criteria",
                                          "Abnormal Capillaroscopy",
                                          "Raynaud phenomenon",
-                                         "Subset_Diffuse",
-                                         "Puffy Fingers",
+                                         "Subset_diffuse",
+                                         "Puffy fingers",
                                          "Digital ulcer",
                                          "Telangiectasia (any)",
                                          "Joint involvement",
@@ -108,13 +108,13 @@ clinical_domains <- list(
     "eustarAI", "ACTIVE_AI", "Active_our", "Inflamm_active", "fibrotic_active", "vascular_active"
   ),
   Cutaneous_and_Vascular = c(
-    "Subset_Diffuse", "Subset_Limited", "Subset_Sine",
+    "Subset_diffuse",
     "Modified rodnan skin score", "mRSS_a", "mRSS Worsening (1yr)",
     "Raynaud phenomenon", "Score : Raynaud phenomenon", "Raynaud's present", "Raynaud VAS",
     "Digital Tip Ulcers", "Digital ulcer", "Fingertip pitting scars", "Pitting scars on finger tips",
     "Telangiectasia", "Telangiectasia (any)", "Abnormal Capillaroscopy", "Capillaroscopy Score",
     "Capillaroscopy Pattern", "Giant capillaries", "Hemorrhages", "Capillary loss", "Ramified bushy capillaries",
-    "Puffy Fingers", "Sclerodactyly", "Skin Thickening (Ext. MCP)", "Skin Thickening (Prox. MCP)",
+    "Puffy fingers", "Sclerodactyly", "Skin Thickening (Ext. MCP)", "Skin Thickening (Prox. MCP)",
     "Subcutaneous Calcinosis", "Gangrene", "log_Modified_rodnan_skin_score"
   ),
   Musculoskeletal = c(
@@ -132,7 +132,7 @@ clinical_domains <- list(
     "Right bundle branch block", "Right axis deviation", "Right ventricular hypertrophy",
     "Ventricular arrhythmias", "Auricular arrhythmias", "Conduction blocks", "Arrhythmias requiring therapy",
     "Right atrium area (cm2)", "Right ventricular area (cm2)", "TAPSE (cm)",
-    "Pericardial effusion on echo", "PAPsys (on echo)?", "Diastolic Dysf. (Echo)", "LVEF %","log_Right_atrium_area__cm2", "log_TAPSE__cm"
+    "Pericardial effusion on echo", "Diastolic Dysf. (Echo)", "LVEF %","log_Right_atrium_area__cm2", "log_TAPSE__cm"
   ),
   Gastrointestinal = c(
     "Stomach Symptoms", "GAVE", "Intestinal Symptoms", "Malabsorption syndrome", "Proximal Dysphagia"
@@ -150,8 +150,8 @@ clinical_domains <- list(
     "Med_tadalafil",                              "Med_bosentan",                               "Med_iloprost",
     "Med_macitentan",                             "Med_ambrisentan",                            "Med_ppi",
     "Med_acei",                                   "Med_nintedanib",                             "Med_asa",
-    "Med_ccb",                                    "Med_arb",                                    "Med_nintadanib",
-    "Med_oac",                                    "Med_nintetanib","Immunosuppressants", "Major vascular", "Steroids", "Other_medication"
+    "Med_ccb",                                    "Med_arb",                                    "Med_oac",
+    "Immunosuppressants", "Major vascular", "Steroids", "Other_medication"
     )
 )
 
