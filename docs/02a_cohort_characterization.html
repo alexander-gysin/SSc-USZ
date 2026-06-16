@@ -468,7 +468,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">08 June, 2026</h4>
+<h4 class="date">16 June, 2026</h4>
 
 </div>
 
@@ -497,7 +497,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-08
+<strong>Last updated:</strong> 2026-06-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -628,15 +628,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree83ea6bbc823f3081ed61830b88e9155b6b89fb36targetblank83ea6bba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/83ea6bbc823f3081ed61830b88e9155b6b89fb36" target="_blank">83ea6bb</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0254ebcae68b2258526d1d1acae8ffd01e66ea1etargetblank0254ebca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree83ea6bbc823f3081ed61830b88e9155b6b89fb36targetblank83ea6bba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -646,7 +646,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0254ebcae68b2258526d1d1acae8ffd01e66ea1e" target="_blank">0254ebc</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/83ea6bbc823f3081ed61830b88e9155b6b89fb36" target="_blank">83ea6bb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -682,9 +682,6 @@ Ignored files:
 
 Untracked files:
     Untracked:  core
-
-Unstaged changes:
-    Modified:   code/00_omics_engines.R
 
 </code></pre>
 <p>
@@ -730,6 +727,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/83ea6bbc823f3081ed61830b88e9155b6b89fb36/analysis/02a_cohort_characterization.Rmd" target="_blank">83ea6bb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/02a_cohort_characterization.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/02a_cohort_characterization.html" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -969,15 +1000,38 @@ upset_configs &lt;- list(
   phenotype_overlap = list(
     title = &quot;Patient Overlap: Phenotypes vs Global Activity&quot;,
     variables = list(
-      # TYPE-AGNOSTIC TARGETS: It doesn&#39;t matter if the spine holds text, factors, or math. 
-      # If the patient has any of these values, they are securely counted.
       &quot;Active&quot;       = list(col = &quot;cohort_group&quot;, target = c(GRP_ACTIVE, &quot;Active&quot;, 2, &quot;2&quot;)),
       &quot;Non_Active&quot;   = list(col = &quot;cohort_group&quot;, target = c(GRP_NON_ACTIVE, &quot;Non-Active&quot;, 1, &quot;1&quot;)),
       &quot;Inflammatory&quot; = list(col = &quot;Inflamm_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;)),
       &quot;Vascular&quot;     = list(col = &quot;vascular_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;)),
       &quot;Fibrotic&quot;     = list(col = &quot;fibrotic_active&quot;, target = c(1, &quot;1&quot;, &quot;yes&quot;, &quot;Yes&quot;, &quot;active&quot;, &quot;Active&quot;))
     )
+  ),
+  
+  medication_overlap = list(
+  title = &quot;Patient Overlap: Medications&quot;,
+  variables = list(
+    &quot;Rituximab&quot;            = list(col = &quot;Med_rituximab&quot;,          target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Tocilizumab&quot;          = list(col = &quot;Med_tocilizumab&quot;,        target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;MMF&quot;                  = list(col = &quot;Med_mmf&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;MTX&quot;                  = list(col = &quot;Med_mtx&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;JAKi&quot;                 = list(col = &quot;Med_jaki&quot;,              target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Abatacept&quot;            = list(col = &quot;Med_abatacept&quot;,         target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Sildenafil&quot;           = list(col = &quot;Med_sildenafil&quot;,        target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Tadalafil&quot;            = list(col = &quot;Med_tadalafil&quot;,         target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Bosentan&quot;             = list(col = &quot;Med_bosentan&quot;,          target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Iloprost&quot;             = list(col = &quot;Med_iloprost&quot;,          target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Macitentan&quot;           = list(col = &quot;Med_macitentan&quot;,        target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Ambrisentan&quot;          = list(col = &quot;Med_ambrisentan&quot;,       target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;PPI&quot;                  = list(col = &quot;Med_ppi&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;ACEi&quot;                 = list(col = &quot;Med_acei&quot;,              target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;Nintedanib&quot;           = list(col = &quot;Med_nintedanib&quot;,        target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;ASA&quot;                  = list(col = &quot;Med_asa&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;CCB&quot;                  = list(col = &quot;Med_ccb&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;ARB&quot;                  = list(col = &quot;Med_arb&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;)),
+    &quot;OAC&quot;                  = list(col = &quot;Med_oac&quot;,               target = c(&quot;yes&quot;, &quot;Yes&quot;, 1, &quot;1&quot;))
   )
+)
 )</code></pre>
 </div>
 <div id="tables" class="section level1">
@@ -1531,7 +1585,82 @@ directory.
   print(stitched_figures[[fig_name]])
   ggsave(filename = file.path(output_dir_data, paste0(fig_name, &quot;.png&quot;)), plot = stitched_figures[[fig_name]], width = 12, height = 8, dpi = 300, bg = &quot;white&quot;)
 }</code></pre>
-<p><img src="figure/02a_cohort_characterization.Rmd/print_figures-1.png" alt="" width="1152" style="display: block; margin: auto;" /><img src="figure/02a_cohort_characterization.Rmd/print_figures-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p><img src="figure/02a_cohort_characterization.Rmd/print_figures-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_figures-1">
+Past versions of print_figures-1.png
+</button>
+</p>
+<div id="fig-print_figures-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_figures-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/02a_cohort_characterization.Rmd/print_figures-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_figures-2">
+Past versions of print_figures-2.png
+</button>
+</p>
+<div id="fig-print_figures-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_figures-2.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="individual-plots" class="section level2 tabset">
 <h2 class="tabset">Individual Plots</h2>
@@ -1559,22 +1688,207 @@ Exported standalone high-resolution PNGs for each individual plot.
 <div id="age-and-sex-distribution" class="section level3">
 <h3>Age and Sex Distribution</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/print_individual_plots-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-1">
+Past versions of print_individual_plots-1.png
+</button>
+</p>
+<div id="fig-print_individual_plots-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_individual_plots-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="sample-storage-age" class="section level3">
 <h3>Sample Storage Age</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/print_individual_plots-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-2">
+Past versions of print_individual_plots-2.png
+</button>
+</p>
+<div id="fig-print_individual_plots-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_individual_plots-2.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="baseline-crp" class="section level3">
 <h3>Baseline CRP</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/print_individual_plots-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-3">
+Past versions of print_individual_plots-3.png
+</button>
+</p>
+<div id="fig-print_individual_plots-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_individual_plots-3.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="baseline-creatinine" class="section level3">
 <h3>Baseline Creatinine</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/print_individual_plots-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-4">
+Past versions of print_individual_plots-4.png
+</button>
+</p>
+<div id="fig-print_individual_plots-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_individual_plots-4.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="baseline-nt-probnp-pgml" class="section level3">
 <h3>Baseline NT-proBNP (pg/ml)</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/print_individual_plots-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-print_individual_plots-5">
+Past versions of print_individual_plots-5.png
+</button>
+</p>
+<div id="fig-print_individual_plots-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/print_individual_plots-5.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1856,14 +2170,125 @@ for (h_id in names(custom_heatmap_configs)) {
 <div id="core-metadata-correlations" class="section level3">
 <h3>Core Metadata Correlations</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-1">
+Past versions of custom_correlation_heatmaps-1.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="classification-vs.-clinical" class="section level3">
 <h3>Classification vs. Clinical</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-2.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-2">
+Past versions of custom_correlation_heatmaps-2.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-2.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="var.-candidates-vs-contrasts" class="section level3">
 <h3>Var. Candidates vs Contrasts</h3>
 <p><img src="figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-3.png" alt="" width="100%" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-custom_correlation_heatmaps-3">
+Past versions of custom_correlation_heatmaps-3.png
+</button>
+</p>
+<div id="fig-custom_correlation_heatmaps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/custom_correlation_heatmaps-3.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>
 # 3. Cleanup
 rm(h_id, conf, res, generate_custom_cor_heatmap)
@@ -2297,6 +2722,47 @@ for (u_id in names(upset_configs)) {
 
 ### Patient Overlap: Phenotypes vs Global Activity</code></pre>
 <p><img src="figure/02a_cohort_characterization.Rmd/upset_execution-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-upset_execution-1">
+Past versions of upset_execution-1.png
+</button>
+</p>
+<div id="fig-upset_execution-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/02a_cohort_characterization.Rmd/upset_execution-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+
+### Patient Overlap: Medications</code></pre>
+<p><img src="figure/02a_cohort_characterization.Rmd/upset_execution-2.png" alt="" width="864" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>
 # Cleanup
 rm(u_id, conf, res, upset_dir, safe_name, ssc_only_spine)
@@ -2315,8 +2781,8 @@ vascular) does not make sense since they largely overlap
 </li>
 </ul>
 </div>
-<pre class="r"><code>cat(&quot;Script 02 Complete!&quot;)
-Script 02 Complete!</code></pre>
+<pre class="r"><code>cat(&quot;Script 02a Complete!&quot;)
+Script 02a Complete!</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
