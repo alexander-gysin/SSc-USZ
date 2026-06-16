@@ -191,7 +191,8 @@ wrap_pca_pipeline <- function(omics_mat, clin_df, pca_conf, pca_id, base_output_
 # Returns:
 #   A nested list containing 'status', 'plots', 'tables', and 'data'.
 wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_dir,
-                              go_db, omics_config, heatmap_config, project_colors_func) {
+                              go_db, omics_config, heatmap_config, project_colors_func,
+                              assets_dir = NULL) { # <-- NEW: Defaults to NULL for legacy support
 
   results <- list(status = "success", plots = list(), tables = list(), data = list())
 
@@ -199,6 +200,11 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
   dea_base_dir <- file.path(base_output_dir, "DEA")
   dea_sub_dir <- file.path(dea_base_dir, dea_id)
   if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
+
+  # Ensure assets directory exists if provided
+  if (!is.null(assets_dir) && !dir.exists(assets_dir)) {
+    dir.create(assets_dir, recursive = TRUE)
+  }
 
   # Pre-flight: Diagnostic Filtering
   if("Sample_Age" %in% colnames(clin_df)) clin_df$Sample_Age <- as.numeric(clin_df$Sample_Age)
@@ -229,8 +235,14 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
   results$data$dea <- limma_res$data
   results$plots$volcano <- limma_res$volcano
 
+  # Save Legacy
   write_csv(limma_res$data, file.path(dea_sub_dir, paste0(dea_id, "_DEA_Full_Results.csv")))
   ggsave(file.path(dea_sub_dir, paste0(dea_id, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300)
+
+  # Dual-Save Asset (normalized name)
+  if (!is.null(assets_dir)) {
+    ggsave(file.path(assets_dir, paste0(dea_id, "_volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300, bg="white")
+  }
 
   # B. Significant Table extraction
   sig_table <- limma_res$data %>%
@@ -252,10 +264,18 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
                                               custom_color_map = custom_map,
                                               annotation_vars = heatmap_config$annotation_vars)
 
+  # Save Legacy
   png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
       width=10, height=12, units="in", res=300)
   ComplexHeatmap::draw(results$plots$heatmap)
-  dev.off()
+  invisible(dev.off())
+
+  # Dual-Save Asset (normalized name)
+  if (!is.null(assets_dir)) {
+    png(file.path(assets_dir, paste0(dea_id, "_heatmap.png")), width=10, height=12, units="in", res=300)
+    ComplexHeatmap::draw(results$plots$heatmap)
+    invisible(dev.off())
+  }
 
   # D. Multi-Database GSEA
   results$plots$gsea <- list()
@@ -271,14 +291,29 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
       results$data$gsea[[db_name]] <- gsea_res$data
       results$plots$gsea[[db_name]] <- gsea_res
 
+      # Save Legacy CSV
       write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Results.csv")))
-      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
 
+      # Plot 1: Dotplot
+      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+      if (!is.null(assets_dir)) {
+        ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+      }
+
+      # Plot 2: Ridgeplot
       if(!is.null(gsea_res$ridgeplot)) {
         ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
+        if (!is.null(assets_dir)) {
+          ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
+        }
       }
+
+      # Plot 3: Emap
       if(!is.null(gsea_res$emap)) {
         ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
+        if (!is.null(assets_dir)) {
+          ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
+        }
       }
     }
   }
