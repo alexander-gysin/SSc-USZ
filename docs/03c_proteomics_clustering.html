@@ -468,7 +468,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">15 June, 2026</h4>
+<h4 class="date">16 June, 2026</h4>
 
 </div>
 
@@ -497,7 +497,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-06-15
+<strong>Last updated:</strong> 2026-06-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -628,15 +628,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree204c85a680dcaf76cd807092fb516cfd221b40edtargetblank204c85aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef83c0e949ffd719e247c9a01825c08f2fe94357etargetblankf83c0e9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/204c85a680dcaf76cd807092fb516cfd221b40ed" target="_blank">204c85a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f83c0e949ffd719e247c9a01825c08f2fe94357e" target="_blank">f83c0e9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree204c85a680dcaf76cd807092fb516cfd221b40edtargetblank204c85aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef83c0e949ffd719e247c9a01825c08f2fe94357etargetblankf83c0e9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -646,7 +646,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/204c85a680dcaf76cd807092fb516cfd221b40ed" target="_blank">204c85a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f83c0e949ffd719e247c9a01825c08f2fe94357e" target="_blank">f83c0e9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -684,7 +684,6 @@ Untracked files:
     Untracked:  core
 
 Unstaged changes:
-    Modified:   code/00_config.R
     Modified:   code/00_omics_engines.R
 
 </code></pre>
@@ -731,6 +730,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f83c0e949ffd719e247c9a01825c08f2fe94357e/analysis/03c_proteomics_clustering.Rmd" target="_blank">f83c0e9</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/03c_proteomics_clustering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/a3c5973d7e81c06466ce771c0f13a2d7183b8c2f/docs/03c_proteomics_clustering.html" target="_blank">a3c5973</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1231,6 +1264,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 current_file &lt;- &quot;03c_proteomics_clustering&quot;
 output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+assets_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file)
 
 # Global DEA Path
 proteomics_dea_path &lt;- here::here(&quot;output&quot;, &quot;03b_proteomics_differential&quot;)
@@ -3466,7 +3500,7 @@ visual profiling.
         tbl &lt;- res$tables[[algo]] %&gt;% 
           gtsummary::as_kable_extra(caption = sprintf(&quot;Clinical Summary: %s&quot;, toupper(algo))) %&gt;%
           kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE)%&gt;%
-          kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
+          kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;600px&quot;)
         print(tbl)
         cat(&quot;\n\n&quot;)
       }
@@ -3502,6 +3536,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a3c5973d7e81c06466ce771c0f13a2d7183b8c2f/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-1.png" target="_blank">a3c5973</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-1.png" target="_blank">f364292</a>
@@ -3554,6 +3599,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a3c5973d7e81c06466ce771c0f13a2d7183b8c2f/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">a3c5973</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">d58f937</a>
@@ -3658,7 +3714,7 @@ alexander-gysin
 <div id="summary-table" class="section level4">
 <h4>Summary Table</h4>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
 <table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <caption>
 Clinical Summary: KMEANS
@@ -5986,6 +6042,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a3c5973d7e81c06466ce771c0f13a2d7183b8c2f/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-5.png" target="_blank">a3c5973</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-5.png" target="_blank">d58f937</a>
 </td>
 <td>
@@ -6088,7 +6155,7 @@ alexander-gysin
 <div id="summary-table-1" class="section level4">
 <h4>Summary Table</h4>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
 <table style="NAborder-bottom: 0; margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <caption>
 Clinical Summary: KMEANS
@@ -8710,7 +8777,6 @@ algorithmically discovered endotypes.
       cat(sprintf(&quot;\n\n#### %s\n\n&quot;, c_conf$title))
       cat(sprintf(&quot;**Description:** %s\n\n&quot;, c_conf$desc))
 
-      # --- THE MAGIC PRE-FILTER (Option A) ---
       # Start with the baseline cluster assignments for this algorithm
       contrast_df &lt;- temp_spine
 
@@ -8728,15 +8794,29 @@ algorithmically discovered endotypes.
       dea_conf &lt;- list(
         title = sprintf(&quot;%s | Alg: %s&quot;, c_conf$title, toupper(algo_name)),
         group_col = &quot;Dynamic_Cluster&quot;,
-        target_groups = c_conf$target, # Fixed mapping!
-        ref_groups = c_conf$ref,       # Fixed mapping!
+        target_groups = c_conf$target,
+        ref_groups = c_conf$ref,
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
+      # Capture the exact job name to use for standardizing image paths
+      job_name_full &lt;- sprintf(&quot;%s_%s_%s&quot;, f_id, algo_name, contrast_name)
+      
       # Push the pre-filtered dataframe directly into the core Limma wrapper
-      res &lt;- wrap_dea_pipeline(target_matrix, contrast_df, dea_conf, sprintf(&quot;%s_%s_%s&quot;, f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
+      res &lt;- wrap_dea_pipeline(
+                target_matrix, 
+                contrast_df, 
+                dea_conf, 
+                job_name_full, 
+                output_dir_data, 
+                go_genesets, 
+                omics_config, 
+                heatmap_config, 
+                get_project_colors,
+                assets_dir = assets_dir
+              )
       
       if (res$status == &quot;success&quot;) {
         
@@ -8746,26 +8826,33 @@ algorithmically discovered endotypes.
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = &quot;e&quot;, digits = 2)) %&gt;%
             kableExtra::kbl(format = &quot;html&quot;, caption = &quot;Top 50 Significant Proteins&quot;) %&gt;% 
             kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;)) %&gt;%
-            kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
+            kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;600px&quot;)
           print(tbl)
           cat(&quot;\n\n&quot;) 
         }
         
         # 2. VOLCANO PLOT
         if (!is.null(res$plots$volcano)) {
-          print(res$plots$volcano)
-          cat(&quot;\n\n&quot;) 
+          if (interactive()) {
+            print(res$plots$volcano)
+            cat(&quot;\n\n&quot;)
+          } else {
+            cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_volcano.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full))
+          }
         }
         
         # 3. COMPLEXHEATMAP 
         if (!is.null(res$plots$heatmap)) {
-          ComplexHeatmap::draw(res$plots$heatmap)
-          cat(&quot;\n\n&quot;) 
+          if (interactive()) {
+            ComplexHeatmap::draw(res$plots$heatmap)
+            cat(&quot;\n\n&quot;)
+          } else {
+            cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_heatmap.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full))
+          }
         }
         
         # 4. GSEA PLOTS (Multi-Database Sub-tabs)
         if (length(res$plots$gsea) &gt; 0) {
-          # Create a new Tabset tier specifically for the different databases
           cat(&quot;\n\n##### Pathway Analysis {.tabset}\n\n&quot;)
           
           for (db_name in names(res$plots$gsea)) {
@@ -8773,33 +8860,35 @@ algorithmically discovered endotypes.
             
             p_obj &lt;- res$plots$gsea[[db_name]]
             
-            if (!is.null(p_obj$dotplot)) print(p_obj$dotplot)
-            cat(&quot;\n\n&quot;)
+            if (!is.null(p_obj$dotplot)) {
+              if (interactive()) { print(p_obj$dotplot); cat(&quot;\n\n&quot;) }
+              else { cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_%s_dotplot.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full, db_name)) }
+            }
             
-            if (!is.null(p_obj$ridgeplot)) print(p_obj$ridgeplot)
-            cat(&quot;\n\n&quot;)
+            if (!is.null(p_obj$ridgeplot)) {
+              if (interactive()) { print(p_obj$ridgeplot); cat(&quot;\n\n&quot;) }
+              else { cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_%s_ridgeplot.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full, db_name)) }
+            }
             
-            if (!is.null(p_obj$emap)) print(p_obj$emap)
-            cat(&quot;\n\n&quot;)
+            if (!is.null(p_obj$emap)) {
+              if (interactive()) { print(p_obj$emap); cat(&quot;\n\n&quot;) }
+              else { cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_%s_emap.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full, db_name)) }
+            }
           }
         } else {
           cat(&quot;*Note: No pathways passed FDR for any database.* \n\n&quot;)
         }
         
-        # 5. GSEA RIDGEPLOT
+        # 5. LEGACY GSEA RIDGEPLOT
         if (!is.null(res$plots$gsea_ridge)) {
-          print(res$plots$gsea_ridge)
-          cat(&quot;\n\n&quot;)
-        } else {
-          cat(&quot;*Note: No GSEA Ridgeplot generated (requires &gt;= 2 significant pathways).* \n\n&quot;)
+          if (interactive()) { print(res$plots$gsea_ridge); cat(&quot;\n\n&quot;) }
+          else { cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_gsea_ridge.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full)) }
         }
         
-        # 6. GSEA EMAP PLOT
+        # 6. LEGACY GSEA EMAP PLOT
         if (!is.null(res$plots$gsea_emap)) {
-          print(res$plots$gsea_emap)
-          cat(&quot;\n\n&quot;)
-        } else {
-          cat(&quot;*Note: No GSEA EMAP generated (requires &gt;= 2 significant pathways).* \n\n&quot;)
+          if (interactive()) { print(res$plots$gsea_emap); cat(&quot;\n\n&quot;) }
+          else { cat(sprintf(&quot;&lt;img src=&#39;assets/03c_proteomics_clustering/%s_gsea_emap.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, job_name_full)) }
         }
       }
     }
@@ -8814,7 +8903,7 @@ algorithmically discovered endotypes.
 <h4>Cluster 1 vs Cluster 2 Ssc only</h4>
 <p><strong>Description:</strong> Both mixed active and nonacctive</p>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Top 50 Significant Proteins
@@ -9539,1166 +9628,33 @@ Up-regulated
 </tbody>
 </table>
 </div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-1">
-Past versions of feature_phenotyping-1.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-1.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-2">
-Past versions of feature_phenotyping-2.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-2.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_volcano.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_heatmap.png' width='100%' /></p>
 <div id="pathway-analysis" class="section level5 tabset">
 <h5 class="tabset">Pathway Analysis</h5>
 <div id="hallmark" class="section level6">
 <h6>Hallmark</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-3">
-Past versions of feature_phenotyping-3.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-3.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-4">
-Past versions of feature_phenotyping-4.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-4.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-5">
-Past versions of feature_phenotyping-5.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-5.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Hallmark_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Hallmark_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Hallmark_emap.png' width='100%' /></p>
 </div>
 <div id="go_bp" class="section level6">
 <h6>GO_BP</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-6">
-Past versions of feature_phenotyping-6.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-6.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-7">
-Past versions of feature_phenotyping-7.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-7.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-8">
-Past versions of feature_phenotyping-8.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f2817c7b9fe652589ca120a5d7b719edf255ca9c/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-8.png" target="_blank">f2817c7</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_GO_BP_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_GO_BP_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_GO_BP_emap.png' width='100%' /></p>
 </div>
 <div id="immunologic_signature" class="section level6">
 <h6>Immunologic_Signature</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-9">
-Past versions of feature_phenotyping-9.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-9.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-10">
-Past versions of feature_phenotyping-10.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-10.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-11">
-Past versions of feature_phenotyping-11.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-11.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Immunologic_Signature_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Immunologic_Signature_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Immunologic_Signature_emap.png' width='100%' /></p>
 </div>
 <div id="reactome" class="section level6">
 <h6>Reactome</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-12">
-Past versions of feature_phenotyping-12.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-12.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-13">
-Past versions of feature_phenotyping-13.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-13" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-13.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><em>Note: No GSEA Ridgeplot generated (requires &gt;= 2 significant
-pathways).</em></p>
-<p><em>Note: No GSEA EMAP generated (requires &gt;= 2 significant
-pathways).</em></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Reactome_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Reactome_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_svc_kmeans_c1_vs_c2_Reactome_emap.png' width='100%' /></p>
 </div>
 </div>
 </div>
@@ -10711,101 +9667,8 @@ pathways).</em></p>
 <div id="nonactive-only-2" class="section level4">
 <h4>Nonactive only</h4>
 <p><strong>Description:</strong></p>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-14">
-Past versions of feature_phenotyping-14.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-14" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-14.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:600px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Top 50 Significant Proteins
@@ -11530,1100 +10393,32 @@ Up-regulated
 </tbody>
 </table>
 </div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-15">
-Past versions of feature_phenotyping-15.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-15.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-16">
-Past versions of feature_phenotyping-16.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-16" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-16.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_volcano.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_heatmap.png' width='100%' /></p>
 <div id="pathway-analysis-1" class="section level5 tabset">
 <h5 class="tabset">Pathway Analysis</h5>
 <div id="hallmark-1" class="section level6">
 <h6>Hallmark</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-17">
-Past versions of feature_phenotyping-17.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-17" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-17.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-18">
-Past versions of feature_phenotyping-18.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-18" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-18.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Hallmark_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Hallmark_ridgeplot.png' width='100%' /></p>
 </div>
 <div id="go_bp-1" class="section level6">
 <h6>GO_BP</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-19">
-Past versions of feature_phenotyping-19.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-19" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-19.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-20">
-Past versions of feature_phenotyping-20.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-20" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-20.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-21">
-Past versions of feature_phenotyping-21.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-21" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-21.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_GO_BP_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_GO_BP_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_GO_BP_emap.png' width='100%' /></p>
 </div>
 <div id="immunologic_signature-1" class="section level6">
 <h6>Immunologic_Signature</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-22">
-Past versions of feature_phenotyping-22.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-22" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-22.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-23">
-Past versions of feature_phenotyping-23.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-23" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-23.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-24">
-Past versions of feature_phenotyping-24.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-24" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">f364292</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7422d1a05a50eb759f22a7461a9a5e08f4693f42/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">7422d1a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/accdbcd476fff020818c44fde1f98d14dc5c9fb2/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">accdbcd</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/be1bb0cf46af94be81776ec752bec164b643e3c1/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-24.png" target="_blank">be1bb0c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Immunologic_Signature_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Immunologic_Signature_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Immunologic_Signature_emap.png' width='100%' /></p>
 </div>
 <div id="reactome-1" class="section level6">
 <h6>Reactome</h6>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-25">
-Past versions of feature_phenotyping-25.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-25" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-25.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-26.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-26">
-Past versions of feature_phenotyping-26.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-26" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-26.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-26.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03c_proteomics_clustering.Rmd/feature_phenotyping-27.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-feature_phenotyping-27">
-Past versions of feature_phenotyping-27.png
-</button>
-</p>
-<div id="fig-feature_phenotyping-27" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/204c85a680dcaf76cd807092fb516cfd221b40ed/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-27.png" target="_blank">204c85a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d58f937bed7eb06685b6502b57cf9ba52d5b060b/docs/figure/03c_proteomics_clustering.Rmd/feature_phenotyping-27.png" target="_blank">d58f937</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><em>Note: No GSEA Ridgeplot generated (requires &gt;= 2 significant
-pathways).</em></p>
-<p><em>Note: No GSEA EMAP generated (requires &gt;= 2 significant
-pathways).</em></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Reactome_dotplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Reactome_ridgeplot.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/feat_nvn_kmeans_c1_vs_c2_Reactome_emap.png' width='100%' /></p>
 <!-- # Consensus Export -->
 <!-- 
 <div class="decision-box">
@@ -12863,7 +10658,8 @@ wrap_pca_pipeline &lt;- function(omics_mat, clin_df, pca_conf, pca_id, base_outp
 # Returns:
 #   A nested list containing &#39;status&#39;, &#39;plots&#39;, &#39;tables&#39;, and &#39;data&#39;.
 wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_output_dir,
-                              go_db, omics_config, heatmap_config, project_colors_func) {
+                              go_db, omics_config, heatmap_config, project_colors_func,
+                              assets_dir = NULL) { # &lt;-- NEW: Defaults to NULL for legacy support
 
   results &lt;- list(status = &quot;success&quot;, plots = list(), tables = list(), data = list())
 
@@ -12871,6 +10667,11 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
   dea_base_dir &lt;- file.path(base_output_dir, &quot;DEA&quot;)
   dea_sub_dir &lt;- file.path(dea_base_dir, dea_id)
   if (!dir.exists(dea_sub_dir)) dir.create(dea_sub_dir, recursive = TRUE)
+
+  # Ensure assets directory exists if provided
+  if (!is.null(assets_dir) &amp;&amp; !dir.exists(assets_dir)) {
+    dir.create(assets_dir, recursive = TRUE)
+  }
 
   # Pre-flight: Diagnostic Filtering
   if(&quot;Sample_Age&quot; %in% colnames(clin_df)) clin_df$Sample_Age &lt;- as.numeric(clin_df$Sample_Age)
@@ -12901,8 +10702,14 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
   results$data$dea &lt;- limma_res$data
   results$plots$volcano &lt;- limma_res$volcano
 
+  # Save Legacy
   write_csv(limma_res$data, file.path(dea_sub_dir, paste0(dea_id, &quot;_DEA_Full_Results.csv&quot;)))
   ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_Volcano.png&quot;)), limma_res$volcano, width = 8, height = 7, dpi=300)
+
+  # Dual-Save Asset (normalized name)
+  if (!is.null(assets_dir)) {
+    ggsave(file.path(assets_dir, paste0(dea_id, &quot;_volcano.png&quot;)), limma_res$volcano, width = 8, height = 7, dpi=300, bg=&quot;white&quot;)
+  }
 
   # B. Significant Table extraction
   sig_table &lt;- limma_res$data %&gt;%
@@ -12924,10 +10731,18 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
                                               custom_color_map = custom_map,
                                               annotation_vars = heatmap_config$annotation_vars)
 
+  # Save Legacy
   png(file.path(dea_sub_dir, paste0(dea_id, &quot;_Heatmap_Top&quot;, heatmap_config$top_n, &quot;.png&quot;)),
       width=10, height=12, units=&quot;in&quot;, res=300)
   ComplexHeatmap::draw(results$plots$heatmap)
-  dev.off()
+  invisible(dev.off())
+
+  # Dual-Save Asset (normalized name)
+  if (!is.null(assets_dir)) {
+    png(file.path(assets_dir, paste0(dea_id, &quot;_heatmap.png&quot;)), width=10, height=12, units=&quot;in&quot;, res=300)
+    ComplexHeatmap::draw(results$plots$heatmap)
+    invisible(dev.off())
+  }
 
   # D. Multi-Database GSEA
   results$plots$gsea &lt;- list()
@@ -12943,14 +10758,29 @@ wrap_dea_pipeline &lt;- function(omics_mat, clin_df, dea_conf, dea_id, base_outp
       results$data$gsea[[db_name]] &lt;- gsea_res$data
       results$plots$gsea[[db_name]] &lt;- gsea_res
 
+      # Save Legacy CSV
       write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Results.csv&quot;)))
-      ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Dotplot.png&quot;)), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg=&quot;white&quot;)
 
+      # Plot 1: Dotplot
+      ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Dotplot.png&quot;)), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg=&quot;white&quot;)
+      if (!is.null(assets_dir)) {
+        ggsave(file.path(assets_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_dotplot.png&quot;)), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg=&quot;white&quot;)
+      }
+
+      # Plot 2: Ridgeplot
       if(!is.null(gsea_res$ridgeplot)) {
         ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Ridgeplot.png&quot;)), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg=&quot;white&quot;)
+        if (!is.null(assets_dir)) {
+          ggsave(file.path(assets_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_ridgeplot.png&quot;)), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg=&quot;white&quot;)
+        }
       }
+
+      # Plot 3: Emap
       if(!is.null(gsea_res$emap)) {
         ggsave(file.path(dea_sub_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_GSEA_Emap.png&quot;)), gsea_res$emap, width = 10, height = 10, dpi=300, bg=&quot;white&quot;)
+        if (!is.null(assets_dir)) {
+          ggsave(file.path(assets_dir, paste0(dea_id, &quot;_&quot;, db_name, &quot;_emap.png&quot;)), gsea_res$emap, width = 10, height = 10, dpi=300, bg=&quot;white&quot;)
+        }
       }
     }
   }
