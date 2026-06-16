@@ -95,6 +95,26 @@ dea_configs <- list(
       file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
       join_col = "Subject_ID"
     )
+  ),
+  
+    job_med_ccb = list(
+    title = "Calcium Channel Blockers",
+    test_var = "Med_ccb",
+    target_groups = c("yes"),
+    ref_groups = c("no"),
+    bin_continuous = FALSE,
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
+  ),
+  
+    job_med_asa = list(
+    title = "Acetylsalicylic Acid",
+    test_var = "Med_asa",
+    target_groups = c("yes"),
+    ref_groups = c("no"),
+    bin_continuous = FALSE,
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
   )
 )
 

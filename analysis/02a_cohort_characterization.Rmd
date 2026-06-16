@@ -964,7 +964,7 @@ generate_upset_plot <- function(conf, df) {
 }
 ```
 
-```{r upset_execution, fig.width=9, fig.height=9}
+```{r upset_execution, fig.width=9, fig.height=9, results='asis'}
 upset_dir <- file.path(output_dir_data, "upset-plots")
 if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
 
