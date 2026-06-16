@@ -632,7 +632,7 @@ worker_plot_dea_heatmap <- function(mat, clin_vec, clin_var_name, results_df, pr
 
 
 
-# PART 5: WRAPPER & WORKER (Raw Abundances & Mann-Whitney U) -------------------
+# PART 5: Raw Abundances --------------------------------------------------
 
 #' Wrapper: Raw Abundance Plotting
 #' Merges contrast groups, calculates conditional Wilcoxon FDR, and triggers 4-col patchwork.
@@ -710,7 +710,7 @@ wrap_raw_abundances <- function(mat_raw, clin_df, config, job_name, out_dir, ass
 
   # 4. Save dynamically scaled image (4 columns wide)
   if (!is.null(p_raw)) {
-    grid_height <- max(4, ceiling(nrow(mat_sub) / 4) * 3.5)
+    grid_height <- max(3, ceiling(nrow(mat_sub) / 3) * 3.5)
     file_name <- paste0(job_name, "_raw_intensities.png")
     ggsave(file.path(out_dir, file_name), plot = p_raw, width = 16, height = grid_height, dpi = 300, bg = "white")
     ggsave(file.path(assets_dir, file_name), plot = p_raw, width = 16, height = grid_height, dpi = 300, bg = "white")
@@ -733,10 +733,10 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
   } else {
     plot_x <- factor(clin_vec, levels = c(ref_name, target_name))
 
-    # Safe Color Mapping: Inherit color from the first group in the vector
-    target_col <- project_colors_func(config$target_groups[1])
-    ref_col <- project_colors_func(config$ref_groups[1])
-    col_map <- setNames(c(target_col, ref_col), c(target_name, ref_name))
+    # Pass both groups simultaneously to properly coordinate the fallback palette
+    base_levels <- c(config$target_groups[1], config$ref_groups[1])
+    assigned_colors <- project_colors_func(base_levels)
+    col_map <- setNames(assigned_colors, c(target_name, ref_name))
   }
 
   for (lipid in target_lipids) {
@@ -770,7 +770,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
       theme(
         legend.position = "none",
         plot.title = element_text(size = 13, face = "bold"),
-        plot.subtitle = element_text(size = 11),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 12),
         panel.grid.minor = element_blank()
@@ -783,11 +783,177 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
   if (length(plot_list) == 0) return(NULL)
 
   # 4 Column Patchwork Layout
-  grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
+  grid_plot <- patchwork::wrap_plots(plot_list, ncol = 3) +
     patchwork::plot_annotation(
       title = sprintf("Raw Conditional Abundances: %s", config$title),
       subtitle = "Values log10-transformed after excluding non-detected features.",
       theme = theme(plot.title = element_text(size = 16, face = "bold"))
+    )
+
+  return(grid_plot)
+}
+
+# PART 6: Lipid Set Enrichment Analysis ----------------------------------------
+
+#' Wrapper: Lipid Set Enrichment Analysis (Binary Burden)
+#' Evaluates the sum of detected lipids per structural family using Wilcoxon/Spearman.
+wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
+
+  # 1. Filter to requested contrast groups
+  if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
+    clin_df <- clin_df %>% dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
+  }
+
+  common_samples <- intersect(colnames(burden_mat), clin_df$Subject_ID)
+  if (length(common_samples) < 5) return(list(status = "error", error_msg = "Insufficient subjects for LSEA."))
+
+  mat_sub <- burden_mat[, common_samples, drop = FALSE]
+  clin_sub <- clin_df %>% filter(Subject_ID %in% common_samples)
+  clin_sub <- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
+
+  is_cont <- is.numeric(clin_sub[[config$test_var]])
+
+  # 2. Group Merging & Formatting
+  if (!is_cont) {
+    target_name <- paste(config$target_groups, collapse = "+")
+    ref_name <- paste(config$ref_groups, collapse = "+")
+
+    clin_sub$Plot_Group <- dplyr::case_when(
+      clin_sub[[config$test_var]] %in% config$target_groups ~ target_name,
+      clin_sub[[config$test_var]] %in% config$ref_groups ~ ref_name,
+      TRUE ~ NA_character_
+    )
+    clin_vec_plot <- clin_sub$Plot_Group
+  } else {
+    target_name <- "High"
+    ref_name <- "Low"
+    clin_vec_plot <- clin_sub[[config$test_var]]
+  }
+
+  # 3. Statistical Testing (Binary Burden)
+  stats_list <- lapply(rownames(mat_sub), function(family) {
+    v_valid <- mat_sub[family, ]
+    g_valid <- clin_vec_plot
+
+    # Skip families with zero variance (e.g., no lipids detected in either group)
+    if (length(unique(v_valid)) <= 1) {
+      return(data.frame(Family = family, P_Value = NA_real_, stringsAsFactors = FALSE))
+    }
+
+    if (!is_cont) {
+      v_target <- v_valid[g_valid == target_name]
+      v_ref <- v_valid[g_valid == ref_name]
+      if (length(v_target) >= 3 && length(v_ref) >= 3) {
+        p_val <- suppressWarnings(wilcox.test(v_target, v_ref, exact = FALSE)$p.value)
+      } else { p_val <- NA_real_ }
+    } else {
+      if (length(v_valid) >= 5) {
+        p_val <- suppressWarnings(cor.test(v_valid, g_valid, method = "spearman")$p.value)
+      } else { p_val <- NA_real_ }
+    }
+    return(data.frame(Family = family, P_Value = p_val, stringsAsFactors = FALSE))
+  })
+
+  stats_df <- do.call(rbind, stats_list)
+  stats_df$FDR <- p.adjust(stats_df$P_Value, method = "BH")
+
+  # 4. Save Statistical Results
+  write.csv(stats_df, file.path(out_dir, paste0(job_name, "_LSEA_results.csv")), row.names = FALSE)
+
+  # 5. Call Plotting Worker
+  p_lsea <- worker_plot_lsea(
+    burden_mat = mat_sub,
+    clin_vec = clin_vec_plot,
+    stats_df = stats_df,
+    is_cont = is_cont,
+    target_name = target_name,
+    ref_name = ref_name,
+    config = config,
+    project_colors_func = project_colors_func
+  )
+
+  # 6. Save dynamically scaled image (4 columns wide)
+  if (!is.null(p_lsea)) {
+    grid_height <- max(4, ceiling(nrow(mat_sub) / 4) * 4)
+    file_name <- paste0(job_name, "_LSEA_burden.png")
+    ggsave(file.path(out_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = "white")
+    ggsave(file.path(assets_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = "white")
+  }
+
+  return(list(status = "success", plot = p_lsea, tables = list(lsea_stats = stats_df)))
+}
+
+#' Worker: Plot LSEA (Patchwork Boxplots + Jitter)
+worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_name, ref_name, config, project_colors_func) {
+
+  target_families <- sort(rownames(burden_mat))
+  if (length(target_families) == 0) return(NULL)
+
+  plot_list <- list()
+
+  if (is_cont) {
+    plot_x <- as.factor(dplyr::ntile(clin_vec, 3))
+    levels(plot_x) <- c("Low", "Mid", "High")
+  } else {
+    plot_x <- factor(clin_vec, levels = c(ref_name, target_name))
+
+    # Safe Color Mapping: Inherit color from the first group in the vector
+    base_levels <- c(config$target_groups[1], config$ref_groups[1])
+    assigned_colors <- project_colors_func(base_levels)
+    col_map <- setNames(assigned_colors, c(target_name, ref_name))
+  }
+
+  for (family in target_families) {
+    df <- data.frame(Pheno = plot_x, Burden = burden_mat[family, ])
+    df_clean <- df %>% dplyr::filter(!is.na(Burden) & !is.na(Pheno))
+
+    if (nrow(df_clean) == 0) next
+
+    # Dynamic Headers (FDR + N counts)
+    fdr_val <- stats_df$FDR[stats_df$Family == family]
+    test_str <- if(is_cont) "Spearman" else "MWU"
+    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2f", test_str, fdr_val)
+
+    if (!is_cont) {
+      g_counts <- table(df_clean$Pheno)
+      n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
+      n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
+      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      p_cols <- col_map
+    } else {
+      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
+    }
+
+    # Boxplot + Jitter visualization
+    p <- ggplot(df_clean, aes(x = Pheno, y = Burden, fill = Pheno, color = Pheno)) +
+      geom_boxplot(alpha = 0.3, outlier.shape = NA, width = 0.5) +
+      geom_jitter(width = 0.18, height = 0.05, alpha = 0.8, size = 2) +
+      scale_fill_manual(values = p_cols) +
+      scale_color_manual(values = p_cols) +
+      scale_y_continuous(breaks = function(limits) seq(0, ceiling(limits[2]), by = 1)) +
+      theme_minimal() +
+      theme(
+        legend.position = "none",
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12, color = "grey30"),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 0, size = 10),
+        panel.grid.minor = element_blank()
+      ) +
+      labs(title = family, subtitle = sub_str, y = "Detected Lipids (Count)")
+
+    plot_list[[family]] <- p
+  }
+
+  if (length(plot_list) == 0) return(NULL)
+
+  # 4 Column Patchwork Layout
+  grid_plot <- patchwork::wrap_plots(plot_list, ncol = 2) +
+    patchwork::plot_annotation(
+      title = sprintf("LSEA Binary Burden: %s", config$title),
+      subtitle = "Boxplots representing the total count of detected lipids per biological family.",
+      theme = theme(plot.title = element_text(size = 17, face = "bold"))
     )
 
   return(grid_plot)

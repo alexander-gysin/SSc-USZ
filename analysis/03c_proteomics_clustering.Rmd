@@ -208,7 +208,7 @@ feature_configs <- list(
     algorithms = list(
       kmeans = list(
         contrasts = list(
-          c1_vs_c2 = list(title = "Nonactive only", desc = "", 
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Nonactive only", desc = "", 
                           target=c("Cluster 2"), ref=c("Cluster 1"),
                           subset_filter = list(column = "cohort_group", value = c("Non-Active")))
         )

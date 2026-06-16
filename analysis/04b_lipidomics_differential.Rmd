@@ -42,6 +42,7 @@ source(here::here("code", "00_lipid_engines.R"))
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 lipid_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "raw_lipid_matrix.rds"))
+mean_lod_df <- readRDS(here::here("output", "01a_data_import_and_qc", "lipid_mean_lod.rds"))
 
 # Dynamic Feature Count
 total_features <- nrow(lipid_mat)
@@ -85,8 +86,8 @@ dea_configs <- list(
   job_cluster_1_vs_2 = list(
     title = "Cluster 1 vs Cluster 2",
     test_var = "kmeans_Cluster",
-    target_groups = c("Cluster 1"),
-    ref_groups = c("Cluster 2"),
+    target_groups = c("Cluster 2"),
+    ref_groups = c("Cluster 1"),
     bin_continuous = FALSE,
     fdr_cutoff = 0.05,
     fc_cutoff = 1.0,
@@ -254,10 +255,77 @@ for (job_id in names(dea_configs)) {
 }
 ```
 
+# Lipid Set Enrichment Analysis (LSEA)
+
+`r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using a 'Binary Burden' approach. Aggregates both testable and ultra-sparse lipids by structural family to rescue statistical power. Tests family-level differences using non-parametric Mann-Whitney U statistics.")`
+
+```{r lsea_execution, fig.width=14, fig.height=10, results='asis'}
+# 1. Collapse the Binarized Matrix into a Family Burden Matrix
+# We use the full binary_mat from the Triage chunk to include ultra-sparse lipids!
+mapped_lipids <- data.frame(Mediator = rownames(binary_mat)) %>%
+  dplyr::left_join(mean_lod_df %>% select(Mediator, Family) %>% distinct(), by = "Mediator") %>%
+  dplyr::mutate(Family = ifelse(is.na(Family) | Family == "", "Unclassified", Family))
+
+# Aggregate columns (patients) by taking the sum of the rows (lipids) per Family
+family_burden_mat <- apply(binary_mat, 2, function(col) {
+  tapply(col, mapped_lipids$Family, sum, na.rm = TRUE)
+})
+
+# 2. Execution Loop (Re-uses dea_configs)
+for (job_id in names(dea_configs)) {
+  job <- dea_configs[[job_id]]
+  
+  cat(sprintf("\n\n## %s\n\n", job$title))
+  
+  # External Data Injection
+  temp_spine <- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df <- readRDS(job$external_data$file_path)
+    temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # Handle Continuous Binning
+  temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
+  }
+  
+  cat(sprintf("### LSEA Burden: %s {.unlisted .unnumbered}\n\n", job$title))
+  
+  # Call LSEA Wrapper
+  res <- wrap_lsea(
+    burden_mat = family_burden_mat, 
+    clin_df = temp_spine, 
+    config = job, 
+    job_name = job_id,
+    out_dir = output_dir_data,
+    assets_dir = assets_dir,
+    project_colors_func = get_project_colors
+  )
+  
+  if (res$status == "success") {
+    if (!is.null(res$plot)) { 
+      if (interactive()) { 
+        print(res$plot)
+        cat("\n\n")
+      } else { 
+        cat(sprintf("<img src='assets/%s/%s_LSEA_burden.png' width='100%%' />\n\n", current_file, job_id))
+        cat("\n\n") 
+      }
+    } else {
+      cat("*No valid family data to plot.* \n\n")
+    }
+  } else {
+    cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
+  }
+}
+```
+
 # Raw Feature Abundances {.tabset}
 `r what_this_does("Generates standalone, high-resolution patchwork grids displaying the raw, log10-transformed intensity distributions for every testable lipid across the requested clinical contrasts. Sorted alphabetically for standardized reference.")`
 
-```{r raw_abundances, fig.width=16, fig.height=15, results='asis'}
+```{r raw_abundances, fig.width=12, fig.height=18, results='asis'}
 for (job_id in names(dea_configs)) {
   job <- dea_configs[[job_id]]
   
@@ -338,5 +406,5 @@ saveRDS(lsea_payload, export_path)
 ```
 
 ```{r complete}
-cat("Script 04a Complete! \n")
+cat("Script 04b Complete! \n")
 ```
