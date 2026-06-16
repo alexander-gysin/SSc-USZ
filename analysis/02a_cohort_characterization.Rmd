@@ -197,15 +197,38 @@ upset_configs <- list(
   phenotype_overlap = list(
     title = "Patient Overlap: Phenotypes vs Global Activity",
     variables = list(
-      # TYPE-AGNOSTIC TARGETS: It doesn't matter if the spine holds text, factors, or math. 
-      # If the patient has any of these values, they are securely counted.
       "Active"       = list(col = "cohort_group", target = c(GRP_ACTIVE, "Active", 2, "2")),
       "Non_Active"   = list(col = "cohort_group", target = c(GRP_NON_ACTIVE, "Non-Active", 1, "1")),
       "Inflammatory" = list(col = "Inflamm_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
       "Vascular"     = list(col = "vascular_active", target = c(1, "1", "yes", "Yes", "active", "Active")),
       "Fibrotic"     = list(col = "fibrotic_active", target = c(1, "1", "yes", "Yes", "active", "Active"))
     )
+  ),
+  
+  medication_overlap = list(
+  title = "Patient Overlap: Medications",
+  variables = list(
+    "Rituximab"            = list(col = "Med_rituximab",          target = c("yes", "Yes", 1, "1")),
+    "Tocilizumab"          = list(col = "Med_tocilizumab",        target = c("yes", "Yes", 1, "1")),
+    "MMF"                  = list(col = "Med_mmf",               target = c("yes", "Yes", 1, "1")),
+    "MTX"                  = list(col = "Med_mtx",               target = c("yes", "Yes", 1, "1")),
+    "JAKi"                 = list(col = "Med_jaki",              target = c("yes", "Yes", 1, "1")),
+    "Abatacept"            = list(col = "Med_abatacept",         target = c("yes", "Yes", 1, "1")),
+    "Sildenafil"           = list(col = "Med_sildenafil",        target = c("yes", "Yes", 1, "1")),
+    "Tadalafil"            = list(col = "Med_tadalafil",         target = c("yes", "Yes", 1, "1")),
+    "Bosentan"             = list(col = "Med_bosentan",          target = c("yes", "Yes", 1, "1")),
+    "Iloprost"             = list(col = "Med_iloprost",          target = c("yes", "Yes", 1, "1")),
+    "Macitentan"           = list(col = "Med_macitentan",        target = c("yes", "Yes", 1, "1")),
+    "Ambrisentan"          = list(col = "Med_ambrisentan",       target = c("yes", "Yes", 1, "1")),
+    "PPI"                  = list(col = "Med_ppi",               target = c("yes", "Yes", 1, "1")),
+    "ACEi"                 = list(col = "Med_acei",              target = c("yes", "Yes", 1, "1")),
+    "Nintedanib"           = list(col = "Med_nintedanib",        target = c("yes", "Yes", 1, "1")),
+    "ASA"                  = list(col = "Med_asa",               target = c("yes", "Yes", 1, "1")),
+    "CCB"                  = list(col = "Med_ccb",               target = c("yes", "Yes", 1, "1")),
+    "ARB"                  = list(col = "Med_arb",               target = c("yes", "Yes", 1, "1")),
+    "OAC"                  = list(col = "Med_oac",               target = c("yes", "Yes", 1, "1"))
   )
+)
 )
 ```
 
@@ -938,7 +961,7 @@ generate_upset_plot <- function(conf, df) {
 }
 ```
 
-```{r upset_execution, fig.width=9, fig.height=6}
+```{r upset_execution, fig.width=9, fig.height=9}
 upset_dir <- file.path(output_dir_data, "upset-plots")
 if (!dir.exists(upset_dir)) dir.create(upset_dir, recursive = TRUE)
 
@@ -978,5 +1001,5 @@ invisible(gc())
 `r key_insight("The groups Firotic, Vascular and Inflammatory largely share the patients, for example only 6 of the 33 fibrotic patients are not part of any other group", "Comparing the groups between each other (for example fibrotic vs vascular) does not make sense since they largely overlap")`
 
 ```{r finish_message}
-cat("Script 02 Complete!")
+cat("Script 02a Complete!")
 ```
