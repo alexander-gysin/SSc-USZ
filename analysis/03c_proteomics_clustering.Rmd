@@ -32,6 +32,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 current_file <- "03c_proteomics_clustering"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+assets_dir <- here::here("docs", "assets", current_file)
 
 # Global DEA Path
 proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
@@ -547,7 +548,7 @@ for (p_id in names(pheno_configs)) {
         tbl <- res$tables[[algo]] %>% 
           gtsummary::as_kable_extra(caption = sprintf("Clinical Summary: %s", toupper(algo))) %>%
           kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE)%>%
-          kableExtra::scroll_box(width = "100%", height = "300px")
+          kableExtra::scroll_box(width = "100%", height = "600px")
         print(tbl)
         cat("\n\n")
       }
@@ -587,7 +588,6 @@ for (f_id in names(feature_configs)) {
       cat(sprintf("\n\n#### %s\n\n", c_conf$title))
       cat(sprintf("**Description:** %s\n\n", c_conf$desc))
 
-      # --- THE MAGIC PRE-FILTER (Option A) ---
       # Start with the baseline cluster assignments for this algorithm
       contrast_df <- temp_spine
 
@@ -605,15 +605,29 @@ for (f_id in names(feature_configs)) {
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
-        target_groups = c_conf$target, # Fixed mapping!
-        ref_groups = c_conf$ref,       # Fixed mapping!
+        target_groups = c_conf$target,
+        ref_groups = c_conf$ref,
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
         dea_fc_cutoff = conf$dea_fc_cutoff
       )
       
+      # Capture the exact job name to use for standardizing image paths
+      job_name_full <- sprintf("%s_%s_%s", f_id, algo_name, contrast_name)
+      
       # Push the pre-filtered dataframe directly into the core Limma wrapper
-      res <- wrap_dea_pipeline(target_matrix, contrast_df, dea_conf, sprintf("%s_%s_%s", f_id, algo_name, contrast_name), output_dir_data, go_genesets, omics_config, heatmap_config, get_project_colors)
+      res <- wrap_dea_pipeline(
+                target_matrix, 
+                contrast_df, 
+                dea_conf, 
+                job_name_full, 
+                output_dir_data, 
+                go_genesets, 
+                omics_config, 
+                heatmap_config, 
+                get_project_colors,
+                assets_dir = assets_dir
+              )
       
       if (res$status == "success") {
         
@@ -623,26 +637,33 @@ for (f_id in names(feature_configs)) {
             mutate(logFC = round(logFC, 2), adj.P.Val = formatC(adj.P.Val, format = "e", digits = 2)) %>%
             kableExtra::kbl(format = "html", caption = "Top 50 Significant Proteins") %>% 
             kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
-            kableExtra::scroll_box(width = "100%", height = "300px")
+            kableExtra::scroll_box(width = "100%", height = "600px")
           print(tbl)
           cat("\n\n") 
         }
         
         # 2. VOLCANO PLOT
         if (!is.null(res$plots$volcano)) {
-          print(res$plots$volcano)
-          cat("\n\n") 
+          if (interactive()) {
+            print(res$plots$volcano)
+            cat("\n\n")
+          } else {
+            cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_volcano.png' width='100%%' />\n\n", job_name_full))
+          }
         }
         
         # 3. COMPLEXHEATMAP 
         if (!is.null(res$plots$heatmap)) {
-          ComplexHeatmap::draw(res$plots$heatmap)
-          cat("\n\n") 
+          if (interactive()) {
+            ComplexHeatmap::draw(res$plots$heatmap)
+            cat("\n\n")
+          } else {
+            cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_heatmap.png' width='100%%' />\n\n", job_name_full))
+          }
         }
         
         # 4. GSEA PLOTS (Multi-Database Sub-tabs)
         if (length(res$plots$gsea) > 0) {
-          # Create a new Tabset tier specifically for the different databases
           cat("\n\n##### Pathway Analysis {.tabset}\n\n")
           
           for (db_name in names(res$plots$gsea)) {
@@ -650,33 +671,35 @@ for (f_id in names(feature_configs)) {
             
             p_obj <- res$plots$gsea[[db_name]]
             
-            if (!is.null(p_obj$dotplot)) print(p_obj$dotplot)
-            cat("\n\n")
+            if (!is.null(p_obj$dotplot)) {
+              if (interactive()) { print(p_obj$dotplot); cat("\n\n") }
+              else { cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_%s_dotplot.png' width='100%%' />\n\n", job_name_full, db_name)) }
+            }
             
-            if (!is.null(p_obj$ridgeplot)) print(p_obj$ridgeplot)
-            cat("\n\n")
+            if (!is.null(p_obj$ridgeplot)) {
+              if (interactive()) { print(p_obj$ridgeplot); cat("\n\n") }
+              else { cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_%s_ridgeplot.png' width='100%%' />\n\n", job_name_full, db_name)) }
+            }
             
-            if (!is.null(p_obj$emap)) print(p_obj$emap)
-            cat("\n\n")
+            if (!is.null(p_obj$emap)) {
+              if (interactive()) { print(p_obj$emap); cat("\n\n") }
+              else { cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_%s_emap.png' width='100%%' />\n\n", job_name_full, db_name)) }
+            }
           }
         } else {
           cat("*Note: No pathways passed FDR for any database.* \n\n")
         }
         
-        # 5. GSEA RIDGEPLOT
+        # 5. LEGACY GSEA RIDGEPLOT
         if (!is.null(res$plots$gsea_ridge)) {
-          print(res$plots$gsea_ridge)
-          cat("\n\n")
-        } else {
-          cat("*Note: No GSEA Ridgeplot generated (requires >= 2 significant pathways).* \n\n")
+          if (interactive()) { print(res$plots$gsea_ridge); cat("\n\n") }
+          else { cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_gsea_ridge.png' width='100%%' />\n\n", job_name_full)) }
         }
         
-        # 6. GSEA EMAP PLOT
+        # 6. LEGACY GSEA EMAP PLOT
         if (!is.null(res$plots$gsea_emap)) {
-          print(res$plots$gsea_emap)
-          cat("\n\n")
-        } else {
-          cat("*Note: No GSEA EMAP generated (requires >= 2 significant pathways).* \n\n")
+          if (interactive()) { print(res$plots$gsea_emap); cat("\n\n") }
+          else { cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_gsea_emap.png' width='100%%' />\n\n", job_name_full)) }
         }
       }
     }
