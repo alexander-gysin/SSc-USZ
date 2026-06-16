@@ -629,15 +629,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree623232514a32cc2ff1cdb0699476c6cc396914f1targetblank6232325a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebb076271b12afeff415f73f8b2256213d931cb28targetblankbb07627a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/623232514a32cc2ff1cdb0699476c6cc396914f1" target="_blank">6232325</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bb076271b12afeff415f73f8b2256213d931cb28" target="_blank">bb07627</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree623232514a32cc2ff1cdb0699476c6cc396914f1targetblank6232325a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebb076271b12afeff415f73f8b2256213d931cb28targetblankbb07627a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -647,7 +647,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/623232514a32cc2ff1cdb0699476c6cc396914f1" target="_blank">6232325</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bb076271b12afeff415f73f8b2256213d931cb28" target="_blank">bb07627</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -728,6 +728,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bb076271b12afeff415f73f8b2256213d931cb28/analysis/04b_lipidomics_differential.Rmd" target="_blank">bb07627</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+fixed med char, added med upset, added med lipid dea
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/6d4ef4598507fcc5df8d2657e4d2e4b077ac4b6d/docs/04b_lipidomics_differential.html" target="_blank">6d4ef45</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -991,6 +1025,26 @@ dea_configs &lt;- list(
       file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc&quot;, &quot;job_svc_Master_Assignments.rds&quot;),
       join_col = &quot;Subject_ID&quot;
     )
+  ),
+  
+    job_med_ccb = list(
+    title = &quot;Calcium Channel Blockers&quot;,
+    test_var = &quot;Med_ccb&quot;,
+    target_groups = c(&quot;yes&quot;),
+    ref_groups = c(&quot;no&quot;),
+    bin_continuous = FALSE,
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
+  ),
+  
+    job_med_asa = list(
+    title = &quot;Acetylsalicylic Acid&quot;,
+    test_var = &quot;Med_asa&quot;,
+    target_groups = c(&quot;yes&quot;),
+    ref_groups = c(&quot;no&quot;),
+    bin_continuous = FALSE,
+    fdr_cutoff = 0.05,
+    fc_cutoff = 1.0
   )
 )
 
@@ -1271,6 +1325,75 @@ groups.</p>
 <p><em>All lipids possessed sufficient variance to be tested.</em></p>
 </div>
 </div>
+<div id="calcium-channel-blockers" class="section level2">
+<h2>Calcium Channel Blockers</h2>
+<div id="overview-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Overview: Calcium Channel Blockers</h3>
+<p><em>Note: Med_ccb is categorical/binary and was routed to Fisher’s
+Exact Test.</em></p>
+</div>
+<div id="significant-lipids-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Significant Lipids: Calcium Channel
+Blockers</h3>
+<p><em>No significant features survived FDR correction.</em></p>
+</div>
+<div id="volcano-plot-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Volcano Plot: Calcium Channel
+Blockers</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_volcano.png' width='100%' /></p>
+</div>
+<div id="heatmap-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Heatmap: Calcium Channel Blockers</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_heatmap.png' width='100%' /></p>
+</div>
+<div id="exclusion-report-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Exclusion Report: Calcium Channel
+Blockers</h3>
+<p>Out of the 14 globally testable lipids, the following were excluded
+from this specific contrast due to zero mathematical variance between
+groups.</p>
+<p><em>All lipids possessed sufficient variance to be tested.</em></p>
+</div>
+</div>
+<div id="acetylsalicylic-acid" class="section level2">
+<h2>Acetylsalicylic Acid</h2>
+<div id="overview-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Overview: Acetylsalicylic Acid</h3>
+<p><em>Note: Med_asa is categorical/binary and was routed to Fisher’s
+Exact Test.</em></p>
+</div>
+<div id="significant-lipids-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Significant Lipids: Acetylsalicylic
+Acid</h3>
+<p><em>No significant features survived FDR correction.</em></p>
+</div>
+<div id="volcano-plot-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Volcano Plot: Acetylsalicylic Acid</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_volcano.png' width='100%' /></p>
+</div>
+<div id="heatmap-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Heatmap: Acetylsalicylic Acid</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_heatmap.png' width='100%' /></p>
+</div>
+<div id="exclusion-report-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Exclusion Report: Acetylsalicylic
+Acid</h3>
+<p>Out of the 14 globally testable lipids, the following were excluded
+from this specific contrast due to zero mathematical variance between
+groups.</p>
+<p><em>All lipids possessed sufficient variance to be tested.</em></p>
+</div>
+</div>
 </div>
 <div id="lipid-set-enrichment-analysis-lsea" class="section level1">
 <h1>Lipid Set Enrichment Analysis (LSEA)</h1>
@@ -1369,6 +1492,23 @@ class="section level3 unlisted unnumbered">
 <p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_LSEA_burden.png' width='100%' /></p>
 </div>
 </div>
+<div id="calcium-channel-blockers-1" class="section level2">
+<h2>Calcium Channel Blockers</h2>
+<div id="lsea-burden-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">LSEA Burden: Calcium Channel
+Blockers</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_LSEA_burden.png' width='100%' /></p>
+</div>
+</div>
+<div id="acetylsalicylic-acid-1" class="section level2">
+<h2>Acetylsalicylic Acid</h2>
+<div id="lsea-burden-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">LSEA Burden: Acetylsalicylic Acid</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_LSEA_burden.png' width='100%' /></p>
+</div>
+</div>
 </div>
 <div id="raw-feature-abundances" class="section level1 tabset">
 <h1 class="tabset">Raw Feature Abundances</h1>
@@ -1456,6 +1596,24 @@ class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Jitter Distributions: Cluster 1 vs
 Cluster 2</h3>
 <p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_raw_intensities.png' width='100%' /></p>
+</div>
+</div>
+<div id="calcium-channel-blockers-2" class="section level2">
+<h2>Calcium Channel Blockers</h2>
+<div id="jitter-distributions-calcium-channel-blockers"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Jitter Distributions: Calcium Channel
+Blockers</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_raw_intensities.png' width='100%' /></p>
+</div>
+</div>
+<div id="acetylsalicylic-acid-2" class="section level2">
+<h2>Acetylsalicylic Acid</h2>
+<div id="jitter-distributions-acetylsalicylic-acid"
+class="section level3 unlisted unnumbered">
+<h3 class="unlisted unnumbered">Jitter Distributions: Acetylsalicylic
+Acid</h3>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
 </div>
