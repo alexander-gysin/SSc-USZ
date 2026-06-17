@@ -12,6 +12,9 @@ library(cluster)
 library(dbscan)
 library(igraph)
 library(missForest)
+library(circlize)
+library(pheatmap)
+library(ComplexHeatmap)
 
 # WRAPPERS 1: Dimensionality Reduction & Utilities ----------------------------------
 

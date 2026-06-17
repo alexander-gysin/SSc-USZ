@@ -37,8 +37,9 @@ assets_dir <- here::here("docs", "assets", current_file)
 # Global DEA Path
 proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
 
-# Source Configuration & Engines
-source(here::here("code", "00_omics_engines.R"))
+# Source Engines
+source(here::here("code", "01_general_engines.R"))
+source(here::here("code", "02_proteomics_engines.R"))
 
 # Load Pre-Cleaned Data
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
@@ -742,7 +743,7 @@ for (f_id in names(feature_configs)) {
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom predictive engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
-```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+```{r print_engine, code=c(readLines(here::here("code", "01_general_engines.R")), readLines(here::here("code", "02_proteomics_engines.R"))), eval=FALSE}
 
 ```
 

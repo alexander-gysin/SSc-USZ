@@ -34,7 +34,7 @@ output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 # Source Engines (Assuming we start the new file here!)
-source(here::here("code", "00_lipid_engines.R"))
+source(here::here("code", "03_lipidomics_engines.R"))
 
 # Load Pre-Cleaned Data
 # Assuming 01c or similar contains your raw/imputed lipid data
@@ -162,7 +162,7 @@ rm(pheno_res)
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom lipid omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
-```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+```{r print_engine,code=readLines(here::here("code", "03_lipidomics_engines.R")), eval=FALSE}
 
 ```
 

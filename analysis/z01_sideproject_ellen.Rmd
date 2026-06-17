@@ -36,7 +36,8 @@ output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 # Source Engines
-source(here::here("code", "00_omics_engines.R"))
+source(here::here("code", "01_general_engines.R"))
+source(here::here("code", "02_proteomics_engines.R"))
 
 # Data Import
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
@@ -133,14 +134,6 @@ if(nrow(clin_10) != 10) {
   cat(sprintf("<b style='color:red;'>WARNING: Only found %d of the 10 specified patients in the spine! Please check your ID list.</b>\n\n", nrow(clin_10)))
 }
 
-# Decode Sex
-if ("Sex" %in% names(clin_10)) {
-  clin_10[, Sex := fcase(
-    Sex == 1 | Sex == "1", SEX_FEMALE,
-    Sex == 0 | Sex == "0", SEX_MALE,
-    default = NA_character_
-  )]
-}
 
 # Create strict 5v5 grouping column
 clin_10[, phenotype_group := fcase(
@@ -291,7 +284,7 @@ if (length(available_poi) > 0) {
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
-```{r print_engine, code=readLines(here::here("code", "00_omics_engines.R")), eval=FALSE}
+```{r print_engine, code=c(readLines(here::here("code", "01_general_engines.R")), readLines(here::here("code", "02_proteomics_engines.R"))), eval=FALSE}
 
 ```
 
