@@ -1,0 +1,16 @@
+---
+title: "Proteomics Machine Learning"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Introduction
+
+```{r}
+
+```
+
+Still working on it...
