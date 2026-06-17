@@ -7,10 +7,186 @@ editor_options:
   chunk_output_type: inline
 ---
 
-## Introduction
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
 
-```{r}
+# Setup and Import
+`r what_this_does("Loaded ML frameworks including glmnet, randomForest, and xgboost.", "Imported global matrices and clinical metadata.", "Sourced the Tiered ML Engines.")`
+
+```{r setup_and_import, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(caret)
+library(glmnet)
+library(randomForest)
+library(xgboost)
+library(smotefamily)
+library(pROC)
+library(kableExtra)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file <- "05_machine_learning"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+assets_dir <- here::here("docs", "assets", current_file)
+if (!dir.exists(assets_dir)) dir.create(assets_dir, recursive = TRUE)
+
+# Source Configuration & ML Engines
+source(here::here("code", "04_ml_engines.R"))
+
+# Load Data 
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+lipid_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "raw_lipid_matrix.rds"))
+```
+
+# Configurations
+`r what_this_does("Configured the Nested Cross-Validation global parameters and defined specific ML routing paths for omics contrasts, including hyperparameter grids for tuning.")`
+
+```{r configurations}
+# 1. Global ML Configurations ---------------------------
+global_ml_configs <- list(
+  cv = list(
+    outer_folds = 5,   # Outer loop for unbiased evaluation
+    inner_folds = 3,   # Inner loop for hyperparameter tuning / early stopping
+    stratified = TRUE
+  ),
+  feature_stability_threshold = 0.80 # Feature must be selected in 80% of outer folds
+)
+
+# 2. ML Routing & Grids ---------------------------
+ml_configs <- list(
+  
+  job_lipid_ssc_vs_ctrl = list(
+    title = "SSc vs Control (Lipidomics)",
+    omics_type = "lipidomics",
+    dataset = "lipid_mat",
+    test_var = "cohort_group",
+    target_groups = c("Active", "Non-Active"),
+    ref_groups = c("Control"),
+    use_smote = FALSE, # SMOTE disabled for sparse/hybrid data
+    algorithms = c("lasso", "rf", "gb", "plsda"),
+    hyperparameters = list(
+      lasso = list(alpha = 1), # 1 = LASSO, 0.5 = Elastic Net
+      rf    = list(ntree = 500),
+      gb    = list(max_depth = 2, eta = 0.01, nrounds = 200),
+      plsda = list(ncomp = 2)
+    )
+  ),
+  
+  job_prot_ssc_vs_ctrl = list(
+    title = "SSc vs Control (Proteomics)",
+    omics_type = "proteomics",
+    dataset = "prot_mat",
+    test_var = "cohort_group",
+    target_groups = c("Active", "Non-Active"),
+    ref_groups = c("Control"),
+    use_smote = TRUE, # SMOTE enabled for dense continuous data
+    algorithms = c("lasso", "rf", "gb", "plsda"),
+    hyperparameters = list(
+      lasso = list(alpha = 0.5), # Using Elastic Net for highly correlated proteins
+      rf    = list(ntree = 500),
+      gb    = list(max_depth = 3, eta = 0.01, nrounds = 300),
+      plsda = list(ncomp = 3)
+    )
+  )
+)
+```
+
+# Machine Learning {.tabset}
+`r what_this_does("Executes the Universal ML Loop across defined omics contrasts. Handles omics-specific preprocessing (Hybrid binarization vs. SMOTE imputation), trains stratified nested CV models, and compiles unified evaluation metrics.")`
+
+```{r machine_learning, results='asis'}
+# Global storage for aggregated metrics
+compiled_metrics <- list()
+
+for (job_id in names(ml_configs)) {
+  job <- ml_configs[[job_id]]
+  target_mat <- get(job$dataset)
+  
+  cat(sprintf("\n\n## %s {.tabset}\n\n", job$title))
+  
+  # 1. Tier 1: Data Preparation Worker
+  prep_res <- tryCatch({
+    wrap_ml_data_prep(mat = target_mat, clin_df = master_spine, config = job)
+  }, error = function(e) return(list(status = "error", msg = e$message)))
+  
+  if (!is.null(prep_res$status) && prep_res$status == "error") {
+    cat(sprintf("**Data Prep FAILED:** %s\n\n", prep_res$msg))
+    next
+  }
+  
+  X_clean <- prep_res$X
+  Y_clean <- prep_res$Y
+  
+  cat(sprintf("*Successfully compiled %d Samples and %d Features for modeling.*\n\n", nrow(X_clean), ncol(X_clean)))
+  
+  job_metrics <- data.frame()
+  
+  # 2. Tier 1: Algorithm Loop
+  for (alg in job$algorithms) {
+    cat(sprintf("\n\n### %s\n\n", toupper(alg)))
+    
+    # Execute Universal Engine
+    ml_res <- wrap_ml_engine(
+      X = X_clean, 
+      Y = Y_clean, 
+      config = job, 
+      global_config = global_ml_configs, 
+      algorithm = alg,
+      job_name = job_id,
+      out_dir = output_dir_data,
+      assets_dir = assets_dir,
+      project_colors_func = get_project_colors
+    )
+    
+    # Accumulate Metrics
+    job_metrics <- bind_rows(job_metrics, ml_res$metrics)
+    
+    # Render Output Metrics Table
+    tbl <- ml_res$metrics %>%
+      kableExtra::kbl(format = "html") %>% 
+      kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+    print(tbl)
+    cat("\n\n")
+    
+    # Render Plots side-by-side if both exist
+    if (!is.null(ml_res$roc_plot) && !is.null(ml_res$stability_plot)) {
+      if (interactive()) {
+        print(ml_res$roc_plot + ml_res$stability_plot)
+      } else {
+        cat(sprintf("<div style='display: flex;'>"))
+        cat(sprintf("<img src='assets/%s/%s_%s_ROC.png' width='45%%' style='margin-right: 5%%;'/>", current_file, job_id, alg))
+        cat(sprintf("<img src='assets/%s/%s_%s_Stability.png' width='45%%' />", current_file, job_id, alg))
+        cat(sprintf("</div>\n\n"))
+      }
+    } else if (!is.null(ml_res$roc_plot)) {
+       if (interactive()) { print(ml_res$roc_plot) } 
+       else { cat(sprintf("<img src='assets/%s/%s_%s_ROC.png' width='50%%' />\n\n", current_file, job_id, alg)) }
+    }
+    
+    cat("\n\n")
+  }
+  
+  compiled_metrics[[job_id]] <- job_metrics
+  
+  # Clean memory inside outer loop
+  rm(X_clean, Y_clean, prep_res, job_metrics)
+  gc()
+}
+```
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the ML engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+
+```{r print_engine, code=readLines(here::here("code", "01_general_engines.R")), eval=FALSE}
 
 ```
 
-Still working on it...
+```{r complete}
+cat("Script 04c Complete! \n")
+```
