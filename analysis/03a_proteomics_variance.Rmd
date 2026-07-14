@@ -63,7 +63,7 @@ numeric_spine         <- readRDS(here::here("output", "01b_clinical_feature_engi
 data_dictionary       <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 
 olink_mat             <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
-clinical_correlations <- readRDS(here::here("output", "02_cohort_characterization", "clinical_correlation_matrices.rds"))
+clinical_correlations <- readRDS(here::here("output", "02a_cohort_characterization", "clinical_correlation_matrices.rds"))
 
 # Initialize multi-core use
 plan(multisession, workers = 4)

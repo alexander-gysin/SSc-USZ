@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 )
 
 # Output paths
-current_file <- "02_cohort_characterization"
+current_file <- "02a_cohort_characterization"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 

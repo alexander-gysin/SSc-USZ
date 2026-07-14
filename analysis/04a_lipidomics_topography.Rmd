@@ -21,6 +21,7 @@ library(here)
 library(kableExtra)
 library(UpSetR) # Highly recommended for missingness topography
 library(readxl)      # Reading messy Excel files
+library(data.table)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -98,9 +99,9 @@ if(!is.null(missingness_res$plots$co_missingness_heatmap)) {
   cat("\n\n")
 }
 
-if(!is.null(missingness_res$plots$lod_range)) {
-  cat("### Limit of Detection (LOD) Range\n\n")
-  print(missingness_res$plots$lod_range)
+if(!is.null(missingness_res$plots$lod_scatter)) {
+  cat("### Limit of Detection (LOD) Topography\n\n")
+  print(missingness_res$plots$lod_scatter)
   cat("\n\n")
 }
 

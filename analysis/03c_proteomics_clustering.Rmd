@@ -741,6 +741,44 @@ for (f_id in names(feature_configs)) {
 <!-- ``` -->
 
 
+# Omics Bridge Export
+`r what_this_does("Extracts the optimal k-means clustering assignments from the proteomics pipeline, formats them strictly as categorical 'Cluster X' labels, and exports them as a cross-omics bridge file to be ingested by the downstream Lipidomics Differential engine.")`
+
+```{r omics_bridge_export}
+# 1. Extract the payload for the target job
+target_job <- "job_svc"
+payload <- global_cluster_payloads[[target_job]]
+
+if (!is.null(payload) && payload$status == "success") {
+  
+  # 2. Extract the k-means assignments (Named vector: Names = Subject_ID, Values = Cluster)
+  kmeans_raw <- payload$data$assignments[["kmeans"]]
+  
+  if (!is.null(kmeans_raw)) {
+    # 3. Transform into the exact format required by the Lipidomics pipeline
+    bridge_df <- data.frame(
+      Subject_ID = names(kmeans_raw),
+      kmeans_Cluster = paste("Cluster", as.character(kmeans_raw)),
+      stringsAsFactors = FALSE
+    )
+    
+    # 4. Define export directory and ensure it exists
+    export_dir <- file.path(output_dir_data, "Clustering", target_job)
+    if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
+    
+    # 5. Export the bridge file
+    export_path <- file.path(export_dir, paste0(target_job, "_Master_Assignments.rds"))
+    saveRDS(bridge_df, export_path)
+    
+    cat(sprintf("**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n", nrow(bridge_df), export_path))
+  } else {
+    cat("*Error: k-means assignments not found in the payload.*\n")
+  }
+} else {
+  cat("*Error: Clustering payload for 'job_svc' is missing or failed.*\n")
+}
+```
+
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom predictive engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 ```{r print_engine, code=c(readLines(here::here("code", "01_general_engines.R")), readLines(here::here("code", "02_proteomics_engines.R"))), eval=FALSE}

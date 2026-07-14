@@ -69,8 +69,8 @@ dea_configs <- list(
     target_groups = c("Active"),
     ref_groups = c("Non-Active"),
     bin_continuous = FALSE,  
-    fdr_cutoff = 0.05,
-    fc_cutoff = 1.0
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
   ),
   
   job_ssc_vs_ctrl = list(
@@ -79,8 +79,8 @@ dea_configs <- list(
     target_groups = c("Active", "Non-Active"),
     ref_groups = c("Control"),
     bin_continuous = FALSE, 
-    fdr_cutoff = 0.05,
-    fc_cutoff = 1.0
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
   ),
   
   job_cluster_1_vs_2 = list(
@@ -89,8 +89,8 @@ dea_configs <- list(
     target_groups = c("Cluster 2"),
     ref_groups = c("Cluster 1"),
     bin_continuous = FALSE,
-    fdr_cutoff = 0.05,
-    fc_cutoff = 1.0,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0,
     external_data = list(
       file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
       join_col = "Subject_ID"
@@ -103,8 +103,8 @@ dea_configs <- list(
     target_groups = c("yes"),
     ref_groups = c("no"),
     bin_continuous = FALSE,
-    fdr_cutoff = 0.05,
-    fc_cutoff = 1.0
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
   ),
   
     job_med_asa = list(
@@ -113,8 +113,8 @@ dea_configs <- list(
     target_groups = c("yes"),
     ref_groups = c("no"),
     bin_continuous = FALSE,
-    fdr_cutoff = 0.05,
-    fc_cutoff = 1.0
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
   )
 )
 
