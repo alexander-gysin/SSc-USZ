@@ -775,7 +775,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
     # Dynamic Headers (FDR + N counts)
     fdr_val <- stats_df$FDR[stats_df$Lipid == lipid]
     test_str <- if(is_cont) "Spearman" else "MWU"
-    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2e", test_str, fdr_val)
+    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2f", test_str, fdr_val)
 
     if (!is_cont) {
       g_counts <- table(df_clean$Pheno)
@@ -934,7 +934,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
     # Dynamic Headers (FDR + N counts)
     fdr_val <- stats_df$FDR[stats_df$Family == family]
     test_str <- if(is_cont) "Spearman" else "MWU"
-    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2e", test_str, fdr_val)
+    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2f", test_str, fdr_val)
 
     if (!is_cont) {
       g_counts <- table(df_clean$Pheno)
@@ -983,4 +983,3 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
   return(grid_plot)
 }
 
-#git test

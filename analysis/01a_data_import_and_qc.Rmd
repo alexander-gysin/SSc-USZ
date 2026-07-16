@@ -358,7 +358,7 @@ lod_raw <- readxl::read_excel(here::here("data", file_paths$lipid_lod), sheet = 
 # Aggregate Technical Replicates & Preserve Family Mapping
 mean_lod_df <- lod_raw %>%
   # FIX: By adding Family to the group_by, it is preserved in the output!
-  dplyr::group_by(Family, Mediator) %>%
+  dplyr::group_by(Precursor, Class, Function, Mediator) %>%
   dplyr::summarise(
     LOD_Matrix = mean(LOD_Matrix, na.rm = TRUE),
     n_replicates = dplyr::n(),
