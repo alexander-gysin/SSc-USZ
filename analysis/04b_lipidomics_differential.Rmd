@@ -7,7 +7,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
-```{r setup_boxes, include=FALSE}
+```{r init, include=FALSE}
+rm(list = ls())
 source(here::here("code", "00_config.R"))
 ```
 
@@ -277,69 +278,89 @@ for (job_id in names(dea_configs)) {
 
 # Lipid Set Enrichment Analysis (LSEA)
 
-`r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using a 'Binary Burden' approach. Aggregates both testable and ultra-sparse lipids by structural family to rescue statistical power. Tests family-level differences using non-parametric Mann-Whitney U statistics.")`
+`r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using a 'Binary Burden' approach.", "Iterates across three distinct biological ontologies (Precursor, Class, Function) to provide orthogonal views of lipidomic shifts.", "Applies Category-Specific FDR correction to maximize statistical power while controlling for false positives.")`
 
 ```{r lsea_execution, fig.width=14, fig.height=10, results='asis'}
-# 1. Collapse the Binarized Matrix into a Family Burden Matrix
-# We use the full binary_mat from the Triage chunk to include ultra-sparse lipids!
+# 1. Clean the Mapping Dictionary for all three ontologies
 mapped_lipids <- data.frame(Mediator = rownames(binary_mat)) %>%
-  dplyr::left_join(mean_lod_df %>% select(Mediator, Family) %>% distinct(), by = "Mediator") %>%
-  dplyr::mutate(Family = ifelse(is.na(Family) | Family == "", "Unclassified", Family))
+  dplyr::left_join(mean_lod_df %>% select(Mediator, Precursor, Class, Function) %>% distinct(), by = "Mediator") %>%
+  dplyr::mutate(
+    Precursor = ifelse(is.na(Precursor) | Precursor == "", "Unclassified", Precursor),
+    Class = ifelse(is.na(Class) | Class == "", "Unclassified", Class),
+    Function = ifelse(is.na(Function) | Function == "", "Unclassified", Function)
+  )
 
-# Aggregate columns (patients) by taking the sum of the rows (lipids) per Family
-family_burden_mat <- apply(binary_mat, 2, function(col) {
-  tapply(col, mapped_lipids$Family, sum, na.rm = TRUE)
-})
+# Define the ontologies we want to test
+ontologies <- c("Precursor", "Class", "Function")
 
-# 2. Execution Loop (Re-uses dea_configs)
+# 2. Execution Loop (Jobs)
 for (job_id in names(dea_configs)) {
   job <- dea_configs[[job_id]]
   
   cat(sprintf("\n\n## %s\n\n", job$title))
   
-  # External Data Injection
+  # External Data Injection & Continuous Binning
   temp_spine <- master_spine
   if (!is.null(job$external_data)) {
     ext_df <- readRDS(job$external_data$file_path)
     temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
   }
   
-  # Handle Continuous Binning
   temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
   if (isTRUE(job$bin_continuous)) {
     median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
     temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
   }
   
-  cat(sprintf("### LSEA Burden: %s {.unlisted .unnumbered}\n\n", job$title))
+  # Set up the parent tabset for the ontologies
+  cat(sprintf("### LSEA Burden {.tabset .unlisted .unnumbered}\n\n"))
   
-  # Call LSEA Wrapper
-  res <- wrap_lsea(
-    burden_mat = family_burden_mat, 
-    clin_df = temp_spine, 
-    config = job, 
-    job_name = job_id,
-    out_dir = output_dir_data,
-    assets_dir = assets_dir,
-    project_colors_func = get_project_colors
-  )
-  
-  if (res$status == "success") {
-    if (!is.null(res$plot)) { 
-      if (interactive()) { 
-        print(res$plot)
-        cat("\n\n")
-      } else { 
-        cat(sprintf("<img src='assets/%s/%s_LSEA_burden.png' width='100%%' />\n\n", current_file, job_id))
-        cat("\n\n") 
+  # 3. Nested Execution Loop (Ontologies)
+  for (ontology in ontologies) {
+    
+    # Create a dynamic markdown tab for this specific ontology
+    cat(sprintf("\n\n#### By %s\n\n", ontology))
+    
+    # Dynamically collapse the binary matrix for THIS ontology
+    target_labels <- mapped_lipids[[ontology]]
+    burden_mat <- apply(binary_mat, 2, function(col) {
+      tapply(col, target_labels, sum, na.rm = TRUE)
+    })
+    
+    # Override the job title/id dynamically so the plots and saved files have the right labels
+    temp_job <- job
+    temp_job$title <- sprintf("%s (%s)", job$title, ontology)
+    temp_job_id <- paste0(job_id, "_", tolower(ontology))
+    
+    # Call LSEA Wrapper 
+    # (Category-Specific FDR is naturally handled here because each ontology is tested in an isolated run!)
+    res <- wrap_lsea(
+      burden_mat = burden_mat, 
+      clin_df = temp_spine, 
+      config = temp_job, 
+      job_name = temp_job_id,
+      out_dir = output_dir_data,
+      assets_dir = assets_dir,
+      project_colors_func = get_project_colors
+    )
+    
+    if (res$status == "success") {
+      if (!is.null(res$plot)) { 
+        if (interactive()) { 
+          print(res$plot)
+          cat("\n\n")
+        } else { 
+          cat(sprintf("<img src='assets/%s/%s_LSEA_burden.png' width='100%%' />\n\n", current_file, temp_job_id))
+          cat("\n\n") 
+        }
+      } else {
+        cat(sprintf("*No valid %s data to plot.* \n\n", ontology))
       }
     } else {
-      cat("*No valid family data to plot.* \n\n")
+      cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
     }
-  } else {
-    cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
-  }
-}
+  } # End Ontology Loop
+} # End Job Loop
 ```
 
 # Raw Feature Abundances {.tabset}
