@@ -976,7 +976,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
   grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
     patchwork::plot_annotation(
       title = sprintf("LSEA Binary Burden: %s", config$title),
-      subtitle = "Boxplots representing the total count of detected lipids per biological family.",
+      subtitle = "Boxplots representing the total count of detected lipids per biological group",
       theme = theme(plot.title = element_text(size = 16, face = "bold"))
     )
 
