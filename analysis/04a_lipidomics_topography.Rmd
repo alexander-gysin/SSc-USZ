@@ -22,6 +22,7 @@ library(kableExtra)
 library(UpSetR) # Highly recommended for missingness topography
 library(readxl)      # Reading messy Excel files
 library(data.table)
+library(UpSetR)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -159,6 +160,60 @@ if(length(pheno_res$plots) == 0) {
 # 3. RAM Cleanup
 rm(pheno_res)
 ```
+
+# Lipid Groups
+`r what_this_does("Creates an UpSet Plot of the different lipid groupings")`
+```{r lipid_groups, fig.width=8, fig.height=10}
+# 1. Define the columns we want to evaluate
+cols_to_evaluate <- c("Class", "Precursor", "Function")
+
+# 2. Clean and isolate the relevant data, keeping only UNIQUE mediators
+df_clean <- lod_df %>%
+  dplyr::select(Mediator, dplyr::all_of(cols_to_evaluate)) %>%
+  dplyr::distinct(Mediator, .keep_all = TRUE) %>% # <-- NEW: Drop technical replicates
+  tidyr::drop_na() # Remove any lipids missing this categorical data
+
+# 3. Pivot LONG to aggregate all categories, then create a unique Set Name
+df_long <- df_clean %>%
+  tidyr::pivot_longer(
+    cols = dplyr::all_of(cols_to_evaluate),
+    names_to = "Category_Type",
+    values_to = "Category_Value"
+  ) %>%
+  dplyr::mutate(
+    Set_Name = paste0(Category_Type, "_", Category_Value),
+    Presence = 1 
+  )
+
+# 4. Pivot WIDE to create the binary matrix UpSetR requires
+df_wide <- df_long %>%
+  dplyr::select(Mediator, Set_Name, Presence) %>%
+  tidyr::pivot_wider(
+    names_from = Set_Name,
+    values_from = Presence,
+    values_fill = 0 # <-- FIX: Simplified to scalar 0 to prevent type-conversion errors
+  )
+
+# 5. Extract the dynamically generated set names
+# We exclude the 'Mediator' column, as UpSetR only wants the binary set columns
+set_names <- setdiff(colnames(df_wide), "Mediator")
+
+# 6. Generate the UpSet Plot
+# Note: UpSetR strictly requires a standard data.frame, not a tibble
+UpSetR::upset(
+  as.data.frame(df_wide),
+  sets = set_names,
+  order.by = "freq",               # Order intersections by size
+  nsets = length(set_names),       # Dynamically include all our dummy columns
+  nintersects = 30,                # Show the top 30 combinations
+  mainbar.y.label = "Lipid Count",
+  sets.x.label = "Total Lipids per Category",
+  text.scale = c(1.2, 1.2, 1, 1, 1.2, 1) # Adjust text sizing for readability
+)
+
+rm(df_clean, df_long, df_wide)
+```
+
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom lipid omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`

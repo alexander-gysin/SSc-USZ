@@ -1,8 +1,6 @@
-# ==============================================================================
 # 00_lipid_engines.R
 # Purpose: Custom analytical engines for highly sparse mass spectrometry lipidomics.
 # Architecture: WRAPPERS (orchestration/routing) at the top, WORKERS (math/plots) at the bottom.
-# ==============================================================================
 
 library(tidyverse)
 library(ggplot2)
@@ -11,11 +9,9 @@ library(ComplexHeatmap)
 library(ggrepel)
 library(scales)
 
-# ==============================================================================
-# PART 1: WRAPPERS
-# ==============================================================================
+# PART 1: WRAPPERS -------------------------------------------------------------
 
-# Wrapper: Missingness Topography ----------------------------------------------
+# Wrapper: Missingness Topography
 #' Coordinates the calculation of global missingness and generates diagnostic plots.
 #' @param lipid_mat A numeric matrix of unimputed lipidomics (Lipids as rows, Patients as columns).
 #' @param config List of visualization parameters.
@@ -63,7 +59,7 @@ wrap_missingness_topography <- function(lipid_mat, config, output_dir, lod_df) {
 }
 
 
-# Wrapper: Distribution Signatures --------------------------------------------
+# Wrapper: Distribution Signatures
 #' Coordinates extraction of strictly measured values and plots histograms with LOD lines.
 #' @param lipid_mat A numeric matrix of unimputed lipidomics.
 #' @param config List of visualization parameters.
@@ -91,7 +87,7 @@ wrap_distribution_signatures <- function(lipid_mat, config, output_dir, project_
 }
 
 
-# Wrapper: Phenotype Completeness ----------------------------------------------
+# Wrapper: Phenotype Completeness
 #' Evaluates completeness against clinical variables using dynamic dictionary routing.
 #' @param lipid_mat A numeric matrix of unimputed lipidomics.
 #' @param clin_df Clinical spine data frame containing subjects.
@@ -119,11 +115,9 @@ wrap_phenotype_completeness <- function(lipid_mat, clin_df, clin_dict, config, o
 }
 
 
-# ==============================================================================
-# PART 2: WORKERS (Data Processing & Visualization)
-# ==============================================================================
+# PART 2: WORKERS (Data Processing & Visualization)----------------------------
 
-# Worker: Calculate Missingness ------------------------------------------------
+# Worker: Calculate Missingness
 #' Safely handles both NA and 0 as missing values on row-wise matrix inputs.
 worker_calc_missingness <- function(mat) {
   # Apply across rows (Lipids)
@@ -141,7 +135,7 @@ worker_calc_missingness <- function(mat) {
 }
 
 
-# Worker: Plot Missingness Bars ------------------------------------------------
+# Worker: Plot Missingness Bars
 #' Visualizes ranked missingness, coloring 100% missing values uniquely.
 worker_plot_missingness_bars <- function(missing_df) {
   missing_df$Lipid <- factor(missing_df$Lipid, levels = missing_df$Lipid)
@@ -172,7 +166,7 @@ worker_plot_missingness_bars <- function(missing_df) {
 }
 
 
-# Worker: Plot Co-Missingness Heatmap ------------------------------------------
+# Worker: Plot Co-Missingness Heatmap
 #' Uses ComplexHeatmap to map paired missingness combinations with hierarchical clustering.
 worker_plot_comissingness_heatmap <- function(mat, missing_df) {
   binary_mat <- ifelse(is.na(mat) | mat == 0, 1, 0)
@@ -215,7 +209,7 @@ worker_plot_comissingness_heatmap <- function(mat, missing_df) {
 }
 
 
-# Worker: Limit of Detection (LOD) Scatter -------------------------------------
+# Worker: Limit of Detection (LOD) Scatter
 #' Maps LOD fold changes including underlying raw point jittering and mean metrics.
 worker_plot_lod_scatter <- function(mat, missing_df, lod_df) {
   lod_vec <- setNames(lod_df$LOD_Matrix, lod_df$Mediator)
@@ -318,7 +312,7 @@ worker_plot_lod_scatter <- function(mat, missing_df, lod_df) {
 }
 
 
-# Worker: Plot Histograms ------------------------------------------------------
+# Worker: Plot Histograms
 #' Plots raw or log2 facet-wrapped histograms including dashed red LOD reference thresholds.
 worker_plot_histograms <- function(mat, config, project_colors_func, lod_df) {
   fill_color <- if(!is.null(project_colors_func)) project_colors_func("primary") else "steelblue"
@@ -372,7 +366,7 @@ worker_plot_histograms <- function(mat, config, project_colors_func, lod_df) {
 }
 
 
-# Worker: Plot Phenotype Completeness ------------------------------------------
+# Worker: Plot Phenotype Completeness
 #' Renders stacked completeness bar charts normalized by overall cohort size.
 worker_plot_phenotype_completeness <- function(mat, clin_df, clin_dict, config, out_dir) {
   plots <- list()
@@ -460,9 +454,7 @@ worker_plot_phenotype_completeness <- function(mat, clin_df, clin_dict, config, 
 }
 
 
-# ==============================================================================
-# PART 3: WORKERS (Statistical Engines - Stubs)
-# ==============================================================================
+# PART 3: WORKERS (Statistical Engines - Stubs)----------------------------------
 
 worker_run_fishers_exact <- function(...) {
   # TODO: Implement 2x2 contingency table math for binarized pipeline
@@ -485,14 +477,12 @@ worker_aggregate_lipid_classes <- function(...) {
 }
 
 
-# ==============================================================================
 # SCRIPT: 00_lipid_engines.R
 # PURPOSE: Master statistical engines and visualization wrappers for sparse lipidomics.
 # ARCHITECTURE:
 #   - Parts 1 & 2: Differential Expression (Binarized Hurdle 1 - Fisher/Firth)
 #   - Parts 3 & 4: Raw Abundances (Continuous Hurdle 2 - Mann-Whitney/Spearman)
 #   - Parts 5 & 6: Lipid Set Enrichment Analysis (LSEA Binary Burden Math)
-# ==============================================================================
 
 library(dplyr)
 library(ggplot2)
@@ -500,9 +490,7 @@ library(patchwork)
 library(ComplexHeatmap)
 # library(logistf) # Required for Firth's Penalized Regression
 
-# ==============================================================================
-# PART 1: CORE STATISTICAL WORKERS (DEA)
-# ==============================================================================
+# PART 4: CORE STATISTICAL WORKERS (DEA)-----------------------------------
 
 #' Worker: Fisher's Exact Test (Categorical)
 worker_fisher_exact <- function(v_valid, g_valid, target_name, ref_name) {
@@ -531,9 +519,7 @@ worker_firth_regression <- function(v_valid, clin_vec_cont) {
   return(list(p_val = p_val, estimate = estimate))
 }
 
-# ==============================================================================
-# PART 2: DIFFERENTIAL EXPRESSION WRAPPER
-# ==============================================================================
+# PART 5: DIFFERENTIAL EXPRESSION WRAPPER-----------------------------------------------------------
 
 #' Wrapper: Sparse Differential Expression Analysis
 wrap_sparse_dea <- function(mat, clin_df, config, engine, job_name, out_dir, assets_dir, project_colors_func) {
@@ -672,9 +658,7 @@ wrap_sparse_dea <- function(mat, clin_df, config, engine, job_name, out_dir, ass
   ))
 }
 
-# ==============================================================================
-# PART 3 & 4: RAW ABUNDANCES (Hurdle 2)
-# ==============================================================================
+# PART 6: RAW ABUNDANCES (Hurdle 2)----------------------------------------
 
 #' Wrapper: Raw Abundance Plotting
 wrap_raw_abundances <- function(mat_raw, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
@@ -834,9 +818,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
   return(grid_plot)
 }
 
-# ==============================================================================
-# PART 5 & 6: LIPID SET ENRICHMENT ANALYSIS (LSEA)
-# ==============================================================================
+# PART 7: LIPID SET ENRICHMENT ANALYSIS (LSEA) --------------------------------------
 
 #' Wrapper: Lipid Set Enrichment Analysis (Binary Burden)
 wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
