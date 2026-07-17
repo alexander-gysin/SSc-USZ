@@ -41,6 +41,8 @@ library(patchwork)
 library(here)
 library(future)
 library(future.apply)
+library(vsn) 
+library(hexbin)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -567,6 +569,19 @@ print(var_res$plot)
 rm(var_res)
 invisible(gc())
 ```
+
+#Scedasticity Plot
+`r what_this_does("Generates collapsible visual evidence (Before-State Multi-VPA and PCA) for any variables that were manually rejected from the automated draft models.")`
+
+```{r scedasticity_plot, fig.width=9, fig.height=8}
+# Plot A: Raw Data
+msd_npx <- meanSdPlot(as.matrix(olink_mat), plot = FALSE)
+p_msd_npx <- msd_npx$gg + 
+  ggtitle("NPX Values") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+p_msd_npx
+```
+
 
 # Appendix
 

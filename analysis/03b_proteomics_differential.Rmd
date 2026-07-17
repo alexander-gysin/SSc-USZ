@@ -141,6 +141,17 @@ contrast_configs <- list(
     covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
+  ),
+  
+  eustar_aactive_vs_nonactive = list(
+    title = "EUSTAR Act vs Nonact",
+    group_col = "ACTIVE_AI",
+    target_groups = c("1"), 
+    ref_groups = c("0"),     
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex"), 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
   )
 )
 
@@ -234,16 +245,27 @@ for (c_name in names(contrast_configs)) {
   cat("\n\n")
 
   # 5. Render Nested GSEA Plots (Loops through databases dynamically)
-  if (!is.null(res$plots$gsea)) {
+  if (!is.null(res$plots$gsea) && length(res$plots$gsea) > 0) {
+    
+    # Create the parent header and declare it as a tabset
+    # (Assuming your contrast title is ##, this should be ###)
+    cat("\n\n### Pathway Enrichment {.tabset .tabset-pills .toc-ignore}\n\n") 
+    
     for (db_name in names(res$plots$gsea)) {
       db_plots <- res$plots$gsea[[db_name]]
       
       if (!is.null(db_plots)) {
+        # Create the sub-header for this specific database (the Tab title)
+        cat(sprintf("\n\n#### %s\n\n", db_name))
+        
+        # Print the plots as normal
         if(!is.null(db_plots$dotplot)) { print(db_plots$dotplot); cat("\n\n") }
         if(!is.null(db_plots$ridgeplot)) { print(db_plots$ridgeplot); cat("\n\n") }
         if(!is.null(db_plots$emap)) { print(db_plots$emap); cat("\n\n") }
       }
     }
+    # Optional: Add a break after the tabset to ensure subsequent sections aren't absorbed
+    cat("\n\n") 
   }
 }
 ```

@@ -758,7 +758,7 @@ if (!is.null(payload) && payload$status == "success") {
     # 3. Transform into the exact format required by the Lipidomics pipeline
     bridge_df <- data.frame(
       Subject_ID = names(kmeans_raw),
-      kmeans_Cluster = paste("Cluster", as.character(kmeans_raw)),
+      kmeans_Cluster = paste(as.character(kmeans_raw)),
       stringsAsFactors = FALSE
     )
     

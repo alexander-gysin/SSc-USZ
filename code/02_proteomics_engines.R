@@ -497,55 +497,115 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
 
   if (is.null(go_db)) return(NULL)
 
+  # Ensure ggnewscale is available for the dual color gradients
+  if (!requireNamespace("ggnewscale", quietly = TRUE)) {
+    warning("Package 'ggnewscale' is required for dual color gradients. Installing is recommended.")
+  }
+
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
   set.seed(42)
 
-  # Calculate GSEA for ALL pathways
-  gsea_res <- clusterProfiler::GSEA(geneList = ranked_vec, TERM2GENE = go_db, pvalueCutoff = 1, minGSSize = omics_config$gsea_min_size, verbose = FALSE)
+  # 1. Base GSEA Calculation
+  gsea_res <- clusterProfiler::GSEA(
+    geneList = ranked_vec,
+    TERM2GENE = go_db,
+    pvalueCutoff = 1, # Keep EVERYTHING initially
+    minGSSize = omics_config$gsea_min_size,
+    verbose = FALSE
+  )
+
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
+  # Clean up descriptions
   gsea_res@result$Description <- gsub("GOBP_", "", gsea_res@result$Description) %>% gsub("_", " ", .)
-  res_df <- as.data.frame(gsea_res) %>% mutate(Status = ifelse(NES > 0, "Up-regulated", "Down-regulated"))
 
+  # 2. Pi-Score Calculation & Sorting
+  # Pi-score formula: |NES| * -log10(FDR)
+  # We use a tiny offset for p.adjust == 0 to avoid Inf values
+  gsea_res@result <- gsea_res@result %>%
+    mutate(
+      Status = ifelse(NES > 0, "Up-regulated", "Down-regulated"),
+      safe_p = ifelse(p.adjust == 0, 1e-10, p.adjust),
+      pi_score = abs(NES) * -log10(safe_p)
+    ) %>%
+    arrange(desc(pi_score)) # Highest Pi-score permanently at the top
+
+  res_df <- as.data.frame(gsea_res)
   warning_tag <- if(sum(res_df$p.adjust < omics_config$gsea_p_cutoff) == 0) "\n(Exploratory: No paths passed FDR)" else ""
 
-  # Wrap long geneset names for the Dotplot
+  # 3. DOTPLOT (Exploratory: Top 10 Up/Down by Pi-Score)
+  # Select Top 10 per direction strictly based on Pi-score
   plot_df <- res_df %>%
     group_by(Status) %>%
-    slice_max(abs(NES), n = 10) %>%
+    slice_max(pi_score, n = 10, with_ties = FALSE) %>%
     ungroup() %>%
     mutate(Description = stringr::str_wrap(Description, width = 45))
 
-  main_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
-  full_title <- paste0(main_title, warning_tag)
+  dot_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
 
-  # 1. Exploratory Dotplot
-  p_dot <- ggplot(plot_df, aes(x = NES, y = reorder(Description, NES), color = p.adjust, size = setSize)) +
-    geom_point() +
-    scale_color_gradient(low = "firebrick3", high = "navy") +
+  # Build Dotplot with DUAL gradients (Significant vs Exploratory)
+  p_dot <- ggplot(mapping = aes(x = NES, y = reorder(Description, pi_score))) +
+    # Layer 1: Significant Pathways (Passes gsea_p_cutoff)
+    geom_point(
+      data = filter(plot_df, p.adjust < omics_config$gsea_p_cutoff),
+      aes(size = setSize, color = p.adjust)
+    ) +
+    scale_color_gradient(
+      low = "firebrick3", high = "navy",
+      limits = c(0, omics_config$gsea_p_cutoff),
+      name = "Significant FDR"
+    ) +
+    # Layer 2: Exploratory Pathways (Fails gsea_p_cutoff)
+    ggnewscale::new_scale_color() +
+    geom_point(
+      data = filter(plot_df, p.adjust >= omics_config$gsea_p_cutoff),
+      aes(size = setSize, color = p.adjust)
+    ) +
+    scale_color_gradient(
+      low = "grey50", high = "grey85",
+      limits = c(omics_config$gsea_p_cutoff, 1),
+      name = "Exploratory FDR\n(Warning)"
+    ) +
     scale_x_continuous(expand = expansion(mult = c(0.05, 0.2))) +
     theme_project_base() +
     theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
-    labs(title = full_title, y = NULL)
+    labs(title = paste0(dot_title, warning_tag), y = NULL)
 
-  # STRICT BIOLOGICAL PRE-FILTERING (FDR < cutoff) for Networks
-  gsea_sig <- gsea_res
-  gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < omics_config$network_p_cutoff)
+  # 4. RIDGEPLOT (Exploratory: Top 15 by Pi-Score)
+  # Because gsea_res is pre-sorted by Pi-score, showCategory = 15 grabs the Top 15 Pi-scores
+  # We extract just the top 15 rows to feed into enrichplot to override the default p-value sorting
+  top_15_gsea <- gsea_res
+  top_15_gsea@result <- head(gsea_res@result, 15)
 
-  # NOTE: simplify() has been permanently bypassed here due to generic GSEA() incompatibility.
+  ridge_title <- str_wrap(sprintf("Top 15 Pathways (%s): %s | Ranked by Pi-score", db_name, title), width = 60)
 
-  gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
-
-  # 2. Ridgeplot
-  ridge_title <- str_wrap(sprintf("Pathways (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
-  p_ridge <- if(nrow(gsea_sig@result) > 0) {
-    enrichplot::ridgeplot(gsea_sig, showCategory = 15) +
+  p_ridge <- if(nrow(top_15_gsea@result) > 0) {
+    enrichplot::ridgeplot(top_15_gsea, showCategory = 15) +
       scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 40)) +
+      # Overwrite the default fill scale with a sharp dual-gradient (Color for Sig, Grey for Exp)
+      scale_fill_gradientn(
+        colors = c("firebrick3", "navy", "grey50", "grey85"),
+        values = scales::rescale(c(0, omics_config$gsea_p_cutoff - 1e-5, omics_config$gsea_p_cutoff, 1)),
+        limits = c(0, 1),
+        name = "FDR"
+      ) +
       theme_project_base() +
+      # Applied custom title alignment and smaller y-axis text from previous discussion
+      theme(
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0),
+        axis.text.y = element_text(size = 8)
+      ) +
       labs(title = ridge_title)
   } else NULL
 
-  # 3. Enrichment Map (MATH SHIELD ACTIVATED)
+  # 5. EMAP (Strictly Gated by network_p_cutoff)
+  # Clone the sorted object and hard-filter out anything failing the network cutoff
+  gsea_sig <- gsea_res
+  gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < omics_config$network_p_cutoff)
+
+  gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
+
   p_emap <- NULL
   if(!is.null(gsea_sim)) {
     sim_mat <- gsea_sim@termsim
@@ -553,13 +613,19 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
       valid_edges <- sum(sim_mat[upper.tri(sim_mat)] >= 0.3, na.rm = TRUE)
 
       if (valid_edges > 0) {
-        emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR cutoff: %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
+        emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR < %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
+
+        # showCategory = 40 will grab the Top 40 Pi-Scores from the STRICTLY FILTERED list
         p_emap <- enrichplot::emapplot(
           gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
           size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
         ) +
           theme_project_base() +
-          labs(title = emap_title, subtitle = "Nodes = Pathways | Edges = Shared Genes")
+          theme(
+            plot.title.position = "plot",
+            plot.title = element_text(hjust = 0)
+          ) +
+          labs(title = emap_title, subtitle = "Nodes = Top 40 Significant Pathways (by Pi-Score) | Edges = Shared Genes")
       }
     }
   }
