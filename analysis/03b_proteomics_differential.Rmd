@@ -16,7 +16,7 @@ source(here::here("code", "00_config.R"))
 ```{r setup_import, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(FactoMineR)
-library(factoextra)
+library(factoextra)wf
 library(limma)
 library(clusterProfiler)
 library(msigdbr)
