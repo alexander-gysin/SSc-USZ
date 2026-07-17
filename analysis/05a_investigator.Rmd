@@ -1,0 +1,272 @@
+---
+title: "Target Investigator"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup_boxes, include=FALSE}
+source(here::here("code", "00_config.R"))
+```
+
+# Setup and Import
+`r what_this_does("Loaded required bioinformatics packages and graphics libraries.", "Imported the pre-cleaned clinical spine, clinical dictionary, continuous Olink proteomics matrix, and binary lipidomics matrix.", "Sourced the legacy engine files and the new investigator-specific engines.")`
+
+```{r setup_and_import}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(kableExtra)
+library(ggraph)
+library(igraph)
+# library(limma) #really required??
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file <- "05a_investigator"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Legacy Engines
+source(here::here("code", "01_general_engines.R"))
+# source(here::here("code", "02_proteomics_engines.R")) # really required??
+source(here::here("code", "05_multiomics_engines.R"))
+
+# Load Data
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+clin_dict <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
+omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+lipid_mat <- readRDS(here::here("output", "04b_lipidomics_differential", "lipid_binary_matrix.rds"))
+```
+
+
+# Analysis Configurator
+`r what_this_does("Defined specific groupings of clinical variables to streamline interpretations.", "Configured the investigative jobs, defining the targets (single or multiple), the background subgrouping strategy, and the statistical constraints (e.g., residualizing out age).")`
+`r analysis_decision("Age and Sex are residualized in jobs 2 and 3 to ensure identified correlations represent independent biological signals rather than demographic confounders.")`
+
+```{r analysis_configurator}
+# 1. Clinical Parameter Groupings
+clin_lists <- list(
+  cardiac_vars = c("NTproBNP", "LVEF", "Heart_Failure_Status"),
+  pulmonary_vars = c("FVC_percent", "DLCO_percent", "ILD_Status"),
+  demographic_vars = c("Age", "BMI", "Sex")
+)
+
+# 2. Global Investigator Configurations
+investigator_config <- list(
+  cor_fdr_cutoff = 0.05,
+  plot_theme = theme_minimal()
+)
+
+# 3. Job Definitions
+investigation_jobs <- list(
+  job1_single_protein = list(
+    title = "Investigate CXCL10 (Single Protein)",
+    targets = c("CXCL10"),
+    subgroup_var = "cohort_group",   # Variable to split distribution plots by
+    clin_test_list = c(clin_lists$cardiac_vars, clin_lists$pulmonary_vars),
+    residualize_conf = NULL          # No covariate correction
+  ),
+  
+  job2_single_lipid = list(
+    title = "Investigate Cer(d18:1/24:0) (Single Lipid)",
+    targets = c("Cer_d18_1_24_0"),
+    subgroup_var = "Inflamm_active",
+    clin_test_list = unlist(clin_lists), # Test all mapped clinical vars
+    residualize_conf = list(method = "residualize", covariates = c("Age", "Sex"))
+  ),
+  
+  job3_target_network = list(
+    title = "Investigate Fibrosis Signature (Multi-Target Network)",
+    targets = c("COL1A1", "MMP9", "TIMP1", "Cer_d18_1_24_0", "SM_d18_1_16_0"),
+    subgroup_var = "fibrotic_active",
+    clin_test_list = clin_lists$pulmonary_vars,
+    residualize_conf = list(method = "residualize", covariates = c("Age"))
+  )
+)
+
+# Configuration for distributions plots
+plot_configs <- list(
+  violin = list(alpha = 0.7, width = 0.8),
+  boxplot = list(width = 0.2, alpha = 0.9, outlier.shape = NA)
+)
+```
+
+# Target Investigation {.tabset}
+`r what_this_does("Iterated through defined jobs to extract target profiles, correct for covariates if requested, and plot clinical subgroup distributions.", "Orchestrated targeted correlation networks across proteomics, lipidomics, and specific clinical parameters.", "Dynamically saved plots and exported full significant summary tables per job.")`
+
+```{r target_investigator}
+master_investigation_results <- list()
+
+for (j_name in names(investigation_jobs)) {
+  conf <- investigation_jobs[[j_name]]
+  
+  cat(sprintf("\n\n## %s\n\n", conf$title))
+  
+  # 1. Prep Specific Matrices & Residualize
+  w_olink <- omics_mat
+  w_lipid <- lipid_mat
+  
+  if (!is.null(conf$residualize_conf)) {
+    # Call wrapper factory for Olink
+    fac_olink <- wrap_matrix_factory(w_olink, master_spine, list(transform = conf$residualize_conf), prep_id = j_name)
+    w_olink <- fac_olink$matrix
+    
+    # Note: Residualizing a purely binary lipid matrix via limma yields continuous residuals.
+    # To maintain our binary-track logic, we do NOT residualize the lipid matrix here. 
+    # Covariates for lipid targets must be handled upstream or accepted as unadjusted in this script.
+    cat("> *Note: Covariate residualization applied to continuous proteomics matrix only. Binary lipid matrix retained in raw state to support Fisher's Exact routing.*\n\n")
+  }
+  
+  # 2. Extract Valid Targets
+  valid_olink_targets <- intersect(conf$targets, rownames(w_olink))
+  valid_lipid_targets <- intersect(conf$targets, rownames(w_lipid))
+  all_valid_targets <- c(valid_olink_targets, valid_lipid_targets)
+  
+  if (length(all_valid_targets) == 0) {
+    cat(sprintf("> <span style='color:red;'>**SKIPPED:** None of the targets found in matrices.</span>\n\n"))
+    next
+  }
+  
+  # 3. Prep Clinical Matrix for testing
+  w_clin <- master_spine %>%
+    select(Subject_ID, any_of(conf$clin_test_list)) %>%
+    column_to_rownames("Subject_ID") %>%
+    t() # Transpose to match omics matrix format (features in rows)
+  
+  # 4. Multi-Target Network Assessment (If > 1 target)
+  if (length(all_valid_targets) > 1) {
+    cat("### Target Network Inter-correlations\n\n")
+    
+    # Combine target data into a single matrix for pairwise checking
+    target_mat <- rbind(w_olink[valid_olink_targets, , drop=FALSE], 
+                        w_lipid[valid_lipid_targets, , drop=FALSE])
+    
+    # Calculate pairwise correlation matrix (Spearman handles continuous vs continuous and cont vs binary)
+    cor_mat <- cor(t(target_mat), method = "spearman", use = "pairwise.complete.obs")
+    
+    # Simple Network Visualization
+    graph <- graph_from_adjacency_matrix(abs(cor_mat) > 0.3, mode="undirected", diag=FALSE)
+    p_net <- ggraph(graph, layout = "fr") + 
+      geom_edge_link(aes(edge_alpha = after_stat(index)), show.legend = FALSE) + 
+      geom_node_point(size = 5, color = "steelblue") + 
+      geom_node_text(aes(label = name), repel = TRUE, size = 4) +
+      theme_void() +
+      ggtitle("Target Correlation Network (|Rho| > 0.3)")
+    
+    print(p_net)
+    cat("\n\n")
+    
+    # Save network
+    ggsave(file.path(output_dir_data, sprintf("%s_network.png", j_name)), p_net, width=6, height=6)
+  }
+  
+  # 5. Iterative Single Target Deep-Dive
+  for (target in all_valid_targets) {
+    cat(sprintf("### Target: %s {.tabset .tabset-pills .toc-ignore}\n\n", target))
+    
+    # Determine target source and extract vector
+    if (target %in% valid_olink_targets) {
+      t_vec <- w_olink[target, ]
+      t_type <- "Continuous"
+    } else {
+      t_vec <- w_lipid[target, ]
+      t_type <- "Categorical_Binary"
+    }
+    
+    # --- TAB A: Distribution ---
+    cat(sprintf("#### Distribution\n\n"))
+    
+    df_plot <- data.frame(
+      Value = t_vec,
+      Subgroup = master_spine[[conf$subgroup_var]][match(names(t_vec), master_spine$Subject_ID)]
+    ) %>% drop_na()
+    
+    if (t_type == "Continuous") {
+      p_dist <- ggplot(df_plot, aes(x = Subgroup, y = Value, fill = Subgroup)) +
+        geom_violin(alpha = plot_configs$violin$alpha, width = plot_configs$violin$width) +
+        geom_boxplot(width = plot_configs$boxplot$width, alpha = plot_configs$boxplot$alpha, outlier.shape = plot_configs$boxplot$outlier.shape) +
+        labs(title = sprintf("%s Expression by %s", target, conf$subgroup_var), y = "Abundance (NPX/Residual)", x = "") +
+        investigator_config$plot_theme +
+        theme(legend.position = "none")
+    } else {
+      # Bar plot for binary lipid distributions
+      p_dist <- ggplot(df_plot, aes(x = Subgroup, fill = factor(Value))) +
+        geom_bar(position = "fill") +
+        labs(title = sprintf("%s Detection Rate by %s", target, conf$subgroup_var), y = "Proportion", fill = "Detected (0/1)") +
+        investigator_config$plot_theme
+    }
+    
+    print(p_dist)
+    cat("\n\n")
+    ggsave(file.path(output_dir_data, sprintf("%s_%s_distribution.png", j_name, target)), p_dist, width=5, height=4)
+    
+    # --- TAB B: Correlations ---
+    cat(sprintf("#### Significant Correlates\n\n"))
+    
+    cor_results <- orchestrate_correlations(
+      target_vec = t_vec, target_type = t_type, 
+      olink_mat = w_olink, lipid_mat = w_lipid, 
+      clin_mat = w_clin, clin_dict = clin_dict
+    )
+    
+    # Bind, filter for significance, and sort
+    final_cor_df <- bind_rows(cor_results) %>%
+      filter(FDR < investigator_config$cor_fdr_cutoff) %>%
+      filter(Feature != target) %>% # Remove self-correlation
+      arrange(FDR)
+    
+    # Store to master list for export
+    master_investigation_results[[paste(j_name, target, sep="_")]] <- final_cor_df
+    
+    # Print Table dynamically to HTML
+    if (nrow(final_cor_df) > 0) {
+      html_table <- kbl(final_cor_df, format = "html", digits = 4, align = "c", 
+                        caption = sprintf("Significant Correlates: %s (FDR < %s)", target, investigator_config$cor_fdr_cutoff)) %>%
+          kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+          scroll_box(width = "100%", height = "400px")
+      
+      cat(as.character(html_table))
+    } else {
+      cat(sprintf("> No significant correlations found at FDR < %s.\n", investigator_config$cor_fdr_cutoff))
+    }
+    cat("\n\n")
+    
+    # Memory Management per target
+    rm(t_vec, df_plot, p_dist, cor_results, final_cor_df)
+  }
+  
+  # Memory Management per job
+  rm(w_olink, w_lipid, w_clin)
+  gc()
+}
+```
+
+# Export
+`r what_this_does("Exported the complete significant correlation tables for each investigated target as CSV files to the output directory.")`
+
+```{r export}
+for (res_name in names(master_investigation_results)) {
+  # Save to dynamic output directory
+  target_file <- file.path(output_dir_data, paste0("investigator_", res_name, ".csv"))
+  write.csv(master_investigation_results[[res_name]], target_file, row.names = FALSE)
+}
+```
+
+# Appendix
+`r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+
+```{r print_engine, code=c(readLines(here::here("code", "01_general_engines.R")), readLines(here::here("code", "02_proteomics_engines.R")), readLines(here::here("code", "05_multiomics_engines.R"))), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script 05a Complete! \n")
+```
