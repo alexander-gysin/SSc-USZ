@@ -434,6 +434,12 @@ lsea_payload <- list(
 export_path <- file.path(output_dir_data, "LSEA_unified_payload.rds")
 saveRDS(lsea_payload, export_path)
 
+# Export Binarized Matrix --------------------
+# Save the complete Presence/Absence matrix
+saveRDS(binary_mat, file.path(output_dir_data, "lipid_binary_matrix.rds"))
+
+cat(sprintf("**Success!** Exported global binary matrix (1=Detected, 0=Missing) to:\n`%s`\n", file.path(output_dir_data, "lipid_binary_matrix.rds")))
+
 # Cleanup ---------------------------
 #rm(lsea_payload, ranked_results_list)
 ```
