@@ -422,6 +422,18 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Multi-Omics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="05a_investigator.html">Investigator</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Side Projects
      
     <span class="caret"></span>
@@ -479,7 +491,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -490,8 +502,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -504,9 +516,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
@@ -529,18 +541,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -631,15 +646,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecda4a7311010deea78a87dde2d87b9f2ee41a47btargetblankcda4a73a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4c6bb731c955213caea63a7d5778e69a22d4c4b8targetblank4c6bb73a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cda4a7311010deea78a87dde2d87b9f2ee41a47b" target="_blank">cda4a73</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4c6bb731c955213caea63a7d5778e69a22d4c4b8" target="_blank">4c6bb73</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecda4a7311010deea78a87dde2d87b9f2ee41a47btargetblankcda4a73a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4c6bb731c955213caea63a7d5778e69a22d4c4b8targetblank4c6bb73a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -649,7 +664,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cda4a7311010deea78a87dde2d87b9f2ee41a47b" target="_blank">cda4a73</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4c6bb731c955213caea63a7d5778e69a22d4c4b8" target="_blank">4c6bb73</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -679,6 +694,7 @@ Ignored files:
     Ignored:    output/04b_lipidomics_differential/
     Ignored:    output/05_machine_learning/
     Ignored:    output/05a_investigator/
+    Ignored:    output/nonact_extraction/
     Ignored:    output/z01_sideproject_ellen/
     Ignored:    renv/library/
     Ignored:    renv/staging/
@@ -686,17 +702,11 @@ Ignored files:
 Untracked files:
     Untracked:  analysis/core_nid001350_38515
     Untracked:  analysis/omnipathr-log/
+    Untracked:  code/nonact_extraction.R
     Untracked:  omnipathr-log/
 
 Unstaged changes:
-    Modified:   analysis/03b_proteomics_differential.Rmd
-    Modified:   analysis/03c_proteomics_clustering.Rmd
-    Modified:   analysis/04b_lipidomics_differential.Rmd
-    Modified:   code/01_general_engines.R
-    Modified:   code/02_proteomics_engines.R
-    Modified:   code/05_multiomics_engines.R
-    Modified:   renv.lock
-    Modified:   renv/activate.R
+    Modified:   analysis/05a_investigator.Rmd
 
 </code></pre>
 <p>
@@ -741,6 +751,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/992411743ee390bec5443199861b4f514a89b897/docs/05a_investigator.html" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -929,8 +956,8 @@ plot_configs &lt;- list(
   boxplot = list(width = 0.2, alpha = 0.9, outlier.shape = NA)
 )</code></pre>
 </div>
-<div id="target-investigation" class="section level1 tabset">
-<h1 class="tabset">Target Investigation</h1>
+<div id="target-investigation" class="section level1 tabset ignore-toc">
+<h1 class="tabset ignore-toc">Target Investigation</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -952,7 +979,7 @@ master_investigation_results &lt;- list()
 
 for (j_name in names(investigation_jobs)) {
   conf &lt;- investigation_jobs[[j_name]]
-  cat(sprintf(&quot;\n\n## %s\n\n&quot;, conf$title))
+  cat(sprintf(&quot;\n\n## %s \n\n&quot;, conf$title))
   
   # 1. Base Matrices
   w_olink &lt;- omics_mat
@@ -989,7 +1016,8 @@ for (j_name in names(investigation_jobs)) {
   }
   
   for (target in all_valid_targets) {
-    cat(sprintf(&quot;### Target: %s {.tabset .tabset-pills .toc-ignore}\n\n&quot;, target))
+    
+    cat(sprintf(&quot;\n\n### Target: %s {.toc-ignore}\n\n&quot;, target))
     
     if (target %in% rownames(w_olink)) {
       t_vec &lt;- w_olink[target, ]
@@ -1000,7 +1028,9 @@ for (j_name in names(investigation_jobs)) {
     }
     
     # --- TAB A: Overall Distribution ---
-    cat(sprintf(&quot;#### Overall Population Profile\n\n&quot;))
+    cat(sprintf(&quot;\n\n#### Data Profile &amp; Highlights {.tabset .tabset-pills}\n\n&quot;))
+    
+    cat(sprintf(&quot;\n\n##### Overall Population Profile\n\n&quot;))
     
     df_dist &lt;- data.frame(Value = t_vec) %&gt;% drop_na()
     n_total &lt;- nrow(df_dist)
@@ -1022,10 +1052,10 @@ for (j_name in names(investigation_jobs)) {
     ggsave(file.path(output_dir_data, sprintf(&quot;%s_%s_histogram.png&quot;, j_name, target)), p_hist, width=5, height=4)
     
     # --- TAB B: Specific Highlights ---
-    cat(sprintf(&quot;#### Data Highlights {.tabset}\n\n&quot;))
     
     for (hl_conf in conf$highlight_vars) {
-      cat(sprintf(&quot;##### %s\n\n&quot;, hl_conf$var))
+      # FIXED: Added \n\n to the start of the string
+      cat(sprintf(&quot;\n\n##### %s\n\n&quot;, hl_conf$var))
       
       res_hl &lt;- wrap_highlight_plot(
         t_vec = t_vec, target_name = target, t_type = t_type, 
@@ -1043,12 +1073,13 @@ for (j_name in names(investigation_jobs)) {
     }
     
     # --- TAB C: Correlation Results (Table Split Logic) ---
-    cat(sprintf(&quot;#### Correlates\n\n&quot;))
+    cat(sprintf(&quot;\n\n#### Correlates {.tabset .tabset-pills}\n\n&quot;))
     
     cor_results &lt;- wrap_investigator_correlation(target_vec = t_vec, target_type = t_type, olink_mat = w_olink, lipid_mat = w_lipid, clin_mat = w_clin, clin_dict = clin_dict)
     
     for (domain in names(cor_results)) {
-      cat(sprintf(&quot;##### %s Domain\n\n&quot;, domain))
+      # FIXED: Added \n\n to the start of the string
+      cat(sprintf(&quot;\n\n##### %s Domain\n\n&quot;, domain))
       
       domain_df_full &lt;- cor_results[[domain]] %&gt;% filter(Feature != target) %&gt;% arrange(FDR)
       
@@ -1087,24 +1118,219 @@ for (j_name in names(investigation_jobs)) {
 <p><em>Diagnostic: Matrices aligned. 130 patients common across Olink,
 Lipids, and Clinical data.</em></p>
 </blockquote>
-<div id="target-casp4"
-class="section level3 tabset tabset-pills toc-ignore">
-<h3 class="tabset tabset-pills toc-ignore">Target: CASP4</h3>
-<div id="overall-population-profile" class="section level4">
-<h4>Overall Population Profile</h4>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-1.png" alt="" width="672" style="display: block; margin: auto;" />####
-Data Highlights {.tabset}</p>
+<div id="target-casp4" class="section level3 toc-ignore">
+<h3 class="toc-ignore">Target: CASP4</h3>
+<div id="data-profile-highlights"
+class="section level4 tabset tabset-pills">
+<h4 class="tabset tabset-pills">Data Profile &amp; Highlights</h4>
+<div id="overall-population-profile" class="section level5">
+<h5>Overall Population Profile</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-1">
+Past versions of target_investigator-1.png
+</button>
+</p>
+<div id="fig-target_investigator-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-1.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <div id="age" class="section level5">
 <h5>Age</h5>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-2.png" alt="" width="672" style="display: block; margin: auto;" />#####
-Sex</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-3.png" alt="" width="672" style="display: block; margin: auto;" />#####
-Sample_Age</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-4.png" alt="" width="672" style="display: block; margin: auto;" />#####
-kmeans_Cluster</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-5.png" alt="" width="672" style="display: block; margin: auto;" />####
-Correlates</p>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-2">
+Past versions of target_investigator-2.png
+</button>
+</p>
+<div id="fig-target_investigator-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-2.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+</div>
+<div id="sex" class="section level5">
+<h5>Sex</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-3">
+Past versions of target_investigator-3.png
+</button>
+</p>
+<div id="fig-target_investigator-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-3.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="sample_age" class="section level5">
+<h5>Sample_Age</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-4">
+Past versions of target_investigator-4.png
+</button>
+</p>
+<div id="fig-target_investigator-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-4.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="kmeans_cluster" class="section level5">
+<h5>kmeans_Cluster</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-5">
+Past versions of target_investigator-5.png
+</button>
+</p>
+<div id="fig-target_investigator-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-5.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="correlates" class="section level4 tabset tabset-pills">
+<h4 class="tabset tabset-pills">Correlates</h4>
 <div id="proteomics-domain" class="section level5">
 <h5>Proteomics Domain</h5>
 <div
@@ -2173,24 +2399,219 @@ Top Non-Sig
 <p><em>Diagnostic: Matrices aligned. 130 patients common across Olink,
 Lipids, and Clinical data.</em></p>
 </blockquote>
-<div id="target-ido1"
-class="section level3 tabset tabset-pills toc-ignore">
-<h3 class="tabset tabset-pills toc-ignore">Target: IDO1</h3>
-<div id="overall-population-profile-1" class="section level4">
-<h4>Overall Population Profile</h4>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-6.png" alt="" width="672" style="display: block; margin: auto;" />####
-Data Highlights {.tabset}</p>
+<div id="target-ido1" class="section level3 toc-ignore">
+<h3 class="toc-ignore">Target: IDO1</h3>
+<div id="data-profile-highlights-1"
+class="section level4 tabset tabset-pills">
+<h4 class="tabset tabset-pills">Data Profile &amp; Highlights</h4>
+<div id="overall-population-profile-1" class="section level5">
+<h5>Overall Population Profile</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-6">
+Past versions of target_investigator-6.png
+</button>
+</p>
+<div id="fig-target_investigator-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-6.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <div id="age-1" class="section level5">
 <h5>Age</h5>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-7.png" alt="" width="672" style="display: block; margin: auto;" />#####
-Sex</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-8.png" alt="" width="672" style="display: block; margin: auto;" />#####
-Sample_Age</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-9.png" alt="" width="672" style="display: block; margin: auto;" />#####
-kmeans_Cluster</p>
-<p><img src="figure/05a_investigator.Rmd/target_investigator-10.png" alt="" width="672" style="display: block; margin: auto;" />####
-Correlates</p>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-7">
+Past versions of target_investigator-7.png
+</button>
+</p>
+<div id="fig-target_investigator-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-7.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+</div>
+<div id="sex-1" class="section level5">
+<h5>Sex</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-8">
+Past versions of target_investigator-8.png
+</button>
+</p>
+<div id="fig-target_investigator-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-8.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="sample_age-1" class="section level5">
+<h5>Sample_Age</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-9">
+Past versions of target_investigator-9.png
+</button>
+</p>
+<div id="fig-target_investigator-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-9.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="kmeans_cluster-1" class="section level5">
+<h5>kmeans_Cluster</h5>
+<p><img src="figure/05a_investigator.Rmd/target_investigator-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-target_investigator-10">
+Past versions of target_investigator-10.png
+</button>
+</p>
+<div id="fig-target_investigator-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/992411743ee390bec5443199861b4f514a89b897/docs/figure/05a_investigator.Rmd/target_investigator-10.png" target="_blank">9924117</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="correlates-1" class="section level4 tabset tabset-pills">
+<h4 class="tabset tabset-pills">Correlates</h4>
 <div id="proteomics-domain-1" class="section level5">
 <h5>Proteomics Domain</h5>
 <div
@@ -17424,8 +17845,9 @@ Top Non-Sig
 </div>
 </div>
 </div>
-<div id="directed-biological-networks" class="section level1">
-<h1>Directed Biological Networks</h1>
+<div id="directed-biological-networks"
+class="section level1 tabset tabset-pills">
+<h1 class="tabset tabset-pills">Directed Biological Networks</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -17439,7 +17861,7 @@ onto validated primary and secondary biological interactions.
 <pre class="r"><code>for (net_job in names(network_queue)) {
   meta &lt;- network_queue[[net_job]]
   
-  cat(sprintf(&quot;\n\n### Network: %s\n\n&quot;, meta$target))
+  cat(sprintf(&quot;\n\n## Network: %s\n\n&quot;, meta$target))
   
   p_net &lt;- wrap_directed_network(
     target = meta$target, 
@@ -17455,17 +17877,14 @@ onto validated primary and secondary biological interactions.
     cat(&quot;&gt; *API returned no high-confidence biological network for this target, or internet is disconnected.*\n\n&quot;)
   }
 }</code></pre>
-<pre><code>
-
-### Network: CASP4
-
-&gt; *API returned no high-confidence biological network for this target, or internet is disconnected.*
-
-
-
-### Network: IDO1
-
-&gt; *API returned no high-confidence biological network for this target, or internet is disconnected.*</code></pre>
+<div id="network-casp4" class="section level2">
+<h2>Network: CASP4</h2>
+<p><img src="figure/05a_investigator.Rmd/directed_biological_networks-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="network-ido1" class="section level2">
+<h2>Network: IDO1</h2>
+<p><img src="figure/05a_investigator.Rmd/directed_biological_networks-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="export" class="section level1">
 <h1>Export</h1>
@@ -21291,70 +21710,71 @@ other attached packages:
 [40] tidyverse_2.0.0          ggplot2_4.0.3            workflowr_1.7.2         
 
 loaded via a namespace (and not attached):
-  [1] IRanges_2.44.0          R.methodsS3_1.8.2       DT_0.34.0              
-  [4] Biostrings_2.78.0       vctrs_0.7.3             ggtangle_0.1.2         
-  [7] digest_0.6.39           png_0.1-9               corpcor_1.6.10         
- [10] shape_1.4.6.1           git2r_0.36.2            parallelly_1.48.0      
- [13] renv_1.2.3              MASS_7.3-65             fontLiberation_0.1.0   
- [16] reshape2_1.4.5          httpuv_1.6.17           foreach_1.5.2          
- [19] BiocGenerics_0.56.0     qvalue_2.42.0           withr_3.0.3            
- [22] showtextdb_3.0          xfun_0.60               ggfun_0.2.1            
- [25] survival_3.8-9          doRNG_1.8.6.3           memoise_2.0.1          
- [28] emmeans_2.0.4           Seqinfo_1.0.0           gson_0.2.0             
- [31] systemfonts_1.3.2       sysfonts_0.8.9          ragg_1.5.2             
- [34] tidytree_0.4.8          GlobalOptions_0.1.4     gtools_3.9.5           
- [37] R.oo_1.27.1             Formula_1.2-5           KEGGREST_1.50.0        
- [40] promises_1.5.0          otel_0.2.0              scatterplot3d_0.3-45   
- [43] rstatix_1.0.0           globals_0.19.1          ps_1.9.3               
- [46] rstudioapi_0.19.0       generics_0.1.4          DOSE_4.4.0             
- [49] processx_3.9.0          curl_7.1.0              S4Vectors_0.48.1       
- [52] polyclip_1.10-7         randomForest_4.7-1.2    doParallel_1.0.17      
- [55] evaluate_1.0.5          hms_1.1.4               irlba_2.3.7            
- [58] colorspace_2.1-3        reticulate_1.46.0       magrittr_2.0.5         
- [61] later_1.4.8             viridis_0.6.5           ggtree_4.0.5           
- [64] lattice_0.22-9          getPass_0.2-4           cowplot_1.2.0          
- [67] matrixStats_1.5.0       pillar_1.11.1           nlme_3.1-170           
- [70] iterators_1.0.14        caTools_1.18.3          compiler_4.5.2         
- [73] RSpectra_0.16-2         stringi_1.8.7           showtext_0.9-8         
- [76] minqa_1.2.8             plyr_1.8.9              crayon_1.5.3           
- [79] abind_1.4-8             gridGraphics_0.5-1      ggtext_0.1.2           
- [82] graphlayouts_1.2.4      bit_4.6.0               fastmatch_1.1-8        
- [85] whisker_0.4.1           codetools_0.2-20        textshaping_1.0.5      
- [88] openssl_2.4.2           bslib_0.11.0            GetoptLong_1.1.1       
- [91] remaCor_0.0.20          splines_4.5.2           Rcpp_1.1.2             
- [94] tidydr_0.0.6            leaps_3.2               gridtext_0.1.6         
- [97] knitr_1.51              blob_1.3.0              clue_0.3-68            
-[100] lme4_2.0-6              itertools_0.1-3         fs_2.1.0               
-[103] listenv_1.0.0           Rdpack_2.6.6            ggsignif_0.6.4         
-[106] ggplotify_0.1.3         estimability_2.0.0      callr_3.8.0            
-[109] statmod_1.5.2           tzdb_0.5.0              svglite_2.2.2          
-[112] fANCOVA_0.6-1           tweenr_2.0.3            pkgconfig_2.0.3        
-[115] tools_4.5.2             cachem_1.1.0            RhpcBLASctl_0.23-42    
-[118] rbibutils_2.4.1         RSQLite_3.53.3          viridisLite_0.4.3      
-[121] DBI_1.3.0               numDeriv_2016.8-1.1     fastmap_1.2.0          
-[124] rmarkdown_2.31          scales_1.4.0            broom_1.0.13           
-[127] sass_0.4.10             BiocManager_1.30.27     farver_2.1.2           
-[130] reformulas_0.4.4        mgcv_1.9-4              aod_1.3.3              
-[133] tidygraph_1.3.1         scatterpie_0.2.6        yaml_2.3.12            
-[136] cli_3.6.6               stats4_4.5.2            lifecycle_1.0.5        
-[139] askpass_1.2.1           Biobase_2.70.0          mvtnorm_1.4-2          
-[142] backports_1.5.1         timechange_0.4.0        gtable_0.3.6           
-[145] rjson_0.2.23            parallel_4.5.2          ape_5.8-1              
-[148] jsonlite_2.0.0          bitops_1.0-9            multcompView_0.1-11    
-[151] bit64_4.8.2             yulab.utils_0.2.4       ranger_0.18.0          
-[154] jquerylib_0.1.4         GOSemSim_2.36.0         R.utils_2.13.0         
-[157] pbkrtest_0.5.5          lazyeval_0.2.3          htmltools_0.5.9        
-[160] GO.db_3.22.0            rappdirs_0.3.4          glue_1.8.1             
-[163] XVector_0.50.0          gdtools_0.5.1           rprojroot_2.1.1        
-[166] treeio_1.34.0           gridExtra_2.3.1         EnvStats_3.1.0         
-[169] boot_1.3-32             flashClust_1.1-4        R6_2.6.1               
-[172] ggiraph_0.9.6           gplots_3.3.0            labeling_0.4.3         
-[175] rngtools_1.5.2          aplot_0.3.1             nloptr_2.2.1           
-[178] tidyselect_1.2.1        ggforce_0.5.0           xml2_1.6.0             
-[181] fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0    KernSmooth_2.23-26     
-[184] S7_0.2.2                fontquiver_0.2.1        data.table_1.18.4      
-[187] htmlwidgets_1.6.4       fgsea_1.36.2            RColorBrewer_1.1-3     
-[190] rlang_1.3.0             lmerTest_3.2-1          ggnewscale_0.5.2       </code></pre>
+  [1] IRanges_2.44.0          R.methodsS3_1.8.2       vroom_1.7.1            
+  [4] DT_0.34.0               Biostrings_2.78.0       vctrs_0.7.3            
+  [7] ggtangle_0.1.2          digest_0.6.39           png_0.1-9              
+ [10] corpcor_1.6.10          shape_1.4.6.1           git2r_0.36.2           
+ [13] parallelly_1.48.0       renv_1.2.3              MASS_7.3-65            
+ [16] fontLiberation_0.1.0    reshape2_1.4.5          httpuv_1.6.17          
+ [19] foreach_1.5.2           BiocGenerics_0.56.0     qvalue_2.42.0          
+ [22] withr_3.0.3             showtextdb_3.0          xfun_0.60              
+ [25] ggfun_0.2.1             survival_3.8-9          doRNG_1.8.6.3          
+ [28] memoise_2.0.1           emmeans_2.0.4           Seqinfo_1.0.0          
+ [31] gson_0.2.0              systemfonts_1.3.2       sysfonts_0.8.9         
+ [34] ragg_1.5.2              tidytree_0.4.8          GlobalOptions_0.1.4    
+ [37] gtools_3.9.5            R.oo_1.27.1             Formula_1.2-5          
+ [40] KEGGREST_1.50.0         promises_1.5.0          otel_0.2.0             
+ [43] scatterplot3d_0.3-45    rstatix_1.0.0           globals_0.19.1         
+ [46] ps_1.9.3                rstudioapi_0.19.0       generics_0.1.4         
+ [49] DOSE_4.4.0              processx_3.9.0          curl_7.1.0             
+ [52] S4Vectors_0.48.1        polyclip_1.10-7         randomForest_4.7-1.2   
+ [55] doParallel_1.0.17       evaluate_1.0.5          hms_1.1.4              
+ [58] irlba_2.3.7             colorspace_2.1-3        reticulate_1.46.0      
+ [61] magrittr_2.0.5          later_1.4.8             viridis_0.6.5          
+ [64] ggtree_4.0.5            lattice_0.22-9          getPass_0.2-4          
+ [67] cowplot_1.2.0           matrixStats_1.5.0       pillar_1.11.1          
+ [70] nlme_3.1-170            iterators_1.0.14        caTools_1.18.3         
+ [73] compiler_4.5.2          RSpectra_0.16-2         stringi_1.8.7          
+ [76] showtext_0.9-8          minqa_1.2.8             plyr_1.8.9             
+ [79] crayon_1.5.3            abind_1.4-8             gridGraphics_0.5-1     
+ [82] ggtext_0.1.2            graphlayouts_1.2.4      bit_4.6.0              
+ [85] fastmatch_1.1-8         whisker_0.4.1           codetools_0.2-20       
+ [88] textshaping_1.0.5       openssl_2.4.2           bslib_0.11.0           
+ [91] GetoptLong_1.1.1        remaCor_0.0.20          splines_4.5.2          
+ [94] Rcpp_1.1.2              tidydr_0.0.6            leaps_3.2              
+ [97] gridtext_0.1.6          knitr_1.51              blob_1.3.0             
+[100] clue_0.3-68             lme4_2.0-6              itertools_0.1-3        
+[103] fs_2.1.0                listenv_1.0.0           Rdpack_2.6.6           
+[106] ggsignif_0.6.4          ggplotify_0.1.3         estimability_2.0.0     
+[109] callr_3.8.0             statmod_1.5.2           tzdb_0.5.0             
+[112] svglite_2.2.2           fANCOVA_0.6-1           tweenr_2.0.3           
+[115] pkgconfig_2.0.3         tools_4.5.2             cachem_1.1.0           
+[118] RhpcBLASctl_0.23-42     rbibutils_2.4.1         RSQLite_3.53.3         
+[121] viridisLite_0.4.3       DBI_1.3.0               numDeriv_2016.8-1.1    
+[124] fastmap_1.2.0           rmarkdown_2.31          scales_1.4.0           
+[127] broom_1.0.13            sass_0.4.10             BiocManager_1.30.27    
+[130] farver_2.1.2            reformulas_0.4.4        mgcv_1.9-4             
+[133] aod_1.3.3               tidygraph_1.3.1         scatterpie_0.2.6       
+[136] yaml_2.3.12             cli_3.6.6               stats4_4.5.2           
+[139] lifecycle_1.0.5         askpass_1.2.1           Biobase_2.70.0         
+[142] mvtnorm_1.4-2           backports_1.5.1         timechange_0.4.0       
+[145] gtable_0.3.6            rjson_0.2.23            parallel_4.5.2         
+[148] ape_5.8-1               jsonlite_2.0.0          bitops_1.0-9           
+[151] multcompView_0.1-11     bit64_4.8.2             yulab.utils_0.2.4      
+[154] ranger_0.18.0           jquerylib_0.1.4         GOSemSim_2.36.0        
+[157] R.utils_2.13.0          pbkrtest_0.5.5          lazyeval_0.2.3         
+[160] htmltools_0.5.9         GO.db_3.22.0            rappdirs_0.3.4         
+[163] glue_1.8.1              XVector_0.50.0          gdtools_0.5.1          
+[166] rprojroot_2.1.1         treeio_1.34.0           gridExtra_2.3.1        
+[169] EnvStats_3.1.0          boot_1.3-32             flashClust_1.1-4       
+[172] R6_2.6.1                ggiraph_0.9.6           gplots_3.3.0           
+[175] labeling_0.4.3          rngtools_1.5.2          aplot_0.3.1            
+[178] nloptr_2.2.1            tidyselect_1.2.1        ggforce_0.5.0          
+[181] xml2_1.6.0              fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0   
+[184] KernSmooth_2.23-26      S7_0.2.2                fontquiver_0.2.1       
+[187] data.table_1.18.4       htmlwidgets_1.6.4       fgsea_1.36.2           
+[190] RColorBrewer_1.1-3      rlang_1.3.0             lmerTest_3.2-1         
+[193] ggnewscale_0.5.2       </code></pre>
 </div>
 </div>
 </div>

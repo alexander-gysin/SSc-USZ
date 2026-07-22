@@ -86,12 +86,7 @@ if (!is.null(api_res) && httr::status_code(api_res) == 200) {
 `r what_this_does("Defined the investigative parameters, including sub-cohort subsetting, external groupings for visual highlights, and biological network thresholds.")`
 
 ```{r analysis_configurator}
-# 1. Clinical Parameter Groupings
-clin_lists <- list(
-  cardiac_vars = c("NTproBNP", "LVEF", "Heart_Failure_Status"),
-  pulmonary_vars = c("FVC_percent", "DLCO_percent", "ILD_Status"),
-  demographic_vars = c("Age", "BMI", "Sex")
-)
+# 1. Ignore me
 
 # 2. Global Investigator Configurations
 investigator_config <- list(
@@ -103,7 +98,8 @@ investigator_config <- list(
 highlights <- list(
       list(var = "Age", source = "master_spine"),
       list(var = "Sex", source = "master_spine"),
-      list(var = "Sample_Age", source = "master_spine"), 
+      list(var = "Sample_Age", source = "master_spine"),
+      list(var = "cohort_group", source = "master_spine"), 
       list(var = "kmeans_Cluster", source = "clustering_res")
       )
 
@@ -134,7 +130,7 @@ plot_configs <- list(
 )
 ```
 
-# Target Investigation {.tabset}
+# Target Investigation {.tabset .ignore-toc}
 `r what_this_does("Iterated through the defined targets to compute baseline distributions, categorical highlights, and cross-domain correlation statistics (Proteomics, Lipidomics, Clinical).", " Automatically aligned and subsetted data matrices based on configuration, and prepared tables displaying both statistically significant hits and top non-significant runners-up.")`
 
 ```{r target_investigator, results='asis'}
@@ -144,7 +140,7 @@ master_investigation_results <- list()
 
 for (j_name in names(investigation_jobs)) {
   conf <- investigation_jobs[[j_name]]
-  cat(sprintf("\n\n## %s\n\n", conf$title))
+  cat(sprintf("\n\n## %s \n\n", conf$title))
   
   # 1. Base Matrices
   w_olink <- omics_mat
@@ -181,7 +177,8 @@ for (j_name in names(investigation_jobs)) {
   }
   
   for (target in all_valid_targets) {
-    cat(sprintf("### Target: %s {.tabset .tabset-pills .toc-ignore}\n\n", target))
+    
+    cat(sprintf("\n\n### Target: %s {.toc-ignore}\n\n", target))
     
     if (target %in% rownames(w_olink)) {
       t_vec <- w_olink[target, ]
@@ -192,7 +189,9 @@ for (j_name in names(investigation_jobs)) {
     }
     
     # --- TAB A: Overall Distribution ---
-    cat(sprintf("#### Overall Population Profile\n\n"))
+    cat(sprintf("\n\n#### Data Profile & Highlights {.tabset .tabset-pills}\n\n"))
+    
+    cat(sprintf("\n\n##### Overall Population Profile\n\n"))
     
     df_dist <- data.frame(Value = t_vec) %>% drop_na()
     n_total <- nrow(df_dist)
@@ -214,10 +213,10 @@ for (j_name in names(investigation_jobs)) {
     ggsave(file.path(output_dir_data, sprintf("%s_%s_histogram.png", j_name, target)), p_hist, width=5, height=4)
     
     # --- TAB B: Specific Highlights ---
-    cat(sprintf("#### Data Highlights {.tabset}\n\n"))
     
     for (hl_conf in conf$highlight_vars) {
-      cat(sprintf("##### %s\n\n", hl_conf$var))
+      # FIXED: Added \n\n to the start of the string
+      cat(sprintf("\n\n##### %s\n\n", hl_conf$var))
       
       res_hl <- wrap_highlight_plot(
         t_vec = t_vec, target_name = target, t_type = t_type, 
@@ -235,12 +234,13 @@ for (j_name in names(investigation_jobs)) {
     }
     
     # --- TAB C: Correlation Results (Table Split Logic) ---
-    cat(sprintf("#### Correlates\n\n"))
+    cat(sprintf("\n\n#### Correlates {.tabset .tabset-pills}\n\n"))
     
     cor_results <- wrap_investigator_correlation(target_vec = t_vec, target_type = t_type, olink_mat = w_olink, lipid_mat = w_lipid, clin_mat = w_clin, clin_dict = clin_dict)
     
     for (domain in names(cor_results)) {
-      cat(sprintf("##### %s Domain\n\n", domain))
+      # FIXED: Added \n\n to the start of the string
+      cat(sprintf("\n\n##### %s Domain\n\n", domain))
       
       domain_df_full <- cor_results[[domain]] %>% filter(Feature != target) %>% arrange(FDR)
       
@@ -275,14 +275,14 @@ for (j_name in names(investigation_jobs)) {
 }
 ```
 
-# Directed Biological Networks
+# Directed Biological Networks {.tabset}
 `r what_this_does("Rendered high-resolution, directed biological network graphs leveraging a database-first API query to OmniPath, mapping dataset significance onto validated primary and secondary biological interactions.")`
 
-```{r directed_biological_networks, fig.height=12, fig.width=12}
+```{r directed_biological_networks, fig.height=12, fig.width=12, results='asis'}
 for (net_job in names(network_queue)) {
   meta <- network_queue[[net_job]]
   
-  cat(sprintf("\n\n### Network: %s\n\n", meta$target))
+  cat(sprintf("\n\n## Network: %s\n\n", meta$target))
   
   p_net <- wrap_directed_network(
     target = meta$target, 
