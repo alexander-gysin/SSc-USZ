@@ -39,6 +39,10 @@ navbar:
       href: 04b_lipidomics_differential.html
     - text: Machine Learning
       href: 04c_lipidomics_machine_learning.html
+  - text: Multi-Omics
+    menu:
+    - text: Investigator
+      href: 05a_investigator.html
   - text: Side Projects
     menu:
     - text: Vascular
