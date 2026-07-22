@@ -45,6 +45,7 @@ source(here::here("code", "02_proteomics_engines.R"))
 master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
 data_dictionary <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds"))
 olink_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+ssc_vs_ctrl_DEA <- read_csv(here::here("output", "03b_proteomics_differential", "DEA", "ssc_vs_control", "ssc_vs_control_DEA_Full_Results.csv"))
 
 # Fetch multiple GSEA databases into a named list
 pathway_dbs <- list(
@@ -173,9 +174,20 @@ pheno_configs <- list(
     highlight_variables = clin_vars_to_highlight ,
     p_cutoff = 0.05,
     must_include_vars = c("cohort_group")
+    ),
+  
+    # --- Composite Grouping Config ---
+  pheno_composite_groups = list(
+    target_job = "job_svc",
+    title = "Cluster x Cohort Composite",
+    target_algorithms = c("kmeans"),
+    composite_group = "cohort_group", # <--- Activates the composite engine logic
+    subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight,
+    p_cutoff = 0.05,
+    must_include_vars = c("cohort_group")
   )
-
-
 )
 
 
@@ -233,6 +245,24 @@ omics_config <- list(
   gsea_p_cutoff  = 0.20, 
   gsea_min_size  = 3,
   network_p_cutoff = 0.1
+)
+
+# --- 8. NEW: Cross-Contrast Configs ---
+cross_contrast_configs <- list(
+  cc_svc_vs_nvn = list(
+    title = "SSc vs Control contrasted with C1 Nonactive vs C2 Nonactive",
+    x_source = "ssc_vs_ctrl_DEA",                # Must map to the variable name loaded in Setup
+    y_source = "feat_nvn_kmeans_c1_vs_c2",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "SSc vs Control",
+    y_label = "C1(Nonact) vs C2(Nonact)",
+    color_x = "#e67e22",                      # Orange
+    color_y = "#2980b9",                      # Blue
+    highlight_color = "#27ae60",              # Green
+    top_n_specific = 8,
+    top_n_shared = 8,
+    p_cutoff = 0.05,   
+    fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
+  )
 )
 ```
 
@@ -562,6 +592,9 @@ for (p_id in names(pheno_configs)) {
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
 ```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis'}
+# --- NEW: Initialize Global Storage for Cross-Contrasts ---
+global_dea_payloads <- list()
+
 for (f_id in names(feature_configs)) {
   conf <- feature_configs[[f_id]]
   payload <- global_cluster_payloads[[conf$target_job]]
@@ -632,6 +665,9 @@ for (f_id in names(feature_configs)) {
       
       if (res$status == "success") {
         
+        # --- NEW: Store the DEA payload for downstream cross-contrasting ---
+        global_dea_payloads[[job_name_full]] <- res$data$dea
+
         # 1. TABLE
         if (nrow(res$tables$significant_proteins) > 0) {
           tbl <- head(res$tables$significant_proteins, 50) %>% 
@@ -709,40 +745,125 @@ for (f_id in names(feature_configs)) {
 }
 ```
 
-<!-- # Consensus Export -->
+# Cross-Contrast Comparisons {.tabset}
+`r what_this_does("Projects temporal and phenotypic shifts across orthogonal Differential Expression runs.", "Highlights specific and shared protein drivers bridging the gap between clinical baselines and algorithmically derived endotypes.")`
 
-<!-- `r analysis_decision("Utilized a Reference-Based Overlap algorithm to translate arbitrary cluster numbers (e.g. Cluster 1 vs Cluster 3) into a unified coordinate space.", "Automatically anchored the alignment matrix to the algorithm with the highest average Silhouette confidence.")` -->
+```{r cross_contrast, results='asis', fig.width=9, fig.height=7}
+# Ensure the export directory exists
+cc_dir <- file.path(output_dir_data, "Cross_Contrasts")
+if (!dir.exists(cc_dir)) dir.create(cc_dir, recursive = TRUE)
 
-<!-- ` r what_this_does("Evaluated row-wise mode to determine the Final Consensus Endotype for every patient.", "Assigned patients failing the stability threshold into a 'Mixed/Transitional' category.", "Exported a comprehensive .rds file containing translated sub-clusters, stability scores, and individual silhouette scores for downstream multi-omics integration.")` -->
-
-<!-- ```{r consensus_export} -->
-<!-- for (export_id in names(export_configs)) { -->
-<!--   conf <- export_configs[[export_id]] -->
-
-<!--   target_payload <- global_cluster_payloads[[conf$target_job]] -->
-<!--   target_diag <- global_diagnostic_payloads[[conf$target_job]] -->
-
-<!--   if (is.null(target_payload) || is.null(target_diag)) next -->
-
-<!--   # Auto-select anchor if requested -->
-<!--   anchor <- if (conf$anchor_algorithm == "auto") target_diag$best_algo else conf$anchor_algorithm -->
-
-<!--   res <- wrap_consensus_export(target_payload, anchor, conf, export_id, output_dir_data) -->
-
-<!--   if (res$status == "success") { -->
-<!--     # Print the raw text log natively -->
-<!--     cat(res$text_log, "\n") -->
-
-<!--     # Render the new diagnostics dynamically to the RStudio Viewer -->
-<!--     print(res$plots$convergence_bar) -->
-<!--     print(res$plots$consensus_umap) -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
-
+for (cc_id in names(cross_contrast_configs)) {
+  conf <- cross_contrast_configs[[cc_id]]
+  
+  # Inject Parent Tab Header for this Comparison
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  
+  # 1. Fetch DEA X
+  dea_x <- if (exists(conf$x_source)) get(conf$x_source) else global_dea_payloads[[conf$x_source]]
+  
+  # 2. Fetch DEA Y
+  dea_y <- if (exists(conf$y_source)) get(conf$y_source) else global_dea_payloads[[conf$y_source]]
+  
+  if (is.null(dea_x) || is.null(dea_y)) {
+    cat(sprintf("*Error: Could not locate DEA source payload(s) for %s.*\n\n", cc_id))
+    next
+  }
+  
+  # 3. Execute Engine
+  cc_res <- run_cross_contrast_engine(
+    dea_x = dea_x, 
+    dea_y = dea_y, 
+    conf = conf, 
+    x_label = conf$x_label, 
+    y_label = conf$y_label, 
+    color_x = conf$color_x, 
+    color_y = conf$color_y, 
+    highlight_color = conf$highlight_color, 
+    title = conf$title
+  )
+  
+  if (!is.null(cc_res)) {
+    
+    # --- SUB-TAB: SCATTER PLOT ---
+    cat("\n\n### Scatter Plot\n\n")
+    
+    ggsave(file.path(cc_dir, paste0(cc_id, "_cross_contrast.png")), cc_res$plot, width = 9, height = 7, bg = "white")
+    if (!is.null(assets_dir)) {
+      ggsave(file.path(assets_dir, paste0(cc_id, "_cross_contrast.png")), cc_res$plot, width = 9, height = 7, bg = "white")
+    }
+    
+    if (interactive()) {
+      print(cc_res$plot)
+    } else {
+      cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_cross_contrast.png' width='100%%' />\n\n", cc_id))
+    }
+    
+    # --- SUB-TAB: DATA TABLES ---
+    cat("\n\n### Driver Tables\n\n")
+    
+    # Map the dynamic names back to the tables using the 'labels' list
+    table_list <- list(
+      "Shared Drivers" = cc_res$tables$shared,
+      "temp_x" = cc_res$tables$x_specific,
+      "temp_y" = cc_res$tables$y_specific
+    )
+    names(table_list)[2] <- cc_res$labels$x_sig_name
+    names(table_list)[3] <- cc_res$labels$y_sig_name
+    
+    # Setup dynamic column names for pristine formatting
+    col_logFC_x <- sprintf("logFC (%s)", conf$x_label)
+    col_FDR_x <- sprintf("FDR (%s)", conf$x_label)
+    col_logFC_y <- sprintf("logFC (%s)", conf$y_label)
+    col_FDR_y <- sprintf("FDR (%s)", conf$y_label)
+    
+    for (t_name in names(table_list)) {
+      df <- table_list[[t_name]]
+      
+      if (nrow(df) > 0) {
+        # Format numbers and apply custom dynamic headers
+        display_df <- df %>%
+          mutate(
+            logFC_X = round(logFC_X, 3),
+            logFC_Y = round(logFC_Y, 3),
+            FDR_X = formatC(FDR_X, format = "e", digits = 2),
+            FDR_Y = formatC(FDR_Y, format = "e", digits = 2)
+          ) %>%
+          rename(
+            !!col_logFC_x := logFC_X,
+            !!col_FDR_x := FDR_X,
+            !!col_logFC_y := logFC_Y,
+            !!col_FDR_y := FDR_Y
+          )
+        
+        if (isTRUE(getOption('knitr.in.progress'))) {
+          html_table <- kableExtra::kbl(display_df, format = "html", align = "c", 
+                                        caption = sprintf("Target Category: %s", t_name)) %>%
+            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+            kableExtra::scroll_box(width = "100%", height = "400px")
+          
+          cat(as.character(html_table))
+          
+        } else {
+          cat(sprintf("\n**Target Category: %s**\n\n", t_name))
+          print(rmarkdown::paged_table(display_df))
+        }
+        
+      } else {
+        cat(sprintf("> No features met the significance criteria for **%s**.\n", t_name))
+      }
+      cat("\n\n<br>\n\n") 
+    }
+    
+  } else {
+    cat("*No significant overlapping drivers found between these datasets.* \n\n")
+  }
+}
+```
 
 # Omics Bridge Export
 `r what_this_does("Extracts the optimal k-means clustering assignments from the proteomics pipeline, formats them strictly as categorical 'Cluster X' labels, and exports them as a cross-omics bridge file to be ingested by the downstream Lipidomics Differential engine.")`
+
 
 ```{r omics_bridge_export}
 # 1. Extract the payload for the target job

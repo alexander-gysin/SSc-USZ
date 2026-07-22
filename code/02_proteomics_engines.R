@@ -1019,14 +1019,20 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, colo
   x_sig_name <- sprintf("%s Specific", x_label)
   y_sig_name <- sprintf("%s Specific", y_label)
 
+  # Extract dynamic cutoffs from config (with safe fallbacks)
+  p_cut <- if(!is.null(conf$p_cutoff)) conf$p_cutoff else 0.05
+  fc_cut <- if(!is.null(conf$fc_cutoff)) conf$fc_cutoff else 0.58
+
   temporal_shifts <- full_join(
-    dea_x %>% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val, Sig_Status_X = Significance),
-    dea_y %>% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val, Sig_Status_Y = Significance),
+    dea_x %>% select(Feature, logFC_X = logFC, FDR_X = adj.P.Val),
+    dea_y %>% select(Feature, logFC_Y = logFC, FDR_Y = adj.P.Val),
     by = "Feature"
   ) %>%
     mutate(
-      Sig_X = !is.na(Sig_Status_X) & Sig_Status_X != "Not Significant",
-      Sig_Y = !is.na(Sig_Status_Y) & Sig_Status_Y != "Not Significant",
+      # Calculate significance dynamically using config thresholds
+      Sig_X = !is.na(FDR_X) & FDR_X < p_cut & abs(logFC_X) >= fc_cut,
+      Sig_Y = !is.na(FDR_Y) & FDR_Y < p_cut & abs(logFC_Y) >= fc_cut,
+
       Signature = case_when(
         Sig_X & Sig_Y  ~ "Shared Drivers",
         Sig_X & !Sig_Y ~ x_sig_name,
@@ -1062,15 +1068,52 @@ run_cross_contrast_engine <- function(dea_x, dea_y, conf, x_label, y_label, colo
 
   color_mapping <- setNames(c(highlight_color, color_x, color_y), c("Shared Drivers", x_sig_name, y_sig_name))
 
-  ggplot() +
+  # 1. BUILD PLOT
+  p <- ggplot() +
     geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60") +
     geom_hline(yintercept = 0, color = "grey40") + geom_vline(xintercept = 0, color = "grey40") +
     geom_point(data = sig_points, aes(x = logFC_X, y = logFC_Y, color = Signature), alpha = 0.8, size = 2.5) +
-    geom_text_repel(data = sig_points, aes(x = logFC_X, y = logFC_Y, label = repel_label), color = "black", size = 3.5, box.padding = 0.8, max.overlaps = Inf, show.legend = FALSE) +
+    ggrepel::geom_text_repel(
+      data = sig_points,
+      aes(x = logFC_X, y = logFC_Y, label = repel_label),
+      color = "black",
+      size = 3.5,
+      box.padding = 0.9,
+      point.padding = 0,       # Pushes text slightly away from the dot
+      min.segment.length = 0,    # Forces the segment to draw for every label
+      max.overlaps = Inf,
+      show.legend = FALSE
+    ) +
     scale_color_manual(values = color_mapping) +
     theme_project_base() +
-    labs(title = title, x = paste(x_label, "(Log2 Fold Change)"), y = paste(y_label, "(Log2 Fold Change)")) +
+    labs(title = title, x = paste(x_label, "(LogFC)"), y = paste(y_label, "(LogFC)")) +
     coord_fixed(ratio = 1)
+
+  # 2. EXTRACT TABLES
+  format_table <- function(df) {
+    df %>%
+      select(Feature, logFC_X, FDR_X, logFC_Y, FDR_Y, Quadrant, label_score) %>%
+      arrange(desc(label_score)) %>%
+      select(-label_score)
+  }
+
+  tbl_shared <- format_table(sig_points %>% filter(Signature == "Shared Drivers"))
+  tbl_x <- format_table(sig_points %>% filter(Signature == x_sig_name))
+  tbl_y <- format_table(sig_points %>% filter(Signature == y_sig_name))
+
+  # 3. RETURN LIST
+  return(list(
+    plot = p,
+    tables = list(
+      shared = tbl_shared,
+      x_specific = tbl_x,
+      y_specific = tbl_y
+    ),
+    labels = list(
+      x_sig_name = x_sig_name,
+      y_sig_name = y_sig_name
+    )
+  ))
 }
 
 
@@ -1605,7 +1648,7 @@ run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
     }
 
     # 3. Route to the correct statistical test
-    if (d_type == "Categorical_Binary") {
+    if (d_type == "Categorical (Binary)") {
       # Wilcoxon Rank-Sum (Returns effect size r instead of Rho)
       # Note: requires numeric 0/1 encoding
       groups <- factor(x)
@@ -1616,7 +1659,7 @@ run_smart_mass_cor <- function(data_mat, score_vec, dict_df = NULL) {
         eff_size <- abs(z) / sqrt(length(x))
         res_list[[feat]] <- c(Feature=feat, Effect=eff_size, P_Val=wt$p.value, Method="Wilcoxon")
       }
-    } else if (d_type == "Categorical_Nominal") {
+    } else if (d_type == "Categorical (Nominal)") {
       # Kruskal-Wallis for multi-level factors
       groups <- factor(x)
       if (length(levels(groups)) > 2) {

@@ -84,6 +84,46 @@ dea_configs <- list(
     dea_fc_cutoff = 1.0
   ),
   
+  job_inflammatory = list(
+    title = "Inflammatory",
+    test_var = "Inflamm_active",
+    target_groups = c("yes"),
+    ref_groups = c("no"),
+    bin_continuous = FALSE, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
+  ),
+  
+  job_vascular = list(
+    title = "Vascular",
+    test_var = "vascular_active",
+    target_groups = c("yes"),
+    ref_groups = c("no"),
+    bin_continuous = FALSE, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
+  ),
+  
+  job_fibrotic = list(
+    title = "Fibrotic",
+    test_var = "fibrotic_active",
+    target_groups = c("yes"),
+    ref_groups = c("no"),
+    bin_continuous = FALSE, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
+  ),
+  
+  job_eustar = list(
+    title = "EUSTAR act vs nonact",
+    test_var = "ACTIVE_AI",
+    target_groups = c("1"),
+    ref_groups = c("0"),
+    bin_continuous = FALSE, 
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0
+  ),
+  
   job_cluster_1_vs_2 = list(
     title = "Cluster 1 vs Cluster 2",
     test_var = "kmeans_Cluster",

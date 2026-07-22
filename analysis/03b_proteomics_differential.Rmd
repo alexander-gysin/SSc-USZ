@@ -16,7 +16,7 @@ source(here::here("code", "00_config.R"))
 ```{r setup_import, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(FactoMineR)
-library(factoextra)wf
+library(factoextra)
 library(limma)
 library(clusterProfiler)
 library(msigdbr)
@@ -116,7 +116,7 @@ contrast_configs <- list(
     title = "Inflammatory vs Non-Inflammatory",
     group_col = "Inflamm_active",
     target_groups = c("yes"), 
-    ref_groups = c("No"),     
+    ref_groups = c("no"),     
     is_continuous = FALSE,
     covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
@@ -126,7 +126,7 @@ contrast_configs <- list(
     title = "Vascular vs Non-Vascular",
     group_col = "vascular_active",
     target_groups = c("yes"), 
-    ref_groups = c("No"),     
+    ref_groups = c("no"),     
     is_continuous = FALSE,
     covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
@@ -136,7 +136,7 @@ contrast_configs <- list(
     title = "Fibrotic vs Non-Fibrotic",
     group_col = "fibrotic_active",
     target_groups = c("yes"), 
-    ref_groups = c("No"),     
+    ref_groups = c("no"),     
     is_continuous = FALSE,
     covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,

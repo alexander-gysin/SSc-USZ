@@ -1024,21 +1024,35 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     results$plots[[algo_name]][["highlights"]] <- list()
 
     plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
-    plot_df$Cluster <- as.factor(labels[plot_df$Subject_ID])
-    valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
 
-    # --- SUBCLUSTER FILTERING (Option A) ---
+    # Cast to character initially to allow string manipulation
+    plot_df$Cluster <- as.character(labels[plot_df$Subject_ID])
+
+    # --- SUBCLUSTER FILTERING ---
     if (!is.null(conf$subset_filter)) {
       filt_col <- conf$subset_filter$column
       filt_val <- conf$subset_filter$value
-      if (filt_col %in% colnames(valid_df)) {
-        valid_df <- valid_df %>% filter(.data[[filt_col]] %in% filt_val) %>% droplevels()
+      if (filt_col %in% colnames(plot_df)) {
+        plot_df <- plot_df %>% filter(.data[[filt_col]] %in% filt_val)
       }
     }
 
+    # --- NEW: COMPOSITE GROUPING ---
+    if (!is.null(conf$composite_group)) {
+      comp_col <- conf$composite_group
+      if (comp_col %in% colnames(plot_df)) {
+        # Concatenates into format: "Cluster 1_Active"
+        plot_df$Cluster <- paste(plot_df$Cluster, plot_df[[comp_col]], sep = "_")
+      }
+    }
+
+    # Cast back to factor for downstream stats
+    plot_df$Cluster <- as.factor(plot_df$Cluster)
+    valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
+
     if (length(unique(valid_df$Cluster)) < 2) next
 
-    # --- NEW: Safely handle both flat vectors and named lists ---
+    # --- Safely handle both flat vectors and named lists ---
     vars_list <- if (is.list(conf$variables)) conf$variables else list("Clinical_Phenotypes" = conf$variables)
     hl_list <- if (is.list(conf$highlight_variables)) conf$highlight_variables else list("Selected_Highlights" = conf$highlight_variables)
 
@@ -1055,26 +1069,18 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     raw_tbl <- gtsummary::as_tibble(summary_obj)
     readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
 
-    # EXPORT RAW GTSUMMARY TO CSV
-    raw_tbl <- gtsummary::as_tibble(summary_obj)
-    readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
-
     # --- TARGETED HIGHLIGHT TABLES (Bypass Loop) ---
     if (!is.null(conf$highlight_variables)) {
-      # FIX 1: Safely initialize the highlights list inside results$tables
       if (!("highlights" %in% names(results$tables))) results$tables$highlights <- list()
       results$tables$highlights[[algo_name]] <- list()
 
       for (h_name in names(conf$highlight_variables)) {
         h_vars <- conf$highlight_variables[[h_name]]
-        # Filter to variables that actually exist in the data
         valid_h_vars <- intersect(h_vars, colnames(valid_df))
 
         if (length(valid_h_vars) > 0) {
-          # FIX 2: Subset from valid_df so we use the clean "Cluster" column and exclude noise!
           hl_df <- valid_df %>% select(all_of(c("Cluster", valid_h_vars)))
 
-          # Generate the gtsummary table showing ALL variables in this list, ignoring p_cutoff
           hl_tbl <- hl_df %>%
             gtsummary::tbl_summary(
               by = Cluster,
@@ -1084,17 +1090,15 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
             gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "fisher.test")) %>%
             gtsummary::bold_labels()
 
-          # Convert to HTML and Store
           hl_html <- gtsummary::as_kable_extra(hl_tbl, format = "html", caption = sprintf("Subset Table: %s", gsub("_", " ", h_name))) %>%
             kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
 
-          # FIX 3: Save to the correct results object
           results$tables$highlights[[algo_name]][[h_name]] <- hl_html
         }
       }
     }
 
-    # --- NEW: OUTER LOOP FOR HEATMAPS ---
+    # --- OUTER LOOP FOR HEATMAPS ---
     for (cat_name in names(vars_list)) {
       cat_vars <- vars_list[[cat_name]]
 
@@ -1133,7 +1137,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       if (length(enrichment_list) > 0) {
         heat_df <- bind_rows(enrichment_list)
 
-        # --- NEW: Transpose Matrix (Clusters = Cols, Features = Rows) ---
         mat_wide <- heat_df %>%
           pivot_wider(names_from=Cluster, values_from=Score, values_fill=0) %>%
           column_to_rownames("Feature")
@@ -1148,27 +1151,22 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
           name = "Enrichment",
           column_title = sprintf("Clinical Enrichment: %s\nJob: %s | Algorithm: %s | (p < %s)",
                                  safe_cat_name, job_id, toupper(algo_name), conf$p_cutoff),
-
-          # --- NEW: Axis and Label formatting ---
-          column_names_rot = 0,         # Clusters straight on X-axis
-          column_names_side = "bottom", # Clusters at the bottom
-          row_names_side = "right",      # Clinical parameters on the left Y-axis
-          row_names_gp = gpar(fontsize = 14),
-
+          column_names_rot = 0,
+          column_names_side = "bottom",
+          row_names_side = "right",
+          row_names_gp = grid::gpar(fontsize = 14),
           clustering_distance_rows = "euclidean",
           cluster_columns = FALSE,
           col = circlize::colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b"))
         )
 
-        # --- NEW: Move the legend to the bottom ---
         ComplexHeatmap::draw(ht, heatmap_legend_side = "bottom")
         dev.off()
 
         results$plots[[algo_name]][["heatmap"]][[cat_name]] <- ht
       }
 
-
-      # --- NEW: OUTER LOOP FOR HIGHLIGHT GRIDS ---
+      # --- OUTER LOOP FOR HIGHLIGHT GRIDS ---
       cluster_levels <- levels(valid_df$Cluster)
       my_comparisons <- combn(cluster_levels, 2, simplify = FALSE)
 
@@ -1179,7 +1177,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
         for (hv in hl_vars) {
           if (!(hv %in% colnames(valid_df))) next
 
-          # CONTINUOUS: Boxplots with Jitter & ggpubr brackets
           if (is.numeric(valid_df[[hv]])) {
             y_max <- max(valid_df[[hv]], na.rm = TRUE)
             y_min <- min(valid_df[[hv]], na.rm = TRUE)
@@ -1198,7 +1195,6 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
               theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
               labs(title = hv, x = NULL)
 
-            # CATEGORICAL: Stacked Barplots with Custom Fisher Subtitle
           } else {
             p_vals <- sapply(my_comparisons, function(p) {
               sub_df <- valid_df %>% filter(Cluster %in% p) %>% droplevels()
@@ -1213,6 +1209,7 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
             sig_pairs <- c()
             for (i in seq_along(fdr_vals)) {
               if (!is.na(fdr_vals[i]) && fdr_vals[i] < 0.05) {
+                # Safe regex replacement for composite names
                 n1 <- gsub("Cluster ", "C", my_comparisons[[i]][1])
                 n2 <- gsub("Cluster ", "C", my_comparisons[[i]][2])
                 sig_pairs <- c(sig_pairs, sprintf("%s vs %s (FDR=%.2f)", n1, n2, fdr_vals[i]))
@@ -1230,11 +1227,10 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
           }
         }
 
-        # Stitch this specific category grid
         if (length(hl_plots) > 0) {
           safe_hl_name <- gsub("_", " ", hl_cat_name)
-          master_grid <- wrap_plots(hl_plots, ncol=5) +
-            plot_annotation(title=sprintf("Parameters: %s | %s (%s)", safe_hl_name, job_id, toupper(algo_name)))
+          master_grid <- patchwork::wrap_plots(hl_plots, ncol=5) +
+            patchwork::plot_annotation(title=sprintf("Parameters: %s | %s (%s)", safe_hl_name, job_id, toupper(algo_name)))
 
           results$plots[[algo_name]][["highlights"]][[hl_cat_name]] <- master_grid
           ggsave(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_HL_Grid_", hl_cat_name, ".png")), master_grid, width=9, height=4, bg="white")
