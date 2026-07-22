@@ -757,7 +757,7 @@ for (cc_id in names(cross_contrast_configs)) {
   conf <- cross_contrast_configs[[cc_id]]
   
   # Inject Parent Tab Header for this Comparison
-  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  cat(sprintf("\n\n## %s {.tabset .tabset-pills}\n\n", conf$title))
   
   # 1. Fetch DEA X
   dea_x <- if (exists(conf$x_source)) get(conf$x_source) else global_dea_payloads[[conf$x_source]]
