@@ -139,7 +139,7 @@ audit_log <- c(audit_log, sprintf("- Enforced Datatypes: Coerced **%d Numeric**,
 
 # 6. Global Lowercase Sweep
 char_cols <- names(curated_spine)[sapply(curated_spine, function (x) is.character(x) || is.factor(x))]
-char_cols <- setdiff(char_cols, c("Subject_ID", date_vars))
+char_cols <- setdiff(char_cols, c("Subject_ID", date_vars, "cohort_group"))
 
 if (length(char_cols) > 0) {
   curated_spine[, (char_cols) := lapply(.SD, tolower), .SDcols = char_cols]
@@ -160,13 +160,7 @@ cat(paste(audit_log, collapse = "\n\n"))
 audit_log <- c("Phase 2: Feature Engineering Audit Log\n")
 
 # 1. Cohort Group Assignment
-curated_spine[, cohort_group := fcase(
-  str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
-  str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
-  str_detect(Subject_ID, "^Ctrl"),   GRP_CONTROL,
-  default = NA_character_
-)]
-curated_spine[, cohort_group := factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))]
+# moved to script 01a to be used in the upset plot
 
 # 2. Demographics (Age and Sample Age)
 # Note: Relies on the standard names in your mapping file
