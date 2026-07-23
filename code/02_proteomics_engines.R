@@ -344,13 +344,21 @@ wrap_trajectory_pipeline <- function(cross_conf, cross_id, master_dea, master_gs
   if (!dir.exists(traj_sub_dir)) dir.create(traj_sub_dir, recursive = TRUE)
 
   # A. PROTEIN TRAJECTORY
-  results$plots$protein_trajectory <- run_cross_contrast_engine(
+  # Save the engine output to a temporary variable first
+  engine_res <- run_cross_contrast_engine(
     dea_x, dea_y, cross_conf, name_x, name_y, color_x, color_y, highlight_color,
     title = paste("Protein Trajectory:", vs_label)
   )
-  if(!is.null(results$plots$protein_trajectory)) {
+
+  # Inject ONLY the plot into the plots list
+  if (!is.null(engine_res)) {
+    results$plots$protein_trajectory <- engine_res$plot
+
+    # Now ggsave receives a pure ggplot object
     ggsave(file.path(traj_sub_dir, paste0(cross_id, "_Protein_Trajectory.png")),
            results$plots$protein_trajectory, width=9, height=9, dpi=300, bg="white")
+  } else {
+    results$plots$protein_trajectory <- NULL
   }
 
   # B. VENN DIAGRAM

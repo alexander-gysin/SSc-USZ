@@ -1,5 +1,5 @@
 ---
-title: "Data Import"
+title: "Data Import & QC"
 author: "alexander-gysin (alexander.gysin@usz.ch)"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -25,6 +25,9 @@ library(readxl)      # Reading messy Excel files
 library(data.table)  # High-performance data wrangling
 library(here)        # Safe file paths
 library(matrixStats) # Fast matrix math for QC and Imputation
+library(OlinkAnalyze)
+library(UpSetR)
+library(patchwork)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -57,6 +60,9 @@ file_paths <- list(
 qc_config <- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
+  min_detectability_pct = 25,
+  apply_lod_filter     = TRUE,  # Toggle to exclude proteins below min_detectability_pct
+  apply_outlier_filter = FALSE,  # Toggle to exclude Median/IQR sample outliers (3 SD)
   max_missing_pct_lipid = 0.60,
   selected_col         = "SELECTED", 
   max_missingness_clin_var = 0.20,
@@ -160,12 +166,22 @@ if (n_dropped > 0) {
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
     kableExtra::scroll_box(width = "100%", height = "600px")
   
-  if (interactive()) {
-    print(dropped_tbl)
+  # If we are in RStudio (interactive) AND knitr is NOT actively building the document
+  if (interactive() && !isTRUE(getOption('knitr.in.progress'))) {
+    print(dropped_tbl) # Prints to RStudio Viewer
   } else {
-    dropped_html <- as.character(dropped_tbl)
+    dropped_html <- as.character(dropped_tbl) # Captures safely for rendering
   }
 }
+
+# Premature Feature Engineering of cohort_group
+raw_spine[, cohort_group := fcase(
+  str_detect(Subject_ID, "^Nonact"), GRP_NON_ACTIVE,
+  str_detect(Subject_ID, "^Act"),    GRP_ACTIVE,
+  str_detect(Subject_ID, "^Ctrl"),   GRP_CONTROL,
+  default = NA_character_
+)]
+raw_spine[, cohort_group := factor(cohort_group, levels = c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL))]
 
 # Cleanup Memory
 rm(raw_clin, id_map, missingness, miss_vec, cols_to_keep, cols_to_drop)
@@ -174,28 +190,279 @@ invisible(gc())
 
 # Print HTML output as a single block to prevent code fragmentation
 cat(paste(audit_log, collapse = "\n\n"))
-cat("\n\n")
-if (dropped_html != "") cat(dropped_html)
+
+if (dropped_html != "") {
+  # Add structural space
+  cat("\n\n")
+  
+  # Tell Pandoc to strictly ignore the following HTML
+  cat("```{=html}\n")
+  cat(dropped_html)
+  cat("\n```\n\n")
+}
 ```
 
 # Proteomics Data
-`r analysis_decision("Dropped proteins and samples exceeding the 5% missingness threshold to ensure robust downstream imputation.", "NA values were imputed using a row-wise (protein-wise) median approach.")`
 
-`r what_this_does("Pivoted the Olink data to a wide matrix.", "Executed missingness filtering and median imputation.", "Cross-synchronized the clinical spine and the Olink matrix to guarantee identical sample inclusion and ordering.")`
-```{r proteomics_data, results='asis'}
-audit_log_olink <- c("Proteomics QC Log\n")
+## Proteomics Import
 
-# 1. Import and Pivot ----------------------------------------------------------
+`r what_this_does("Ingested raw Olink long-format data.", "Retained strictly the patient samples present in the clinical spine, while defensively preserving technical Negative Controls (NC/NEG) required for accurate LOD calculation.")`
+
+```{r proteomics_import, results='asis'}
+audit_log_olink <- c("Proteomics Import Log\n")
+
+# 1. Import Raw Long Format ----------------------------------------------------
 raw_olink <- fread(here::here("data", file_paths$olink_raw))
-raw_olink <- raw_olink[SampleID %in% raw_spine$Subject_ID]
 
-wide_olink <- dcast(raw_olink, Assay ~ SampleID, value.var = "NPX")
+# CRITICAL: Keep valid patients AND technical negative controls for LOD math
+valid_subjects <- raw_spine$Subject_ID
+raw_olink <- raw_olink[SampleID %in% valid_subjects | str_detect(toupper(SampleType), "NEG|NC")]
+
+audit_log_olink <- c(audit_log_olink, sprintf("- Initial Long Matrix: %d total rows imported (Patients + Negative Controls).", nrow(raw_olink)))
+
+# Print Import Log
+cat(paste(audit_log_olink, collapse = "\n\n"))
+```
+
+## Proteomics QC {.tabset}
+`r what_this_does("Calculated the Limit of Detection (LOD) using negative controls.", "Evaluated cohort-specific detectability rates, generating a tiered master summary table to isolate true global failures from state-dependent signals.", "Generated global NPX distribution and Median-IQR scatter plots to map technical variance and flag 3-SD sample outliers.", "Mapped biological representation across cohorts using UpSet intersections.")`
+
+```{r proteomics_qc, fig.width=10, fig.height=8, results='asis'}
+cat("\n\n### LOD & Detectability\n\n")
+
+# 1. LOD Calculation -----------------------------------------------------------
+nc_data <- raw_olink %>% filter(str_detect(toupper(SampleType), "NEG|NC"))
+n_nc_wells <- n_distinct(nc_data$SampleID)
+
+cat("<b>Negative control wells available:</b>", n_nc_wells, "<br><br>")
+
+npx_lod <- NULL
+lod_col <- NULL
+has_olink_analyze <- requireNamespace("OlinkAnalyze", quietly = TRUE)
+
+if (has_olink_analyze && n_nc_wells >= 10) {
+  npx_lod <- tryCatch(
+    OlinkAnalyze::olink_lod(as.data.frame(raw_olink), lod_method = "NCLOD", 
+                            preferred_names = "PCNormalizedNPX"),
+    error = function(e) { NULL }
+  )
+  if (!is.null(npx_lod)) {
+    lod_col <- if ("PCNormalizedLOD" %in% colnames(npx_lod)) "PCNormalizedLOD" else "LOD"
+  }
+}
+
+if (is.null(npx_lod)) {
+  lod_tbl <- nc_data %>%
+    group_by(Assay) %>%
+    summarise(
+      mean_NPX = mean(NPX, na.rm = TRUE),
+      sd_NPX = sd(NPX, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(LOD_manual = mean_NPX + (3 * sd_NPX))
+  
+  npx_lod <- raw_olink %>% left_join(lod_tbl, by = "Assay")
+  lod_col <- "LOD_manual"
+}
+
+# 2. Master Detectability Calculation ------------------------------------------
+samples_only <- npx_lod %>% 
+  filter(toupper(SampleType) == "SAMPLE") %>%
+  left_join(raw_spine %>% select(Subject_ID, cohort_group), by = c("SampleID" = "Subject_ID"))
+
+# A. Global percentages
+global_det <- samples_only %>%
+  mutate(Target_NPX = if("PCNormalizedNPX" %in% names(.)) PCNormalizedNPX else NPX,
+         above_lod = Target_NPX > .data[[lod_col]]) %>%
+  group_by(Assay, OlinkID, UniProt) %>%
+  summarise(Overall_Pct = 100 * mean(above_lod, na.rm = TRUE), .groups = "drop")
+
+# B. Cohort-specific percentages
+cohort_det <- samples_only %>%
+  filter(!is.na(cohort_group)) %>%
+  mutate(Target_NPX = if("PCNormalizedNPX" %in% names(.)) PCNormalizedNPX else NPX,
+         above_lod = Target_NPX > .data[[lod_col]]) %>%
+  group_by(Assay, cohort_group) %>%
+  summarise(pct = 100 * mean(above_lod, na.rm = TRUE), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = cohort_group, values_from = pct, values_fill = 0)
+
+# C. Merge and assign tiers
+cohort_cols <- as.character(unique(samples_only$cohort_group[!is.na(samples_only$cohort_group)]))
+
+master_det <- global_det %>%
+  left_join(cohort_det, by = "Assay") %>%
+  rowwise() %>%
+  mutate(
+    max_cohort_pct = max(c_across(all_of(cohort_cols)), na.rm = TRUE),
+    min_cohort_pct = min(c_across(all_of(cohort_cols)), na.rm = TRUE),
+    # Fails ONLY if below threshold in ALL groups (meaning max percentage across groups is < threshold)
+    Pass = if_else(max_cohort_pct >= qc_config$min_detectability_pct, "Yes", "No"),
+    Tier = case_when(
+      Pass == "No" ~ 1,
+      Pass == "Yes" & min_cohort_pct < qc_config$min_detectability_pct ~ 2,
+      TRUE ~ 3
+    )
+  ) %>%
+  ungroup() %>%
+  arrange(Tier, Overall_Pct) # Sorted by Tier, then lowest detectability at the top
+
+# Isolate the definitive failures for downstream exclusion in the next chunk
+low_detect <- master_det %>% filter(Pass == "No")
+
+# 3. Build Master Table --------------------------------------------------------
+master_tbl_df <- master_det %>%
+  select(Assay, Overall_Pct, all_of(cohort_cols), Pass) %>%
+  mutate(across(c("Overall_Pct", all_of(cohort_cols)), 
+                ~ kableExtra::cell_spec(sprintf("%.1f%%", .x), 
+                                        color = ifelse(.x < qc_config$min_detectability_pct, "red", "black")))) %>%
+  rename(Overall = Overall_Pct)
+
+master_tbl <- master_tbl_df %>%
+  kableExtra::kbl(format = "html", escape = FALSE, row.names = FALSE,
+                  caption = sprintf("<b style='font-size:1.2em; color:#333;'>Master Detectability Summary (Threshold: %s%%)</b>", qc_config$min_detectability_pct)) %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
+  kableExtra::scroll_box(width = "100%", height = "600px")
+
+# 4. Global Distribution & QC Plots --------------------------------------------
+cat("\n\n### Global Distribution\n\n")
+
+if (has_olink_analyze) {
+  npx_distribution_full <- OlinkAnalyze::olink_dist_plot(
+    df = as.data.frame(samples_only),
+    color_g = "SampleQC"
+  ) + 
+    ggplot2::theme(text = ggplot2::element_text(size = 12)) +
+    ggplot2::labs(title = "Global NPX Distribution across all valid samples")
+  
+  print(npx_distribution_full)
+  cat("<br><br>")
+  
+  # Calculate pass percentage for subtitle
+  pct_pass_qc <- 100 * mean(toupper(samples_only$SampleQC) == "PASS", na.rm = TRUE)
+  
+  median_iqr_full <- OlinkAnalyze::olink_qc_plot(
+    df = as.data.frame(samples_only),
+    color_g = "cohort_group",
+    label_outliers = TRUE,
+    IQR_outlierDef = 3L,
+    median_outlierDef = 3L,
+    outlierLines = TRUE
+  ) +
+    ggplot2::labs(
+      title = "Median–IQR QC plot for all valid samples",
+      subtitle = sprintf("Outlier thresholds defined as ± 3 Standard Deviations from the mean Median/IQR.\nOverall Sample QC Pass Rate: %.1f%%", pct_pass_qc),
+      color = "Cohort Group"
+    ) +
+    ggplot2::theme(
+      text = ggplot2::element_text(size = 13),
+      plot.title = ggplot2::element_text(size = 17, face = "bold"),
+      plot.subtitle = ggplot2::element_text(size = 12, color = "#555555")
+    )
+  
+  print(median_iqr_full)
+}
+
+# 5. Cohort Overlaps (UpSet Plot) ----------------------------------------------
+cat("\n\n### Cohort Overlaps\n\n")
+
+has_upsetr <- requireNamespace("UpSetR", quietly = TRUE)
+
+if (has_upsetr) {
+  
+  upset_detection_data <- master_det %>%
+    mutate(across(all_of(cohort_cols), ~ .x >= qc_config$min_detectability_pct)) %>%
+    select(Assay, all_of(cohort_cols))
+  
+  upset_df <- as.data.frame(upset_detection_data)
+  for(col in cohort_cols) {
+    upset_df[[col]] <- as.integer(upset_df[[col]])
+  }
+  
+  olink_upset_plot <- UpSetR::upset(
+    upset_df,
+    sets = cohort_cols,
+    keep.order = TRUE,
+    order.by = c("freq", "degree"),
+    sets.bar.color = "#4C72B0",
+    mainbar.y.label = "Number of Detected Proteins",
+    sets.x.label = "Total Proteins per Cohort",
+    text.scale = 1.3
+  )
+  
+  print(olink_upset_plot)
+  
+} else {
+  cat("<br><b>Skipped UpSet Plot because the 'UpSetR' package is missing.</b><br>")
+}
+
+# 6. Outputs -------------------------------------------------------------------
+cat("\n\n### Assay Detectability Table\n\n")
+cat(sprintf("<p><i>Proteins dropping below the %s%% threshold in ALL cohorts (Tier 1) are flagged 'No' and will be excluded. Proteins failing in at least one cohort but passing in others (Tier 2) are retained.</i></p>", qc_config$min_detectability_pct))
+
+if (exists("master_tbl")) {
+  print(master_tbl)
+  cat("\n\n")
+}
+```
+
+## Proteomics Filtering & Imputation
+`r what_this_does("Pivoted the Olink data to a wide matrix for standard math operations.", "Executed strict missingness filtering (5% threshold) for proteins and samples.", "Applied cohort-aware LOD exclusions, safely retaining proteins that showed signal in at least one clinical group.", "Excluded sample outliers using the exact 3-SD Median/IQR math utilized in the Olink QC plots.", "Applied row-wise median imputation exclusively to surviving missing values.")`
+
+`r analysis_decision("Enforced a cohort-aware LOD filter, dropping only proteins that fell below the parameterized detectability threshold simultaneously across all three clinical groups (Active, Non-Active, Control).", "Excluded technical sample outliers exceeding 3 standard deviations from the global mean Median or IQR to prevent skewed biological signals downstream.")`
+
+```{r proteomics_filtering_and_imputation, results='asis'}
+audit_log_impute <- c("Filtering & Imputation Log\n")
+
+# 1. Pre-Processing & Pivot ----------------------------------------------------
+target_val <- if("PCNormalizedNPX" %in% names(samples_only)) "PCNormalizedNPX" else "NPX"
+
+# Perfect replica of OlinkAnalyze's internal QC math
+has_panel <- "Panel" %in% names(samples_only)
+
+if (has_panel) {
+  qc_calc <- samples_only %>%
+    group_by(SampleID, Panel) %>%
+    summarise(
+      S_Median = median(NPX, na.rm = TRUE), # Olink strictly calculates QC on NPX
+      S_IQR = IQR(NPX, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    # 3-SD thresholds are calculated independently per Panel
+    group_by(Panel) %>%
+    mutate(
+      median_outlier = abs(S_Median - mean(S_Median, na.rm = TRUE)) > (3 * sd(S_Median, na.rm = TRUE)),
+      iqr_outlier = abs(S_IQR - mean(S_IQR, na.rm = TRUE)) > (3 * sd(S_IQR, na.rm = TRUE))
+    ) %>%
+    ungroup()
+} else {
+  qc_calc <- samples_only %>%
+    group_by(SampleID) %>%
+    summarise(
+      S_Median = median(NPX, na.rm = TRUE),
+      S_IQR = IQR(NPX, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      median_outlier = abs(S_Median - mean(S_Median, na.rm = TRUE)) > (3 * sd(S_Median, na.rm = TRUE)),
+      iqr_outlier = abs(S_IQR - mean(S_IQR, na.rm = TRUE)) > (3 * sd(S_IQR, na.rm = TRUE))
+    )
+}
+
+failed_outlier_samps <- qc_calc %>%
+  filter(median_outlier | iqr_outlier) %>%
+  pull(SampleID) %>%
+  unique()
+
+# Pivot to Wide Matrix
+setDT(samples_only)
+wide_olink <- dcast(samples_only, Assay ~ SampleID, value.var = target_val)
+
 olink_mat <- as.matrix(wide_olink[, -1, with = FALSE])
 rownames(olink_mat) <- wide_olink$Assay
 
-audit_log_olink <- c(audit_log_olink, sprintf("- Initial Matrix: %d Proteins | %d Samples", nrow(olink_mat), ncol(olink_mat)))
+audit_log_impute <- c(audit_log_impute, sprintf("- Pivot Complete: Wide Matrix configured with %d Proteins | %d Samples.", nrow(olink_mat), ncol(olink_mat)))
 
-# 2. Missingness Filtering -----------------------------------------------------
+# 2. Missingness Filtering (NA-based) ------------------------------------------
 miss_prots <- rowMeans(is.na(olink_mat))
 miss_samps <- colMeans(is.na(olink_mat))
 
@@ -206,72 +473,90 @@ failed_prots <- rownames(olink_mat)[!valid_prots]
 failed_samps <- colnames(olink_mat)[!valid_samps]
 
 if(length(failed_prots) > 0) {
-  audit_log_olink <- c(audit_log_olink, sprintf("- Dropped %d Proteins (>= %s%% missing).", length(failed_prots), qc_config$max_missing_pct_prot * 100))
+  audit_log_impute <- c(audit_log_impute, sprintf("- Dropped %d Proteins (>= %s%% missing NA).", length(failed_prots), qc_config$max_missing_pct_prot * 100))
 }
 if(length(failed_samps) > 0) {
-  audit_log_olink <- c(audit_log_olink, sprintf("- Dropped %d Patients (>= %s%% missing).", length(failed_samps), qc_config$max_missing_pct_pat * 100))
+  audit_log_impute <- c(audit_log_impute, sprintf("- Dropped %d Patients (>= %s%% missing NA).", length(failed_samps), qc_config$max_missing_pct_pat * 100))
 }
 
 qc_mat <- olink_mat[valid_prots, valid_samps, drop = FALSE]
 
-# 3. Median Imputation Tracking & Execution ------------------------------------
+# 3. Parameterized Exclusions (LOD & Outliers) ---------------------------------
+
+# A. LOD Filter (Using cohort-aware logic from previous chunk)
+assays_to_drop_lod <- low_detect$Assay[low_detect$Assay %in% rownames(qc_mat)]
+
+if (qc_config$apply_lod_filter) {
+  if(length(assays_to_drop_lod) > 0) {
+    qc_mat <- qc_mat[!rownames(qc_mat) %in% assays_to_drop_lod, , drop = FALSE]
+    audit_log_impute <- c(audit_log_impute, sprintf("- Strict LOD Filter Applied: Excluded %d proteins for falling below the %s%% detectability threshold across ALL cohort groups.", length(assays_to_drop_lod), qc_config$min_detectability_pct))
+  } else {
+    audit_log_impute <- c(audit_log_impute, "- Strict LOD Filter Applied: 0 proteins failed across all cohort groups. None excluded.")
+  }
+} else {
+  audit_log_impute <- c(audit_log_impute, sprintf("- LOD Filter Bypassed (Config): %d proteins below the %s%% detectability threshold were retained.", 
+                                                  length(assays_to_drop_lod), qc_config$min_detectability_pct))
+}
+
+# B. Median-IQR Outlier Filter
+if (qc_config$apply_outlier_filter) {
+  if (length(failed_outlier_samps) > 0) {
+    qc_mat <- qc_mat[, !colnames(qc_mat) %in% failed_outlier_samps, drop = FALSE]
+    audit_log_impute <- c(audit_log_impute, sprintf("- Outlier Filter Applied: Excluded %d samples that failed the 3 SD Median/IQR check (%s).", 
+                                                    length(failed_outlier_samps), paste(failed_outlier_samps, collapse = ", ")))
+  } else {
+    audit_log_impute <- c(audit_log_impute, "- Outlier Filter Applied: 0 samples failed the Median/IQR check. None excluded.")
+  }
+} else {
+  audit_log_impute <- c(audit_log_impute, sprintf("- Outlier Filter Bypassed (Config): %d flagged sample outliers were retained.", length(failed_outlier_samps)))
+}
+
+# 4. Median Imputation ---------------------------------------------------------
 na_coords <- which(is.na(qc_mat), arr.ind = TRUE)
 row_meds <- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
 
-impute_html <- ""
 if (nrow(na_coords) > 0) {
-  # Count how many NAs belong to each protein row
   na_counts <- table(rownames(qc_mat)[na_coords[, "row"]])
   
-  impute_df <- data.frame(
-    Protein = names(na_counts),
-    Imputed_Values = as.integer(na_counts)
-  )
-  
-  # Append the median that was used
+  impute_df <- data.frame(Protein = names(na_counts), Imputed_Values = as.integer(na_counts))
   impute_df$Imputed_Median_NPX <- row_meds[match(impute_df$Protein, rownames(qc_mat))]
-  
-  impute_df <- impute_df %>% 
-    arrange(desc(Imputed_Values)) %>%
-    mutate(Imputed_Median_NPX = sprintf("%.4f", Imputed_Median_NPX))
+  impute_df <- impute_df %>% arrange(desc(Imputed_Values)) %>% mutate(Imputed_Median_NPX = sprintf("%.4f", Imputed_Median_NPX))
 
   impute_tbl <- impute_df %>%
-    kableExtra::kbl(format = "html", row.names = FALSE, 
-                    caption = "<b style='font-size:1.2em; color:#333;'>Proteomics Median Imputation Log</b>") %>%
+    kableExtra::kbl(format = "html", row.names = FALSE, caption = "<b style='font-size:1.2em; color:#333;'>Proteomics Median Imputation Log</b>") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
     kableExtra::scroll_box(width = "100%", height = "300px")
   
-  if (interactive()) {
-    print(impute_tbl)
-  } else {
-    impute_html <- as.character(impute_tbl)
-  }
-  
-  # Execute the actual imputation
   qc_mat[na_coords] <- row_meds[na_coords[, "row"]]
-  audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete: %d total values imputed. Post-QC Matrix: %d Proteins | %d Samples", nrow(na_coords), nrow(qc_mat), ncol(qc_mat)))
-
+  audit_log_impute <- c(audit_log_impute, sprintf("- Imputation Complete: %d total missing values replaced with row-wise medians.", nrow(na_coords)))
 } else {
-  audit_log_olink <- c(audit_log_olink, sprintf("- Median Imputation Complete: 0 missing values found. No imputation required. Post-QC Matrix: %d Proteins | %d Samples", nrow(qc_mat), ncol(qc_mat)))
+  audit_log_impute <- c(audit_log_impute, "- Imputation Bypassed: 0 missing values found in the surviving matrix.")
 }
 
-# 4. Final Sync ----------------------------------------------------------------
-# Ensure the clinical spine perfectly matches the surviving omics samples
-raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat)]
+audit_log_impute <- c(audit_log_impute, sprintf("- Final QC Matrix Dimensions: %d Proteins | %d Samples.", nrow(qc_mat), ncol(qc_mat)))
 
-# Ensure exact column ordering in the matrix
+# 5. Final Data Synchronization ------------------------------------------------
+raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat)]
 qc_mat <- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
 
-# Cleanup Memory
-rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, failed_prots, failed_samps, row_meds, na_coords)
+# Memory Cleanup
+rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, 
+   failed_prots, failed_samps, row_meds, na_coords, samples_only, npx_lod, nc_data,
+   sample_medians, sample_iqrs, mean_median, sd_median, mean_iqr, sd_iqr, outlier_flags)
 if(exists("impute_df")) rm(impute_df, na_counts)
 invisible(gc())
 
-# Print HTML output as a single block
-cat(paste(audit_log_olink, collapse = "\n\n"))
-cat("\n\n<br>\n\n")
-if (impute_html != "") cat(impute_html)
+# 6. Outputs -------------------------------------------------------------------
+cat(paste(audit_log_impute, collapse = "\n\n"))
+cat("\n\n<!-- Terminate List -->\n\n")
+
+if (exists("impute_tbl")) {
+  print(impute_tbl)
+  cat("\n\n")
+}
 ```
+
+
 # Lipidomics Data
 ```{r lipidomics_data}
 # 1. Ingestion and ID Translation 
@@ -399,6 +684,17 @@ invisible(gc())
 
 # Print output
 cat(paste(audit_log_lipid, collapse = "\n\n"))
+
+# Extract the lipid names from both sources
+matrix_lipids <- rownames(raw_lipid_mat)
+lod_lipids <- mean_lod_df$Mediator # (or lod_raw$Mediator depending on which object is in your environment)
+
+# Find lipids in the matrix that are missing from the LOD file
+missing_from_lod <- setdiff(matrix_lipids, lod_lipids)
+
+# Print the results
+cat(sprintf("There are %d lipids in your matrix missing from or named differently in the LOD file:\n", length(missing_from_lod)))
+sort(missing_from_lod)
 ```
 
 # Export 
@@ -416,17 +712,5 @@ saveRDS(mean_lod_df, file.path(output_dir_data, "lipid_mean_lod.rds"))
 cat("Script 01a Complete!\n")
 ```
 
-```{r}
-# Extract the lipid names from both sources
-matrix_lipids <- rownames(raw_lipid_mat)
-lod_lipids <- mean_lod_df$Mediator # (or lod_raw$Mediator depending on which object is in your environment)
 
-# Find lipids in the matrix that are missing from the LOD file
-missing_from_lod <- setdiff(matrix_lipids, lod_lipids)
-
-# Print the results
-cat(sprintf("There are %d lipids in your matrix missing from or named differently in the LOD file:\n", length(missing_from_lod)))
-sort(missing_from_lod)
-
-```
 

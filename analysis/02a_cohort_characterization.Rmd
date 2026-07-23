@@ -228,7 +228,17 @@ upset_configs <- list(
     "ARB"                  = list(col = "Med_arb",               target = c("yes", "Yes", 1, "1")),
     "OAC"                  = list(col = "Med_oac",               target = c("yes", "Yes", 1, "1"))
   )
-)
+),
+
+classification_overlap = list(
+    title = "Patient Overlap: cohort_group vs EUSTAR Classification",
+    variables = list(
+      "Active"       = list(col = "cohort_group", target = c("Active")),
+      "Non_Active"   = list(col = "cohort_group", target = c("Non-Active")),
+      "EUSTAR_Active" = list(col = "ACTIVE_AI", target = c("1")),
+      "EUSTAR_Non_ACTIVE"     = list(col = "ACTIVE_AI", target = c("0"))
+    )
+  )
 )
 ```
 
@@ -925,7 +935,7 @@ generate_upset_plot <- function(conf, df) {
   set_names <- names(conf$variables)
   
   # Inject a Dummy_ID to act as a "metadata" column so UpSetR doesn't crash on an all-binary matrix
-  plot_df <- data.frame(Dummy_ID = 1:nrow(df))
+  plot_df <- data.frame(Dummy_ID = 1:nrow(df), check.names = FALSE)
   
   for (s in set_names) {
     col <- conf$variables[[s]]$col
@@ -939,18 +949,24 @@ generate_upset_plot <- function(conf, df) {
     plot_df[[s]] <- as.integer(ifelse(!is.na(df[[col]]) & (df[[col]] %in% target), 1, 0))
   }
   
-  # Check if matrix is entirely empty (ignoring the Dummy_ID)
-  if (sum(rowSums(plot_df[, -1, drop = FALSE])) == 0) {
-    return(list(status = "failed", msg = "No patients match any target criteria."))
+  # 1. Calculate totals for each requested set
+  set_totals <- colSums(plot_df[, set_names, drop = FALSE])
+  
+  # 2. Filter out sets that have exactly 0 patients (Prevents UpSetR crash)
+  valid_sets <- set_names[set_totals > 0]
+  
+  # 3. UpSetR mathematically requires at least 2 populated sets to draw an intersection
+  if (length(valid_sets) < 2) {
+    return(list(status = "failed", msg = sprintf("Not enough populated categories to compute intersections. Surviving sets: %s", paste(valid_sets, collapse = ", "))))
   }
   
-  # Find the largest category
-  max_group_size <- max(colSums(plot_df[, -1, drop = FALSE]))
+  # Find the largest category dynamically from the surviving sets
+  max_group_size <- max(set_totals[valid_sets])
   
   # Generate Plot
-  p <- upset(
+  p <- UpSetR::upset(
     plot_df, 
-    sets = set_names,
+    sets = valid_sets, # CRITICAL: Feed only the non-zero sets to the engine
     keep.order = TRUE,
     order.by = "freq",
     mainbar.y.label = "Number of Patients in Intersection",
@@ -960,7 +976,7 @@ generate_upset_plot <- function(conf, df) {
     set_size.show = TRUE
   )
   
-  return(list(status = "success", plot = p, data = plot_df))
+  return(list(status = "success", plot = p, data = plot_df[, c("Dummy_ID", valid_sets), drop = FALSE]))
 }
 ```
 
