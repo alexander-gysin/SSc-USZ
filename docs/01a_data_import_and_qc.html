@@ -483,7 +483,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">23 July, 2026</h4>
+<h4 class="date">24 July, 2026</h4>
 
 </div>
 
@@ -491,7 +491,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -502,8 +502,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -512,13 +512,13 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-07-23
+<strong>Last updated:</strong> 2026-07-24
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
@@ -541,21 +541,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -646,15 +643,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9e9a1da88516c2399319cbf4e463164d4a6c4a6btargetblank9e9a1daa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee45fc232b8d40a23fd002b0426d58d5a592eeb4atargetblanke45fc23a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9e9a1da88516c2399319cbf4e463164d4a6c4a6b" target="_blank">9e9a1da</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e45fc232b8d40a23fd002b0426d58d5a592eeb4a" target="_blank">e45fc23</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree9e9a1da88516c2399319cbf4e463164d4a6c4a6btargetblank9e9a1daa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreee45fc232b8d40a23fd002b0426d58d5a592eeb4atargetblanke45fc23a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -664,7 +661,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/9e9a1da88516c2399319cbf4e463164d4a6c4a6b" target="_blank">9e9a1da</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/e45fc232b8d40a23fd002b0426d58d5a592eeb4a" target="_blank">e45fc23</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -696,19 +693,9 @@ Ignored files:
     Ignored:    output/05a_investigator/
     Ignored:    output/nonact_extraction/
     Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
     Ignored:    renv/library/
     Ignored:    renv/staging/
-
-Untracked files:
-    Untracked:  analysis/core_nid001350_38515
-    Untracked:  analysis/omnipathr-log/
-    Untracked:  code/nonact_extraction.R
-    Untracked:  omnipathr-log/
-
-Unstaged changes:
-    Modified:   analysis/01a_data_import_and_qc.Rmd
-    Modified:   analysis/01b_clinical_feature_engineering.Rmd
-    Modified:   analysis/04c_lipidomics_machine_learning.Rmd
 
 </code></pre>
 <p>
@@ -754,6 +741,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/e45fc232b8d40a23fd002b0426d58d5a592eeb4a/analysis/01a_data_import_and_qc.Rmd" target="_blank">e45fc23</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Corrected QC, no filtering
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/88ffef0e687a764b4a73a08f5e28984096db9266/analysis/01a_data_import_and_qc.Rmd" target="_blank">88ffef0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-23
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/88ffef0e687a764b4a73a08f5e28984096db9266/docs/01a_data_import_and_qc.html" target="_blank">88ffef0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-23
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1179,7 +1217,8 @@ file_paths &lt;- list(
   olink_raw     = &quot;pre_quant.csv&quot;,
   lipid_raw     = &quot;Dr Gabriela Kaina and Dr Amela Hurka aLipid Mediator Profiling raw data.xlsx&quot;,
   lipid_map     = &quot;Samples for SPM profiling_final export_081225.xlsx&quot;,
-  lipid_lod     = &quot;Lipidomics_LOD.xlsx&quot;
+  lipid_lod     = &quot;Lipidomics_LOD.xlsx&quot;,
+  fixed_lod_raw = &quot;Reveal Fixed LOD.csv&quot;
 )
 
 # 2. Global QC Thresholds &amp; Protected Columns ----------------------------------
@@ -1187,8 +1226,8 @@ qc_config &lt;- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
   min_detectability_pct = 25,
-  apply_lod_filter     = TRUE,  # Toggle to exclude proteins below min_detectability_pct
-  apply_outlier_filter = TRUE,  # Toggle to exclude Median/IQR sample outliers (3 SD)
+  apply_lod_filter     = FALSE,  # Toggle to exclude proteins below min_detectability_pct
+  apply_outlier_filter = FALSE,  # Toggle to exclude Median/IQR sample outliers (3 SD)
   max_missing_pct_lipid = 0.60,
   selected_col         = &quot;SELECTED&quot;, 
   max_missingness_clin_var = 0.20,
@@ -2287,32 +2326,42 @@ the SSc cohort.</p></li>
 <strong>What this code does:</strong>
 <ul>
 <li>
-Ingested raw Olink long-format data.
+Ingested raw Olink Reveal data using OlinkAnalyze::read_npx to strictly
+enforce column typing.
 </li>
 <li>
 Retained strictly the patient samples present in the clinical spine,
-while defensively preserving technical Negative Controls (NC/NEG)
-required for accurate LOD calculation.
+while defensively preserving control samples for accurate downstream LOD
+validation.
 </li>
 </ul>
 </div>
 <pre class="r"><code>audit_log_olink &lt;- c(&quot;Proteomics Import Log\n&quot;)
 
-# 1. Import Raw Long Format ----------------------------------------------------
-raw_olink &lt;- fread(here::here(&quot;data&quot;, file_paths$olink_raw))
+# 1. Import Raw Long Format using OlinkAnalyze ---------------------------------
+raw_olink &lt;- OlinkAnalyze::read_npx(
+  filename = here::here(&quot;data&quot;, file_paths$olink_raw),
+  out_df = &quot;tibble&quot;,
+  long_format = TRUE,
+  olink_platform = &quot;Reveal&quot;,
+  data_type = &quot;NPX&quot;,
+  quiet = TRUE
+)
 
-# CRITICAL: Keep valid patients AND technical negative controls for LOD math
+# CRITICAL: Keep valid patients AND technical controls for LOD math
+# Use dplyr to filter so the object remains a strict &#39;tibble&#39; for OlinkAnalyze
 valid_subjects &lt;- raw_spine$Subject_ID
-raw_olink &lt;- raw_olink[SampleID %in% valid_subjects | str_detect(toupper(SampleType), &quot;NEG|NC&quot;)]
+raw_olink &lt;- raw_olink %&gt;%
+  dplyr::filter(SampleID %in% valid_subjects | stringr::str_detect(toupper(SampleType), &quot;NEG|NC|CONTROL&quot;))
 
-audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Initial Long Matrix: %d total rows imported (Patients + Negative Controls).&quot;, nrow(raw_olink)))
+audit_log_olink &lt;- c(audit_log_olink, sprintf(&quot;- Initial Long Matrix: %d total rows imported via read_npx (Patients + Controls).&quot;, nrow(raw_olink)))
 
 # Print Import Log
 cat(paste(audit_log_olink, collapse = &quot;\n\n&quot;))</code></pre>
 <p>Proteomics Import Log</p>
 <ul>
-<li>Initial Long Matrix: 139590 total rows imported (Patients + Negative
-Controls).</li>
+<li>Initial Long Matrix: 156134 total rows imported via read_npx
+(Patients + Controls).</li>
 </ul>
 </div>
 <div id="proteomics-qc" class="section level2 tabset">
@@ -2321,13 +2370,18 @@ Controls).</li>
 <strong>What this code does:</strong>
 <ul>
 <li>
-Calculated the Limit of Detection (LOD) natively from negative control
-wells using OlinkAnalyze.
+Integrated Olink Reveal Fixed LOD definitions, dynamically mapping
+project-specific DataAnalysisRefIDs.
+</li>
+<li>
+Applied a dual-method detectability classification (NPX-based
+vs. Count-based) to rescue low-abundance assays missing NPX-scale
+thresholds.
 </li>
 <li>
 Evaluated per-assay detection rates across all samples, globally
-flagging assays where a percentage below the cutoff of samples were
-detectable for downstream exclusion.
+flagging assays where below threshold % of samples were detectable for
+downstream exclusion.
 </li>
 <li>
 Generated non-manipulated global QC plots (NPX Distribution &amp;
@@ -2343,51 +2397,65 @@ proteins.
 <pre class="r"><code>cat(&quot;\n\n### LOD &amp; Detectability\n\n&quot;)</code></pre>
 <div id="lod-detectability" class="section level3">
 <h3>LOD &amp; Detectability</h3>
-<pre class="r"><code># 1. LOD Calculation -----------------------------------------------------------
-nc_data &lt;- raw_olink %&gt;% filter(str_detect(toupper(SampleType), &quot;NEG|NC&quot;))
-n_nc_wells &lt;- n_distinct(nc_data$SampleID)
+<pre class="r"><code># 1. Fixed LOD Integration &amp; Validation ----------------------------------------
+fixed_lod &lt;- readr::read_delim(
+  file = here::here(&quot;data&quot;, file_paths$fixed_lod_raw),
+  delim = &quot;;&quot;, locale = readr::locale(decimal_mark = &quot;.&quot;),
+  trim_ws = TRUE, show_col_types = FALSE
+)
 
-cat(&quot;&lt;b&gt;Negative control wells available:&lt;/b&gt;&quot;, n_nc_wells, &quot;&lt;br&gt;&lt;br&gt;&quot;)</code></pre>
-<p><b>Negative control wells available:</b> 4 <br><br></p>
-<pre class="r"><code>npx_lod &lt;- NULL
-lod_col &lt;- NULL
-has_olink_analyze &lt;- requireNamespace(&quot;OlinkAnalyze&quot;, quietly = TRUE)
+# Filter Fixed LOD to match the specific reagent lot IDs in our dataset
+required_reference_ids &lt;- sort(unique(raw_olink$DataAnalysisRefID))
+fixed_lod_project &lt;- fixed_lod %&gt;%
+  dplyr::filter(DataAnalysisRefID %in% required_reference_ids, AssayType == &quot;assay&quot;)
 
-if (has_olink_analyze &amp;&amp; n_nc_wells &gt;= 10) {
-  npx_lod &lt;- tryCatch(
-    OlinkAnalyze::olink_lod(as.data.frame(raw_olink), lod_method = &quot;NCLOD&quot;, 
-                            preferred_names = &quot;PCNormalizedNPX&quot;),
-    error = function(e) { NULL }
+lod_key &lt;- c(&quot;OlinkID&quot;, &quot;DataAnalysisRefID&quot;)
+
+# 2. Check and Clean Data ------------------------------------------------------
+# Generate pre-check log, then clean while protecting controls
+npx_check &lt;- OlinkAnalyze::check_npx(df = raw_olink, preferred_names = c(&quot;quant&quot; = &quot;NPX&quot;))
+npx_pre_lod &lt;- OlinkAnalyze::clean_npx(
+  df = raw_olink, check_log = npx_check,
+  remove_control_assay = FALSE, remove_control_sample = FALSE,
+  remove_assay_warning = FALSE, remove_qc_warning = FALSE
+)
+
+npx_pre_lod_check &lt;- OlinkAnalyze::check_npx(df = npx_pre_lod, preferred_names = c(&quot;quant&quot; = &quot;NPX&quot;))
+
+# 3. Apply Official LOD --------------------------------------------------------
+npx_with_lod &lt;- OlinkAnalyze::olink_lod(
+  data = npx_pre_lod,
+  lod_method = &quot;FixedLOD&quot;,
+  lod_file_path = here::here(&quot;data&quot;, file_paths$fixed_lod_raw),
+  check_log = npx_pre_lod_check
+)
+
+# 4. Dual-Method Detectability Classification ----------------------------------
+# Reattach original LOD logic and count thresholds 
+lod_lookup &lt;- fixed_lod_project %&gt;%
+  dplyr::select(dplyr::all_of(lod_key), LODMethod, FixedLODCount_reference = LODCount)
+
+npx_lod_classified &lt;- npx_with_lod %&gt;%
+  dplyr::left_join(lod_lookup, by = lod_key, relationship = &quot;many-to-one&quot;) %&gt;%
+  dplyr::mutate(
+    AboveLOD = dplyr::case_when(
+      # NPX-based Fixed LOD
+      AssayType == &quot;assay&quot; &amp; LODMethod == &quot;lod_npx&quot; &amp; !is.na(NPX) &amp; !is.na(LOD) ~ NPX &gt; LOD,
+      # Count-based Fixed LOD
+      AssayType == &quot;assay&quot; &amp; LODMethod == &quot;lod_count&quot; &amp; !is.na(Count) &amp; !is.na(FixedLODCount_reference) ~ Count &gt; FixedLODCount_reference,
+      # Fallback
+      TRUE ~ NA
+    )
   )
-  if (!is.null(npx_lod)) {
-    lod_col &lt;- if (&quot;PCNormalizedLOD&quot; %in% colnames(npx_lod)) &quot;PCNormalizedLOD&quot; else &quot;LOD&quot;
-  }
-}
 
-if (is.null(npx_lod)) {
-  lod_tbl &lt;- nc_data %&gt;%
-    group_by(Assay) %&gt;%
-    summarise(
-      mean_NPX = mean(NPX, na.rm = TRUE),
-      sd_NPX = sd(NPX, na.rm = TRUE),
-      .groups = &quot;drop&quot;
-    ) %&gt;%
-    mutate(LOD_manual = mean_NPX + (3 * sd_NPX))
-  
-  npx_lod &lt;- raw_olink %&gt;% left_join(lod_tbl, by = &quot;Assay&quot;)
-  lod_col &lt;- &quot;LOD_manual&quot;
-}
-
-# 2. Detectability Rate &amp; LOD Plot ---------------------------------------------
-samples_only &lt;- npx_lod %&gt;% 
+# 5. Detectability Rate &amp; LOD Plot ---------------------------------------------
+samples_only &lt;- npx_lod_classified %&gt;% 
   filter(toupper(SampleType) == &quot;SAMPLE&quot;) %&gt;%
   left_join(raw_spine %&gt;% select(Subject_ID, cohort_group), by = c(&quot;SampleID&quot; = &quot;Subject_ID&quot;))
 
 detection &lt;- samples_only %&gt;%
-  mutate(Target_NPX = if(&quot;PCNormalizedNPX&quot; %in% names(.)) PCNormalizedNPX else NPX,
-         above_lod = Target_NPX &gt; .data[[lod_col]]) %&gt;%
   group_by(Assay, OlinkID, UniProt) %&gt;%
-  summarise(pct_above_lod = 100 * mean(above_lod, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;%
+  summarise(pct_above_lod = 100 * mean(AboveLOD, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;%
   arrange(pct_above_lod)
 
 low_detect &lt;- detection %&gt;% filter(pct_above_lod &lt; qc_config$min_detectability_pct)
@@ -2397,7 +2465,7 @@ lod_plot &lt;- ggplot2::ggplot(detection, ggplot2::aes(x = pct_above_lod)) +
   ggplot2::geom_histogram(binwidth = 5, fill = &quot;#4C72B0&quot;, color = &quot;white&quot;) +
   ggplot2::geom_vline(xintercept = qc_config$min_detectability_pct, color = &quot;#C44E52&quot;, linetype = &quot;dashed&quot;, size = 1) +
   ggplot2::labs(
-    title = &quot;Assay Detectability Distribution&quot;,
+    title = &quot;Assay Detectability Distribution (Dual-Method Fixed LOD)&quot;,
     subtitle = sprintf(&quot;Red dashed line indicates parameterized %s%% detectability threshold&quot;, qc_config$min_detectability_pct),
     x = &quot;Percentage of Samples Above LOD (%)&quot;,
     y = &quot;Number of Proteins&quot;
@@ -2407,6 +2475,43 @@ lod_plot &lt;- ggplot2::ggplot(detection, ggplot2::aes(x = pct_above_lod)) +
 
 print(lod_plot)</code></pre>
 <p><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-proteomics_qc-1">
+Past versions of proteomics_qc-1.png
+</button>
+</p>
+<div id="fig-proteomics_qc-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bff47d7653f390d927e81aeccc0c94dcdefbae07/docs/figure/01a_data_import_and_qc.Rmd/proteomics_qc-1.png" target="_blank">bff47d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Table: List the low detectability assays
 if (nrow(low_detect) &gt; 0) {
   cat(sprintf(&quot;&lt;br&gt;&lt;b&gt;Assays with &lt;%s%% of samples above LOD: %d out of %d.&lt;/b&gt;&lt;br&gt;&quot;, 
@@ -2418,13 +2523,13 @@ if (nrow(low_detect) &gt; 0) {
     kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, 
                     caption = sprintf(&quot;&lt;b style=&#39;color:#C44E52;&#39;&gt;Proteins Below %s%% Detectability Threshold&lt;/b&gt;&quot;, qc_config$min_detectability_pct)) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
-    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;)
   
   print(low_detect_tbl)
 }</code></pre>
-<br><b>Assays with &lt;25% of samples above LOD: 92 out of 1034.</b><br>
+<br><b>Assays with &lt;25% of samples above LOD: 79 out of 1034.</b><br>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style>
 <caption>
 <b style="color:#C44E52;">Proteins Below 25% Detectability Threshold</b>
@@ -2442,7 +2547,7 @@ pct_above_lod
 <tbody>
 <tr>
 <td style="text-align:left;">
-CASP1
+AKT3
 </td>
 <td style="text-align:left;">
 0.0%
@@ -2450,7 +2555,7 @@ CASP1
 </tr>
 <tr>
 <td style="text-align:left;">
-ERG
+IL17F
 </td>
 <td style="text-align:left;">
 0.0%
@@ -2458,7 +2563,31 @@ ERG
 </tr>
 <tr>
 <td style="text-align:left;">
-APBB1IP
+KIAA0319L
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PRKN
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SERPINB5
+</td>
+<td style="text-align:left;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CSF2
 </td>
 <td style="text-align:left;">
 0.8%
@@ -2466,7 +2595,7 @@ APBB1IP
 </tr>
 <tr>
 <td style="text-align:left;">
-EVI5
+POF1B
 </td>
 <td style="text-align:left;">
 0.8%
@@ -2474,31 +2603,7 @@ EVI5
 </tr>
 <tr>
 <td style="text-align:left;">
-IL1B
-</td>
-<td style="text-align:left;">
-0.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LTA4H
-</td>
-<td style="text-align:left;">
-0.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RAP1GAP
-</td>
-<td style="text-align:left;">
-0.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-TLR2
+SIKE1
 </td>
 <td style="text-align:left;">
 0.8%
@@ -2514,7 +2619,7 @@ ATF1
 </tr>
 <tr>
 <td style="text-align:left;">
-IFNL4
+CASP1
 </td>
 <td style="text-align:left;">
 1.5%
@@ -2522,7 +2627,7 @@ IFNL4
 </tr>
 <tr>
 <td style="text-align:left;">
-IL33
+LTA4H
 </td>
 <td style="text-align:left;">
 1.5%
@@ -2530,31 +2635,7 @@ IL33
 </tr>
 <tr>
 <td style="text-align:left;">
-MYL11
-</td>
-<td style="text-align:left;">
-1.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-NCF1C_NCF1
-</td>
-<td style="text-align:left;">
-1.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PTPRK
-</td>
-<td style="text-align:left;">
-1.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL11
+IL1B
 </td>
 <td style="text-align:left;">
 2.3%
@@ -2562,7 +2643,7 @@ IL11
 </tr>
 <tr>
 <td style="text-align:left;">
-IL17F
+SPTBN2
 </td>
 <td style="text-align:left;">
 2.3%
@@ -2570,7 +2651,7 @@ IL17F
 </tr>
 <tr>
 <td style="text-align:left;">
-LY96
+TARDBP
 </td>
 <td style="text-align:left;">
 2.3%
@@ -2578,23 +2659,7 @@ LY96
 </tr>
 <tr>
 <td style="text-align:left;">
-NAPRT
-</td>
-<td style="text-align:left;">
-2.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ZBP1
-</td>
-<td style="text-align:left;">
-2.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CES3
+SIRT1
 </td>
 <td style="text-align:left;">
 3.1%
@@ -2602,23 +2667,7 @@ CES3
 </tr>
 <tr>
 <td style="text-align:left;">
-IL4
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-KIFAP3
-</td>
-<td style="text-align:left;">
-3.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-TNF
+SUMO1
 </td>
 <td style="text-align:left;">
 3.1%
@@ -2634,7 +2683,7 @@ ATP6AP2
 </tr>
 <tr>
 <td style="text-align:left;">
-NRTN
+IFNB1
 </td>
 <td style="text-align:left;">
 3.8%
@@ -2642,402 +2691,34 @@ NRTN
 </tr>
 <tr>
 <td style="text-align:left;">
-ANP32E
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-BTN1A1
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DDX60
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HRAS
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HSP90B1
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL20
-</td>
-<td style="text-align:left;">
-4.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DDX39A
-</td>
-<td style="text-align:left;">
-5.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PGM2
-</td>
-<td style="text-align:left;">
-5.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PIKFYVE
-</td>
-<td style="text-align:left;">
-5.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SUMO1
-</td>
-<td style="text-align:left;">
-5.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-BCL2L15
-</td>
-<td style="text-align:left;">
-6.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CENPS
-</td>
-<td style="text-align:left;">
-6.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PCNA
-</td>
-<td style="text-align:left;">
-6.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RAB44
-</td>
-<td style="text-align:left;">
-6.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PARP1
-</td>
-<td style="text-align:left;">
-6.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CBS
-</td>
-<td style="text-align:left;">
-7.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GBP2
-</td>
-<td style="text-align:left;">
-7.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HIF1A
-</td>
-<td style="text-align:left;">
-7.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RBPMS
-</td>
-<td style="text-align:left;">
-7.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SIKE1
-</td>
-<td style="text-align:left;">
-7.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PGR
-</td>
-<td style="text-align:left;">
-8.4%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-C8orf34
-</td>
-<td style="text-align:left;">
-9.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DNPEP
-</td>
-<td style="text-align:left;">
-9.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-LIF
-</td>
-<td style="text-align:left;">
-9.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MAPT
-</td>
-<td style="text-align:left;">
-9.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PADI2
-</td>
-<td style="text-align:left;">
-9.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HDAC9
-</td>
-<td style="text-align:left;">
-9.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PXN
-</td>
-<td style="text-align:left;">
-9.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SIRT1
-</td>
-<td style="text-align:left;">
-9.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 UBA52
 </td>
 <td style="text-align:left;">
-9.9%
+3.8%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-BTNL9
+IL33
 </td>
 <td style="text-align:left;">
-10.7%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GBP3
-</td>
-<td style="text-align:left;">
-10.7%
+4.6%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-IL1A
+KIFAP3
 </td>
 <td style="text-align:left;">
-10.7%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-NUP50
-</td>
-<td style="text-align:left;">
-10.7%
+4.6%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-SRP14
+CES3
 </td>
 <td style="text-align:left;">
-10.7%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ACRV1
-</td>
-<td style="text-align:left;">
-11.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RANBP2
-</td>
-<td style="text-align:left;">
-11.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CEP164
-</td>
-<td style="text-align:left;">
-12.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-POLR3F
-</td>
-<td style="text-align:left;">
-12.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-MAPKAP1
-</td>
-<td style="text-align:left;">
-13.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-WASL
-</td>
-<td style="text-align:left;">
-13.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IFNB1
-</td>
-<td style="text-align:left;">
-14.5%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DDX21
-</td>
-<td style="text-align:left;">
-15.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL9
-</td>
-<td style="text-align:left;">
-15.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PAEP
-</td>
-<td style="text-align:left;">
-15.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-DEFB103A_DEFB103B
-</td>
-<td style="text-align:left;">
-16.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GPD1
-</td>
-<td style="text-align:left;">
-16.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IRAK1BP1
-</td>
-<td style="text-align:left;">
-16.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ESR1
-</td>
-<td style="text-align:left;">
-16.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SPN
-</td>
-<td style="text-align:left;">
-16.8%
+5.3%
 </td>
 </tr>
 <tr>
@@ -3045,63 +2726,39 @@ SPN
 IL13
 </td>
 <td style="text-align:left;">
-17.6%
+5.3%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-S100A16
+LIF
 </td>
 <td style="text-align:left;">
-18.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SSB
-</td>
-<td style="text-align:left;">
-18.3%
+5.3%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-PPIE
+SPN
 </td>
 <td style="text-align:left;">
-19.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SNAP25
-</td>
-<td style="text-align:left;">
-19.1%
+5.3%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-FUS
+RNF135
 </td>
 <td style="text-align:left;">
-19.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-TSLP
-</td>
-<td style="text-align:left;">
-19.8%
+6.1%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-AIF1
+GBP3
 </td>
 <td style="text-align:left;">
-20.6%
+6.9%
 </td>
 </tr>
 <tr>
@@ -3109,55 +2766,175 @@ AIF1
 IL20RA
 </td>
 <td style="text-align:left;">
-21.4%
+6.9%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-CBLB
+NAPRT
 </td>
 <td style="text-align:left;">
-22.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HCLS1
-</td>
-<td style="text-align:left;">
-22.9%
+6.9%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-ODAM
+TGFBR1
 </td>
 <td style="text-align:left;">
-22.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL17RB
-</td>
-<td style="text-align:left;">
-23.7%
+6.9%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-ECSIT
+APBB1IP
 </td>
 <td style="text-align:left;">
-24.4%
+7.6%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-IGFL4
+DEFB103A_DEFB103B
 </td>
 <td style="text-align:left;">
-24.4%
+7.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL20
+</td>
+<td style="text-align:left;">
+7.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAPKAP1
+</td>
+<td style="text-align:left;">
+7.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CBS
+</td>
+<td style="text-align:left;">
+8.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DDX60
+</td>
+<td style="text-align:left;">
+8.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GBP2
+</td>
+<td style="text-align:left;">
+8.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NRTN
+</td>
+<td style="text-align:left;">
+8.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PCNA
+</td>
+<td style="text-align:left;">
+8.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RANBP2
+</td>
+<td style="text-align:left;">
+9.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C8orf34
+</td>
+<td style="text-align:left;">
+9.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL1A
+</td>
+<td style="text-align:left;">
+9.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL9
+</td>
+<td style="text-align:left;">
+9.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PTPRK
+</td>
+<td style="text-align:left;">
+9.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EVI5
+</td>
+<td style="text-align:left;">
+10.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PDE4C
+</td>
+<td style="text-align:left;">
+11.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL4
+</td>
+<td style="text-align:left;">
+12.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PADI2
+</td>
+<td style="text-align:left;">
+12.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PGM2
+</td>
+<td style="text-align:left;">
+12.2%
 </td>
 </tr>
 <tr>
@@ -3165,12 +2942,236 @@ IGFL4
 SNX5
 </td>
 <td style="text-align:left;">
+12.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RAP1GAP
+</td>
+<td style="text-align:left;">
+13.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSB
+</td>
+<td style="text-align:left;">
+13.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DDX39A
+</td>
+<td style="text-align:left;">
+13.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TLR2
+</td>
+<td style="text-align:left;">
+13.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSLP
+</td>
+<td style="text-align:left;">
+13.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCND1
+</td>
+<td style="text-align:left;">
+14.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MKI67
+</td>
+<td style="text-align:left;">
+14.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POLR3F
+</td>
+<td style="text-align:left;">
+14.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MAPT
+</td>
+<td style="text-align:left;">
+15.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NFATC3
+</td>
+<td style="text-align:left;">
+15.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RGS8
+</td>
+<td style="text-align:left;">
+15.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CFDP1
+</td>
+<td style="text-align:left;">
+16.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AFAP1L2
+</td>
+<td style="text-align:left;">
+17.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ESR1
+</td>
+<td style="text-align:left;">
+17.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SMURF1
+</td>
+<td style="text-align:left;">
+18.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ECSIT
+</td>
+<td style="text-align:left;">
+20.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NBEAL2
+</td>
+<td style="text-align:left;">
+20.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MSTN
+</td>
+<td style="text-align:left;">
+21.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SDHAF4
+</td>
+<td style="text-align:left;">
+21.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KIR3DL1
+</td>
+<td style="text-align:left;">
+22.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LIPF
+</td>
+<td style="text-align:left;">
+22.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STK11IP
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FBXO28
+</td>
+<td style="text-align:left;">
+23.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RBPMS
+</td>
+<td style="text-align:left;">
+23.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WASL
+</td>
+<td style="text-align:left;">
+23.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BTN1A1
+</td>
+<td style="text-align:left;">
 24.4%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-STX5
+CENPS
+</td>
+<td style="text-align:left;">
+24.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEP164
+</td>
+<td style="text-align:left;">
+24.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL22
 </td>
 <td style="text-align:left;">
 24.4%
@@ -3183,9 +3184,9 @@ STX5
 </div>
 <div id="global-distribution" class="section level3">
 <h3>Global Distribution</h3>
-<pre class="r"><code>if (has_olink_analyze) {
+<pre class="r"><code>if (requireNamespace(&quot;OlinkAnalyze&quot;, quietly = TRUE)) {
   npx_distribution_full &lt;- OlinkAnalyze::olink_dist_plot(
-    df = as.data.frame(samples_only),
+    df = samples_only,  # FIX: Passed directly as a tibble
     color_g = &quot;SampleQC&quot;
   ) + 
     ggplot2::theme(text = ggplot2::element_text(size = 12)) +
@@ -3195,7 +3196,7 @@ STX5
   cat(&quot;&lt;br&gt;&lt;br&gt;&quot;)
   
   median_iqr_full &lt;- OlinkAnalyze::olink_qc_plot(
-    df = as.data.frame(samples_only),
+    df = samples_only,  # FIX: Passed directly as a tibble
     color_g = &quot;SampleQC&quot;,
     label_outliers = TRUE,
     IQR_outlierDef = 3L,
@@ -3213,7 +3214,82 @@ STX5
   
   print(median_iqr_full)
 }</code></pre>
-<p><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-2.png" alt="" width="960" style="display: block; margin: auto;" /><br><br><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-2.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-proteomics_qc-2">
+Past versions of proteomics_qc-2.png
+</button>
+</p>
+<div id="fig-proteomics_qc-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bff47d7653f390d927e81aeccc0c94dcdefbae07/docs/figure/01a_data_import_and_qc.Rmd/proteomics_qc-2.png" target="_blank">bff47d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br><br><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-3.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-proteomics_qc-3">
+Past versions of proteomics_qc-3.png
+</button>
+</p>
+<div id="fig-proteomics_qc-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bff47d7653f390d927e81aeccc0c94dcdefbae07/docs/figure/01a_data_import_and_qc.Rmd/proteomics_qc-3.png" target="_blank">bff47d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cat(&quot;\n\n### Cohort Overlaps\n\n&quot;)</code></pre>
 </div>
 <div id="cohort-overlaps" class="section level3">
@@ -3223,14 +3299,11 @@ has_cohort &lt;- &quot;cohort_group&quot; %in% names(samples_only)
 
 if (has_upsetr &amp;&amp; has_cohort) {
   
-  # Group detectability by clinical cohort
+  # Group detectability by clinical cohort using the new AboveLOD boolean
   group_detection_summary &lt;- samples_only %&gt;%
     filter(!is.na(cohort_group)) %&gt;%
-    mutate(Target_NPX = if(&quot;PCNormalizedNPX&quot; %in% names(.)) PCNormalizedNPX else NPX,
-           above_lod = Target_NPX &gt; .data[[lod_col]]) %&gt;%
     group_by(OlinkID, Assay, UniProt, cohort_group) %&gt;%
-    summarise(pct_above_lod = mean(above_lod, na.rm = TRUE) * 100, .groups = &quot;drop&quot;) %&gt;%
-    # Use the dynamic threshold here
+    summarise(pct_above_lod = mean(AboveLOD, na.rm = TRUE) * 100, .groups = &quot;drop&quot;) %&gt;%
     mutate(detected_in_group = pct_above_lod &gt;= qc_config$min_detectability_pct) 
   
   upset_detection_data &lt;- group_detection_summary %&gt;%
@@ -3267,6 +3340,43 @@ if (has_upsetr &amp;&amp; has_cohort) {
   if (!has_cohort) cat(&quot;- The column &#39;cohort_group&#39; was not found.&lt;br&gt;&quot;)
 }</code></pre>
 <p><img src="figure/01a_data_import_and_qc.Rmd/proteomics_qc-4.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-proteomics_qc-4">
+Past versions of proteomics_qc-4.png
+</button>
+</p>
+<div id="fig-proteomics_qc-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bff47d7653f390d927e81aeccc0c94dcdefbae07/docs/figure/01a_data_import_and_qc.Rmd/proteomics_qc-4.png" target="_blank">bff47d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cat(&quot;\n\n### Uniquely Detectable Proteins {.tabset .tabset-pills}\n\n&quot;)</code></pre>
 </div>
 <div id="uniquely-detectable-proteins"
@@ -3274,27 +3384,22 @@ class="section level3 tabset tabset-pills">
 <h3 class="tabset tabset-pills">Uniquely Detectable Proteins</h3>
 <pre class="r"><code>if (has_cohort &amp;&amp; exists(&quot;group_detection_summary&quot;)) {
   
-  # Calculate exact percentages for display
   wide_pct_data &lt;- group_detection_summary %&gt;%
     select(Assay, cohort_group, pct_above_lod) %&gt;%
     tidyr::pivot_wider(names_from = cohort_group, values_from = pct_above_lod, values_fill = 0)
   
-  # Identify assays detected in ALL groups (which we want to exclude from this view)
   upset_df$total_detected &lt;- rowSums(upset_df[, upset_groups, drop = FALSE])
   num_cohorts &lt;- length(upset_groups)
   
-  # Keep only proteins detected in at least one group, but NOT in all groups
   interesting_proteins &lt;- upset_df %&gt;%
     filter(total_detected &gt; 0 &amp; total_detected &lt; num_cohorts) %&gt;%
     pull(Assay)
   
   wide_pct_filtered &lt;- wide_pct_data %&gt;% filter(Assay %in% interesting_proteins)
   
-  # Dynamically generate a sub-tab for each cohort group
   for (cohort in upset_groups) {
     cat(sprintf(&quot;\n\n#### %s\n\n&quot;, cohort))
     
-    # Filter for proteins detectable in THIS cohort
     cohort_tbl_data &lt;- wide_pct_filtered %&gt;%
       filter(.data[[cohort]] &gt;= qc_config$min_detectability_pct) %&gt;%
       arrange(desc(.data[[cohort]])) %&gt;%
@@ -3305,7 +3410,7 @@ class="section level3 tabset tabset-pills">
         kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, 
                         caption = sprintf(&quot;Proteins detectable (&gt;= %s%%) in %s, but missing in at least one other cohort&quot;, qc_config$min_detectability_pct, cohort)) %&gt;%
         kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
-        kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;400px&quot;)
+        kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;)
       
       print(cohort_tbl)
     } else {
@@ -3316,7 +3421,7 @@ class="section level3 tabset tabset-pills">
 <div id="active" class="section level4">
 <h4>Active</h4>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Proteins detectable (&gt;= 25%) in Active, but missing in at least one
@@ -3341,27 +3446,13 @@ Control
 <tbody>
 <tr>
 <td style="text-align:left;">
-S100A12
+MILR1
 </td>
 <td style="text-align:left;">
-72.9%
+47.9%
 </td>
 <td style="text-align:left;">
-50.0%
-</td>
-<td style="text-align:left;">
-14.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ACE2
-</td>
-<td style="text-align:left;">
-58.3%
-</td>
-<td style="text-align:left;">
-50.0%
+29.2%
 </td>
 <td style="text-align:left;">
 20.0%
@@ -3369,27 +3460,13 @@ ACE2
 </tr>
 <tr>
 <td style="text-align:left;">
-NFATC3
+NLGN1
 </td>
 <td style="text-align:left;">
-52.1%
+41.7%
 </td>
 <td style="text-align:left;">
-56.2%
-</td>
-<td style="text-align:left;">
-20.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-POF1B
-</td>
-<td style="text-align:left;">
-52.1%
-</td>
-<td style="text-align:left;">
-33.3%
+50.0%
 </td>
 <td style="text-align:left;">
 22.9%
@@ -3397,27 +3474,41 @@ POF1B
 </tr>
 <tr>
 <td style="text-align:left;">
-DAPK2
-</td>
-<td style="text-align:left;">
-43.8%
-</td>
-<td style="text-align:left;">
-43.8%
-</td>
-<td style="text-align:left;">
-14.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CFDP1
+DDX21
 </td>
 <td style="text-align:left;">
 37.5%
 </td>
 <td style="text-align:left;">
-20.8%
+37.5%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIKFYVE
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+17.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DHPS
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+<td style="text-align:left;">
+52.1%
 </td>
 <td style="text-align:left;">
 22.9%
@@ -3425,69 +3516,13 @@ CFDP1
 </tr>
 <tr>
 <td style="text-align:left;">
-FMNL1
+PLCG1
 </td>
 <td style="text-align:left;">
 35.4%
 </td>
 <td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-11.4%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-FUS
-</td>
-<td style="text-align:left;">
-33.3%
-</td>
-<td style="text-align:left;">
-20.8%
-</td>
-<td style="text-align:left;">
-0.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PTP4A3
-</td>
-<td style="text-align:left;">
-33.3%
-</td>
-<td style="text-align:left;">
-31.2%
-</td>
-<td style="text-align:left;">
-14.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SERPINB5
-</td>
-<td style="text-align:left;">
-31.2%
-</td>
-<td style="text-align:left;">
-20.8%
-</td>
-<td style="text-align:left;">
-28.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RGS8
-</td>
-<td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-45.8%
+39.6%
 </td>
 <td style="text-align:left;">
 22.9%
@@ -3495,69 +3530,13 @@ RGS8
 </tr>
 <tr>
 <td style="text-align:left;">
-HCLS1
+FBXO28
 </td>
 <td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-20.8%
-</td>
-<td style="text-align:left;">
-17.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SNX5
-</td>
-<td style="text-align:left;">
-29.2%
+35.4%
 </td>
 <td style="text-align:left;">
 25.0%
-</td>
-<td style="text-align:left;">
-17.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL17RB
-</td>
-<td style="text-align:left;">
-27.1%
-</td>
-<td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-17.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IFIT1
-</td>
-<td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-37.5%
-</td>
-<td style="text-align:left;">
-17.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SSB
-</td>
-<td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-20.8%
 </td>
 <td style="text-align:left;">
 5.7%
@@ -3565,13 +3544,181 @@ SSB
 </tr>
 <tr>
 <td style="text-align:left;">
-TSLP
+IL22
+</td>
+<td style="text-align:left;">
+35.4%
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+<td style="text-align:left;">
+11.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LIPF
+</td>
+<td style="text-align:left;">
+33.3%
+</td>
+<td style="text-align:left;">
+18.8%
+</td>
+<td style="text-align:left;">
+11.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEP164
+</td>
+<td style="text-align:left;">
+31.2%
 </td>
 <td style="text-align:left;">
 25.0%
 </td>
 <td style="text-align:left;">
+14.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CENPS
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HSP90B1
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+14.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL36B
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+<td style="text-align:left;">
+28.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SDHAF4
+</td>
+<td style="text-align:left;">
+27.1%
+</td>
+<td style="text-align:left;">
 16.7%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CCND1
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+2.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STK11IP
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+31.2%
+</td>
+<td style="text-align:left;">
+8.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CFDP1
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+11.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KIR3DL1
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+31.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POLR3F
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+2.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RBPMS
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+27.1%
 </td>
 <td style="text-align:left;">
 17.1%
@@ -3584,7 +3731,7 @@ TSLP
 <div id="non-active" class="section level4">
 <h4>Non-Active</h4>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Proteins detectable (&gt;= 25%) in Non-Active, but missing in at least
@@ -3609,55 +3756,13 @@ Control
 <tbody>
 <tr>
 <td style="text-align:left;">
-NFATC3
+DHPS
+</td>
+<td style="text-align:left;">
+37.5%
 </td>
 <td style="text-align:left;">
 52.1%
-</td>
-<td style="text-align:left;">
-56.2%
-</td>
-<td style="text-align:left;">
-20.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-ACE2
-</td>
-<td style="text-align:left;">
-58.3%
-</td>
-<td style="text-align:left;">
-50.0%
-</td>
-<td style="text-align:left;">
-20.0%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-S100A12
-</td>
-<td style="text-align:left;">
-72.9%
-</td>
-<td style="text-align:left;">
-50.0%
-</td>
-<td style="text-align:left;">
-14.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-RGS8
-</td>
-<td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-45.8%
 </td>
 <td style="text-align:left;">
 22.9%
@@ -3665,30 +3770,44 @@ RGS8
 </tr>
 <tr>
 <td style="text-align:left;">
-DAPK2
+NLGN1
 </td>
 <td style="text-align:left;">
-43.8%
+41.7%
 </td>
 <td style="text-align:left;">
-43.8%
+50.0%
 </td>
 <td style="text-align:left;">
-14.3%
+22.9%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-IFIT1
+PLCG1
 </td>
 <td style="text-align:left;">
-25.0%
+35.4%
+</td>
+<td style="text-align:left;">
+39.6%
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DDX21
 </td>
 <td style="text-align:left;">
 37.5%
 </td>
 <td style="text-align:left;">
-17.1%
+37.5%
+</td>
+<td style="text-align:left;">
+20.0%
 </td>
 </tr>
 <tr>
@@ -3696,10 +3815,38 @@ IFIT1
 ODAM
 </td>
 <td style="text-align:left;">
-16.7%
+20.8%
 </td>
 <td style="text-align:left;">
-33.3%
+35.4%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STK11IP
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+31.2%
+</td>
+<td style="text-align:left;">
+8.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BTN1A1
+</td>
+<td style="text-align:left;">
+22.9%
+</td>
+<td style="text-align:left;">
+31.2%
 </td>
 <td style="text-align:left;">
 17.1%
@@ -3707,30 +3854,58 @@ ODAM
 </tr>
 <tr>
 <td style="text-align:left;">
-POF1B
+NPHS1
 </td>
 <td style="text-align:left;">
-52.1%
-</td>
-<td style="text-align:left;">
-33.3%
-</td>
-<td style="text-align:left;">
-22.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-PTP4A3
-</td>
-<td style="text-align:left;">
-33.3%
+14.6%
 </td>
 <td style="text-align:left;">
 31.2%
 </td>
 <td style="text-align:left;">
+31.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HSP90B1
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
 14.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MILR1
+</td>
+<td style="text-align:left;">
+47.9%
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PIKFYVE
+</td>
+<td style="text-align:left;">
+37.5%
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+17.1%
 </td>
 </tr>
 <tr>
@@ -3738,24 +3913,10 @@ PTP4A3
 ECSIT
 </td>
 <td style="text-align:left;">
-20.8%
+16.7%
 </td>
 <td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-22.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CBLB
-</td>
-<td style="text-align:left;">
-18.8%
-</td>
-<td style="text-align:left;">
-29.2%
+27.1%
 </td>
 <td style="text-align:left;">
 17.1%
@@ -3763,27 +3924,69 @@ CBLB
 </tr>
 <tr>
 <td style="text-align:left;">
-FMNL1
+WASL
 </td>
 <td style="text-align:left;">
-35.4%
+22.9%
 </td>
 <td style="text-align:left;">
-29.2%
+27.1%
 </td>
 <td style="text-align:left;">
-11.4%
+20.0%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-IL20RA
+RBPMS
 </td>
 <td style="text-align:left;">
-20.8%
+25.0%
 </td>
 <td style="text-align:left;">
 27.1%
+</td>
+<td style="text-align:left;">
+17.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NBEAL2
+</td>
+<td style="text-align:left;">
+16.7%
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+20.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AFAP1L2
+</td>
+<td style="text-align:left;">
+18.8%
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+5.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CEP164
+</td>
+<td style="text-align:left;">
+31.2%
+</td>
+<td style="text-align:left;">
+25.0%
 </td>
 <td style="text-align:left;">
 14.3%
@@ -3791,72 +3994,30 @@ IL20RA
 </tr>
 <tr>
 <td style="text-align:left;">
-STX5
+FBXO28
 </td>
 <td style="text-align:left;">
-22.9%
-</td>
-<td style="text-align:left;">
-27.1%
-</td>
-<td style="text-align:left;">
-22.9%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SNAP25
-</td>
-<td style="text-align:left;">
-18.8%
+35.4%
 </td>
 <td style="text-align:left;">
 25.0%
 </td>
 <td style="text-align:left;">
-11.4%
+5.7%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-IGFL4
+RGS8
 </td>
 <td style="text-align:left;">
-20.8%
+10.4%
 </td>
 <td style="text-align:left;">
 25.0%
 </td>
 <td style="text-align:left;">
-28.6%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IL17RB
-</td>
-<td style="text-align:left;">
-27.1%
-</td>
-<td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-17.1%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-SNX5
-</td>
-<td style="text-align:left;">
-29.2%
-</td>
-<td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-17.1%
+8.6%
 </td>
 </tr>
 </tbody>
@@ -3866,7 +4027,7 @@ SNX5
 <div id="control" class="section level4">
 <h4>Control</h4>
 <div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Proteins detectable (&gt;= 25%) in Control, but missing in at least one
@@ -3891,13 +4052,41 @@ Control
 <tbody>
 <tr>
 <td style="text-align:left;">
-SERPINB5
+KIR3DL1
+</td>
+<td style="text-align:left;">
+25.0%
+</td>
+<td style="text-align:left;">
+12.5%
+</td>
+<td style="text-align:left;">
+31.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NPHS1
+</td>
+<td style="text-align:left;">
+14.6%
 </td>
 <td style="text-align:left;">
 31.2%
 </td>
 <td style="text-align:left;">
-20.8%
+31.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IL36B
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+<td style="text-align:left;">
+22.9%
 </td>
 <td style="text-align:left;">
 28.6%
@@ -3905,16 +4094,16 @@ SERPINB5
 </tr>
 <tr>
 <td style="text-align:left;">
-IGFL4
+MSTN
+</td>
+<td style="text-align:left;">
+18.8%
 </td>
 <td style="text-align:left;">
 20.8%
 </td>
 <td style="text-align:left;">
-25.0%
-</td>
-<td style="text-align:left;">
-28.6%
+25.7%
 </td>
 </tr>
 </tbody>
@@ -3932,20 +4121,35 @@ IGFL4
 Pivoted the Olink data to a wide matrix for standard math operations.
 </li>
 <li>
-Executed strict missingness filtering at the 5% threshold for both
-proteins and samples.
+Executed strict missingness filtering (5% threshold) for proteins and
+samples.
 </li>
 <li>
-Applied the parameterized LOD filter to drop proteins indistinguishable
-from noise.
+Applied cohort-aware LOD exclusions, safely retaining proteins that
+showed signal in at least one clinical group.
+</li>
+<li>
+Excluded sample outliers using the exact 3-SD Median/IQR math utilized
+in the Olink QC plots.
 </li>
 <li>
 Applied row-wise median imputation exclusively to surviving missing
 values.
 </li>
+</ul>
+</div>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
 <li>
-Cross-synchronized the final matrix and clinical spine to guarantee
-dimensional parity.
+Enforced a cohort-aware LOD filter, dropping only proteins that fell
+below the parameterized detectability threshold simultaneously across
+all three clinical groups (Active, Non-Active, Control).
+</li>
+<li>
+Excluded technical sample outliers exceeding 3 standard deviations from
+the global mean Median or IQR to prevent skewed biological signals
+downstream.
 </li>
 </ul>
 </div>
@@ -3954,6 +4158,44 @@ dimensional parity.
 # 1. Pre-Processing &amp; Pivot ----------------------------------------------------
 target_val &lt;- if(&quot;PCNormalizedNPX&quot; %in% names(samples_only)) &quot;PCNormalizedNPX&quot; else &quot;NPX&quot;
 
+# Perfect replica of OlinkAnalyze&#39;s internal QC math
+has_panel &lt;- &quot;Panel&quot; %in% names(samples_only)
+
+if (has_panel) {
+  qc_calc &lt;- samples_only %&gt;%
+    group_by(SampleID, Panel) %&gt;%
+    summarise(
+      S_Median = median(NPX, na.rm = TRUE), # Olink strictly calculates QC on NPX
+      S_IQR = IQR(NPX, na.rm = TRUE),
+      .groups = &quot;drop&quot;
+    ) %&gt;%
+    # 3-SD thresholds are calculated independently per Panel
+    group_by(Panel) %&gt;%
+    mutate(
+      median_outlier = abs(S_Median - mean(S_Median, na.rm = TRUE)) &gt; (3 * sd(S_Median, na.rm = TRUE)),
+      iqr_outlier = abs(S_IQR - mean(S_IQR, na.rm = TRUE)) &gt; (3 * sd(S_IQR, na.rm = TRUE))
+    ) %&gt;%
+    ungroup()
+} else {
+  qc_calc &lt;- samples_only %&gt;%
+    group_by(SampleID) %&gt;%
+    summarise(
+      S_Median = median(NPX, na.rm = TRUE),
+      S_IQR = IQR(NPX, na.rm = TRUE),
+      .groups = &quot;drop&quot;
+    ) %&gt;%
+    mutate(
+      median_outlier = abs(S_Median - mean(S_Median, na.rm = TRUE)) &gt; (3 * sd(S_Median, na.rm = TRUE)),
+      iqr_outlier = abs(S_IQR - mean(S_IQR, na.rm = TRUE)) &gt; (3 * sd(S_IQR, na.rm = TRUE))
+    )
+}
+
+failed_outlier_samps &lt;- qc_calc %&gt;%
+  filter(median_outlier | iqr_outlier) %&gt;%
+  pull(SampleID) %&gt;%
+  unique()
+
+# Pivot to Wide Matrix
 setDT(samples_only)
 wide_olink &lt;- dcast(samples_only, Assay ~ SampleID, value.var = target_val)
 
@@ -3961,19 +4203,6 @@ olink_mat &lt;- as.matrix(wide_olink[, -1, with = FALSE])
 rownames(olink_mat) &lt;- wide_olink$Assay
 
 audit_log_impute &lt;- c(audit_log_impute, sprintf(&quot;- Pivot Complete: Wide Matrix configured with %d Proteins | %d Samples.&quot;, nrow(olink_mat), ncol(olink_mat)))
-
-# Calculate outliers on the FULL matrix to exactly match the plot
-sample_medians &lt;- matrixStats::colMedians(olink_mat, na.rm = TRUE)
-sample_iqrs    &lt;- matrixStats::colIQRs(olink_mat, na.rm = TRUE)
-
-mean_median &lt;- mean(sample_medians, na.rm = TRUE)
-sd_median   &lt;- sd(sample_medians, na.rm = TRUE)
-mean_iqr    &lt;- mean(sample_iqrs, na.rm = TRUE)
-sd_iqr      &lt;- sd(sample_iqrs, na.rm = TRUE)
-
-outlier_flags &lt;- abs(sample_medians - mean_median) &gt; (3 * sd_median) | 
-                 abs(sample_iqrs - mean_iqr) &gt; (3 * sd_iqr)
-failed_outlier_samps &lt;- colnames(olink_mat)[outlier_flags]
 
 # 2. Missingness Filtering (NA-based) ------------------------------------------
 miss_prots &lt;- rowMeans(is.na(olink_mat))
@@ -3996,14 +4225,15 @@ qc_mat &lt;- olink_mat[valid_prots, valid_samps, drop = FALSE]
 
 # 3. Parameterized Exclusions (LOD &amp; Outliers) ---------------------------------
 
-# A. LOD Filter
+# A. LOD Filter (Using cohort-aware logic from previous chunk)
 assays_to_drop_lod &lt;- low_detect$Assay[low_detect$Assay %in% rownames(qc_mat)]
 
 if (qc_config$apply_lod_filter) {
   if(length(assays_to_drop_lod) &gt; 0) {
     qc_mat &lt;- qc_mat[!rownames(qc_mat) %in% assays_to_drop_lod, , drop = FALSE]
-    audit_log_impute &lt;- c(audit_log_impute, sprintf(&quot;- Strict LOD Filter Applied: Excluded %d proteins for falling below the %s%% global detectability threshold.&quot;, 
-                                                    length(assays_to_drop_lod), qc_config$min_detectability_pct))
+    audit_log_impute &lt;- c(audit_log_impute, sprintf(&quot;- Strict LOD Filter Applied: Excluded %d proteins for falling below the %s%% detectability threshold across ALL cohort groups.&quot;, length(assays_to_drop_lod), qc_config$min_detectability_pct))
+  } else {
+    audit_log_impute &lt;- c(audit_log_impute, &quot;- Strict LOD Filter Applied: 0 proteins failed across all cohort groups. None excluded.&quot;)
   }
 } else {
   audit_log_impute &lt;- c(audit_log_impute, sprintf(&quot;- LOD Filter Bypassed (Config): %d proteins below the %s%% detectability threshold were retained.&quot;, 
@@ -4011,8 +4241,6 @@ if (qc_config$apply_lod_filter) {
 }
 
 # B. Median-IQR Outlier Filter
-# outlier_flags and failed_outlier_samps are already calculated
-
 if (qc_config$apply_outlier_filter) {
   if (length(failed_outlier_samps) &gt; 0) {
     qc_mat &lt;- qc_mat[, !colnames(qc_mat) %in% failed_outlier_samps, drop = FALSE]
@@ -4029,7 +4257,6 @@ if (qc_config$apply_outlier_filter) {
 na_coords &lt;- which(is.na(qc_mat), arr.ind = TRUE)
 row_meds &lt;- matrixStats::rowMedians(qc_mat, na.rm = TRUE)
 
-impute_html &lt;- &quot;&quot;
 if (nrow(na_coords) &gt; 0) {
   na_counts &lt;- table(rownames(qc_mat)[na_coords[, &quot;row&quot;]])
   
@@ -4041,8 +4268,6 @@ if (nrow(na_coords) &gt; 0) {
     kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, caption = &quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Proteomics Median Imputation Log&lt;/b&gt;&quot;) %&gt;%
     kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
     kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)
-  
-  if (interactive()) print(impute_tbl) else impute_html &lt;- as.character(impute_tbl)
   
   qc_mat[na_coords] &lt;- row_meds[na_coords[, &quot;row&quot;]]
   audit_log_impute &lt;- c(audit_log_impute, sprintf(&quot;- Imputation Complete: %d total missing values replaced with row-wise medians.&quot;, nrow(na_coords)))
@@ -4063,21 +4288,26 @@ rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_
 if(exists(&quot;impute_df&quot;)) rm(impute_df, na_counts)
 invisible(gc())
 
-# Print Imputation Log and Table
+# 6. Outputs -------------------------------------------------------------------
 cat(paste(audit_log_impute, collapse = &quot;\n\n&quot;))</code></pre>
 <p>Filtering &amp; Imputation Log</p>
 <ul>
 <li><p>Pivot Complete: Wide Matrix configured with 1034 Proteins | 131
 Samples.</p></li>
-<li><p>Strict LOD Filter Applied: Excluded 92 proteins for falling below
-the 25% global detectability threshold.</p></li>
-<li><p>Outlier Filter Applied: Excluded 4 samples that failed the 3 SD
-Median/IQR check (Act_15, Act_2, Act_28, Act_41).</p></li>
+<li><p>LOD Filter Bypassed (Config): 79 proteins below the 25%
+detectability threshold were retained.</p></li>
+<li><p>Outlier Filter Bypassed (Config): 2 flagged sample outliers were
+retained.</p></li>
 <li><p>Imputation Bypassed: 0 missing values found in the surviving
 matrix.</p></li>
-<li><p>Final QC Matrix Dimensions: 942 Proteins | 127 Samples.</p></li>
+<li><p>Final QC Matrix Dimensions: 1034 Proteins | 131 Samples.</p></li>
 </ul>
-<pre class="r"><code>if (impute_html != &quot;&quot;) cat(impute_html)</code></pre>
+<pre class="r"><code>cat(&quot;\n\n&lt;!-- Terminate List --&gt;\n\n&quot;)</code></pre>
+<!-- Terminate List -->
+<pre class="r"><code>if (exists(&quot;impute_tbl&quot;)) {
+  print(impute_tbl)
+  cat(&quot;\n\n&quot;)
+}</code></pre>
 </div>
 </div>
 <div id="lipidomics-data" class="section level1">
@@ -4212,15 +4442,13 @@ cat(paste(audit_log_lipid, collapse = &quot;\n\n&quot;))</code></pre>
 
 - Dropped 1 manually configured tech_ids (FS93796088).
 
-- Dropping 4 unmatched samples.
-
-- Initial Matrix: 50 Lipids | 127 Samples
+- Initial Matrix: 50 Lipids | 131 Samples
 
 - Dropped 47 Lipids (&gt;= 50% missing). Which corresponds to 94.0%
 
 - LOD Aggregation: 50 unique lipids averaged from technical replicates.
 
-- LOD Imputation Complete: 158 values imputed.</code></pre>
+- LOD Imputation Complete: 161 values imputed.</code></pre>
 <pre class="r"><code># Extract the lipid names from both sources
 matrix_lipids &lt;- rownames(raw_lipid_mat)
 lod_lipids &lt;- mean_lod_df$Mediator # (or lod_raw$Mediator depending on which object is in your environment)
@@ -4286,7 +4514,7 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] patchwork_1.3.2    UpSetR_1.4.1       OlinkAnalyze_4.5.0 matrixStats_1.5.0 
+ [1] patchwork_1.3.2    UpSetR_1.4.1       OlinkAnalyze_5.0.2 matrixStats_1.5.0 
  [5] here_1.0.2         data.table_1.18.4  readxl_1.5.0       lubridate_1.9.5   
  [9] forcats_1.0.1      stringr_1.6.0      dplyr_1.2.1        purrr_1.2.2       
 [13] readr_2.2.0        tidyr_1.3.2        tibble_3.3.1       tidyverse_2.0.0   
@@ -4294,32 +4522,32 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] tidyselect_1.2.1    viridisLite_0.4.3   farver_2.1.2       
- [4] S7_0.2.2            fastmap_1.2.0       promises_1.5.0     
- [7] digest_0.6.39       timechange_0.4.0    estimability_2.0.0 
-[10] lifecycle_1.0.5     processx_3.9.0      magrittr_2.0.5     
-[13] compiler_4.5.2      rlang_1.3.0         sass_0.4.10        
-[16] tools_4.5.2         yaml_2.3.12         knitr_1.51         
-[19] labeling_0.4.3      showtextdb_3.0      plyr_1.8.9         
-[22] xml2_1.6.0          RColorBrewer_1.1-3  abind_1.4-8        
-[25] withr_3.0.3         grid_4.5.2          git2r_0.36.2       
-[28] sysfonts_0.8.9      emmeans_2.0.4       scales_1.4.0       
-[31] cli_3.6.6           mvtnorm_1.4-2       rmarkdown_2.31     
-[34] generics_0.1.4      otel_0.2.0          rstudioapi_0.19.0  
-[37] httr_1.4.8          tzdb_0.5.0          cachem_1.1.0       
-[40] BiocManager_1.30.27 cellranger_1.1.0    vctrs_0.7.3        
-[43] jsonlite_2.0.0      carData_3.0-6       car_3.1-5          
-[46] callr_3.8.0         hms_1.1.4           ggrepel_0.9.8      
-[49] rstatix_1.0.0       Formula_1.2-5       systemfonts_1.3.2  
-[52] testthat_3.3.2      jquerylib_0.1.4     glue_1.8.1         
-[55] ps_1.9.3            stringi_1.8.7       gtable_0.3.6       
-[58] later_1.4.8         pillar_1.11.1       brio_1.1.5         
-[61] htmltools_0.5.9     showtext_0.9-8      R6_2.6.1           
-[64] textshaping_1.0.5   rprojroot_2.1.1     evaluate_1.0.5     
-[67] kableExtra_1.4.1    backports_1.5.1     broom_1.0.13       
-[70] renv_1.2.3          httpuv_1.6.17       bslib_0.11.0       
-[73] Rcpp_1.1.2          svglite_2.2.2       gridExtra_2.3.1    
-[76] whisker_0.4.1       xfun_0.60           fs_2.1.0           
-[79] getPass_0.2-4       pkgconfig_2.0.3    </code></pre>
+ [4] blob_1.3.0          arrow_23.0.0        S7_0.2.2           
+ [7] fastmap_1.2.0       duckdb_1.4.4        promises_1.5.0     
+[10] digest_0.6.39       timechange_0.4.0    lifecycle_1.0.5    
+[13] processx_3.9.0      magrittr_2.0.5      compiler_4.5.2     
+[16] rlang_1.3.0         sass_0.4.10         tools_4.5.2        
+[19] yaml_2.3.12         knitr_1.51          labeling_0.4.3     
+[22] bit_4.6.0           showtextdb_3.0      plyr_1.8.9         
+[25] xml2_1.6.0          RColorBrewer_1.1-3  withr_3.0.3        
+[28] grid_4.5.2          git2r_0.36.2        sysfonts_0.8.9     
+[31] scales_1.4.0        cli_3.6.6           rmarkdown_2.31     
+[34] crayon_1.5.3        generics_0.1.4      otel_0.2.0         
+[37] rstudioapi_0.19.0   httr_1.4.8          tzdb_0.5.0         
+[40] DBI_1.3.0           cachem_1.1.0        assertthat_0.2.1   
+[43] parallel_4.5.2      BiocManager_1.30.27 cellranger_1.1.0   
+[46] vctrs_0.7.3         jsonlite_2.0.0      callr_3.8.0        
+[49] hms_1.1.4           ggrepel_0.9.8       bit64_4.8.2        
+[52] systemfonts_1.3.2   testthat_3.3.2      jquerylib_0.1.4    
+[55] glue_1.8.1          ps_1.9.3            stringi_1.8.7      
+[58] gtable_0.3.6        later_1.4.8         pillar_1.11.1      
+[61] brio_1.1.5          htmltools_0.5.9     showtext_0.9-8     
+[64] R6_2.6.1            dbplyr_2.6.0        textshaping_1.0.5  
+[67] rprojroot_2.1.1     vroom_1.7.1         evaluate_1.0.5     
+[70] kableExtra_1.4.1    renv_1.2.3          httpuv_1.6.17      
+[73] bslib_0.11.0        Rcpp_1.1.2          svglite_2.2.2      
+[76] gridExtra_2.3.1     whisker_0.4.1       xfun_0.60          
+[79] fs_2.1.0            getPass_0.2-4       pkgconfig_2.0.3    </code></pre>
 </div>
 </div>
 </div>
