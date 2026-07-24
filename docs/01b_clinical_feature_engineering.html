@@ -1,0 +1,6052 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="alexander-gysin (alexander.gysin@usz.ch)" />
+
+
+<title>Clinical Features</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Clinical
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="02a_cohort_characterization.html">Charcterization</a>
+    </li>
+    <li>
+      <a href="02b_clinical_clustering.html">Clustering</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_correlations.html">Correlations</a>
+    </li>
+    <li>
+      <a href="03f_proteomics_machine_learning.html">Machine Learning</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Lipidomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="04a_lipidomics_topography.html">Topography</a>
+    </li>
+    <li>
+      <a href="04b_lipidomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="04c_lipidomics_machine_learning.html">Machine Learning</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Multi-Omics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="05a_investigator.html">Investigator</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_vascular_2.html">Vascular 2</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Clinical Features</h1>
+<h4 class="author">alexander-gysin (<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">24 July, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-07-24
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree01f3e9aba5410421cfc66f012ef0f468925d6cbetargetblank01f3e9aa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/01f3e9aba5410421cfc66f012ef0f468925d6cbe" target="_blank">01f3e9a</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree01f3e9aba5410421cfc66f012ef0f468925d6cbetargetblank01f3e9aa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/01f3e9aba5410421cfc66f012ef0f468925d6cbe" target="_blank">01f3e9a</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01b_clinical_feature_engineering/
+    Ignored:    output/02a_cohort_characterization/
+    Ignored:    output/02b_clinical_clustering/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/03d_proteomics_subgroups/
+    Ignored:    output/03e_proteomics_correlations/
+    Ignored:    output/04a_lipidomics_topography/
+    Ignored:    output/04b_lipidomics_differential/
+    Ignored:    output/05_machine_learning/
+    Ignored:    output/05a_investigator/
+    Ignored:    output/nonact_extraction/
+    Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Unstaged changes:
+    Modified:   renv.lock
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/01b_clinical_feature_engineering.Rmd</code>) and HTML
+(<code>docs/01b_clinical_feature_engineering.html</code>) files. If
+you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/01b_clinical_feature_engineering.html" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/fe3ebc7254feb0bd7e048b0abb39e0e03fd5aea2/docs/01b_clinical_feature_engineering.html" target="_blank">fe3ebc7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0f9503d10fc08fec2eea9d47b2405d248055fb7d/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">0f9503d</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-23
+</td>
+<td>
+removed cohort_group from lower case sweep, after new QC implementation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/01b_clinical_feature_engineering.html" target="_blank">28cc4b4</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/70e6f17dbe587aa65e54e0c727e2d3c3859d9caf/docs/01b_clinical_feature_engineering.html" target="_blank">70e6f17</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b63264862e277b5fe5ea4c646459e61298c1392a/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">b632648</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-09
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/01b_clinical_feature_engineering.html" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/695739c4cfea9b191225ae9a977876dbd0adec98/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">695739c</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-05
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/25890d75682e25ec54d6a51e1e8da9d8ce62b6ba/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">25890d7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-29
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/23b57701f2921281060563fa3016d5bbaaf88ffe/docs/01b_clinical_feature_engineering.html" target="_blank">23b5770</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/6ebf6f681b10676afc571c3a29b098cfbdc1f12b/docs/01b_clinical_feature_engineering.html" target="_blank">6ebf6f6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7a979fef2e2d22b6435fa33fffd5d3201b31ba55/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">7a979fe</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/659a2576444eaab1596b4e7bb9f82d3dbc468e5d/docs/01b_clinical_feature_engineering.html" target="_blank">659a257</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b770fabce59a238b7ff7d6374f012807c1d213b7/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">b770fab</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-22
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/486671b3a3fb2691bf86dfffd394f6a03f33e755/docs/01b_clinical_feature_engineering.html" target="_blank">486671b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c03272339705976c47601ea6962e90c7b9cd3e8c/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">c032723</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Added medications, improved log transformation, factors to lowercase,
+fixed clincal atlas
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/01b_clinical_feature_engineering.html" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1a67cb8e101e72b449057f6d77a288bb16deddf7/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">1a67cb8</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+<td>
+Added medications, improved log transformation, factors to lowercase,
+fixed clincal atlas
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/256492b0107688895f3ddcd08a98ea4a97fcc441/docs/01b_clinical_feature_engineering.html" target="_blank">256492b</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/9f4790041011c72c0231588b5c8f6290feeed065/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">9f47900</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-19
+</td>
+<td>
+cluster pre_revision
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8773e4f3eeb4cc5bfd858b188b5b60c2a7df55a3/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">8773e4f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-07
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/82fc9668e3b0b8185668e46840908de5a032ea5f/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">82fc966</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-04
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/85162770d089c5d5c5bef53ba3735c0d9c6d8a11/docs/01b_clinical_feature_engineering.html" target="_blank">8516277</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c744b5e0899e1e82ec7ef76d4bce6ec2004f6d53/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">c744b5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-02
+</td>
+<td>
+wflow_publish("analysis/01b_clinical_feature_engineering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/2bb3054d79ec891779fae3112632412b05fd000e/docs/01b_clinical_feature_engineering.html" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1115ac7726fa3c9b93e5bac4872668137a3362b0/analysis/01b_clinical_feature_engineering.Rmd" target="_blank">1115ac7</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+<td>
+after data dictionary and twin creation
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This script represents Phase 1b of the pipeline. It takes the
+technically synchronized data from Phase 1a and performs rigorous
+biological feature engineering, ordinal mapping, and statistical Quality
+Control. It addresses extreme skewness and class imbalance, generating a
+finalized curated_clinical_spine.rds and a clinical_data_dictionary.rds
+for all downstream omics scripts.</p>
+</div>
+<div id="setup-and-import" class="section level1">
+<h1>Setup and Import</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded required utility packages including readxl for the master mapping
+file.
+</li>
+<li>
+Established dynamic output directory paths to safely save curated data.
+</li>
+<li>
+Loaded the raw_filtered_spine generated by Script 01a.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Packages
+library(tidyverse)
+library(data.table)
+library(here)
+library(kableExtra)
+library(patchwork)
+library(readxl) # Added to read the Master Mapping File
+library(stringr)
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file &lt;- &quot;01b_clinical_feature_engineering&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Input paths
+file_paths &lt;- list(
+  master_mapping_xlsx = &quot;clinical_master_mapping.xlsx&quot; 
+)
+mapping_path &lt;- here::here(&quot;data&quot;, file_paths$master_mapping_xlsx)
+
+# Load Technically Synced Data from 01a
+raw_spine &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and_qc&quot;, &quot;raw_filtered_spine.rds&quot;))</code></pre>
+</div>
+<div id="configuration" class="section level1">
+<h1>Configuration</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Established path to the Master Mapping Excel file.
+</li>
+<li>
+Set strict mathematical thresholds for QA/QC, including a parameterized
+IQR multiplier for outlier detection.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Define standard ordinal hierarchies
+ordinal_map &lt;- list(
+  &quot;Binary (no=0, yes=1)&quot; = c(&quot;no&quot; = &quot;0&quot;, &quot;yes&quot; = &quot;1&quot;),
+  &quot;Temporal (never=0, prev=1, current=2)&quot; = c(&quot;never&quot; = &quot;0&quot;, &quot;previously&quot; = &quot;1&quot;, &quot;current&quot; = &quot;2&quot;),
+  &quot;Severity (none=0, rare=1, mod=2, ext=3)&quot; = c(&quot;none&quot; = &quot;0&quot;, &quot;rare&quot; = &quot;1&quot;, &quot;moderate&quot; = &quot;2&quot;, &quot;extensive&quot; = &quot;3&quot;),
+  &quot;Roman Numerals (I=1, II=2, III=3)&quot; = c(&quot;1&quot; = &quot;1&quot;, &quot;i&quot; = &quot;1&quot;, &quot;ii&quot; = &quot;2&quot;, &quot;iii&quot; = &quot;3&quot;)
+)
+
+# 2. QC Mathematical Thresholds 
+qc_config &lt;- list(
+  max_skewness = 2,        
+  min_minority_pct = 0.05, 
+  outlier_iqr_multiplier = 3.0, 
+  manual_log_rejects = c(),
+  log_offsets = list(
+    default = 1,
+    &quot;CRP&quot; = 2,
+    &quot;CK value in serum&quot; = 1.1,
+    &quot;Creatinine&quot; = 2,
+    &quot;NT-proBNP (pg/ml)&quot; = 1.1,
+    &quot;Uric Acid (mg/dl)&quot; = 2,
+    &quot;Min SpO2 (Excersise)&quot; = 0.1
+    # You can add specific offsets here if needed, e.g., CRP = 0.5
+  ),
+  olink_date = as.Date(&quot;2026-03-30&quot;)
+)
+  # Variables to bypass QC:
+qc_bypass_conf &lt;- c(&quot;cohort_group&quot;, &quot;Subject_ID&quot;, &quot;inCentraxx&quot;, &quot;Geburtsdatum&quot;, &quot;Geschlecht&quot;, &quot;Entnahmedatum&quot;, &quot;Entnahmedatum_Clean&quot;, &quot;Birth_Year&quot;)
+
+# Clinical variables to remove at the end
+vars_to_remove = c(&quot;Geburtsdatum&quot;, &quot;Birth_Year&quot;, &quot;Geschlecht&quot;)</code></pre>
+</div>
+<div id="schema-mapping-enforcement" class="section level1">
+<h1>Schema &amp; Mapping Enforcement</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Single Source of Truth: All variable renaming, exclusion dropping, and
+datatype coercion is now dictated entirely by an external Excel file
+(clinical_master_mapping.xlsx).
+</li>
+<li>
+Rename First Rule: Variables are renamed immediately upon import. All
+subsequent downstream engineering relies exclusively on the
+‘Clean_Name’.
+</li>
+<li>
+Global Lowercase: All textual and categorical variables are swept to
+lowercase to definitively eliminate capitalization artifacts (e.g.,
+‘Yes’ vs ‘yes’).
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded the Master Mapping Excel file.
+</li>
+<li>
+Executed a ‘Pre-Flight Check’ to identify raw variables missing from the
+dictionary.
+</li>
+<li>
+Renamed all variables to their Clean_Name.
+</li>
+<li>
+Dropped all variables tagged with ‘x’.
+</li>
+<li>
+Coerced remaining columns into pure Numerics (n), Categorical Factors
+(c), or Dates (d).
+</li>
+<li>
+Forced all character columns to lowercase.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Initialize the global audit log to track every change made to the dataset
+audit_log &lt;- c(&quot;Phase 1: Schema &amp; Mapping Audit Log\n&quot;)
+curated_spine &lt;- copy(raw_spine)
+
+# 1. Load Master Mapping File
+if (!file.exists(mapping_path)) stop(&quot;FATAL: clinical_master_mapping.xlsx not found.&quot;)
+mapping_df &lt;- read_excel(mapping_path)
+
+# 2. Pre-Flight Check (Detect Unmapped Variables)
+raw_cols &lt;- names(curated_spine)
+mapped_cols &lt;- mapping_df$Raw_Name
+unmapped &lt;- setdiff(raw_cols, mapped_cols)
+
+if(length(unmapped) &gt; 0) {
+  audit_log &lt;- c(audit_log, sprintf(&quot;- **WARNING:** %d columns in raw data are missing from the mapping file.&quot;, length(unmapped)), setdiff(colnames(raw_spine), mapping_df$Raw_Name))
+}
+
+# 3. Rename First, Forget the Past
+# Create a named vector: c(&quot;Old_Name&quot; = &quot;Clean_Name&quot;)
+rename_dict &lt;- setNames(mapping_df$Clean_Name, mapping_df$Raw_Name)
+setnames(curated_spine, old = names(rename_dict), new = as.character(rename_dict), skip_absent = TRUE)
+
+audit_log &lt;- c(audit_log, sprintf(&quot;- Applied Master Naming Dictionary. Renamed %d variables. All subsequent steps now use &#39;Clean_Name&#39;.&quot;, length(rename_dict)))
+
+# 4. The Purge (Drop &#39;x&#39; variables)
+drop_vars &lt;- mapping_df %&gt;% filter(Data_Type == &quot;x&quot;) %&gt;% pull(Clean_Name)
+actual_drops &lt;- intersect(drop_vars, names(curated_spine))
+
+if(length(actual_drops) &gt; 0) {
+  curated_spine[, (actual_drops) := NULL]
+  audit_log &lt;- c(audit_log, sprintf(&quot;- **Dropped %d variables** designated as &#39;x&#39; (Excluded) in master mapping.&quot;, length(actual_drops)))
+}
+
+# 5. Safe Type Coercion
+# Extract the target column names based on their flags
+num_vars  &lt;- mapping_df %&gt;% filter(Data_Type == &quot;n&quot;) %&gt;% pull(Clean_Name) %&gt;% intersect(names(curated_spine))
+cat_vars  &lt;- mapping_df %&gt;% filter(Data_Type == &quot;c&quot;) %&gt;% pull(Clean_Name) %&gt;% intersect(names(curated_spine))
+date_vars &lt;- mapping_df %&gt;% filter(Data_Type == &quot;d&quot;) %&gt;% pull(Clean_Name) %&gt;% intersect(names(curated_spine))
+
+# Define helper functions to prevent R from crashing on weird text
+safe_numeric &lt;- function(x) { suppressWarnings(as.numeric(gsub(&quot;,&quot;, &quot;.&quot;, trimws(as.character(x))))) }
+safe_excel_date &lt;- function(x) { suppressWarnings(as.Date(as.numeric(as.character(x)), origin = &quot;1899-12-30&quot;)) }
+
+# Apply the coercions efficiently using data.table syntax
+if(length(num_vars) &gt; 0)  curated_spine[, (num_vars)  := lapply(.SD, safe_numeric), .SDcols = num_vars]
+if(length(cat_vars) &gt; 0)  curated_spine[, (cat_vars)  := lapply(.SD, as.factor), .SDcols = cat_vars]
+if(length(date_vars) &gt; 0) curated_spine[, (date_vars) := lapply(.SD, safe_excel_date), .SDcols = date_vars]
+
+audit_log &lt;- c(audit_log, sprintf(&quot;- Enforced Datatypes: Coerced **%d Numeric**, **%d Categorical**, and **%d Date** variables.&quot;, length(num_vars), length(cat_vars), length(date_vars)))
+
+# 6. Global Lowercase Sweep
+char_cols &lt;- names(curated_spine)[sapply(curated_spine, function (x) is.character(x) || is.factor(x))]
+char_cols &lt;- setdiff(char_cols, c(&quot;Subject_ID&quot;, date_vars, &quot;cohort_group&quot;))
+
+if (length(char_cols) &gt; 0) {
+  curated_spine[, (char_cols) := lapply(.SD, tolower), .SDcols = char_cols]
+  audit_log &lt;- c(audit_log, sprintf(&quot;- Standardized %d categorical/character variables to lowercase.&quot;, length(char_cols)))
+}
+
+# Convert categoricals to factors after lowering
+if(length(cat_vars) &gt; 0) curated_spine[, (cat_vars) := lapply(.SD, as.factor), .SDcols = cat_vars]
+
+# Print the Phase 1 Log
+cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
+<p>Phase 1: Schema &amp; Mapping Audit Log</p>
+<ul>
+<li><p>Applied Master Naming Dictionary. Renamed 390 variables. All
+subsequent steps now use ‘Clean_Name’.</p></li>
+<li><p><strong>Dropped 23 variables</strong> designated as ‘x’
+(Excluded) in master mapping.</p></li>
+<li><p>Enforced Datatypes: Coerced <strong>45 Numeric</strong>,
+<strong>74 Categorical</strong>, and <strong>8 Date</strong>
+variables.</p></li>
+<li><p>Standardized 79 categorical/character variables to
+lowercase.</p></li>
+</ul>
+</div>
+<div id="feature-engineering" class="section level1">
+<h1>Feature Engineering</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Engineered cohort groups strictly from Subject_ID prefixes.
+</li>
+<li>
+Calculated standard baseline demographics (Age, Sex, Sample_Age) and
+temporal deltas between clinical assessments and blood draws.
+</li>
+<li>
+Permanently encoded Subsets (Diffuse/Limited/Sine) as One-Hot binary
+variables.
+</li>
+<li>
+Extracted individual medications from grouped text strings into discrete
+binary features.
+</li>
+</ul>
+</div>
+<pre class="r"><code>audit_log &lt;- c(&quot;Phase 2: Feature Engineering Audit Log\n&quot;)
+
+# 1. Cohort Group Assignment
+# moved to script 01a to be used in the upset plot
+
+# 2. Demographics (Age and Sample Age)
+# Note: Relies on the standard names in your mapping file
+if (all(c(&quot;Entnahmedatum&quot;, &quot;Geburtsdatum&quot;) %in% names(curated_spine))) {
+  curated_spine[, Entnahmedatum_Clean := Entnahmedatum]
+  curated_spine[, Birth_Year := as.numeric(trimws(Geburtsdatum))]
+  curated_spine[, Age := year(Entnahmedatum_Clean) - Birth_Year]
+  curated_spine[, Sample_Age := as.numeric(difftime(qc_config$olink_date, Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
+  audit_log &lt;- c(audit_log, &quot;- Calculated &#39;Age&#39; and &#39;Sample_Age&#39; using Entnahmedatum and Geburtsdatum.&quot;)
+}
+
+# 3. Sex Normalization
+if (&quot;Geschlecht&quot; %in% names(curated_spine)) {
+  curated_spine[, Sex := fcase(
+    Geschlecht == &quot;weiblich&quot; | tolower(Geschlecht) == &quot;female&quot;, SEX_FEMALE, 
+    Geschlecht == &quot;männlich&quot; | tolower(Geschlecht) == &quot;male&quot;, SEX_MALE,   
+    default = NA_character_
+  )]
+  curated_spine[, Sex := factor(Sex, levels = c(SEX_MALE, SEX_FEMALE))]
+  audit_log &lt;- c(audit_log, &quot;- Normalized &#39;Geschlecht&#39; into standardized factor &#39;Sex&#39;.&quot;)
+}
+
+# 4. Dynamic Date Deltas (Using the dictionary&#39;s &#39;d&#39; tags)
+# Find all columns tagged as dates, excluding the base reference dates
+assessment_dates &lt;- setdiff(date_vars, c(&quot;Visit Date&quot;, &quot;Entnahmedatum&quot;, &quot;Einlagerungsdatum&quot;, &quot;Geburtsdatum&quot;))
+
+if (length(assessment_dates) &gt; 0 &amp;&amp; &quot;Entnahmedatum_Clean&quot; %in% names(curated_spine)) {
+  for (d_col in assessment_dates) {
+    # Strip procedural text to create a clean prefix for the delta column
+    clean_prefix &lt;- gsub(&quot;.*Date of assessment for |.*Date of |.*date of &quot;, &quot;&quot;, d_col)
+    clean_name &lt;- paste0(&quot;Delta_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, clean_prefix), &quot;_Years&quot;)
+    curated_spine[, (clean_name) := as.numeric(difftime(get(d_col), Entnahmedatum_Clean, units = &quot;days&quot;)) / 365.25]
+  }
+  audit_log &lt;- c(audit_log, sprintf(&quot;- Calculated %d temporal Delta variables against blood draw date.&quot;, length(assessment_dates)))
+}
+
+
+
+# 5. Medication Re-engineering (Explosion &amp; One-Hot)
+med_cols &lt;- c(&quot;Immunosuppressants&quot;, &quot;Major vascular&quot;, &quot;Steroids&quot;, &quot;Other_medication&quot;)
+actual_med_cols &lt;- intersect(med_cols, names(curated_spine))
+
+if (length(actual_med_cols) &gt; 0) {
+  all_drugs &lt;- c()
+  
+  # Pass 1: Extract universe of unique drugs
+  for (m in actual_med_cols) {
+    vec &lt;- as.character(curated_spine[[m]])
+    vec &lt;- vec[!is.na(vec) &amp; vec != &quot;&quot; &amp; vec != &quot;no&quot; &amp; vec != &quot;none&quot;]
+    split_drugs &lt;- unlist(strsplit(vec, &quot;[,;]&quot;))
+    clean_drugs &lt;- trimws(split_drugs)
+    clean_drugs &lt;- clean_drugs[clean_drugs != &quot;yes&quot; &amp; clean_drugs != &quot;no&quot; &amp; clean_drugs != &quot;&quot; &amp; clean_drugs != &quot;none&quot;]
+    all_drugs &lt;- unique(c(all_drugs, clean_drugs))
+  }
+
+  # Pass 2: Create binary columns for specific drugs
+  for (drug in all_drugs) {
+    col_name &lt;- paste0(&quot;Med_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, drug))
+    has_drug &lt;- apply(curated_spine[, ..actual_med_cols], 1, function(row) {
+      any(grepl(paste0(&quot;\\b&quot;, regex(drug), &quot;\\b&quot;), row, ignore.case = TRUE))
+    })
+    curated_spine[, (col_name) := factor(ifelse(has_drug, &quot;yes&quot;, &quot;no&quot;), levels = c(&quot;no&quot;, &quot;yes&quot;))]
+  }
+
+  # Pass 3: Overwrite parent columns to clean yes/no
+  for (m in actual_med_cols) {
+    vec &lt;- as.character(curated_spine[[m]])
+    is_yes &lt;- !is.na(vec) &amp; vec != &quot;&quot; &amp; vec != &quot;no&quot; &amp; vec != &quot;none&quot;
+    curated_spine[, (m) := factor(ifelse(is_yes, &quot;yes&quot;, &quot;no&quot;), levels = c(&quot;no&quot;, &quot;yes&quot;))]
+  }
+  
+  audit_log &lt;- c(audit_log, sprintf(&quot;- Parsed medication strings: Extracted %d specific drugs into one-hot variables and binarized parent classes.&quot;, length(all_drugs)))
+}
+
+# 6. Biological Failsafes
+if(&quot;CRP&quot; %in% names(curated_spine)) curated_spine[CRP &lt;= 0, CRP := NA_real_]
+
+#7. Official Eustar active/inactive
+if (&quot;eustarAI&quot; %in% names(curated_spine)) {
+  curated_spine[, eustar_group := fcase(
+    eustarAI &gt;= 2.5, &quot;Active&quot;, 
+    eustarAI &lt; 2.5, &quot;Inactive&quot;,   
+    default = NA_character_
+  )]
+  curated_spine[, eustar_group := factor(eustar_group, levels = c(&quot;Active&quot;, &quot;Inactive&quot;))]
+  audit_log &lt;- c(audit_log, &quot;- Created &#39;eustar_group&#39; based on eustarAI 2.5 cutoff.&quot;)
+}
+
+# Remove redundant clinical variables
+curated_spine &lt;- curated_spine %&gt;%
+  select(-all_of(vars_to_remove))
+
+cat(paste(audit_log, collapse = &quot;\n\n&quot;))</code></pre>
+<p>Phase 2: Feature Engineering Audit Log</p>
+<ul>
+<li><p>Calculated ‘Age’ and ‘Sample_Age’ using Entnahmedatum and
+Geburtsdatum.</p></li>
+<li><p>Normalized ‘Geschlecht’ into standardized factor ‘Sex’.</p></li>
+<li><p>Calculated 5 temporal Delta variables against blood draw
+date.</p></li>
+<li><p>Parsed medication strings: Extracted 19 specific drugs into
+one-hot variables and binarized parent classes.</p></li>
+<li><p>Created ‘eustar_group’ based on eustarAI 2.5 cutoff.</p></li>
+</ul>
+</div>
+<div id="numeric-spine-generation" class="section level1">
+<h1>Numeric Spine Generation</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Generated a parallel curated_spine_numeric by mapping severity rankings
+(e.g., ‘none’, ‘rare’, ‘moderate’) into mathematical ordinal scales
+(0-3).
+</li>
+<li>
+Explicitly binarized the Sex and Cohort Group variables.
+</li>
+<li>
+Output a visual tracker to audit exactly which mappings were applied to
+which variables.
+</li>
+</ul>
+</div>
+<pre class="r"><code>curated_spine_numeric &lt;- copy(curated_spine)
+
+ordinal_log_df &lt;- data.frame(Variable = character(), Mappings_Applied = character(), stringsAsFactors = FALSE)
+scan_cols &lt;- names(curated_spine)[sapply(curated_spine, function(x) is.character(x) || is.factor(x))]
+
+for (col in scan_cols) {
+  vec &lt;- tolower(as.character(curated_spine[[col]]))
+  changed &lt;- FALSE
+  map_applied &lt;- c()
+  
+  # Check against all hierarchical dictionaries
+  for (map_name in names(ordinal_map)) {
+    mapping &lt;- ordinal_map[[map_name]]
+    if (any(vec %in% names(mapping), na.rm = TRUE)) {
+      vec &lt;- unname(mapping[vec]) %&gt;% coalesce(vec)
+      changed &lt;- TRUE
+      map_applied &lt;- c(map_applied, map_name)
+    }
+  }
+  
+  if (changed) {
+    curated_spine_numeric[[col]] &lt;- as.numeric(vec)
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = paste(map_applied, collapse = &quot; | &quot;)))
+    
+  } else if (col == &quot;Sex&quot;) {
+    curated_spine_numeric[[col]] &lt;- ifelse(curated_spine[[col]] == SEX_FEMALE, 1, 0)
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Binary (Male=0, Female=1)&quot;))
+  
+  } else if (col == &quot;eustar_group&quot;) {
+    curated_spine_numeric[[col]] &lt;- ifelse(curated_spine[[col]] == &quot;Active&quot;, 1, 0)
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Binary eustar_group (Active=1, Inactive=0)&quot;))
+      
+  } else if (col == &quot;cohort_group&quot;) {
+    curated_spine_numeric[[col]] &lt;- case_when(
+      curated_spine[[col]] == GRP_CONTROL ~ 0,
+      curated_spine[[col]] == GRP_NON_ACTIVE ~ 1,
+      curated_spine[[col]] == GRP_ACTIVE ~ 2,
+      TRUE ~ NA_real_
+    )
+    ordinal_log_df &lt;- rbind(ordinal_log_df, data.frame(Variable = col, Mappings_Applied = &quot;Explicit Ordinal (Control=0, Non-Active=1, Active=2)&quot;))
+  }
+}
+
+# Failsafe: Force any remaining text columns that only contain numbers into pure numerics
+curated_spine_numeric &lt;- curated_spine_numeric %&gt;%
+  mutate(across(everything(), ~ {
+    if((is.character(.x) || is.factor(.x)) &amp;&amp; all(grepl(&quot;^[0-9.]+$&quot;, na.omit(as.character(.x))))) {
+      as.numeric(as.character(.x))
+    } else {
+      .x
+    }
+  }))
+setDT(curated_spine_numeric)
+
+# Print Tracker Table
+if(nrow(ordinal_log_df) &gt; 0) {
+  ord_tbl &lt;- ordinal_log_df %&gt;%
+    arrange(Mappings_Applied, Variable) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, row.names = FALSE, caption = &quot;&lt;b style=&#39;font-size:1.2em; color:#333;&#39;&gt;Ordinalization Tracker (Applied to Math Spine Only)&lt;/b&gt;&quot;) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    kableExtra::collapse_rows(columns = 2, valign = &quot;top&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;400px&quot;)
+  if (interactive()) print(ord_tbl) else cat(as.character(ord_tbl))
+}</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<caption>
+<b style="font-size:1.2em; color:#333;">Ordinalization Tracker (Applied
+to Math Spine Only)</b>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Mappings_Applied
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Abnormal Capillaroscopy
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="76">
+Binary (no=0, yes=1) | Roman Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-RNA polymerase III
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-Scl70
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Anti-centromere (ACA)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Arrhythmias requiring therapy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Auricular arrhythmias
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Buffy-coat
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillaroscopy Pattern
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Conduction blocks
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic Dysf. (Echo)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital Tip Ulcers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dyspnea NYHA Stage
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EULAR/ACR 2013 Criteria
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Esophageal symptom at the time of visit
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fingertip pitting scars
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAVE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ILD diagnosed via HRCT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Immunosuppressants
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Inflamm_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Intestinal Symptoms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint Contractures
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joint involvement
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Major vascular
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Malabsorption syndrome
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Borg Dyspnea
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_abatacept
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_acei
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_ambrisentan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_arb
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_asa
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_bosentan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_ccb
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_iloprost
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_jaki
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_macitentan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_mmf
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_mtx
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_nintedanib
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_oac
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_ppi
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_rituximab
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_sildenafil
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_tadalafil
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Med_tocilizumab
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Muscle atrophy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Myalgia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New Cardiac Manifest.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New PAH
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non-Raynaud Symptom
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other_medication
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PAH/ILD
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Patients eligible
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pericardial effusion on echo
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proteinuria (&gt;300mg/d)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal Dysphagia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proximal muscle weakness
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Puffy fingers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud phenomenon
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raynaud’s present
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right axis deviation
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right bundle branch block
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Right ventricular hypertrophy
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SSc Antibodies
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sclerodactyly
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Ext. MCP)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Steroids
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stomach Symptoms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subcutaneous Calcinosis
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Subset_diffuse
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Telangiectasia (any)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tendon friction rubs
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ventricular arrhythmias
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fibrotic_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mRSS Worsening (1yr)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vascular_active
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Skin Thickening (Prox. MCP)
+</td>
+<td style="text-align:left;">
+Binary (no=0, yes=1) | Temporal (never=0, prev=1, current=2) | Roman
+Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:left;">
+Explicit Binary (Male=0, Female=1)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+eustar_group
+</td>
+<td style="text-align:left;">
+Explicit Binary eustar_group (Active=1, Inactive=0)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cohort_group
+</td>
+<td style="text-align:left;">
+Explicit Ordinal (Control=0, Non-Active=1, Active=2)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ACTIVE_AI
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Roman Numerals (I=1, II=2, III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Active_our
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SELECTED
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capillary loss
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Severity (none=0, rare=1, mod=2, ext=3) | Roman Numerals (I=1, II=2,
+III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Giant capillaries
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hemorrhages
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ramified bushy capillaries
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Digital ulcer
+</td>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+Temporal (never=0, prev=1, current=2) | Roman Numerals (I=1, II=2,
+III=3)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gangrene
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pitting scars on finger tips
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="automated-qc-data-dictionary" class="section level1">
+<h1>Automated QC &amp; Data Dictionary</h1>
+<div class="decision-box">
+<strong>Analysis Decisions:</strong>
+<ul>
+<li>
+Continuous variables were evaluated for both skewness and extreme
+outliers simultaneously.
+</li>
+<li>
+Skewed variables were transformed using the Natural Log: ln(x + c).
+Variables producing NaNs were flagged and skipped.
+</li>
+<li>
+Categorical variables with a minority class &lt;10% were flagged as
+IMBALANCED.
+</li>
+<li>
+Character variables were deliberately bypassed from statistical QC.
+</li>
+</ul>
+</div>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Iterated through every clinical feature.
+</li>
+<li>
+Implemented an accumulating flag system (e.g., ‘SKEWED &amp; EXTREME
+OUTLIERS’).
+</li>
+<li>
+Unified data taxonomy into a single, clean ‘Class’ column (Continuous,
+Ordinal, Categorical Binary/Nominal, Excluded).
+</li>
+<li>
+Merged statistical QC results with manual exclusion notes from the
+Master Mapping file to generate the final definitive Data Dictionary.
+</li>
+</ul>
+</div>
+<pre class="r"><code>calc_skew &lt;- function(x) {
+  x &lt;- x[is.finite(x)]
+  n &lt;- length(x)
+  if (n &lt; 3) return(NA_real_)
+  sum((x - mean(x))^3 / n) / (sd(x)^3)
+}
+
+calc_outliers &lt;- function(x) {
+  x &lt;- x[is.finite(x)]
+  if (length(x) &lt; 5) return(0)
+  q25 &lt;- quantile(x, 0.25)
+  q75 &lt;- quantile(x, 0.75)
+  iqr &lt;- q75 - q25
+  upper_bound &lt;- q75 + (qc_config$outlier_iqr_multiplier * iqr)
+  lower_bound &lt;- q25 - (qc_config$outlier_iqr_multiplier * iqr)
+  sum(x &gt; upper_bound | x &lt; lower_bound)
+}
+
+# Variables to bypass in the statistical scan
+qc_bypass &lt;- c(qc_bypass_conf, date_vars)
+candidate_vars &lt;- setdiff(names(curated_spine), qc_bypass)
+
+dict_list &lt;- list()
+qc_plots_skew &lt;- list()
+imb_log_list &lt;- list()
+
+for (v in candidate_vars) {
+  vec &lt;- curated_spine[[v]]
+  vec_patients &lt;- vec[!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+  miss_pct &lt;- sum(is.na(vec_patients)) / length(vec_patients)
+  
+  # A. CHARACTER / IDENTIFIER LOGIC
+  if (is.character(vec)) {
+    dict_list[[length(dict_list) + 1]] &lt;- data.frame(
+      Variable = v, Class = &quot;Identifier / Text&quot;, Missing_Pct = miss_pct, 
+      Distribution_Metric = &quot;N/A (Free Text)&quot;, 
+      QC_Flag = &quot;PASS&quot;, Action_Taken = &quot;Character bypassed QC&quot;
+    )
+    next
+    
+  # B. NUMERIC / CONTINUOUS LOGIC
+  } else if (is.numeric(vec)) {
+    if (length(unique(na.omit(vec))) &gt; 5) {
+      skew_val &lt;- calc_skew(vec_patients)
+      extreme_outliers &lt;- calc_outliers(vec_patients)
+      
+      flags &lt;- c()
+      if (extreme_outliers &gt; 0) flags &lt;- c(flags, &quot;EXTREME OUTLIERS&quot;)
+      if (!is.na(skew_val) &amp;&amp; abs(skew_val) &gt; qc_config$max_skewness) flags &lt;- c(flags, &quot;SKEWED&quot;)
+      
+      qc_flag &lt;- if (length(flags) &gt; 0) paste(flags, collapse = &quot; &amp; &quot;) else &quot;PASS&quot;
+      dist_metric &lt;- sprintf(&quot;Skew: %.2f | Outliers: %d&quot;, skew_val, extreme_outliers)
+      action &lt;- if (&quot;SKEWED&quot; %in% flags) &quot;Log10 Transformed&quot; else if (&quot;EXTREME OUTLIERS&quot; %in% flags) &quot;Flagged (Review for unit errors)&quot; else &quot;None&quot;
+      
+      if (&quot;SKEWED&quot; %in% flags) {
+        log_name &lt;- gsub(&quot;_+$&quot;, &quot;&quot;, paste0(&quot;log_&quot;, gsub(&quot;[^A-Za-z0-9]&quot;, &quot;_&quot;, v)))
+        
+        # Determine variable-specific offset
+        offset &lt;- if(!is.null(qc_config$log_offsets[[v]])) qc_config$log_offsets[[v]] else qc_config$log_offsets[[&quot;default&quot;]]
+        
+        # Attempt mathematical transformation
+        transformed_patients &lt;- suppressWarnings(log(vec_patients + offset))
+        
+        if (any(is.nan(transformed_patients))) {
+          cat(sprintf(&quot;\n\n&gt; **WARNING:** Variable &#39;%s&#39; produced NaNs during ln(x + %g) transformation. Transformation aborted.\n\n&quot;, v, offset))
+          action &lt;- &quot;Transformation Failed (NaN)&quot;
+          qc_flag &lt;- paste(qc_flag, &quot;FAILED LOG&quot;, sep=&quot; &amp; &quot;)
+        } else {
+          curated_spine[, (log_name) := log(get(v) + offset)]
+          curated_spine_numeric[, (log_name) := log(get(v) + offset)]
+          
+          log_patients &lt;- curated_spine[[log_name]][!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+          log_skew &lt;- calc_skew(log_patients)
+          log_outliers &lt;- calc_outliers(log_patients)
+          
+          log_flags &lt;- c()
+          if (log_name %in% qc_config$manual_log_rejects) {
+            log_flags &lt;- c(log_flags, &quot;LOG REJECTED&quot;)
+          } else {
+            if (log_outliers &gt; 0) log_flags &lt;- c(log_flags, &quot;EXTREME OUTLIERS&quot;)
+            if (!is.na(log_skew) &amp;&amp; abs(log_skew) &gt; qc_config$max_skewness) log_flags &lt;- c(log_flags, &quot;SKEWED&quot;)
+          }
+          
+          log_qc_flag &lt;- if (length(log_flags) &gt; 0) paste(log_flags, collapse = &quot; &amp; &quot;) else &quot;PASS&quot;
+          log_action  &lt;- if (&quot;LOG REJECTED&quot; %in% log_flags) &quot;Flagged by User&quot; else &quot;Engineered to fix skew&quot;
+          log_dist_metric &lt;- sprintf(&quot;Skew: %.2f | Outliers: %d&quot;, log_skew, log_outliers)
+
+          qc_plots_skew[[v]] &lt;- local({
+            plot_df &lt;- data.frame(Raw = vec_patients, Transformed = log_patients)
+            p_raw &lt;- ggplot(plot_df, aes(x = Raw)) + geom_histogram(fill = &quot;#c0392b&quot;, color = &quot;white&quot;, bins = 30) + theme_project_base(10) + labs(title = v, x = &quot;Raw Data&quot;)
+            p_log &lt;- ggplot(plot_df, aes(x = Transformed)) + geom_histogram(fill = &quot;#2980b9&quot;, color = &quot;white&quot;, bins = 30) + theme_project_base(10) + labs(title = log_name, x = sprintf(&quot;Ln(x + %g) Data&quot;, offset))
+            p_raw | p_log
+          })
+
+          dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = log_name, Class = &quot;Continuous&quot;, Missing_Pct = miss_pct, Distribution_Metric = log_dist_metric, QC_Flag = log_qc_flag, Action_Taken = log_action)
+        }
+      }
+      
+      dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = &quot;Continuous&quot;, Missing_Pct = miss_pct, Distribution_Metric = dist_metric, QC_Flag = qc_flag, Action_Taken = action)
+    } else {
+      # Numbers with &lt;5 levels are Ordinal/Binary.
+      dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = &quot;Ordinal / Binary&quot;, Missing_Pct = miss_pct, Distribution_Metric = &quot;N/A (&lt;5 Levels)&quot;, QC_Flag = &quot;PASS&quot;, Action_Taken = &quot;None&quot;)
+    }
+    
+  # C. FACTOR / CATEGORICAL LOGIC
+  } else if (is.factor(vec) || is.logical(vec)) {
+    props &lt;- prop.table(table(vec_patients))
+    counts &lt;- table(vec_patients)
+    min_prop &lt;- if(length(props) &gt; 0) min(props) else 0
+    qc_flag &lt;- &quot;PASS&quot;
+    action &lt;- &quot;None&quot;
+    
+    if (length(props) &lt; 2) {
+      qc_flag &lt;- &quot;ZERO VARIANCE&quot;
+      action &lt;- &quot;Flagged&quot;
+    } else if (min_prop &lt; qc_config$min_minority_pct) {
+      qc_flag &lt;- &quot;IMBALANCED&quot;
+      action &lt;- &quot;Flagged&quot;
+      imb_log_list[[v]] &lt;- data.frame(Variable = v, Level = as.character(names(props)), Count = as.numeric(counts), Percentage = as.numeric(props))
+    }
+    
+    # NEW: Unified Class Assignment
+    unified_class &lt;- if(length(props) == 2) &quot;Categorical (Binary)&quot; else &quot;Categorical (Nominal)&quot;
+    
+    dict_list[[length(dict_list) + 1]] &lt;- data.frame(Variable = v, Class = unified_class, Missing_Pct = miss_pct, Distribution_Metric = sprintf(&quot;Minority: %.1f%%&quot;, min_prop * 100), QC_Flag = qc_flag, Action_Taken = action)
+  }
+}</code></pre>
+<pre><code>
+
+&gt; **WARNING:** Variable &#39;Delta_PFT_Years&#39; produced NaNs during ln(x + 1) transformation. Transformation aborted.
+
+
+
+&gt; **WARNING:** Variable &#39;Delta_ECHO_Years&#39; produced NaNs during ln(x + 1) transformation. Transformation aborted.</code></pre>
+<pre class="r"><code># Construct Dictionary
+base_dict &lt;- bind_rows(dict_list) %&gt;% mutate(Exclusion_Reason = &quot;None&quot;)
+
+# Pull dropped variables directly from the Master Mapping File!
+drops_dict &lt;- mapping_df %&gt;%
+  filter(Data_Type == &quot;x&quot;) %&gt;%
+  transmute(
+    Variable = Clean_Name,
+    Class = &quot;Excluded&quot;,
+    Missing_Pct = 1, 
+    Distribution_Metric = &quot;N/A&quot;,
+    QC_Flag = &quot;EXCLUDED&quot;,
+    Action_Taken = &quot;Dropped via Mapping&quot;,
+    Exclusion_Reason = Exclusion_Reason 
+  )
+
+# Calculate missing % and order data dictionary
+data_dictionary &lt;- bind_rows(base_dict, drops_dict) %&gt;%
+  mutate(
+    Missing_Pct = sprintf(&quot;%.1f%%&quot;, as.numeric(Missing_Pct) * 100), 
+    Sort_Order = case_when(
+      QC_Flag == &quot;EXCLUDED&quot; ~ 1,
+      grepl(&quot;ZERO VARIANCE&quot;, QC_Flag) ~ 2, 
+      grepl(&quot;IMBALANCED&quot;, QC_Flag) ~ 3, 
+      grepl(&quot;OUTLIERS&quot;, QC_Flag) ~ 4, 
+      grepl(&quot;LOG REJECTED&quot;, QC_Flag) ~ 5, 
+      grepl(&quot;SKEWED&quot;, QC_Flag) ~ 6, 
+      QC_Flag == &quot;PASS&quot; ~ 7, 
+      TRUE ~ 8
+    )
+  ) %&gt;% 
+  arrange(Sort_Order, Variable) %&gt;% 
+  select(-Sort_Order)
+
+# Final Column Ordering
+core_cols &lt;- intersect(c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;, &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;), names(curated_spine))
+setcolorder(curated_spine, core_cols)
+setcolorder(curated_spine_numeric, core_cols)</code></pre>
+<div id="qc-diagnostics" class="section level2 tabset">
+<h2 class="tabset">QC Diagnostics</h2>
+<div id="skewness-corrections" class="section level3">
+<h3>Skewness Corrections</h3>
+<p>The following continuous variables violated the Skewness threshold
+(|Skew| &gt; 2.5). The algorithm automatically engineered a normalized
+log_ variant.</p>
+<pre class="r"><code>if (length(qc_plots_skew) &gt; 0) {
+  for (v in names(qc_plots_skew)) {
+    cat(sprintf(&quot;#### %s\n\n&quot;, v))
+    print(qc_plots_skew[[v]])
+    cat(&quot;\n\n&quot;)
+  }
+} else {
+  cat(&quot;&gt; No severe skewness detected.\n\n&quot;)
+}</code></pre>
+<div id="modified-rodnan-skin-score" class="section level4">
+<h4>Modified rodnan skin score</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-1">
+Past versions of QC_diagnostics-1.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-1.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="crp" class="section level4">
+<h4>CRP</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-2">
+Past versions of QC_diagnostics-2.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-2.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="ck-value-in-serum-ul" class="section level4">
+<h4>CK value in serum (U/L)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-3">
+Past versions of QC_diagnostics-3.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-3.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="creatinine" class="section level4">
+<h4>Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-4">
+Past versions of QC_diagnostics-4.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-4.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="nt-probnp-pgml" class="section level4">
+<h4>NT-proBNP (pg/ml)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-5">
+Past versions of QC_diagnostics-5.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-5.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="uric-acid-mgdl" class="section level4">
+<h4>Uric Acid (mg/dl)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-6">
+Past versions of QC_diagnostics-6.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-6.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="right-atrium-area-cm2" class="section level4">
+<h4>Right atrium area (cm2)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-7">
+Past versions of QC_diagnostics-7.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-7.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tapse-cm" class="section level4">
+<h4>TAPSE (cm)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-8">
+Past versions of QC_diagnostics-8.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-8.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="min-spo2-exercise" class="section level4">
+<h4>Min SpO2 (Exercise)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-9">
+Past versions of QC_diagnostics-9.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-9.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_ecg_years" class="section level4">
+<h4>Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_diagnostics-10">
+Past versions of QC_diagnostics-10.png
+</button>
+</p>
+<div id="fig-QC_diagnostics-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/QC_diagnostics-10.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="extreme-outliers" class="section level3">
+<h3>Extreme Outliers</h3>
+<p>The following continuous variables contain extreme outliers (values
+exceeding the parameterized IQR multiplier). These have been flagged for
+manual review to ensure they are not data entry or unit errors.</p>
+<pre class="r"><code># Query the dictionary for variables containing the outlier flag (handles compound flags)
+outlier_vars &lt;- data_dictionary %&gt;% 
+  filter(grepl(&quot;EXTREME OUTLIERS&quot;, QC_Flag)) %&gt;% 
+  pull(Variable)
+
+if (length(outlier_vars) &gt; 0) {
+  for (v in outlier_vars) {
+    cat(sprintf(&quot;#### %s\n\n&quot;, v))
+    
+    vec_patients &lt;- curated_spine[[v]][!is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+    
+    if (sum(!is.na(vec_patients)) &lt; 5) {
+      cat(&quot;&gt; Insufficient data to plot bounds.\n\n&quot;)
+      next
+    }
+    
+    plot_df &lt;- data.frame(Value = vec_patients)
+    
+    q25 &lt;- quantile(vec_patients, 0.25, na.rm = TRUE)
+    q75 &lt;- quantile(vec_patients, 0.75, na.rm = TRUE)
+    iqr &lt;- q75 - q25
+    upper_bound &lt;- q75 + (qc_config$outlier_iqr_multiplier * iqr)
+    lower_bound &lt;- q25 - (qc_config$outlier_iqr_multiplier * iqr)
+    
+    p &lt;- ggplot(plot_df, aes(x = Value)) + 
+      geom_histogram(fill = &quot;#e67e22&quot;, color = &quot;white&quot;, bins = 40) + 
+      geom_vline(xintercept = c(lower_bound, upper_bound), color = &quot;#c0392b&quot;, linetype = &quot;dashed&quot;, linewidth = 1) +
+      theme_project_base(10) + 
+      labs(title = v, 
+           subtitle = sprintf(&quot;Red dashed lines indicate %gx IQR thresholds [%.1f, %.1f]&quot;, qc_config$outlier_iqr_multiplier, lower_bound, upper_bound), 
+           x = &quot;Data Value&quot;, y = &quot;Count&quot;)
+    
+    print(p)
+    cat(&quot;\n\n&quot;)
+  }
+} else {
+  cat(&quot;&gt; No extreme outliers detected.\n\n&quot;)
+}</code></pre>
+<div id="body-weight-kg" class="section level4">
+<h4>Body weight (kg)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-1">
+Past versions of qc_outliers-1.png
+</button>
+</p>
+<div id="fig-qc_outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-1.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="ck-value-in-serum-ul-1" class="section level4">
+<h4>CK value in serum (U/L)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-2">
+Past versions of qc_outliers-2.png
+</button>
+</p>
+<div id="fig-qc_outliers-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-2.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="crp-1" class="section level4">
+<h4>CRP</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-3">
+Past versions of qc_outliers-3.png
+</button>
+</p>
+<div id="fig-qc_outliers-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-3.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="creatinine-1" class="section level4">
+<h4>Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-4">
+Past versions of qc_outliers-4.png
+</button>
+</p>
+<div id="fig-qc_outliers-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-4.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_ecg_years-1" class="section level4">
+<h4>Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-5">
+Past versions of qc_outliers-5.png
+</button>
+</p>
+<div id="fig-qc_outliers-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-5.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_echo_years" class="section level4">
+<h4>Delta_ECHO_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-6">
+Past versions of qc_outliers-6.png
+</button>
+</p>
+<div id="fig-qc_outliers-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-6.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_hrct_years" class="section level4">
+<h4>Delta_HRCT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-7">
+Past versions of qc_outliers-7.png
+</button>
+</p>
+<div id="fig-qc_outliers-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-7.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_pft_years" class="section level4">
+<h4>Delta_PFT_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-8">
+Past versions of qc_outliers-8.png
+</button>
+</p>
+<div id="fig-qc_outliers-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-8.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="delta_walk_test_years" class="section level4">
+<h4>Delta_Walk_test_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-9">
+Past versions of qc_outliers-9.png
+</button>
+</p>
+<div id="fig-qc_outliers-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-9.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="min-spo2-exercise-1" class="section level4">
+<h4>Min SpO2 (Exercise)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-10">
+Past versions of qc_outliers-10.png
+</button>
+</p>
+<div id="fig-qc_outliers-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-10.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="modified-rodnan-skin-score-1" class="section level4">
+<h4>Modified rodnan skin score</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-11">
+Past versions of qc_outliers-11.png
+</button>
+</p>
+<div id="fig-qc_outliers-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-11.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="nt-probnp-pgml-1" class="section level4">
+<h4>NT-proBNP (pg/ml)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-12">
+Past versions of qc_outliers-12.png
+</button>
+</p>
+<div id="fig-qc_outliers-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-12.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="o2-saturation-at-rest" class="section level4">
+<h4>O2-saturation at rest (%)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-13">
+Past versions of qc_outliers-13.png
+</button>
+</p>
+<div id="fig-qc_outliers-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-13.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="rvlv-ratio" class="section level4">
+<h4>RV/LV ratio</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-14">
+Past versions of qc_outliers-14.png
+</button>
+</p>
+<div id="fig-qc_outliers-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-14.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="right-atrium-area-cm2-1" class="section level4">
+<h4>Right atrium area (cm2)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-15">
+Past versions of qc_outliers-15.png
+</button>
+</p>
+<div id="fig-qc_outliers-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-15.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="right-ventricular-area-cm2" class="section level4">
+<h4>Right ventricular area (cm2)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-16">
+Past versions of qc_outliers-16.png
+</button>
+</p>
+<div id="fig-qc_outliers-16" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-16.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="tapse-cm-1" class="section level4">
+<h4>TAPSE (cm)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-17">
+Past versions of qc_outliers-17.png
+</button>
+</p>
+<div id="fig-qc_outliers-17" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-17.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="uric-acid-mgdl-1" class="section level4">
+<h4>Uric Acid (mg/dl)</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-18">
+Past versions of qc_outliers-18.png
+</button>
+</p>
+<div id="fig-qc_outliers-18" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-18.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_crp" class="section level4">
+<h4>log_CRP</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-19">
+Past versions of qc_outliers-19.png
+</button>
+</p>
+<div id="fig-qc_outliers-19" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-19.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_creatinine" class="section level4">
+<h4>log_Creatinine</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-20">
+Past versions of qc_outliers-20.png
+</button>
+</p>
+<div id="fig-qc_outliers-20" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-20.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_delta_ecg_years" class="section level4">
+<h4>log_Delta_ECG_Years</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-21">
+Past versions of qc_outliers-21.png
+</button>
+</p>
+<div id="fig-qc_outliers-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-21.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_min_spo2__exercise" class="section level4">
+<h4>log_Min_SpO2__Exercise</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-22">
+Past versions of qc_outliers-22.png
+</button>
+</p>
+<div id="fig-qc_outliers-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-22.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_right_atrium_area__cm2" class="section level4">
+<h4>log_Right_atrium_area__cm2</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-23">
+Past versions of qc_outliers-23.png
+</button>
+</p>
+<div id="fig-qc_outliers-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-23.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_tapse__cm" class="section level4">
+<h4>log_TAPSE__cm</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-24">
+Past versions of qc_outliers-24.png
+</button>
+</p>
+<div id="fig-qc_outliers-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c06aefb5ffd507eed80385d8fcdf83c844f72ebe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" target="_blank">c06aefb</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-21
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2bb3054d79ec891779fae3112632412b05fd000e/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-24.png" target="_blank">2bb3054</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="log_uric_acid__mg_dl" class="section level4">
+<h4>log_Uric_Acid__mg_dl</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-25.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-25">
+Past versions of qc_outliers-25.png
+</button>
+</p>
+<div id="fig-qc_outliers-25" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-25.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-25.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="mrss_a" class="section level4">
+<h4>mRSS_a</h4>
+<p><img src="figure/01b_clinical_feature_engineering.Rmd/qc_outliers-26.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc_outliers-26">
+Past versions of qc_outliers-26.png
+</button>
+</p>
+<div id="fig-qc_outliers-26" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/01f3e9aba5410421cfc66f012ef0f468925d6cbe/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-26.png" target="_blank">01f3e9a</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f364292479e2022a7cddd80d4de1a8bbacdcf647/docs/figure/01b_clinical_feature_engineering.Rmd/qc_outliers-26.png" target="_blank">f364292</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-06-08
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="class-imbalances" class="section level3">
+<h3>Class Imbalances</h3>
+<p>The following categorical variables have a minority class of &lt;
+10%. They are retained in the dataset for Table 1 summaries, but flagged
+in the Dictionary to protect downstream omics models from zero-variance
+crashes.</p>
+<pre class="r"><code>if (length(imb_log_list) &gt; 0) {
+  
+  # Bind the list and calculate which specific rows triggered the flag
+  imb_df &lt;- bind_rows(imb_log_list) %&gt;%
+    mutate(
+      Is_Offender = Percentage &lt; qc_config$min_minority_pct,
+      Percentage = sprintf(&quot;%.1f%%&quot;, Percentage * 100)
+    ) %&gt;%
+    arrange(Variable, desc(Count)) # Sort levels by largest to smallest within each variable
+  
+  imb_tbl &lt;- imb_df %&gt;%
+    select(Variable, Level, Count, Percentage) %&gt;%
+    kableExtra::kbl(format = &quot;html&quot;, escape = FALSE, row.names = FALSE) %&gt;%
+    kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE, position = &quot;left&quot;) %&gt;%
+    # Group the variable names so the table is extremely easy to read
+    kableExtra::collapse_rows(columns = 1, valign = &quot;top&quot;) %&gt;%
+    # Highlight the offending minority classes in bold red!
+    kableExtra::row_spec(which(imb_df$Is_Offender), bold = TRUE, color = &quot;#c0392b&quot;) %&gt;%
+    kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;500px&quot;)
+  
+  if (interactive()) {
+    print(imb_tbl)
+  } else {
+    cat(as.character(imb_tbl))
+    cat(&quot;\n\n&quot;)
+  }
+  
+} else {
+  cat(&quot;&gt; No severe class imbalances detected.\n\n&quot;)
+}</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Level
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Count
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Percentage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+ACTIVE_AI
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:left;">
+66.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+33.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+-1
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+0
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Arrhythmias requiring therapy
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+95.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Auricular arrhythmias
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+87
+</td>
+<td style="text-align:left;">
+95.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Conduction blocks
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="5">
+Dyspnea NYHA Stage
+</td>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+42.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ii
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+21.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+18.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+14.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+iii
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Gangrene
+</td>
+<td style="text-align:left;">
+never
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+96.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+previously
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Giant capillaries
+</td>
+<td style="text-align:left;">
+rare
+</td>
+<td style="text-align:right;">
+44
+</td>
+<td style="text-align:left;">
+49.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+none
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+41.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+moderate
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+6.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+extensive
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="18">
+Max Borg Dyspnea
+</td>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+29.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+9.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+9.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.5
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+7.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+7.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+7.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+5.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.5
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+8
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+5.5
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+7
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.5
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+10
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.5
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+6
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+6.5
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+no
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Med_abatacept
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:left;">
+98.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Med_ambrisentan
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:left;">
+98.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Med_iloprost
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+96.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Med_jaki
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:left;">
+98.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Med_macitentan
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:left;">
+96.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+3.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Muscle atrophy
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+85
+</td>
+<td style="text-align:left;">
+95.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Proximal muscle weakness
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+87
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Raynaud phenomenon
+</td>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+91
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+no
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Right axis deviation
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+87
+</td>
+<td style="text-align:left;">
+95.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Right ventricular hypertrophy
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+SiteNumber
+</td>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+93
+</td>
+<td style="text-align:left;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+manual
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="4">
+Skin Thickening (Prox. MCP)
+</td>
+<td style="text-align:left;">
+never
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+66.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+current
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+22.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+previously
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+9.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Tendon friction rubs
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+91
+</td>
+<td style="text-align:left;">
+95.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+4.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="2">
+Ventricular arrhythmias
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:left;">
+97.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+yes
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+2.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+VisitNumber
+</td>
+<td style="text-align:left;">
+follow up visit (1)
+</td>
+<td style="text-align:right;">
+69
+</td>
+<td style="text-align:left;">
+74.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+follow up visit (2)
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+24.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+visit 0
+</td>
+<td style="text-align:right;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 1) !important;">
+1.1%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="clinical-domain-atlas" class="section level1">
+<h1>Clinical Domain Atlas</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Iterates through the global clinical domain lists to construct a
+comprehensive visual atlas.
+</li>
+<li>
+Dynamically routes continuous variables to histograms and categorical
+variables to smart-sorted bar charts.
+</li>
+<li>
+Bypasses the gitignored output folder by saving images directly to
+docs/assets/ and generating interactive HTML dropdowns for web
+publishing.
+</li>
+</ul>
+</div>
+<p>
+Select a clinical domain to visualize its feature distributions:
+</p>
+<p><select id="atlasSelector" onchange="switchAtlasPlot()" class="form-control" style="width: auto; margin-bottom: 20px;">
+<option value="">– Select Domain –</option>
+<option value="Demographics_and_Scores">Demographics and Scores</option>
+<option value="Cutaneous_and_Vascular">Cutaneous and Vascular</option>
+<option value="Musculoskeletal">Musculoskeletal</option>
+<option value="Pulmonary">Pulmonary</option>
+<option value="Cardiac">Cardiac</option>
+<option value="Gastrointestinal">Gastrointestinal</option>
+<option value="Labs_and_Biomarkers">Labs and Biomarkers</option>
+<option value="Medications">Medications</option> </select></p>
+<div id="atlasPlotContainer">
+<p><img id="atlasImage" src="" style="width: 100%; display: none; border: 1px solid #ddd; border-radius: 8px;"></p>
+</div>
+<script>
+function switchAtlasPlot() {
+  var val = document.getElementById("atlasSelector").value;
+  var img = document.getElementById("atlasImage");
+  if (val) {
+    img.src = "assets/01b_clinical_feature_engineering/" + val + "_atlas.png";
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+  }
+}
+</script>
+<pre class="r"><code># Point directly to the web-accessible docs folder
+atlas_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file)
+if(!dir.exists(atlas_dir)) dir.create(atlas_dir, recursive = TRUE)
+
+for (dom in names(clinical_domains)) {
+  
+  vars &lt;- intersect(clinical_domains[[dom]], names(curated_spine))
+  vars &lt;- setdiff(vars, c(&quot;Subject_ID&quot;, &quot;cohort_group&quot;))
+  if(length(vars) == 0) next
+  
+  plot_list &lt;- list()
+  
+  for (v in vars) {
+    vec &lt;- curated_spine[[v]]
+    vec_clean &lt;- vec[!is.na(vec) &amp; !is.na(curated_spine$cohort_group) &amp; curated_spine$cohort_group != GRP_CONTROL]
+    
+    qc_row &lt;- data_dictionary %&gt;% filter(Variable == v)
+    qc_flag &lt;- if(nrow(qc_row) &gt; 0) qc_row$QC_Flag[1] else &quot;UNKNOWN&quot;
+    miss_pct &lt;- if(nrow(qc_row) &gt; 0) qc_row$Missing_Pct[1] else &quot;UNKNOWN&quot;
+    
+    flag_color &lt;- case_when(
+      qc_flag == &quot;PASS&quot; ~ &quot;#27ae60&quot;,
+      grepl(&quot;OUTLIERS|IMBALANCED|ZERO|REJECTED&quot;, qc_flag) ~ &quot;#c0392b&quot;,
+      grepl(&quot;SKEWED&quot;, qc_flag) ~ &quot;#2980b9&quot;,
+      TRUE ~ &quot;black&quot;
+    )
+    
+    if (is.numeric(vec_clean)) {
+      med &lt;- median(vec_clean, na.rm=TRUE)
+      q25 &lt;- quantile(vec_clean, 0.25, na.rm=TRUE)
+      q75 &lt;- quantile(vec_clean, 0.75, na.rm=TRUE)
+      sub_txt &lt;- sprintf(&quot;QC: %s\nDist: Med %.1f [%.1f - %.1f]\nMissing: %s&quot;, qc_flag, med, q25, q75, miss_pct)
+      
+      p &lt;- ggplot(data.frame(x=vec_clean), aes(x)) +
+        geom_histogram(fill=&quot;grey70&quot;, color=&quot;white&quot;, bins=30) +
+        geom_vline(xintercept=med, color=&quot;#2c3e50&quot;, linetype=&quot;dashed&quot;, linewidth=1) +
+        theme_project_base(10) +
+        labs(title = v, subtitle = sub_txt, x=NULL, y=NULL) +
+        theme(plot.subtitle = element_text(color = flag_color, face=&quot;bold&quot;, size=rel(0.85)),
+              plot.title = element_text(size=rel(0.9), face=&quot;bold&quot;))
+              
+    } else {
+      val_lower &lt;- as.character(vec_clean) # Already lowercased via the sweep!
+      
+      # SMART SORTING LOGIC: Ordinal vs Frequency
+      if (all(val_lower %in% c(&quot;none&quot;, &quot;rare&quot;, &quot;moderate&quot;, &quot;extensive&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;none&quot;, &quot;rare&quot;, &quot;moderate&quot;, &quot;extensive&quot;))
+      } else if (all(val_lower %in% c(&quot;never&quot;, &quot;previously&quot;, &quot;current&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;never&quot;, &quot;previously&quot;, &quot;current&quot;))
+      } else if (all(val_lower %in% c(&quot;no&quot;, &quot;yes&quot;))) {
+        plot_vec &lt;- factor(val_lower, levels = c(&quot;no&quot;, &quot;yes&quot;))
+      } else {
+        plot_vec &lt;- forcats::fct_infreq(as.character(vec_clean))
+      }
+      
+      props &lt;- prop.table(table(plot_vec)) * 100
+      lvl_strs &lt;- paste0(names(props), &quot;: &quot;, sprintf(&quot;%.0f%%&quot;, props))
+      if(length(lvl_strs) &gt; 3) lvl_strs &lt;- c(lvl_strs[1:3], &quot;...&quot;)
+      
+      sub_txt &lt;- sprintf(&quot;QC: %s\nDist: %s\nMissing: %s&quot;, qc_flag, paste(lvl_strs, collapse=&quot;, &quot;), miss_pct)
+      
+      p &lt;- ggplot(data.frame(x=plot_vec), aes(x)) +
+        geom_bar(fill=&quot;grey70&quot;, color=&quot;black&quot;, alpha=0.8) +
+        theme_project_base(10) +
+        labs(title = v, subtitle = sub_txt, x=NULL, y=NULL) +
+        theme(plot.subtitle = element_text(color = flag_color, face=&quot;bold&quot;, size=rel(0.85)),
+              plot.title = element_text(size=rel(0.9), face=&quot;bold&quot;),
+              axis.text.x = element_text(angle=45, hjust=1))
+    }
+    
+    plot_list[[v]] &lt;- p
+  }
+  
+  grid_p &lt;- wrap_plots(plot_list, ncol = 3) +
+    plot_annotation(title = sprintf(&quot;Clinical Domain: %s&quot;, gsub(&quot;_&quot;, &quot; &quot;, dom)),
+                    theme = theme(plot.title = element_text(size=18, face=&quot;bold&quot;)))
+  
+  dyn_h &lt;- max(5, ceiling(length(plot_list) / 3) * 3 + 1)
+  file_name &lt;- paste0(dom, &quot;_atlas.png&quot;)
+  file_path &lt;- file.path(atlas_dir, file_name)
+  ggsave(file_path, grid_p, width=14, height=dyn_h, dpi=150, bg=&quot;white&quot;)
+}</code></pre>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Exported the human-readable curated_clinical_spine.rds for visualization
+(Phase 2).
+</li>
+<li>
+Exported the binarized curated_clinical_spine_numeric.rds for machine
+learning and linear algebra (Phase 3).
+</li>
+<li>
+Exported the definitive clinical_data_dictionary.rds detailing the QC
+status.
+</li>
+</ul>
+</div>
+<pre class="r"><code>saveRDS(curated_spine, file.path(output_dir_data, &quot;curated_clinical_spine.rds&quot;))
+saveRDS(curated_spine_numeric, file.path(output_dir_data, &quot;curated_clinical_spine_numeric.rds&quot;))
+saveRDS(data_dictionary, file.path(output_dir_data, &quot;clinical_data_dictionary.rds&quot;))
+
+writexl::write_xlsx(curated_spine, file.path(output_dir_data, &quot;curated_clinical_spine.xlsx&quot;))
+
+cat(&quot;Script 01b Complete!\n&quot;)</code></pre>
+<pre><code>Script 01b Complete!</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] readxl_1.5.0      patchwork_1.3.2   kableExtra_1.4.1  here_1.0.2       
+ [5] data.table_1.18.4 lubridate_1.9.5   forcats_1.0.1     stringr_1.6.0    
+ [9] dplyr_1.2.1       purrr_1.2.2       readr_2.2.0       tidyr_1.3.2      
+[13] tibble_3.3.1      tidyverse_2.0.0   ggplot2_4.0.3     workflowr_1.7.2  
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        xfun_0.60           bslib_0.11.0       
+ [4] processx_3.9.0      callr_3.8.0         tzdb_0.5.0         
+ [7] vctrs_0.7.3         tools_4.5.2         ps_1.9.3           
+[10] generics_0.1.4      pkgconfig_2.0.3     RColorBrewer_1.1-3 
+[13] S7_0.2.2            lifecycle_1.0.5     compiler_4.5.2     
+[16] farver_2.1.2        git2r_0.36.2        textshaping_1.0.5  
+[19] getPass_0.2-4       httpuv_1.6.17       htmltools_0.5.9    
+[22] sass_0.4.10         yaml_2.3.12         later_1.4.8        
+[25] pillar_1.11.1       jquerylib_0.1.4     whisker_0.4.1      
+[28] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+[31] stringi_1.8.7       labeling_0.4.3      rprojroot_2.1.1    
+[34] fastmap_1.2.0       grid_4.5.2          cli_3.6.6          
+[37] magrittr_2.0.5      withr_3.0.3         scales_1.4.0       
+[40] promises_1.5.0      writexl_1.5.4       timechange_0.4.0   
+[43] rmarkdown_2.31      httr_1.4.8          otel_0.2.0         
+[46] cellranger_1.1.0    ragg_1.5.2          hms_1.1.4          
+[49] evaluate_1.0.5      knitr_1.51          viridisLite_0.4.3  
+[52] rlang_1.3.0         Rcpp_1.1.2          glue_1.8.1         
+[55] BiocManager_1.30.27 xml2_1.6.0          renv_1.2.3         
+[58] svglite_2.2.2       rstudioapi_0.19.0   jsonlite_2.0.0     
+[61] R6_2.6.1            systemfonts_1.3.2   fs_2.1.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
