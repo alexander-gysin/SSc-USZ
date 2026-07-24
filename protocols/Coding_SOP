@@ -1,0 +1,33 @@
+===================================
+Coding SOP
+===================================
+
+I. General Architecture & Memory Management
+--------------------------------------------------------------------------------
+* DRY Principle: Do not repeat yourself. Code must be fully parameterized with zero hardcoded values deep within scripts.
+* Configurations: Provide fully commented-out example configurations detailing all available features.
+* Documentation: Maintain clear, explanatory in-line comments for logic comprehension.
+* Memory Optimization: Actively declutter the workspace. Variables unneeded outside their local chunk must be deleted (via `rm()` and `gc()`) to save RAM.
+* Output Standardization: Save plots/figures as dynamically and comprehensibly named .png files, and tables as .csv files, inside the script's output folder (creating dynamic subfolders if necessary).
+* Audit Trails: Enforce detailed audit logs exclusively for data cleanup and manipulation steps. Omit forced logging for non-transformative chunks.
+
+II. Data Visualization (Plots)
+--------------------------------------------------------------------------------
+* Parameterization: Store all plot configurations in hierarchical nested lists (e.g., `histograms <- list(histogram_1 <- list(histogram_1_configs))`).
+* Project wide colors: Use the custom get_project_colors <- function(requested_levels, custom_map = NULL) to get project wide colors
+
+III. Omics-Specific Workflows
+--------------------------------------------------------------------------------
+* Global Environments: Source all global configurations (e.g., colors) and universal functions (e.g., `what_this_does()`) from the centralized `00_config.R` file.
+* Modularity: Isolate reusable engines into corresponding engine files (e.g., general, proteomics, lipidomics, machine_learning and multi-omics).
+* Chunk Summaries: Begin every code chunk with an accurate `what_this_does()` function call.
+* Decision Tracking: Explicitly highlight all critical analysis decisions (e.g., exclusions, thresholds, patient filtering) using the `analysis_decision()` function.
+
+IV. HTML Report Generation & Rendering Stability
+--------------------------------------------------------------------------------
+* Report Aesthetics: Ensure tables are highly legible and header structures (#, ##, ###) remain minimal, logical, and devoid of unnecessary subheaders.
+* Chunk Cohesion: Prevent code fragmentation (which spawns excessive "show code" buttons) by consolidating all `cat()` commands strictly at the end of the code chunk.
+* Tables: kableExtra Tables in `results='asis'`
+    - Primary Shielding Strategy: To prevent Pandoc DOM corruption, leverage knitr's native HTML preservation tags by directly calling `print(table_object)` at the end of the chunk rather than converting to strings.
+    - Fallback Shielding Strategy: If string conversion via `as.character()` is strictly necessary, manually shield the naked HTML from the Pandoc parser by wrapping the `cat()` output inside Pandoc raw HTML blocks (```{=html} ... ```).
+    - workflowr Interactive Trap: Never rely solely on `interactive()` for Viewer pane testing, as wflow_build() executes interactively. To prevent premature HTML dumping during compilation, strictly evaluate conditional prints using: `interactive() && !isTRUE(getOption('knitr.in.progress'))`.
