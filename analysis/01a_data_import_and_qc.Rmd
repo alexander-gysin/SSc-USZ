@@ -53,7 +53,8 @@ file_paths <- list(
   olink_raw     = "pre_quant.csv",
   lipid_raw     = "Dr Gabriela Kaina and Dr Amela Hurka aLipid Mediator Profiling raw data.xlsx",
   lipid_map     = "Samples for SPM profiling_final export_081225.xlsx",
-  lipid_lod     = "Lipidomics_LOD.xlsx"
+  lipid_lod     = "Lipidomics_LOD.xlsx",
+  fixed_lod_raw = "Reveal Fixed LOD.csv"
 )
 
 # 2. Global QC Thresholds & Protected Columns ----------------------------------
@@ -61,7 +62,7 @@ qc_config <- list(
   max_missing_pct_prot = 0.05,
   max_missing_pct_pat  = 0.05,
   min_detectability_pct = 25,
-  apply_lod_filter     = TRUE,  # Toggle to exclude proteins below min_detectability_pct
+  apply_lod_filter     = FALSE,  # Toggle to exclude proteins below min_detectability_pct
   apply_outlier_filter = FALSE,  # Toggle to exclude Median/IQR sample outliers (3 SD)
   max_missing_pct_lipid = 0.60,
   selected_col         = "SELECTED", 
@@ -206,129 +207,138 @@ if (dropped_html != "") {
 
 ## Proteomics Import
 
-`r what_this_does("Ingested raw Olink long-format data.", "Retained strictly the patient samples present in the clinical spine, while defensively preserving technical Negative Controls (NC/NEG) required for accurate LOD calculation.")`
+`r what_this_does("Ingested raw Olink Reveal data using OlinkAnalyze::read_npx to strictly enforce column typing.", "Retained strictly the patient samples present in the clinical spine, while defensively preserving control samples for accurate downstream LOD validation.")`
 
-```{r proteomics_import, results='asis'}
+```{r proteomics_import, results='asis', warning=FALSE, message=FALSE}
 audit_log_olink <- c("Proteomics Import Log\n")
 
-# 1. Import Raw Long Format ----------------------------------------------------
-raw_olink <- fread(here::here("data", file_paths$olink_raw))
+# 1. Import Raw Long Format using OlinkAnalyze ---------------------------------
+raw_olink <- OlinkAnalyze::read_npx(
+  filename = here::here("data", file_paths$olink_raw),
+  out_df = "tibble",
+  long_format = TRUE,
+  olink_platform = "Reveal",
+  data_type = "NPX",
+  quiet = TRUE
+)
 
-# CRITICAL: Keep valid patients AND technical negative controls for LOD math
+# CRITICAL: Keep valid patients AND technical controls for LOD math
+# Use dplyr to filter so the object remains a strict 'tibble' for OlinkAnalyze
 valid_subjects <- raw_spine$Subject_ID
-raw_olink <- raw_olink[SampleID %in% valid_subjects | str_detect(toupper(SampleType), "NEG|NC")]
+raw_olink <- raw_olink %>%
+  dplyr::filter(SampleID %in% valid_subjects | stringr::str_detect(toupper(SampleType), "NEG|NC|CONTROL"))
 
-audit_log_olink <- c(audit_log_olink, sprintf("- Initial Long Matrix: %d total rows imported (Patients + Negative Controls).", nrow(raw_olink)))
+audit_log_olink <- c(audit_log_olink, sprintf("- Initial Long Matrix: %d total rows imported via read_npx (Patients + Controls).", nrow(raw_olink)))
 
 # Print Import Log
 cat(paste(audit_log_olink, collapse = "\n\n"))
 ```
 
 ## Proteomics QC {.tabset}
-`r what_this_does("Calculated the Limit of Detection (LOD) using negative controls.", "Evaluated cohort-specific detectability rates, generating a tiered master summary table to isolate true global failures from state-dependent signals.", "Generated global NPX distribution and Median-IQR scatter plots to map technical variance and flag 3-SD sample outliers.", "Mapped biological representation across cohorts using UpSet intersections.")`
+`r what_this_does("Integrated Olink Reveal Fixed LOD definitions, dynamically mapping project-specific DataAnalysisRefIDs.", "Applied a dual-method detectability classification (NPX-based vs. Count-based) to rescue low-abundance assays missing NPX-scale thresholds.", "Evaluated per-assay detection rates across all samples, globally flagging assays where below threshold % of samples were detectable for downstream exclusion.", "Generated non-manipulated global QC plots (NPX Distribution & Median-IQR Outlier checks).", "Calculated protein detectability overlap across clinical cohorts to map biological representation and extract cohort-specific detectable proteins.")`
 
 ```{r proteomics_qc, fig.width=10, fig.height=8, results='asis'}
 cat("\n\n### LOD & Detectability\n\n")
 
-# 1. LOD Calculation -----------------------------------------------------------
-nc_data <- raw_olink %>% filter(str_detect(toupper(SampleType), "NEG|NC"))
-n_nc_wells <- n_distinct(nc_data$SampleID)
+# 1. Fixed LOD Integration & Validation ----------------------------------------
+fixed_lod <- readr::read_delim(
+  file = here::here("data", file_paths$fixed_lod_raw),
+  delim = ";", locale = readr::locale(decimal_mark = "."),
+  trim_ws = TRUE, show_col_types = FALSE
+)
 
-cat("<b>Negative control wells available:</b>", n_nc_wells, "<br><br>")
+# Filter Fixed LOD to match the specific reagent lot IDs in our dataset
+required_reference_ids <- sort(unique(raw_olink$DataAnalysisRefID))
+fixed_lod_project <- fixed_lod %>%
+  dplyr::filter(DataAnalysisRefID %in% required_reference_ids, AssayType == "assay")
 
-npx_lod <- NULL
-lod_col <- NULL
-has_olink_analyze <- requireNamespace("OlinkAnalyze", quietly = TRUE)
+lod_key <- c("OlinkID", "DataAnalysisRefID")
 
-if (has_olink_analyze && n_nc_wells >= 10) {
-  npx_lod <- tryCatch(
-    OlinkAnalyze::olink_lod(as.data.frame(raw_olink), lod_method = "NCLOD", 
-                            preferred_names = "PCNormalizedNPX"),
-    error = function(e) { NULL }
+# 2. Check and Clean Data ------------------------------------------------------
+# Generate pre-check log, then clean while protecting controls
+npx_check <- OlinkAnalyze::check_npx(df = raw_olink, preferred_names = c("quant" = "NPX"))
+npx_pre_lod <- OlinkAnalyze::clean_npx(
+  df = raw_olink, check_log = npx_check,
+  remove_control_assay = FALSE, remove_control_sample = FALSE,
+  remove_assay_warning = FALSE, remove_qc_warning = FALSE
+)
+
+npx_pre_lod_check <- OlinkAnalyze::check_npx(df = npx_pre_lod, preferred_names = c("quant" = "NPX"))
+
+# 3. Apply Official LOD --------------------------------------------------------
+npx_with_lod <- OlinkAnalyze::olink_lod(
+  data = npx_pre_lod,
+  lod_method = "FixedLOD",
+  lod_file_path = here::here("data", file_paths$fixed_lod_raw),
+  check_log = npx_pre_lod_check
+)
+
+# 4. Dual-Method Detectability Classification ----------------------------------
+# Reattach original LOD logic and count thresholds 
+lod_lookup <- fixed_lod_project %>%
+  dplyr::select(dplyr::all_of(lod_key), LODMethod, FixedLODCount_reference = LODCount)
+
+npx_lod_classified <- npx_with_lod %>%
+  dplyr::left_join(lod_lookup, by = lod_key, relationship = "many-to-one") %>%
+  dplyr::mutate(
+    AboveLOD = dplyr::case_when(
+      # NPX-based Fixed LOD
+      AssayType == "assay" & LODMethod == "lod_npx" & !is.na(NPX) & !is.na(LOD) ~ NPX > LOD,
+      # Count-based Fixed LOD
+      AssayType == "assay" & LODMethod == "lod_count" & !is.na(Count) & !is.na(FixedLODCount_reference) ~ Count > FixedLODCount_reference,
+      # Fallback
+      TRUE ~ NA
+    )
   )
-  if (!is.null(npx_lod)) {
-    lod_col <- if ("PCNormalizedLOD" %in% colnames(npx_lod)) "PCNormalizedLOD" else "LOD"
-  }
-}
 
-if (is.null(npx_lod)) {
-  lod_tbl <- nc_data %>%
-    group_by(Assay) %>%
-    summarise(
-      mean_NPX = mean(NPX, na.rm = TRUE),
-      sd_NPX = sd(NPX, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    mutate(LOD_manual = mean_NPX + (3 * sd_NPX))
-  
-  npx_lod <- raw_olink %>% left_join(lod_tbl, by = "Assay")
-  lod_col <- "LOD_manual"
-}
-
-# 2. Master Detectability Calculation ------------------------------------------
-samples_only <- npx_lod %>% 
+# 5. Detectability Rate & LOD Plot ---------------------------------------------
+samples_only <- npx_lod_classified %>% 
   filter(toupper(SampleType) == "SAMPLE") %>%
   left_join(raw_spine %>% select(Subject_ID, cohort_group), by = c("SampleID" = "Subject_ID"))
 
-# A. Global percentages
-global_det <- samples_only %>%
-  mutate(Target_NPX = if("PCNormalizedNPX" %in% names(.)) PCNormalizedNPX else NPX,
-         above_lod = Target_NPX > .data[[lod_col]]) %>%
+detection <- samples_only %>%
   group_by(Assay, OlinkID, UniProt) %>%
-  summarise(Overall_Pct = 100 * mean(above_lod, na.rm = TRUE), .groups = "drop")
+  summarise(pct_above_lod = 100 * mean(AboveLOD, na.rm = TRUE), .groups = "drop") %>%
+  arrange(pct_above_lod)
 
-# B. Cohort-specific percentages
-cohort_det <- samples_only %>%
-  filter(!is.na(cohort_group)) %>%
-  mutate(Target_NPX = if("PCNormalizedNPX" %in% names(.)) PCNormalizedNPX else NPX,
-         above_lod = Target_NPX > .data[[lod_col]]) %>%
-  group_by(Assay, cohort_group) %>%
-  summarise(pct = 100 * mean(above_lod, na.rm = TRUE), .groups = "drop") %>%
-  tidyr::pivot_wider(names_from = cohort_group, values_from = pct, values_fill = 0)
+low_detect <- detection %>% filter(pct_above_lod < qc_config$min_detectability_pct)
 
-# C. Merge and assign tiers
-cohort_cols <- as.character(unique(samples_only$cohort_group[!is.na(samples_only$cohort_group)]))
+# Plot: Detectability Distribution
+lod_plot <- ggplot2::ggplot(detection, ggplot2::aes(x = pct_above_lod)) +
+  ggplot2::geom_histogram(binwidth = 5, fill = "#4C72B0", color = "white") +
+  ggplot2::geom_vline(xintercept = qc_config$min_detectability_pct, color = "#C44E52", linetype = "dashed", size = 1) +
+  ggplot2::labs(
+    title = "Assay Detectability Distribution (Dual-Method Fixed LOD)",
+    subtitle = sprintf("Red dashed line indicates parameterized %s%% detectability threshold", qc_config$min_detectability_pct),
+    x = "Percentage of Samples Above LOD (%)",
+    y = "Number of Proteins"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(text = ggplot2::element_text(size = 13))
 
-master_det <- global_det %>%
-  left_join(cohort_det, by = "Assay") %>%
-  rowwise() %>%
-  mutate(
-    max_cohort_pct = max(c_across(all_of(cohort_cols)), na.rm = TRUE),
-    min_cohort_pct = min(c_across(all_of(cohort_cols)), na.rm = TRUE),
-    # Fails ONLY if below threshold in ALL groups (meaning max percentage across groups is < threshold)
-    Pass = if_else(max_cohort_pct >= qc_config$min_detectability_pct, "Yes", "No"),
-    Tier = case_when(
-      Pass == "No" ~ 1,
-      Pass == "Yes" & min_cohort_pct < qc_config$min_detectability_pct ~ 2,
-      TRUE ~ 3
-    )
-  ) %>%
-  ungroup() %>%
-  arrange(Tier, Overall_Pct) # Sorted by Tier, then lowest detectability at the top
+print(lod_plot)
 
-# Isolate the definitive failures for downstream exclusion in the next chunk
-low_detect <- master_det %>% filter(Pass == "No")
+# Table: List the low detectability assays
+if (nrow(low_detect) > 0) {
+  cat(sprintf("<br><b>Assays with <%s%% of samples above LOD: %d out of %d.</b><br>", 
+              qc_config$min_detectability_pct, nrow(low_detect), nrow(detection)))
+  
+  low_detect_tbl <- low_detect %>%
+    select(Assay, pct_above_lod) %>%
+    mutate(pct_above_lod = sprintf("%.1f%%", pct_above_lod)) %>%
+    kableExtra::kbl(format = "html", row.names = FALSE, 
+                    caption = sprintf("<b style='color:#C44E52;'>Proteins Below %s%% Detectability Threshold</b>", qc_config$min_detectability_pct)) %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
+    kableExtra::scroll_box(width = "100%", height = "500px")
+  
+  print(low_detect_tbl)
+}
 
-# 3. Build Master Table --------------------------------------------------------
-master_tbl_df <- master_det %>%
-  select(Assay, Overall_Pct, all_of(cohort_cols), Pass) %>%
-  mutate(across(c("Overall_Pct", all_of(cohort_cols)), 
-                ~ kableExtra::cell_spec(sprintf("%.1f%%", .x), 
-                                        color = ifelse(.x < qc_config$min_detectability_pct, "red", "black")))) %>%
-  rename(Overall = Overall_Pct)
-
-master_tbl <- master_tbl_df %>%
-  kableExtra::kbl(format = "html", escape = FALSE, row.names = FALSE,
-                  caption = sprintf("<b style='font-size:1.2em; color:#333;'>Master Detectability Summary (Threshold: %s%%)</b>", qc_config$min_detectability_pct)) %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE, position = "left") %>%
-  kableExtra::scroll_box(width = "100%", height = "600px")
-
-# 4. Global Distribution & QC Plots --------------------------------------------
 cat("\n\n### Global Distribution\n\n")
 
-if (has_olink_analyze) {
+if (requireNamespace("OlinkAnalyze", quietly = TRUE)) {
   npx_distribution_full <- OlinkAnalyze::olink_dist_plot(
-    df = as.data.frame(samples_only),
+    df = samples_only,  # FIX: Passed directly as a tibble
     color_g = "SampleQC"
   ) + 
     ggplot2::theme(text = ggplot2::element_text(size = 12)) +
@@ -337,12 +347,9 @@ if (has_olink_analyze) {
   print(npx_distribution_full)
   cat("<br><br>")
   
-  # Calculate pass percentage for subtitle
-  pct_pass_qc <- 100 * mean(toupper(samples_only$SampleQC) == "PASS", na.rm = TRUE)
-  
   median_iqr_full <- OlinkAnalyze::olink_qc_plot(
-    df = as.data.frame(samples_only),
-    color_g = "cohort_group",
+    df = samples_only,  # FIX: Passed directly as a tibble
+    color_g = "SampleQC",
     label_outliers = TRUE,
     IQR_outlierDef = 3L,
     median_outlierDef = 3L,
@@ -350,37 +357,48 @@ if (has_olink_analyze) {
   ) +
     ggplot2::labs(
       title = "Median–IQR QC plot for all valid samples",
-      subtitle = sprintf("Outlier thresholds defined as ± 3 Standard Deviations from the mean Median/IQR.\nOverall Sample QC Pass Rate: %.1f%%", pct_pass_qc),
-      color = "Cohort Group"
+      color = "Sample QC"
     ) +
     ggplot2::theme(
       text = ggplot2::element_text(size = 13),
-      plot.title = ggplot2::element_text(size = 17, face = "bold"),
-      plot.subtitle = ggplot2::element_text(size = 12, color = "#555555")
+      plot.title = ggplot2::element_text(size = 17, face = "bold")
     )
   
   print(median_iqr_full)
 }
 
-# 5. Cohort Overlaps (UpSet Plot) ----------------------------------------------
 cat("\n\n### Cohort Overlaps\n\n")
 
 has_upsetr <- requireNamespace("UpSetR", quietly = TRUE)
+has_cohort <- "cohort_group" %in% names(samples_only)
 
-if (has_upsetr) {
+if (has_upsetr && has_cohort) {
   
-  upset_detection_data <- master_det %>%
-    mutate(across(all_of(cohort_cols), ~ .x >= qc_config$min_detectability_pct)) %>%
-    select(Assay, all_of(cohort_cols))
+  # Group detectability by clinical cohort using the new AboveLOD boolean
+  group_detection_summary <- samples_only %>%
+    filter(!is.na(cohort_group)) %>%
+    group_by(OlinkID, Assay, UniProt, cohort_group) %>%
+    summarise(pct_above_lod = mean(AboveLOD, na.rm = TRUE) * 100, .groups = "drop") %>%
+    mutate(detected_in_group = pct_above_lod >= qc_config$min_detectability_pct) 
+  
+  upset_detection_data <- group_detection_summary %>%
+    dplyr::select(OlinkID, Assay, UniProt, cohort_group, detected_in_group) %>%
+    tidyr::pivot_wider(
+      names_from = cohort_group,
+      values_from = detected_in_group,
+      values_fill = FALSE
+    )
+  
+  upset_groups <- as.character(unique(group_detection_summary$cohort_group))
   
   upset_df <- as.data.frame(upset_detection_data)
-  for(col in cohort_cols) {
+  for(col in upset_groups) {
     upset_df[[col]] <- as.integer(upset_df[[col]])
   }
   
   olink_upset_plot <- UpSetR::upset(
     upset_df,
-    sets = cohort_cols,
+    sets = upset_groups,
     keep.order = TRUE,
     order.by = c("freq", "degree"),
     sets.bar.color = "#4C72B0",
@@ -392,16 +410,48 @@ if (has_upsetr) {
   print(olink_upset_plot)
   
 } else {
-  cat("<br><b>Skipped UpSet Plot because the 'UpSetR' package is missing.</b><br>")
+  cat("<br><b>Skipped UpSet Plot because:</b><br>")
+  if (!has_upsetr) cat("- Missing 'UpSetR' package.<br>")
+  if (!has_cohort) cat("- The column 'cohort_group' was not found.<br>")
 }
 
-# 6. Outputs -------------------------------------------------------------------
-cat("\n\n### Assay Detectability Table\n\n")
-cat(sprintf("<p><i>Proteins dropping below the %s%% threshold in ALL cohorts (Tier 1) are flagged 'No' and will be excluded. Proteins failing in at least one cohort but passing in others (Tier 2) are retained.</i></p>", qc_config$min_detectability_pct))
+cat("\n\n### Uniquely Detectable Proteins {.tabset .tabset-pills}\n\n")
 
-if (exists("master_tbl")) {
-  print(master_tbl)
-  cat("\n\n")
+if (has_cohort && exists("group_detection_summary")) {
+  
+  wide_pct_data <- group_detection_summary %>%
+    select(Assay, cohort_group, pct_above_lod) %>%
+    tidyr::pivot_wider(names_from = cohort_group, values_from = pct_above_lod, values_fill = 0)
+  
+  upset_df$total_detected <- rowSums(upset_df[, upset_groups, drop = FALSE])
+  num_cohorts <- length(upset_groups)
+  
+  interesting_proteins <- upset_df %>%
+    filter(total_detected > 0 & total_detected < num_cohorts) %>%
+    pull(Assay)
+  
+  wide_pct_filtered <- wide_pct_data %>% filter(Assay %in% interesting_proteins)
+  
+  for (cohort in upset_groups) {
+    cat(sprintf("\n\n#### %s\n\n", cohort))
+    
+    cohort_tbl_data <- wide_pct_filtered %>%
+      filter(.data[[cohort]] >= qc_config$min_detectability_pct) %>%
+      arrange(desc(.data[[cohort]])) %>%
+      mutate(across(all_of(upset_groups), ~sprintf("%.1f%%", .x)))
+    
+    if (nrow(cohort_tbl_data) > 0) {
+      cohort_tbl <- cohort_tbl_data %>%
+        kableExtra::kbl(format = "html", row.names = FALSE, 
+                        caption = sprintf("Proteins detectable (>= %s%%) in %s, but missing in at least one other cohort", qc_config$min_detectability_pct, cohort)) %>%
+        kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+      
+      print(cohort_tbl)
+    } else {
+      cat(sprintf("<p><i>No uniquely detectable proteins found for %s. All detectable proteins are also shared across all other cohorts.</i></p>", cohort))
+    }
+  }
 }
 ```
 
