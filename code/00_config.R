@@ -32,8 +32,12 @@ lipidomics_scripts <- c(
   "analysis/04c_lipidomics_machine_learning.Rmd"
 )
 
+miRNA_scripts <- c(
+  "analysis/05a_qc_and_preprocessing.Rmd"
+)
+
 multiomics_scripts <- c(
-  "analysis/05a_investigator.Rmd"
+  "analysis/06a_investigator.Rmd"
 )
 
 sideproject_scripts <- c(
@@ -58,244 +62,230 @@ generate_all_scripts <- function() {
 all_scripts <- generate_all_scripts()
 
 # 3. SYNC FUNCTION -------------------------------
+sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
 
-sync <- function(files = NULL, all = FALSE, publish = TRUE, preview = FALSE, message = NULL, verbose = TRUE) {
+  # 1. Environment Health Checks
+  is_git <- suppressWarnings(system("git rev-parse --is-inside-work-tree", intern = TRUE, ignore.stderr = TRUE)[1] == "true")
+  is_wflow <- file.exists("_workflowr.yml") || file.exists("analysis/_site.yml")
+  is_renv <- file.exists("renv.lock") && requireNamespace("renv", quietly = TRUE)
 
-  # --- 1. Resolve Input Files ---
-  if (all) {
-    # If all = TRUE, we let workflowr determine the files later.
-    target_files <- NULL
-  } else if (is.null(files)) {
-    # No argument: look for current_file in the global environment
+  if (any(!c(is_git, is_wflow, is_renv)) && !preview) {
+    cat("\n\u26A0\uFE0F ENVIRONMENT WARNINGS:\n")
+    if (!is_git) cat("- Git is missing. Run `git init` or check your repository path.\n")
+    if (!is_wflow) cat("- Workflowr is missing. Run `workflowr::wflow_start()`.\n")
+    if (!is_renv) cat("- renv is missing. Run `renv::init()`.\n")
+    cat("-----------------------------------------\n")
+  }
+
+  # 2. Input Resolution
+  if (all) publish <- TRUE
+  target_files <- files
+
+  # If publishing without passing specific files, grab current_file
+  if (is.null(target_files) && publish && !all) {
     if (!exists("current_file", envir = .GlobalEnv)) {
-      stop("Error: 'current_file' is not defined in the environment.", call. = FALSE)
+      stop("Error: 'current_file' is undefined. Either pass a file, or use all = TRUE.", call. = FALSE)
     }
     target_files <- get("current_file", envir = .GlobalEnv)
-  } else {
-    target_files <- files
   }
 
-  # --- 2. Validation and Formatting (if specific files are targeted) ---
+  # Validate specific files & enforce all_scripts order if it exists
   if (!is.null(target_files)) {
-    # Check if files exist
-    missing_files <- target_files[!file.exists(target_files)]
-    if (length(missing_files) > 0) {
-      stop(paste("Error: The following files do not exist:\n", paste(missing_files, collapse = "\n")), call. = FALSE)
-    }
+    missing <- target_files[!file.exists(target_files)]
+    if (length(missing) > 0) stop(sprintf("Missing files:\n%s", paste(missing, collapse = "\n")), call. = FALSE)
 
-    # Deduplicate and reorder according to canonical all_scripts
     target_files <- unique(target_files)
+    if (exists("all_scripts", envir = .GlobalEnv)) {
+      invalid <- target_files[!target_files %in% all_scripts]
+      if (length(invalid) > 0) stop(sprintf("Files not in all_scripts:\n%s", paste(invalid, collapse = "\n")), call. = FALSE)
 
-    # Check for invalid files not in all_scripts
-    invalid_files <- target_files[!target_files %in% all_scripts]
-    if (length(invalid_files) > 0) {
-      stop(paste("Error: Files not found in canonical all_scripts list:\n", paste(invalid_files, collapse = "\n")), call. = FALSE)
-    }
+      target_files <- all_scripts[all_scripts %in% target_files]
 
-    # Reorder based on the master list
-    target_files <- all_scripts[all_scripts %in% target_files]
-
-    # --- 3. Confirmation for all_scripts ---
-    if (identical(target_files, all_scripts) && !preview) {
-      cat(sprintf("You are about to publish %d analysis files.\n", length(target_files)))
-      ans <- readline("Continue? [y/n]: ")
-      if (tolower(ans) != "y") {
-        stop("Sync cancelled by user.", call. = FALSE)
+      if (identical(target_files, all_scripts) && !preview) {
+        if (tolower(readline("Publish all analyses? [y/n]: ")) != "y") stop("Sync cancelled.", call. = FALSE)
       }
     }
   }
 
-  # --- 4. Handle Commit Message ---
+  # 3. Message Prompting
   if (!preview) {
-    if (is.null(message)) {
-      message <- readline("Commit message: ")
-      if (trimws(message) == "") {
-        stop("Error: Commit message cannot be empty.", call. = FALSE)
+    msg_prompt <- readline("Commit message (Leave blank for default): ")
+    if (trimws(msg_prompt) != "") {
+      commit_msg <- trimws(msg_prompt)
+    } else {
+      # Smart defaults
+      if (!is.null(target_files) && length(target_files) == 1) {
+        commit_msg <- sprintf("Update %s", basename(target_files))
+      } else if (!is.null(target_files) && length(target_files) > 1) {
+        commit_msg <- sprintf("Update %d analysis files", length(target_files))
+      } else {
+        commit_msg <- "routine sync"
       }
-    } else if (isFALSE(message)) {
-      message <- "Automated sync update" # Fallback if opt-out
     }
+  } else {
+    commit_msg <- "[Preview Mode Message]"
   }
 
-  # --- 5. Preview Mode ---
+  # 4. Preview Mode
   if (preview) {
     cat("\n=== PREVIEW MODE ===\n")
     if (publish) {
-      cat("Files to be PUBLISHED:\n")
-      if (all) {
-        cat("- [workflowr automatically detected changes]\n")
-      } else {
-        cat(paste("-", target_files, collapse = "\n"), "\n")
-      }
+      cat(sprintf("Action: PUBLISH, COMMIT & PUSH\nTarget: %s\n", if (all) "All detected changes" else paste(target_files, collapse = ", ")))
     } else {
-      cat("PUBLISHING is skipped (publish = FALSE).\n")
+      cat(sprintf("Action: COMMIT & PUSH (Hourly Backup)\nTarget: %s + all modified tracked files\n", if(is.null(target_files)) "None" else paste(target_files, collapse = ", ")))
     }
-    cat("\nFiles to be COMMITTED:\n- All remaining uncommitted project changes (wflow_git_commit(all = TRUE))\n")
-    cat("\nTarget to PUSH:\n- GitHub (Current branch)\n")
-    cat("====================\n\n")
+    cat(sprintf("Message: \"%s\"\n====================\n\n", commit_msg))
     return(invisible(TRUE))
   }
 
-  # --- 6. Execution ---
-
-  # PUBLISH
-  if (publish) {
-    if (verbose) cat("\nPublishing analyses...\n")
-
-    tryCatch({
+  # 5. Execution
+  tryCatch({
+    if (publish) {
+      cat("\n\U0001F680 Publishing and committing...\n")
       if (all) {
-        workflowr::wflow_publish(all = TRUE, message = message)
+        workflowr::wflow_publish(all = TRUE, message = commit_msg)
       } else {
-        workflowr::wflow_publish(target_files, message = message)
+        workflowr::wflow_publish(target_files, message = commit_msg)
       }
-      if (verbose) cat("✓ Publishing completed\n")
-    }, error = function(e) {
-      stop(paste("Publishing failed with workflowr error:\n", e$message), call. = FALSE)
-    })
-  }
+    } else {
+      cat("\n\U0001F4BE Committing changes...\n")
+      # wflow_git_commit explicitly adds specific files, and all=TRUE sweeps tracked modifications
+      workflowr::wflow_git_commit(files = target_files, all = TRUE, message = commit_msg)
+    }
+  }, error = function(e) stop(sprintf("Commit/Publish failed:\n%s", e$message), call. = FALSE))
 
-  # COMMIT ALL REMAINING
-  if (verbose) cat("\nCommitting remaining project changes...\n")
+  # 6. Push with Error Handling
   tryCatch({
-    # Catch any supporting files (like 00_config.R) that publishing missed
-    workflowr::wflow_git_commit(all = TRUE, message = paste(message, "(Catch-all commit)"))
-    if (verbose) cat("✓ Commit completed\n")
-  }, error = function(e) {
-    stop(paste("Commit failed:\n", e$message), call. = FALSE)
-  })
-
-  # PUSH
-  if (verbose) cat("\nPushing to GitHub...\n")
-  tryCatch({
+    cat("\u2601\uFE0F Pushing to GitHub...\n")
     workflowr::wflow_git_push()
-    if (verbose) cat("✓ Push completed\n")
+    cat("\u2705 Sync complete!\n")
   }, error = function(e) {
-    stop(paste("Push failed, but commits remain intact. Error:\n", e$message), call. = FALSE)
+    cat("\n\u274C PUSH FAILED:\n", e$message, "\n\n")
+    cat("\U0001F4A1 INSTRUCTIONS: Your files were successfully committed, but the push failed.\n")
+    cat("1. Check your internet connection.\n")
+    cat("2. If this is a new repository/branch, you may need to set the upstream:\n")
+    cat("   Run: `system(\"git push -u origin HEAD\")`\n")
+    cat("3. If there is a remote conflict, pull changes first: `workflowr::wflow_git_pull()`\n")
   })
 }
 
 # 4. SYNC STATUS FUNCTION --------------------
-
-
 sync_status <- function() {
   cat("\n=========================================\n")
   cat("           PROJECT SYNC STATUS           \n")
-  cat("=========================================\n\n")
+  cat("=========================================\n")
 
-  # --- 1. Workflowr Status ---
-  cat("## WORKFLOWR STATUS ##\n")
-  w_stat <- workflowr::wflow_status()
-  status_df <- w_stat$status
-
-  # Extract specific states
-  scratch <- rownames(status_df)[status_df$scratch == TRUE]
-  unpublished <- rownames(status_df)[status_df$published == FALSE & status_df$scratch == FALSE]
-  modified <- rownames(status_df)[status_df$published == TRUE & status_df$mod_Rmd == TRUE]
-
-  if (length(scratch) > 0) {
-    cat("\n\u26A0\uFE0F Scratch (Untracked by Git, never published):\n")
-    cat(paste("-", scratch, collapse = "\n"), "\n")
-  }
-
-  if (length(unpublished) > 0) {
-    cat("\n\u26A0\uFE0F Unpublished (Tracked by Git, never published):\n")
-    cat(paste("-", unpublished, collapse = "\n"), "\n")
-  }
-
-  if (length(modified) > 0) {
-    cat("\n\u26A0\uFE0F Modified (Rmd file differs from existing HTML):\n")
-    cat(paste("-", modified, collapse = "\n"), "\n")
-  }
-
-  if (length(scratch) == 0 && length(unpublished) == 0 && length(modified) == 0) {
-    cat("\n\u2705 All analyses are up to date and published.\n")
-  }
-
-  # --- Workflowr Recommendations ---
-  cat("\n\U0001F4A1 WORKFLOWR ACTIONS:\n")
-  if (length(scratch) > 0 || length(modified) > 0 || length(unpublished) > 0) {
-    cat("- Run `sync(all = TRUE)` to publish all detected changed Rmd files\n")
-    cat("- Or target specific files: `sync(c(\"file1.Rmd\", \"file2.Rmd\"))`\n")
-  } else {
-    cat("- No action required.\n")
-  }
-
-  cat("\n-----------------------------------------\n")
-
-  # --- 2. Git Status ---
-  cat("## GIT STATUS ##\n")
-
-  get_git <- function(cmd) {
-    suppressWarnings(system(paste("git", cmd), intern = TRUE, ignore.stderr = TRUE))
-  }
-
-  branch <- get_git("rev-parse --abbrev-ref HEAD")
-  cat(sprintf("\nBranch:\n%s\n", branch))
-
-  get_git("fetch --quiet")
-  ahead_behind <- get_git("rev-list --left-right --count HEAD...@{u}")
-  is_ahead <- FALSE
-
-  if (length(ahead_behind) > 0) {
-    ab_split <- strsplit(ahead_behind, "\t")[[1]]
-    is_ahead <- as.numeric(ab_split[1]) > 0
-    is_behind <- as.numeric(ab_split[2]) > 0
-    if (is_ahead | is_behind) { cat(sprintf("\n⚠️ ️GitHub status:\nahead by %s commits\nbehind by %s commits\n", ab_split[1], ab_split[2]))
-    } else {cat(sprintf("\n\u2705 GitHub status:\nahead by %s commits & behind by %s commits\n", ab_split[1], ab_split[2]))}
-  } else {
-    cat("\nGitHub status: No upstream branch configured.\n")
-  }
-
-  status_raw <- get_git("status --porcelain")
-  has_git_changes <- length(status_raw) > 0
   untracked_clean <- character(0)
 
-  if (!has_git_changes) {
-    cat("\nWorking tree:\nclean\n")
+  # Helper
+  get_git <- function(cmd) suppressWarnings(system(paste("git", cmd), intern = TRUE, ignore.stderr = TRUE))
+
+  # 1. Workflowr Status
+  cat("\n## WORKFLOWR STATUS ##\n")
+  is_wflow <- file.exists("_workflowr.yml") || file.exists("analysis/_site.yml")
+
+  if (!is_wflow) {
+    cat("\u26A0\uFE0F Workflowr not initialized.\n")
   } else {
-    untracked <- status_raw[grepl("^\\?\\?", status_raw)]
-    modified_git <- status_raw[!grepl("^\\?\\?", status_raw)]
+    w_stat <- tryCatch(workflowr::wflow_status(), error = function(e) NULL)
+    if (is.null(w_stat)) {
+      cat("\u26A0\uFE0F Error reading Workflowr status.\n")
+    } else {
+      st <- w_stat$status
+      scratch <- rownames(st)[st$scratch == TRUE]
+      unpub <- rownames(st)[st$published == FALSE & st$scratch == FALSE]
+      mod <- rownames(st)[st$published == TRUE & st$mod_Rmd == TRUE]
 
-    if (length(untracked) > 0) {
-      untracked_clean <- sub("^\\?\\?\\s+", "", untracked)
-      cat("\n\u26A0\uFE0F Untracked non-analysis files (Git has never seen these):\n")
-      cat(paste("-", untracked_clean, collapse = "\n"), "\n")
+      if (length(scratch) > 0) cat(sprintf("\n\u26A0\uFE0F Scratch (Untracked, no HTML):\n- %s\n", paste(scratch, collapse = "\n- ")))
+      if (length(unpub) > 0) cat(sprintf("\n\u26A0\uFE0F Unpublished (Tracked, no HTML):\n- %s\n", paste(unpub, collapse = "\n- ")))
+      if (length(mod) > 0) cat(sprintf("\n\u26A0\uFE0F Modified (Rmd differs from HTML):\n- %s\n", paste(mod, collapse = "\n- ")))
+      if (sum(length(scratch), length(unpub), length(mod)) == 0) cat("\n\u2705 All analyses published.\n")
+
+      cat("\n\U0001F4A1 WORKFLOWR ACTIONS:\n")
+      if (length(scratch) > 0) {
+        cat("- Track a scratch file (no HTML): `sync(\"analysis/your_file.Rmd\")`\n")
+        cat("- Publish a scratch file: `sync(\"analysis/your_file.Rmd\", publish = TRUE)`\n")
+      }
+      if (length(mod) > 0 || length(unpub) > 0) {
+        cat("- Publish all tracked Rmd changes: `sync(all = TRUE)`\n")
+      }
     }
-    if (length(modified_git) > 0) {
-      cat("\n\u26A0\uFE0F Modified tracked non-analysis files (Tracked files with new changes):\n")
-      cat(paste("-", sub("^\\s*[A-Z]+\\s+", "", modified_git), collapse = "\n"), "\n")
-    }
   }
 
-  # --- Git Recommendations ---
-  cat("\n\U0001F4A1 GIT ACTIONS:\n")
-  if (length(untracked_clean) > 0) {
-    cat("- Run `untracked_files <- sync_status()` to assign the untracked files to a vector.\n")
-    cat("- You can then print `untracked_files`, copy the ones you need, and commit them.\n")
-  }
-  if (has_git_changes) {
-    cat("- Run `sync(publish = FALSE)` to commit non-analysis file changes (e.g. .R files).\n")
-  }
-  if (is_ahead && !has_git_changes && length(modified) == 0) {
-    cat("- Run `workflowr::wflow_git_push()` to send your local commits to GitHub.\n")
-  }
-  if (!has_git_changes && !is_ahead) {
-    cat("- No action required.\n")
-  }
-
-  # --- 3. Enriched Last Commit ---
   cat("\n-----------------------------------------\n")
-  cat("## LAST COMMIT ##\n")
-  # Format: Hash | YYYY-MM-DD HH:MM:SS | Author - Message
-  last_commit <- get_git("log -1 --format=\"%h | %ci | %an - %s\"")
-  cat(last_commit, "\n")
+
+  # 2. Git Status
+  cat("## GIT STATUS ##\n")
+  is_git <- length(get_git("rev-parse --is-inside-work-tree")) > 0 && get_git("rev-parse --is-inside-work-tree")[1] == "true"
+
+  if (!is_git) {
+    cat("\u26A0\uFE0F Git not initialized.\n")
+  } else {
+    cat(sprintf("\nBranch: %s\n", get_git("rev-parse --abbrev-ref HEAD")))
+
+    get_git("fetch --quiet")
+    ab <- get_git("rev-list --left-right --count HEAD...@{u}")
+    is_ahead <- FALSE
+
+    if (length(ab) > 0) {
+      ab_split <- strsplit(ab, "\t")[[1]]
+      is_ahead <- as.numeric(ab_split[1]) > 0
+      icon <- if (is_ahead || as.numeric(ab_split[2]) > 0) "\u26A0\uFE0F" else "\u2705"
+      cat(sprintf("\n%s GitHub status: ahead by %s, behind by %s commits\n", icon, ab_split[1], ab_split[2]))
+    } else {
+      cat("\n\u26A0\uFE0F GitHub status: No upstream branch configured.\n")
+    }
+
+    stat_raw <- get_git("status --porcelain")
+    if (length(stat_raw) == 0) {
+      cat("\nWorking tree: clean\n")
+    } else {
+      untracked <- stat_raw[grepl("^\\?\\?", stat_raw)]
+      modified_git <- stat_raw[!grepl("^\\?\\?", stat_raw)]
+
+      if (length(untracked) > 0) {
+        untracked_clean <- sub("^\\?\\?\\s+", "", untracked)
+        cat(sprintf("\n\u26A0\uFE0F Untracked files:\n- %s\n", paste(untracked_clean, collapse = "\n- ")))
+      }
+      if (length(modified_git) > 0) {
+        cat(sprintf("\n\u26A0\uFE0F Modified files:\n- %s\n", paste(sub("^\\s*[A-Z]+\\s+", "", modified_git), collapse = "\n- ")))
+      }
+    }
+
+    cat("\n\U0001F4A1 GIT ACTIONS:\n")
+    if (length(untracked_clean) > 0) cat("- Untracked files returned invisibly. Assign with `untracked <- sync_status()`.\n")
+    if (length(stat_raw) > 0) cat("- Hourly backup (commit all tracked changes): `sync()`\n")
+    if (is_ahead && length(stat_raw) == 0) cat("- Push local commits: `workflowr::wflow_git_push()`\n")
+
+    cat("\n## LAST COMMIT ##\n")
+    cat(get_git("log -1 --format=\"%h | %ci | %an - %s\""), "\n")
+  }
+
+  cat("\n-----------------------------------------\n")
+
+  # 3. Renv Status
+  cat("## RENV STATUS ##\n")
+  is_renv <- file.exists("renv.lock") && requireNamespace("renv", quietly = TRUE)
+
+  if (!is_renv) {
+    cat("\u26A0\uFE0F renv not initialized.\n")
+  } else {
+    r_out <- capture.output(suppressMessages(tryCatch(renv::status(), error = function(e) "Error")))
+    if (length(r_out) == 0 || any(grepl("is in sync|is synchronized|no issues found", r_out, ignore.case = TRUE))) {
+      cat("\n\u2705 renv environment is synchronized.\n")
+    } else {
+      cat(sprintf("\n\u26A0\uFE0F renv is out of sync:\n%s\n", paste(r_out, collapse = "\n")))
+      cat("\n\U0001F4A1 RENV ACTIONS:\n")
+      cat("- Update lockfile: `renv::snapshot()`\n")
+      cat("- Revert environment: `renv::restore()`\n")
+    }
+  }
 
   cat("\n=========================================\n")
-
-  # Invisibly return the vector of untracked files so it doesn't clutter the terminal output
-  # but remains available for variable assignment.
   return(invisible(untracked_clean))
 }
+
+
 
 # 1. GLOBAL LIBRARIES REQUIRED FOR CONFIG
 library(ggplot2)

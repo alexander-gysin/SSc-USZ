@@ -464,7 +464,7 @@ if (has_cohort && exists("group_detection_summary")) {
 audit_log_impute <- c("Filtering & Imputation Log\n")
 
 # 1. Pre-Processing & Pivot ----------------------------------------------------
-target_val <- if("PCNormalizedNPX" %in% names(samples_only)) "PCNormalizedNPX" else "NPX"
+target_val <-  "NPX" #this is only acceptable because in this experiment only one plate was used!
 
 # Perfect replica of OlinkAnalyze's internal QC math
 has_panel <- "Panel" %in% names(samples_only)
@@ -590,10 +590,10 @@ raw_spine <- raw_spine[Subject_ID %in% colnames(qc_mat)]
 qc_mat <- qc_mat[, raw_spine$Subject_ID, drop = FALSE]
 
 # Memory Cleanup
-rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, 
-   failed_prots, failed_samps, row_meds, na_coords, samples_only, npx_lod, nc_data,
-   sample_medians, sample_iqrs, mean_median, sd_median, mean_iqr, sd_iqr, outlier_flags)
-if(exists("impute_df")) rm(impute_df, na_counts)
+# rm(raw_olink, wide_olink, olink_mat, miss_prots, miss_samps, valid_prots, valid_samps, 
+#    failed_prots, failed_samps, row_meds, na_coords, samples_only, npx_lod, nc_data,
+#    sample_medians, sample_iqrs, mean_median, sd_median, mean_iqr, sd_iqr, outlier_flags)
+# if(exists("impute_df")) rm(impute_df, na_counts)
 invisible(gc())
 
 # 6. Outputs -------------------------------------------------------------------

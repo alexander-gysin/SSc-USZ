@@ -428,7 +428,7 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="05a_investigator.html">Investigator</a>
+      <a href="06a_investigator.html">Investigator</a>
     </li>
   </ul>
 </li>
@@ -483,7 +483,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">24 July, 2026</h4>
+<h4 class="date">29 July, 2026</h4>
 
 </div>
 
@@ -491,7 +491,7 @@ class="email">alexander.gysin@usz.ch</a>)</h4>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -502,8 +502,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -512,13 +512,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-07-24
+<strong>Last updated:</strong> 2026-07-29
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
@@ -541,18 +541,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -643,15 +646,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree01f3e9aba5410421cfc66f012ef0f468925d6cbetargetblank01f3e9aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree51e879692636e57dd5a0790c3a7f31c755c4997atargetblank51e8796a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/01f3e9aba5410421cfc66f012ef0f468925d6cbe" target="_blank">01f3e9a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/51e879692636e57dd5a0790c3a7f31c755c4997a" target="_blank">51e8796</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree01f3e9aba5410421cfc66f012ef0f468925d6cbetargetblank01f3e9aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree51e879692636e57dd5a0790c3a7f31c755c4997atargetblank51e8796a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -661,7 +664,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/01f3e9aba5410421cfc66f012ef0f468925d6cbe" target="_blank">01f3e9a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/51e879692636e57dd5a0790c3a7f31c755c4997a" target="_blank">51e8796</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -691,13 +694,29 @@ Ignored files:
     Ignored:    output/04b_lipidomics_differential/
     Ignored:    output/05_machine_learning/
     Ignored:    output/05a_investigator/
+    Ignored:    output/05a_qc_and_preprocessing/
     Ignored:    output/nonact_extraction/
     Ignored:    output/z01_sideproject_ellen/
     Ignored:    output/z02_sideproject_vascular_2/
     Ignored:    renv/library/
     Ignored:    renv/staging/
 
+Untracked files:
+    Untracked:  analysis/05a_qc_and_preprocessing.Rmd
+    Untracked:  analysis/06a_investigator.Rmd
+    Untracked:  analysis/core_nid001125_192708
+    Untracked:  code/05_sRNA_engines.R
+    Untracked:  code/06_multiomics_engines.R
+    Untracked:  core_nid001125_167924
+    Untracked:  core_nid001125_171513
+    Untracked:  protocols/miRNA_Analysis_Plan.Rmd
+
 Unstaged changes:
+    Modified:   analysis/03b_proteomics_differential.Rmd
+    Modified:   analysis/03c_proteomics_clustering.Rmd
+    Deleted:    analysis/05a_investigator.Rmd
+    Modified:   analysis/_site.yml
+    Deleted:    code/05_multiomics_engines.R
     Modified:   renv.lock
 
 </code></pre>
@@ -744,6 +763,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/03c_proteomics_clustering.html" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2768,6 +2804,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/PCA-1.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/PCA-1.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -2818,6 +2865,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/PCA-2.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/PCA-2.png" target="_blank">7b7d98c</a>
@@ -2872,6 +2930,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/PCA-3.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/PCA-3.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -2924,6 +2993,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/PCA-4.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/PCA-4.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -2974,6 +3054,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/PCA-5.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/PCA-5.png" target="_blank">7b7d98c</a>
@@ -3059,6 +3150,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3139,6 +3241,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" target="_blank">7b7d98c</a>
@@ -3223,6 +3336,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3303,6 +3427,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" target="_blank">7b7d98c</a>
@@ -3423,6 +3558,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3497,6 +3643,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-2.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-2.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3569,6 +3726,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-3.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-3.png" target="_blank">7b7d98c</a>
@@ -3782,6 +3950,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-1.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-1.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3853,6 +4032,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-2.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-2.png" target="_blank">7b7d98c</a>
 </td>
 <td>
@@ -3922,6 +4112,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-3.png" target="_blank">51e8796</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-07-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/7b7d98c67babe26ef9b3d20d8889052a09f1c746/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-3.png" target="_blank">7b7d98c</a>
@@ -14509,7 +14710,7 @@ IFI30
 0.696
 </td>
 <td style="text-align:center;">
-3.23e-07
+3.01e-07
 </td>
 <td style="text-align:center;">
 0.846
@@ -14529,7 +14730,7 @@ S100A12
 1.205
 </td>
 <td style="text-align:center;">
-2.47e-05
+2.28e-05
 </td>
 <td style="text-align:center;">
 1.142
@@ -14549,7 +14750,7 @@ TNFRSF10B
 0.729
 </td>
 <td style="text-align:center;">
-1.56e-07
+1.46e-07
 </td>
 <td style="text-align:center;">
 0.625
@@ -14569,7 +14770,7 @@ MAD1L1
 0.708
 </td>
 <td style="text-align:center;">
-1.21e-05
+1.13e-05
 </td>
 <td style="text-align:center;">
 0.721
@@ -14589,7 +14790,7 @@ CCL19
 1.083
 </td>
 <td style="text-align:center;">
-3.42e-05
+3.16e-05
 </td>
 <td style="text-align:center;">
 0.905
@@ -14609,7 +14810,7 @@ LAMP3
 0.789
 </td>
 <td style="text-align:center;">
-4.65e-06
+4.31e-06
 </td>
 <td style="text-align:center;">
 0.717
@@ -14629,7 +14830,7 @@ CD300E
 0.622
 </td>
 <td style="text-align:center;">
-4.41e-05
+4.09e-05
 </td>
 <td style="text-align:center;">
 0.770
@@ -14649,7 +14850,7 @@ TNFRSF6B
 0.833
 </td>
 <td style="text-align:center;">
-8.50e-05
+7.86e-05
 </td>
 <td style="text-align:center;">
 0.885
@@ -14669,7 +14870,7 @@ TYMS
 0.778
 </td>
 <td style="text-align:center;">
-2.52e-03
+2.37e-03
 </td>
 <td style="text-align:center;">
 1.090
@@ -14689,7 +14890,7 @@ CXCL10
 0.839
 </td>
 <td style="text-align:center;">
-2.07e-04
+1.92e-04
 </td>
 <td style="text-align:center;">
 0.781
@@ -14709,7 +14910,7 @@ LMNB1
 0.748
 </td>
 <td style="text-align:center;">
-3.23e-04
+2.98e-04
 </td>
 <td style="text-align:center;">
 0.764
@@ -14729,7 +14930,7 @@ CXCL11
 0.700
 </td>
 <td style="text-align:center;">
-1.06e-02
+1.01e-02
 </td>
 <td style="text-align:center;">
 0.989
@@ -14749,7 +14950,7 @@ CCL7
 0.874
 </td>
 <td style="text-align:center;">
-5.25e-03
+4.97e-03
 </td>
 <td style="text-align:center;">
 1.037
@@ -14769,7 +14970,7 @@ CXCL9
 0.801
 </td>
 <td style="text-align:center;">
-3.11e-04
+2.88e-04
 </td>
 <td style="text-align:center;">
 0.690
@@ -14789,7 +14990,7 @@ TPR
 0.607
 </td>
 <td style="text-align:center;">
-9.61e-04
+8.89e-04
 </td>
 <td style="text-align:center;">
 0.610
@@ -14809,7 +15010,7 @@ CCL3
 0.625
 </td>
 <td style="text-align:center;">
-5.15e-04
+4.77e-04
 </td>
 <td style="text-align:center;">
 0.645
@@ -14829,7 +15030,7 @@ IL10RA
 0.627
 </td>
 <td style="text-align:center;">
-3.91e-02
+3.79e-02
 </td>
 <td style="text-align:center;">
 1.194
@@ -14849,7 +15050,7 @@ IFIT3
 0.602
 </td>
 <td style="text-align:center;">
-4.02e-02
+3.91e-02
 </td>
 <td style="text-align:center;">
 0.894
@@ -14902,7 +15103,7 @@ IL6
 1.707
 </td>
 <td style="text-align:center;">
-2.71e-05
+2.50e-05
 </td>
 <td style="text-align:center;">
 0.579
@@ -14922,7 +15123,7 @@ AFAP1L1
 0.917
 </td>
 <td style="text-align:center;">
-1.56e-07
+1.46e-07
 </td>
 <td style="text-align:center;">
 0.445
@@ -14942,7 +15143,7 @@ LMNB2
 0.740
 </td>
 <td style="text-align:center;">
-5.20e-08
+4.86e-08
 </td>
 <td style="text-align:center;">
 0.473
@@ -14962,7 +15163,7 @@ RBFOX3
 0.673
 </td>
 <td style="text-align:center;">
-2.25e-07
+2.10e-07
 </td>
 <td style="text-align:center;">
 0.384
@@ -14982,7 +15183,7 @@ EDA2R
 0.742
 </td>
 <td style="text-align:center;">
-3.69e-06
+3.42e-06
 </td>
 <td style="text-align:center;">
 0.477
@@ -15002,7 +15203,7 @@ CAPG
 0.646
 </td>
 <td style="text-align:center;">
-1.30e-06
+1.21e-06
 </td>
 <td style="text-align:center;">
 0.500
@@ -15022,7 +15223,7 @@ LAIR2
 1.095
 </td>
 <td style="text-align:center;">
-1.18e-03
+1.10e-03
 </td>
 <td style="text-align:center;">
 0.574
@@ -15042,7 +15243,7 @@ DPY30
 0.600
 </td>
 <td style="text-align:center;">
-1.11e-05
+1.03e-05
 </td>
 <td style="text-align:center;">
 0.507
@@ -15062,7 +15263,7 @@ FKBP15
 0.592
 </td>
 <td style="text-align:center;">
-7.61e-05
+7.06e-05
 </td>
 <td style="text-align:center;">
 0.488
@@ -15082,7 +15283,7 @@ SFTPA2
 0.792
 </td>
 <td style="text-align:center;">
-1.66e-03
+1.55e-03
 </td>
 <td style="text-align:center;">
 0.589
@@ -15102,7 +15303,7 @@ RAB44
 0.609
 </td>
 <td style="text-align:center;">
-5.79e-04
+5.39e-04
 </td>
 <td style="text-align:center;">
 0.479
@@ -15122,7 +15323,7 @@ SLAMF8
 0.604
 </td>
 <td style="text-align:center;">
-8.69e-04
+8.04e-04
 </td>
 <td style="text-align:center;">
 0.334
@@ -15142,7 +15343,7 @@ IL17C
 0.690
 </td>
 <td style="text-align:center;">
-2.54e-03
+2.39e-03
 </td>
 <td style="text-align:center;">
 0.138
@@ -15162,7 +15363,7 @@ CCL20
 0.758
 </td>
 <td style="text-align:center;">
-5.29e-03
+4.99e-03
 </td>
 <td style="text-align:center;">
 0.078
@@ -15182,7 +15383,7 @@ MMP12
 0.595
 </td>
 <td style="text-align:center;">
-1.58e-03
+1.49e-03
 </td>
 <td style="text-align:center;">
 0.453
@@ -15202,7 +15403,7 @@ HNRNPA0
 0.819
 </td>
 <td style="text-align:center;">
-1.06e-02
+1.01e-02
 </td>
 <td style="text-align:center;">
 0.618
@@ -15222,7 +15423,7 @@ BAX
 0.660
 </td>
 <td style="text-align:center;">
-4.53e-03
+4.22e-03
 </td>
 <td style="text-align:center;">
 0.450
@@ -15242,7 +15443,7 @@ POMC
 -0.608
 </td>
 <td style="text-align:center;">
-2.97e-03
+2.78e-03
 </td>
 <td style="text-align:center;">
 0.185
@@ -15262,7 +15463,7 @@ HAO1
 0.861
 </td>
 <td style="text-align:center;">
-2.13e-02
+2.03e-02
 </td>
 <td style="text-align:center;">
 0.345
@@ -15282,7 +15483,7 @@ IL17A
 0.663
 </td>
 <td style="text-align:center;">
-1.80e-02
+1.72e-02
 </td>
 <td style="text-align:center;">
 0.152
@@ -15302,7 +15503,7 @@ GPA33
 -0.738
 </td>
 <td style="text-align:center;">
-3.43e-02
+3.30e-02
 </td>
 <td style="text-align:center;">
 0.439
@@ -15322,7 +15523,7 @@ MYO1E
 0.641
 </td>
 <td style="text-align:center;">
-2.11e-02
+2.00e-02
 </td>
 <td style="text-align:center;">
 0.292
@@ -15342,7 +15543,7 @@ MUC16
 0.609
 </td>
 <td style="text-align:center;">
-1.88e-02
+1.79e-02
 </td>
 <td style="text-align:center;">
 -0.018
@@ -15362,7 +15563,7 @@ CSRP3
 0.668
 </td>
 <td style="text-align:center;">
-3.42e-02
+3.29e-02
 </td>
 <td style="text-align:center;">
 0.325
@@ -15415,7 +15616,7 @@ CDCP1
 0.473
 </td>
 <td style="text-align:center;">
-6.15e-03
+5.79e-03
 </td>
 <td style="text-align:center;">
 0.884
@@ -15435,7 +15636,7 @@ IDO1
 0.574
 </td>
 <td style="text-align:center;">
-8.69e-04
+8.04e-04
 </td>
 <td style="text-align:center;">
 0.972
@@ -15455,7 +15656,7 @@ CASP4
 0.185
 </td>
 <td style="text-align:center;">
-7.41e-01
+7.42e-01
 </td>
 <td style="text-align:center;">
 1.658
@@ -15475,7 +15676,7 @@ IL18
 0.383
 </td>
 <td style="text-align:center;">
-2.77e-02
+2.65e-02
 </td>
 <td style="text-align:center;">
 0.842
@@ -15495,7 +15696,7 @@ IL12RB1
 0.437
 </td>
 <td style="text-align:center;">
-8.20e-04
+7.61e-04
 </td>
 <td style="text-align:center;">
 0.701
@@ -15515,7 +15716,7 @@ NAGK
 0.301
 </td>
 <td style="text-align:center;">
-4.63e-02
+4.50e-02
 </td>
 <td style="text-align:center;">
 0.714
@@ -15535,7 +15736,7 @@ SERPINB8
 0.520
 </td>
 <td style="text-align:center;">
-3.83e-03
+3.58e-03
 </td>
 <td style="text-align:center;">
 0.754
@@ -15552,10 +15753,10 @@ Up-Up
 MKI67
 </td>
 <td style="text-align:center;">
-0.516
+NA
 </td>
 <td style="text-align:center;">
-5.10e-03
+NA
 </td>
 <td style="text-align:center;">
 0.797
@@ -15564,7 +15765,7 @@ MKI67
 1.11e-03
 </td>
 <td style="text-align:center;">
-Up-Up
+None
 </td>
 </tr>
 <tr>
@@ -15575,7 +15776,7 @@ IL16
 0.326
 </td>
 <td style="text-align:center;">
-2.52e-02
+2.41e-02
 </td>
 <td style="text-align:center;">
 0.661
@@ -15595,7 +15796,7 @@ OCLN
 0.431
 </td>
 <td style="text-align:center;">
-2.54e-03
+2.41e-03
 </td>
 <td style="text-align:center;">
 0.621
@@ -15612,10 +15813,10 @@ Up-Up
 IL9
 </td>
 <td style="text-align:center;">
-0.303
+NA
 </td>
 <td style="text-align:center;">
-1.02e-01
+NA
 </td>
 <td style="text-align:center;">
 0.930
@@ -15624,7 +15825,7 @@ IL9
 6.19e-03
 </td>
 <td style="text-align:center;">
-Up-Up
+None
 </td>
 </tr>
 <tr>
@@ -15635,7 +15836,7 @@ CXCL8
 0.468
 </td>
 <td style="text-align:center;">
-2.87e-02
+2.76e-02
 </td>
 <td style="text-align:center;">
 0.913
@@ -15655,7 +15856,7 @@ SH2D1A
 0.365
 </td>
 <td style="text-align:center;">
-8.30e-02
+8.10e-02
 </td>
 <td style="text-align:center;">
 0.822
@@ -15675,7 +15876,7 @@ CXCL1
 0.084
 </td>
 <td style="text-align:center;">
-7.89e-01
+7.91e-01
 </td>
 <td style="text-align:center;">
 0.917
@@ -15695,7 +15896,7 @@ XCL1
 0.232
 </td>
 <td style="text-align:center;">
-2.40e-01
+2.39e-01
 </td>
 <td style="text-align:center;">
 0.655
@@ -15715,7 +15916,7 @@ LCN15
 0.332
 </td>
 <td style="text-align:center;">
-1.17e-01
+1.14e-01
 </td>
 <td style="text-align:center;">
 0.782
@@ -15735,7 +15936,7 @@ IFNG
 0.399
 </td>
 <td style="text-align:center;">
-5.05e-02
+4.90e-02
 </td>
 <td style="text-align:center;">
 0.804
@@ -15755,7 +15956,7 @@ APIP
 0.410
 </td>
 <td style="text-align:center;">
-3.78e-02
+3.65e-02
 </td>
 <td style="text-align:center;">
 0.729
@@ -15775,7 +15976,7 @@ ZBP1
 0.437
 </td>
 <td style="text-align:center;">
-5.67e-03
+5.35e-03
 </td>
 <td style="text-align:center;">
 0.726
@@ -15795,7 +15996,7 @@ LAG3
 0.393
 </td>
 <td style="text-align:center;">
-2.52e-03
+2.37e-03
 </td>
 <td style="text-align:center;">
 0.689
@@ -15815,7 +16016,7 @@ DHPS
 0.402
 </td>
 <td style="text-align:center;">
-1.15e-02
+1.10e-02
 </td>
 <td style="text-align:center;">
 0.757
@@ -15835,7 +16036,7 @@ CD38
 0.209
 </td>
 <td style="text-align:center;">
-8.44e-02
+8.25e-02
 </td>
 <td style="text-align:center;">
 0.583
@@ -15855,7 +16056,7 @@ CD6
 -0.089
 </td>
 <td style="text-align:center;">
-6.38e-01
+6.40e-01
 </td>
 <td style="text-align:center;">
 0.772
@@ -15875,7 +16076,7 @@ PYHIN1
 0.417
 </td>
 <td style="text-align:center;">
-8.87e-02
+8.64e-02
 </td>
 <td style="text-align:center;">
 0.763
@@ -15895,7 +16096,7 @@ LEFTY2
 -0.115
 </td>
 <td style="text-align:center;">
-6.02e-01
+6.06e-01
 </td>
 <td style="text-align:center;">
 0.717
@@ -15915,7 +16116,7 @@ EGLN1
 0.449
 </td>
 <td style="text-align:center;">
-7.84e-03
+7.50e-03
 </td>
 <td style="text-align:center;">
 0.732
@@ -15935,7 +16136,7 @@ GZMH
 0.458
 </td>
 <td style="text-align:center;">
-8.66e-02
+8.45e-02
 </td>
 <td style="text-align:center;">
 0.845
@@ -15955,7 +16156,7 @@ PSMD5
 0.205
 </td>
 <td style="text-align:center;">
-1.78e-01
+1.75e-01
 </td>
 <td style="text-align:center;">
 0.583
@@ -15975,7 +16176,7 @@ ITM2A
 0.092
 </td>
 <td style="text-align:center;">
-5.70e-01
+5.73e-01
 </td>
 <td style="text-align:center;">
 0.590
@@ -15995,7 +16196,7 @@ APEX1
 0.540
 </td>
 <td style="text-align:center;">
-1.64e-03
+1.55e-03
 </td>
 <td style="text-align:center;">
 0.644
@@ -16015,7 +16216,7 @@ TNFRSF9
 0.512
 </td>
 <td style="text-align:center;">
-2.03e-03
+1.91e-03
 </td>
 <td style="text-align:center;">
 0.622
@@ -16035,7 +16236,7 @@ IL12B
 0.395
 </td>
 <td style="text-align:center;">
-2.39e-02
+2.29e-02
 </td>
 <td style="text-align:center;">
 0.686
@@ -16055,7 +16256,7 @@ IFIT1
 0.455
 </td>
 <td style="text-align:center;">
-1.81e-02
+1.73e-02
 </td>
 <td style="text-align:center;">
 0.667
@@ -16075,7 +16276,7 @@ CXCL17
 0.394
 </td>
 <td style="text-align:center;">
-1.28e-02
+1.22e-02
 </td>
 <td style="text-align:center;">
 0.617
@@ -16095,7 +16296,7 @@ ZC3H12D
 0.133
 </td>
 <td style="text-align:center;">
-5.28e-01
+5.32e-01
 </td>
 <td style="text-align:center;">
 0.723
@@ -16115,7 +16316,7 @@ PDZK1
 0.283
 </td>
 <td style="text-align:center;">
-9.03e-02
+8.83e-02
 </td>
 <td style="text-align:center;">
 0.591
@@ -16135,7 +16336,7 @@ GZMA
 0.042
 </td>
 <td style="text-align:center;">
-8.41e-01
+8.43e-01
 </td>
 <td style="text-align:center;">
 0.606
@@ -16155,7 +16356,7 @@ ADGRE1
 0.437
 </td>
 <td style="text-align:center;">
-5.67e-03
+5.35e-03
 </td>
 <td style="text-align:center;">
 0.656
@@ -16175,7 +16376,7 @@ UBE2Z
 0.160
 </td>
 <td style="text-align:center;">
-5.15e-01
+5.19e-01
 </td>
 <td style="text-align:center;">
 0.733
@@ -16195,7 +16396,7 @@ GPD1
 0.097
 </td>
 <td style="text-align:center;">
-6.77e-01
+6.78e-01
 </td>
 <td style="text-align:center;">
 0.725
@@ -16215,7 +16416,7 @@ IL12A_IL12B
 0.442
 </td>
 <td style="text-align:center;">
-2.77e-02
+2.65e-02
 </td>
 <td style="text-align:center;">
 0.720
@@ -16235,7 +16436,7 @@ FCRL6
 0.046
 </td>
 <td style="text-align:center;">
-8.17e-01
+8.20e-01
 </td>
 <td style="text-align:center;">
 0.636
@@ -16255,7 +16456,7 @@ GCG
 -0.247
 </td>
 <td style="text-align:center;">
-4.86e-01
+4.91e-01
 </td>
 <td style="text-align:center;">
 0.866
@@ -16275,7 +16476,7 @@ FGF23
 0.247
 </td>
 <td style="text-align:center;">
-3.56e-01
+3.59e-01
 </td>
 <td style="text-align:center;">
 0.636
@@ -16295,7 +16496,7 @@ SAMD9L
 0.362
 </td>
 <td style="text-align:center;">
-1.14e-01
+1.12e-01
 </td>
 <td style="text-align:center;">
 0.626
@@ -16315,7 +16516,7 @@ RIGI
 0.504
 </td>
 <td style="text-align:center;">
-1.45e-02
+1.38e-02
 </td>
 <td style="text-align:center;">
 0.626
@@ -16355,7 +16556,7 @@ RFC4
 0.177
 </td>
 <td style="text-align:center;">
-5.37e-01
+5.40e-01
 </td>
 <td style="text-align:center;">
 0.601
@@ -16375,7 +16576,7 @@ PDCD1
 0.538
 </td>
 <td style="text-align:center;">
-8.03e-04
+7.44e-04
 </td>
 <td style="text-align:center;">
 0.610
@@ -16395,7 +16596,7 @@ CCL4
 0.376
 </td>
 <td style="text-align:center;">
-6.63e-02
+6.42e-02
 </td>
 <td style="text-align:center;">
 0.614
@@ -16415,7 +16616,7 @@ HIF1A
 0.260
 </td>
 <td style="text-align:center;">
-3.09e-01
+3.10e-01
 </td>
 <td style="text-align:center;">
 0.686
@@ -16435,7 +16636,7 @@ CXCL6
 0.083
 </td>
 <td style="text-align:center;">
-7.73e-01
+7.76e-01
 </td>
 <td style="text-align:center;">
 0.580
@@ -16491,6 +16692,8 @@ if (!is.null(payload) &amp;&amp; payload$status == &quot;success&quot;) {
     # 5. Export the bridge file
     export_path &lt;- file.path(export_dir, paste0(target_job, &quot;_Master_Assignments.rds&quot;))
     saveRDS(bridge_df, export_path)
+    
+    write_csv(bridge_df, file = here::here(&quot;output/03c_proteomics_clustering/Clustering/job_svc/job_svc_master_assignment.csv&quot;))
     
     cat(sprintf(&quot;**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n&quot;, nrow(bridge_df), export_path))
   } else {

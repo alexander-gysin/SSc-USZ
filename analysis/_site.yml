@@ -42,7 +42,7 @@ navbar:
   - text: Multi-Omics
     menu:
     - text: Investigator
-      href: 05a_investigator.html
+      href: 06a_investigator.html
   - text: Side Projects
     menu:
     - text: Vascular

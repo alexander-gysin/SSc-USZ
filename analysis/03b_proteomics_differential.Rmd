@@ -321,7 +321,7 @@ for (cross_name in names(cross_contrasts)) {
 ```{r export}
 #Export all DEA Results
 for (name in names(master_dea_results)) {
-  target_file <- file.path(output_dir_data, paste0(name, ".rds"))
+  target_file <- file.path(output_dir_data, paste0(name, ".rds")) 
   saveRDS(master_dea_results[[name]], target_file)
 }
 
@@ -329,7 +329,7 @@ for (name in names(master_dea_results)) {
 if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
   saveRDS(
     master_dea_results[["vascular_vs_nonvascular"]], 
-    file.path(output_dir_data, "full_vascular_dea_results.rds")
+    file.path(output_dir_data, "full_vascular_dea_results.rds") 
   )
 } else {
   cat("'vascular_vs_nonvascular' contrast was not found or failed. Export skipped.\n\n")
@@ -340,7 +340,7 @@ if ("active_vs_control" %in% names(master_dea_results)) {
   # Save to the root differential output folder so other scripts easily find it
   saveRDS(
     master_dea_results[["active_vs_control"]], 
-    file.path(output_dir_data, "dea_active_vs_control.rds")
+    file.path(output_dir_data, "dea_active_vs_control.rds") 
   )
 }
 ```
