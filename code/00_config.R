@@ -149,7 +149,6 @@ sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
       }
     } else {
       cat("\n\U0001F4BE Committing changes...\n")
-      # wflow_git_commit explicitly adds specific files, and all=TRUE sweeps tracked modifications
       workflowr::wflow_git_commit(files = target_files, all = TRUE, message = commit_msg)
     }
   }, error = function(e) stop(sprintf("Commit/Publish failed:\n%s", e$message), call. = FALSE))
@@ -166,6 +165,8 @@ sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
     cat("2. If this is a new repository/branch, you may need to set the upstream:\n")
     cat("   Run: `system(\"git push -u origin HEAD\")`\n")
     cat("3. If there is a remote conflict, pull changes first: `workflowr::wflow_git_pull()`\n")
+    cat("4. If you are constantly asked for your username/password on the cluster,\n")
+    cat("   run this in your terminal to save them: `git config --global credential.helper store`\n")
   })
 }
 
@@ -250,6 +251,15 @@ sync_status <- function() {
       if (length(modified_git) > 0) {
         cat(sprintf("\n\u26A0\uFE0F Modified files:\n- %s\n", paste(sub("^\\s*[A-Z]+\\s+", "", modified_git), collapse = "\n- ")))
       }
+    }
+
+    # Check for Git credential helper config
+    cred_helper <- get_git("config --global credential.helper")
+    if (length(cred_helper) > 0 && grepl("store|cache|manager", cred_helper[1])) {
+      cat("\n\u2705 Git credential helper is configured.\n")
+    } else {
+      cat("\n\u26A0\uFE0F Git credential helper not found. If pushing asks for a password,\n")
+      cat("   run this in your terminal: `git config --global credential.helper store`\n")
     }
 
     cat("\n\U0001F4A1 GIT ACTIONS:\n")
