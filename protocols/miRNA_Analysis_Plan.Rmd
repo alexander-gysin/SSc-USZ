@@ -1,0 +1,93 @@
+---
+title: "miRNA_Analysis_Plan"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Overview
+
+## Anatomy of the sequencing read:
+
+5'-miRNA-3'adapter-UMI-Illumina adapter-sample index
+
+3'-Adaptor: (5’-3’, 19bp) AACTGTAGGCACCATCAAT (source:
+<https://www.qiagen.com/us/resources/faq/3671>) UMI: start at 0bp after
+3'-Adaptor, length 12bp (source:
+<https://resources.qiagenbioinformatics.com/manuals/biomedicalgenomicsanalysis/2600/index.php?manual=Create_UMI_Reads_miRNA.html>)
+Illumina adapter: 34bp long? (does not really matter)
+
+## Tech
+
+-   Only use R1
+
+## Structure
+
+-   05a_qc_and_preprocessing.Rmd (raw fastq to quality-assessed,
+    extracted and trimmed pre-processed fastq) FastQC/MultiQC, UMI-tools
+    extract, cutadapt, FastQC/MultiQC again
+-   05b_alignment_and_counting.Rmd (preprocessed fastq to raw count
+    matrix) Rsubread::align, UMI-tools dedup, Rsubread::featureCounts
+    -05c_normalization_and_exploration (from raw count to normalized
+    count to PCA) DESeq2::... -05d_differential_expression.Rmd
+    DESeq2::... (volcano plots and MA plots multiMiR:: for target
+    prediction
+
+# Questions
+
+1.  Is there a difference between SSc vs Ctrl?
+2.  is there a difference between Act vs Nonactive?
+3.  Is there a difference between C1 vs C2?
+4.  Is there a difference between N1 vs N2?
+5.  Does unsupervised clustering on sRNA agree with the proteomics
+    clustering?
+6.  Which sRNAs correlate with which clinical features?
+7.  Can we predict organ involvement?
+8.  Cell-of-origin inference (enriched for certain cell type signature)
+
+# Plan
+
+## Import and QC
+
+1.  Load the fastQ files using FastQC via command-line
+2.  Run FastQC/MultiQC via command-line to aggregatea all samples into
+    one QC report, embed in html report using iframe, export table to
+    .csv file
+
+## Preprocessing
+
+1.  Use UMI-tools extract via command-line to extract the UMI and append
+    it to the header
+2.  Use cutadapt via command-line to remove the 3'-adapter
+3.  Run Run FastQC/MultiQC again via command-line to aggregatea all
+    samples into one QC report, embed in html report using iframe,
+    export table to .csv file
+
+## Read Alignment & Feature Counting
+
+1.  Index the reference genome using Rsubread::featureCounts (using the
+    GRCh38(h38) geome fasta file)
+2.  Map the preprocessed reads using Rsubread::align (creates BAM file)
+3.  Run UMI-tools dedup via command-line on the BAM files (groups reads
+    by their mapping coordinate and UMI (creates a deduplicated BAM
+    file)
+4.  Generate the final numeric count-matrix using
+    Rsubread::featureCounts from the deduplicated BAM files, providing a
+    GTF file (from miRBase) with coordinates of known miRNAs
+
+## Spike-In Normalization & Modeling
+
+1.  DESeq2::DESeqDataSetFromMatrix binds the count data, meta data and
+    design formula into one object
+2.  DESeq2::estimateSizeFactors calculates normalization factors from
+    the spike-ins AND endogenous miRNAs
+3.  DESeq2::DESeq estimates feature dispersion (variance) and fits
+    Negative Binomial Model
+4.  DESeq::results extracts FCs, SEs, p-values and FDR for the specified
+    contrasts
+
+## Target Integration
+
+1.  multiMiR::get.multimir send the list of differentially expressed
+    miRNAs to the multiMiR databae for mRNA target prediction

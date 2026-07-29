@@ -96,10 +96,16 @@ sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
 
     target_files <- unique(target_files)
     if (exists("all_scripts", envir = .GlobalEnv)) {
-      invalid <- target_files[!target_files %in% all_scripts]
-      if (length(invalid) > 0) stop(sprintf("Files not in all_scripts:\n%s", paste(invalid, collapse = "\n")), call. = FALSE)
+      not_in_list <- target_files[!target_files %in% all_scripts]
 
-      target_files <- all_scripts[all_scripts %in% target_files]
+      if (length(not_in_list) > 0) {
+        cat("\n\U0001F4A1 HINT: The following files are not in the canonical `all_scripts` list but will be processed:\n")
+        cat(paste("-", not_in_list, collapse = "\n"), "\n")
+      }
+
+      # Reorder canonical files according to all_scripts, and append the non-canonical ones
+      in_list <- all_scripts[all_scripts %in% target_files]
+      target_files <- c(in_list, not_in_list)
 
       if (identical(target_files, all_scripts) && !preview) {
         if (tolower(readline("Publish all analyses? [y/n]: ")) != "y") stop("Sync cancelled.", call. = FALSE)
@@ -117,7 +123,7 @@ sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
       if (!is.null(target_files) && length(target_files) == 1) {
         commit_msg <- sprintf("Update %s", basename(target_files))
       } else if (!is.null(target_files) && length(target_files) > 1) {
-        commit_msg <- sprintf("Update %d analysis files", length(target_files))
+        commit_msg <- sprintf("Update %d files", length(target_files))
       } else {
         commit_msg <- "routine sync"
       }
@@ -259,7 +265,9 @@ sync_status <- function() {
       cat("\n\u2705 Git credential helper is configured.\n")
     } else {
       cat("\n\u26A0\uFE0F Git credential helper not found. If pushing asks for a password,\n")
-      cat("   run this in your terminal: `git config --global credential.helper store`\n")
+      cat("   run this in your terminal to save them the next time you are asked: \n`git config --global credential.helper store`\n
+        KEEP IN MIND THAT THIS SAVES YOUR PAT IN PLAIN TEXT IN YOUR HOME DIRECTORY\n
+        NOBODY ELSE SHOULD HAVE ACCESS TO YOUR HOME DIRECTORY TO KEEP YOUR PAT PRIVATE\n")
     }
 
     cat("\n\U0001F4A1 GIT ACTIONS:\n")
