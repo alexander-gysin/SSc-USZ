@@ -35,6 +35,8 @@ current_file <- "03b_proteomics_differential"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
+assets_dir <- here::here("docs", "assets", current_file)
+
 # Source Engines
 source(here::here("code", "01_general_engines.R"))
 source(here::here("code", "02_proteomics_engines.R"))
@@ -72,26 +74,6 @@ candidate_vars <- list(
 )
 
 contrast_configs <- list(
-  active_vs_control = list(
-    title = "Active vs Control",
-    group_col = "cohort_group",
-    target_groups = c(GRP_ACTIVE),
-    ref_groups = c(GRP_CONTROL),
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
-  nonactive_vs_control = list(
-    title = "Non-Active vs Control",
-    group_col = "cohort_group",
-    target_groups = c(GRP_NON_ACTIVE),
-    ref_groups = c(GRP_CONTROL),
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
   ssc_vs_control = list(
     title = "SSc vs Control",
     group_col = "cohort_group",
@@ -102,6 +84,18 @@ contrast_configs <- list(
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.5
   ),
+  
+    ssc_vs_control_sample_age = list(
+    title = "SSc vs Control",
+    group_col = "cohort_group",
+    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
+    ref_groups = c(GRP_CONTROL),
+    is_continuous = FALSE,
+    covariates = c("Age", "Sex", "Sample_Age"),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.5
+  ),
+  
   active_vs_nonactive = list(
     title = "Active vs Nonactive",
     group_col = "cohort_group",
@@ -111,36 +105,6 @@ contrast_configs <- list(
     covariates = c("Age", "Sex"),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.2
-  ),
-  inflamm_vs_noninflamm = list(
-    title = "Inflammatory vs Non-Inflammatory",
-    group_col = "Inflamm_active",
-    target_groups = c("yes"), 
-    ref_groups = c("no"),     
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"), 
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
-  vascular_vs_nonvascular = list(
-    title = "Vascular vs Non-Vascular",
-    group_col = "vascular_active",
-    target_groups = c("yes"), 
-    ref_groups = c("no"),     
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"), 
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
-  fibrotic_vs_nonfibrotic = list(
-    title = "Fibrotic vs Non-Fibrotic",
-    group_col = "fibrotic_active",
-    target_groups = c("yes"), 
-    ref_groups = c("no"),     
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex"), 
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
   ),
   
   eustar_aactive_vs_nonactive = list(
@@ -156,15 +120,20 @@ contrast_configs <- list(
 )
 
 ## 4. Cross-Contrast Trajectory Plots
-cross_contrasts <- list(
-  active_vs_nonactive_trajectory = list(
-    title = "Trajectory: Active vs Nonactive",
-    x_axis_contrast = "active_vs_control",      
-    y_axis_contrast = "nonactive_vs_control",   
-    top_n_specific  = 5,  
-    top_n_shared    = 5,
-    top_n_pathways  = 10,       # Per Quadrant
-    pathway_rank_var = "rank_score" # Internal rank score uses lowest FDR sum
+cross_contrast_configs <- list(
+  cc_svc_vs_svc_sa_cor = list(
+    title = "SSc vs Control contrasted with SSc vs Control (Sample_Age corrected)",
+    x_source = "ssc_vs_control",                # Must map to the variable name loaded in Setup
+    y_source = "ssc_vs_control_sample_age",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "SSc vs Control",
+    y_label = "SSc vs Control Sample_Age corrected",
+    color_x = "#e67e22",                      # Orange
+    color_y = "#2980b9",                      # Blue
+    highlight_color = "#27ae60",              # Green
+    top_n_specific = 8,
+    top_n_shared = 8,
+    p_cutoff = 0.05,   
+    fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
   )
 )
 
@@ -175,9 +144,6 @@ heatmap_config <- list(
   row_font_size = 8
 )
 
-# 6. Comparative Settings
-cross_contrasts$active_vs_nonactive_trajectory$top_n_upset <- 10       
-cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20
 ```
 
 
@@ -185,8 +151,8 @@ cross_contrasts$active_vs_nonactive_trajectory$top_n_pathways <- 20
 `r what_this_does("Executed linear modeling (limma) for each defined contrast to identify differentially expressed proteins while adjusting for covariates.", "Generated Volcano plots and static Heatmaps to visualize significant fold changes and expression clusters.", "Performed Gene Set Enrichment Analysis (GSEA) on full fold-change ranked lists and rendered Dot and Ridge plots for biological interpretation.")`
 
 ```{r execution_engine_DEA_GSEA, fig.width=8, fig.height=8, results='asis'}
-master_dea_results <- list()
-master_gsea_results <- list() 
+global_dea_payloads <- list()
+master_gsea_results <- list()
 
 for (c_name in names(contrast_configs)) {
   
@@ -214,7 +180,7 @@ for (c_name in names(contrast_configs)) {
   }
   
   # Store Master Results
-  master_dea_results[[c_name]] <- res$data$dea
+  global_dea_payloads[[c_name]] <- res$data$dea
   
   # Extract primary GO_BP database for downstream trajectory plotting to satisfy the flat-dataframe requirement
   if (!is.null(res$data$gsea[["GO_BP"]])) {
@@ -273,46 +239,114 @@ for (c_name in names(contrast_configs)) {
 # Trajectory Mapping {.tabset}
 `r what_this_does("Mapped the fold changes of proteins across two distinct clinical contrasts to identify shared and diverging biological trajectories (Quadrant Plots).", "Generated Venn diagrams to visualize the intersection of significant features between contrasts.", "Calculated and plotted cross-contrast pathway trajectories to reveal higher-order biological mechanisms driving cohort differences.")`
 ```{r execution_engine_trajectory, fig.width=8, fig.height=8, results='asis'}
-for (cross_name in names(cross_contrasts)) {
-  conf <- cross_contrasts[[cross_name]]
+# Ensure the export directory exists
+cc_dir <- file.path(output_dir_data, "Cross_Contrasts")
+if (!dir.exists(cc_dir)) dir.create(cc_dir, recursive = TRUE)
+
+for (cc_id in names(cross_contrast_configs)) {
+  conf <- cross_contrast_configs[[cc_id]]
   
-  # CALL THE MASTER PIPELINE
-  traj_res <- wrap_trajectory_pipeline(
-    cross_conf          = conf, 
-    cross_id            = cross_name, 
-    master_dea          = master_dea_results, 
-    master_gsea         = master_gsea_results, 
-    contrast_configs    = contrast_configs,
-    base_output_dir     = output_dir_data, 
-    project_colors_func = get_project_colors, 
-    highlight_color     = COLOR_HIGHLIGHT,
-    omics_config        = omics_config      
-  )
+  # Inject Parent Tab Header for this Comparison
+  cat(sprintf("\n\n## %s {.tabset .tabset-pills}\n\n", conf$title))
   
-  # 1. Generate the Tab Header
-  cat(sprintf("\n\n## %s\n\n", conf$title))
+  # 1. Fetch DEA X
+  dea_x <- if (exists(conf$x_source)) get(conf$x_source) else global_dea_payloads[[conf$x_source]]
+
+  # 2. Fetch DEA Y
+  dea_y <- if (exists(conf$y_source)) get(conf$y_source) else global_dea_payloads[[conf$y_source]]
   
-  if(traj_res$status == "failed") {
-    cat(sprintf("> <span style='color:red;'>**SKIPPED:** %s</span>\n\n", traj_res$error_msg))
+  if (is.null(dea_x) || is.null(dea_y)) {
+    cat(sprintf("*Error: Could not locate DEA source payload(s) for %s.*\n\n", cc_id))
     next
   }
-
-  # 2. Render Plots
-  if(!is.null(traj_res$plots$protein_trajectory)) {
-    print(traj_res$plots$protein_trajectory)
-    cat("\n\n")
-  }
   
-  if(!is.null(traj_res$plots$venn)) {
-    cat("### Feature Intersection\n\n")
-    print(traj_res$plots$venn)
-    cat("\n\n")
-  }
-
-  if(!is.null(traj_res$plots$pathway_trajectory)) {
-    cat("### Pathway Trajectory\n\n")
-    print(traj_res$plots$pathway_trajectory)
-    cat("\n\n")
+  # 3. Execute Engine
+  cc_res <- run_cross_contrast_engine(
+    dea_x = dea_x, 
+    dea_y = dea_y, 
+    conf = conf, 
+    x_label = conf$x_label, 
+    y_label = conf$y_label, 
+    color_x = conf$color_x, 
+    color_y = conf$color_y, 
+    highlight_color = conf$highlight_color, 
+    title = conf$title
+  )
+  
+  if (!is.null(cc_res)) {
+    
+    # --- SUB-TAB: SCATTER PLOT ---
+    cat("\n\n### Scatter Plot\n\n")
+    
+    ggsave(file.path(cc_dir, paste0(cc_id, "_cross_contrast.png")), cc_res$plot, width = 9, height = 7, bg = "white")
+    if (!is.null(assets_dir)) {
+      ggsave(file.path(assets_dir, paste0(cc_id, "_cross_contrast.png")), cc_res$plot, width = 9, height = 7, bg = "white")
+    }
+    
+    if (interactive()) {
+      print(cc_res$plot)
+    } else {
+      cat(sprintf("<img src='assets/03c_proteomics_clustering/%s_cross_contrast.png' width='100%%' />\n\n", cc_id))
+    }
+    
+    # --- SUB-TAB: DATA TABLES ---
+    cat("\n\n### Driver Tables\n\n")
+    
+    # Map the dynamic names back to the tables using the 'labels' list
+    table_list <- list(
+      "Shared Drivers" = cc_res$tables$shared,
+      "temp_x" = cc_res$tables$x_specific,
+      "temp_y" = cc_res$tables$y_specific
+    )
+    names(table_list)[2] <- cc_res$labels$x_sig_name
+    names(table_list)[3] <- cc_res$labels$y_sig_name
+    
+    # Setup dynamic column names for pristine formatting
+    col_logFC_x <- sprintf("logFC (%s)", conf$x_label)
+    col_FDR_x <- sprintf("FDR (%s)", conf$x_label)
+    col_logFC_y <- sprintf("logFC (%s)", conf$y_label)
+    col_FDR_y <- sprintf("FDR (%s)", conf$y_label)
+    
+    for (t_name in names(table_list)) {
+      df <- table_list[[t_name]]
+      
+      if (nrow(df) > 0) {
+        # Format numbers and apply custom dynamic headers
+        display_df <- df %>%
+          mutate(
+            logFC_X = round(logFC_X, 3),
+            logFC_Y = round(logFC_Y, 3),
+            FDR_X = formatC(FDR_X, format = "e", digits = 2),
+            FDR_Y = formatC(FDR_Y, format = "e", digits = 2)
+          ) %>%
+          rename(
+            !!col_logFC_x := logFC_X,
+            !!col_FDR_x := FDR_X,
+            !!col_logFC_y := logFC_Y,
+            !!col_FDR_y := FDR_Y
+          )
+        
+        if (isTRUE(getOption('knitr.in.progress'))) {
+          html_table <- kableExtra::kbl(display_df, format = "html", align = "c", 
+                                        caption = sprintf("Target Category: %s", t_name)) %>%
+            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left") %>%
+            kableExtra::scroll_box(width = "100%", height = "400px")
+          
+          cat(as.character(html_table))
+          
+        } else {
+          cat(sprintf("\n**Target Category: %s**\n\n", t_name))
+          print(rmarkdown::paged_table(display_df))
+        }
+        
+      } else {
+        cat(sprintf("> No features met the significance criteria for **%s**.\n", t_name))
+      }
+      cat("\n\n<br>\n\n") 
+    }
+    
+  } else {
+    cat("*No significant overlapping drivers found between these datasets.* \n\n")
   }
 }
 ```
@@ -320,15 +354,15 @@ for (cross_name in names(cross_contrasts)) {
 `r what_this_does("Exported the full vascular DEA results to hand off to the subsetted side-project script.", "Finalized the script execution.")`
 ```{r export}
 #Export all DEA Results
-for (name in names(master_dea_results)) {
+for (name in names(global_dea_payloads)) {
   target_file <- file.path(output_dir_data, paste0(name, ".rds")) 
-  saveRDS(master_dea_results[[name]], target_file)
+  saveRDS(global_dea_payloads[[name]], target_file)
 }
 
 # Export Vascular DEA (Legacy support)
-if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
+if ("vascular_vs_nonvascular" %in% names(global_dea_payloads)) {
   saveRDS(
-    master_dea_results[["vascular_vs_nonvascular"]], 
+    global_dea_payloads[["vascular_vs_nonvascular"]], 
     file.path(output_dir_data, "full_vascular_dea_results.rds") 
   )
 } else {
@@ -336,10 +370,10 @@ if ("vascular_vs_nonvascular" %in% names(master_dea_results)) {
 }
 
 # <-- NEW: Export Active vs Control DEA for 03d
-if ("active_vs_control" %in% names(master_dea_results)) {
+if ("active_vs_control" %in% names(global_dea_payloads)) {
   # Save to the root differential output folder so other scripts easily find it
   saveRDS(
-    master_dea_results[["active_vs_control"]], 
+    global_dea_payloads[["active_vs_control"]], 
     file.path(output_dir_data, "dea_active_vs_control.rds") 
   )
 }

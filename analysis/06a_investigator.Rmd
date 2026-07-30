@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 )
 
 # Output paths
-current_file <- "05a_investigator"
+current_file <- "06a_investigator"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
@@ -117,6 +117,14 @@ investigation_jobs <- list(
   job_ido1 = list(
     title = "Investigate IDO1",
     targets = c("IDO1"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_eda2r = list(
+    title = "Investigate EDA2R",
+    targets = c("EDA2R"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
     residualize_conf = NULL
@@ -320,7 +328,7 @@ for (res_name in names(master_investigation_results)) {
 ```
 
 ```{r complete}
-cat("Script 05a Complete! \n")
+cat("Script 06a Complete! \n")
 ```
 
   <!-- # ========================================================================= -->
