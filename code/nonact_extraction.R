@@ -2,6 +2,8 @@ library(dplyr)
 library(tibble)
 library(writexl)
 
+omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+
 # -----------------------------
 # 1. Select the proteins of interest
 # -----------------------------
@@ -54,11 +56,11 @@ export_df <- joined_df %>%
 # -----------------------------
 
 # Output paths
-current_file <- "nonact_extraction"
+current_file <- "nonact_extraction_NPX_no_filter"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 write_xlsx(
   export_df,
-  file.path(output_dir_data, "Nonact_Protein_Expression_Extraction.xlsx")
+  file.path(output_dir_data, "Nonact_Protein_Expression_Extraction_NPX_nonfilter.xlsx")
 )
