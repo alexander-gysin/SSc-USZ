@@ -146,7 +146,8 @@ diagnostic_configs <- list(
 #Note: For the value argument, I used %in% under the hood instead of ==, so you can even pass multiple values like value = c("Nonactive", "Mildly Active") if you ever need to group ordinal tiers together!
 clin_vars_to_highlight <- list(
   "SSc clinical parameters" = ssc_clinical_parameters,
-  "Medication" = clinical_domains$Medications
+  "Medication" = clinical_domains$Medications,
+  "Demographics_and_Scores" = clinical_domains$Demographics_and_Scores
 )
 
 clin_vars_to_include <- list(
