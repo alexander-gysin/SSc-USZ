@@ -1,51 +1,11 @@
+# scratch directory
+scratch_dir <- "~/scratch/SSc-USZ"
+
 # GLOBAL CONFIGURATION FILE (00_config.R)
 # Project: Systemic Sclerosis Disease Activity Multi-Omics
 
 
-# 1. SCRIPT GROUPS ----------------------
-
-base_scripts <- c(
-  "analysis/index.Rmd",
-  "analysis/about.Rmd",
-  "analysis/license.Rmd"
-)
-
-clinical_scripts <- c(
-  "analysis/01a_data_import_and_qc.Rmd",
-  "analysis/01b_clinical_feature_engineering.Rmd",
-  "analysis/02a_cohort_characterization.Rmd",
-  "analysis/02b_clinical_clustering.Rmd"
-)
-
-proteomics_scripts <- c(
-  "analysis/03a_proteomics_variance.Rmd",
-  "analysis/03b_proteomics_differential.Rmd",
-  "analysis/03c_proteomics_clustering.Rmd",
-  "analysis/03d_proteomics_subgroups.Rmd",
-  "analysis/03e_proteomics_correlations.Rmd",
-  "analysis/03f_proteomics_machine_learning.Rmd"
-)
-
-lipidomics_scripts <- c(
-  "analysis/04a_lipidomics_topography.Rmd",
-  "analysis/04b_lipidomics_differential.Rmd",
-  "analysis/04c_lipidomics_machine_learning.Rmd"
-)
-
-miRNA_scripts <- c(
-  "analysis/05a_qc_and_preprocessing.Rmd"
-)
-
-multiomics_scripts <- c(
-  "analysis/06a_investigator.Rmd"
-)
-
-sideproject_scripts <- c(
-  "analysis/z01_sideproject_ellen.Rmd",
-  "analysis/z02_sideproject_vascular_2.Rmd"
-)
-
-# 2. AUTOMATIC MASTER LIST -------------------------
+# 1. . AUTOMATIC MASTER LIST -------------------------
 
 generate_all_scripts <- function() {
   c(
@@ -338,7 +298,7 @@ HM_Z_HIGH <- "firebrick4"
 
 # Fallback Palettes for Exploratory Plotting (PCA, etc.)
 # Used automatically when a variable doesn't have a strict color mapped above
-FALLBACK_CAT_PALETTE  <- c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#0072B2", "#F0E442", "#999999")
+FALLBACK_CAT_PALETTE  <- c("#E69F00", "#56B4E9", "#CC79A7", "#009E73", "#D55E00", "#0072B2", "#F0E442", "#999999")
 FALLBACK_CONT_PALETTE <- "viridis" # Continuous fallback palette (viridis, plasma, magma, etc.)
 
 # 5. CLINICAL VARIABLES SUBSETS

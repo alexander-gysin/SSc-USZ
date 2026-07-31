@@ -38,7 +38,7 @@ olink_df <- rownames_to_column(olink_df, "Subject_ID")
 # -----------------------------
 
 final_df <- master_spine %>%
-  select(Subject_ID, inCentraxx, Entnahmedatum, ACTIVE_AI) %>%
+  select(Subject_ID, inCentraxx, Entnahmedatum, ACTIVE_AI, Age, Sex) %>%
   inner_join(olink_df, by = "Subject_ID")
 
 clust_res <- readRDS(here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"))
@@ -56,11 +56,11 @@ export_df <- joined_df %>%
 # -----------------------------
 
 # Output paths
-current_file <- "nonact_extraction_NPX_EUSTAR"
+current_file <- "nonact_extraction"
 output_dir_data <- here::here("output", current_file)
 if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
 
 write_xlsx(
   export_df,
-  file.path(output_dir_data, "Nonact_Protein_Expression_Extraction_NPX_EUSTAR.xlsx")
+  file.path(output_dir_data, "Nonact_Protein_Expression_Extraction_NPX_EUSTAR_age_and_sex.xlsx")
 )

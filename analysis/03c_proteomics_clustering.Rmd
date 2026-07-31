@@ -24,9 +24,7 @@ library(dbscan)     # HDBSCAN Density clustering
 library(igraph)     # Louvain Graph clustering
 library(gtsummary)  # Clinical tables$
 library(msigdbr)
-
-# Knitr Config
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(ggsankey)
 
 # Output paths
 current_file <- "03c_proteomics_clustering" # Change dataset
@@ -36,6 +34,48 @@ assets_dir <- here::here("docs", "assets", current_file)
 
 # Global DEA Path
 proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
+
+# Knitr Config & Caching Setup
+knitr::opts_chunk$set(
+  cache = TRUE, 
+  autodep = TRUE,
+  cache.path = paste0(scratch_dir, "/cache/", current_file)
+)
+
+# Automated Engine-Tracking Hook (Monitors external .R files for changes)
+knitr::opts_hooks$set(cache = function(options) {
+  if (isTRUE(options$cache)) {
+    # Isolate all custom functions currently loaded in the global environment
+    custom_funcs <- Filter(is.function, eapply(.GlobalEnv, identity))
+    func_names <- names(custom_funcs)
+    
+    if (length(func_names) > 0) {
+      chunk_code <- paste(options$code, collapse = "\n")
+      
+      # Find which custom functions are explicitly called in this chunk's code
+      used_top <- func_names[sapply(func_names, function(f) grepl(paste0("\\b", f, "\\b"), chunk_code))]
+      
+      all_deps <- used_top
+      unprocessed <- used_top
+      
+      # Recursively dig into the code of those functions to find nested helpers
+      while(length(unprocessed) > 0) {
+        bodies <- paste(lapply(unprocessed, function(f) paste(deparse(custom_funcs[[f]]), collapse = "\n")), collapse = "\n")
+        found <- func_names[sapply(func_names, function(f) grepl(paste0("\\b", f, "\\b"), bodies))]
+        unprocessed <- setdiff(found, all_deps)
+        all_deps <- unique(c(all_deps, unprocessed))
+      }
+      
+      # Hash the final family tree of functions and attach it to the chunk's cache fingerprint
+      if (length(all_deps) > 0) {
+        options$cache.extra <- sapply(all_deps, function(f) digest::digest(custom_funcs[[f]]))
+      }
+    }
+  }
+  return(options)
+})
+
+
 
 # Source Engines
 source(here::here("code", "01_general_engines.R"))
@@ -77,13 +117,16 @@ matrix_prep_configs <- list(
       fdr_cutoff = 0.05, fc_cutoff = 0.58, min_features = 30, top_n = 200 
     ),
     transform = list(method = "residualize", covariates = c("Age"))
-  )
+  ),
   
-  # mat_full_age_res = list(
-  #   subset_var = NULL, # Change to NULL if you want to include Controls too
-  #   base_features = list(method = "variance", top_n = total_features), 
-  #   transform = list(method = "residualize", covariates = c("Age"))
-  # )
+  mat_avc_sa_res = list(
+    subset_var = NULL,
+    base_features = list(
+      method = "dea", dea_path = proteomics_dea_path, source_file = "ssc_vs_control_sample_age.rds", 
+      fdr_cutoff = 0.05, fc_cutoff = 0.58, min_features = 30, top_n = 200 
+    ),
+    transform = list(method = "residualize", covariates = c("Age", "Sample_Age"))
+  )
 )
 
 # 2. PCA
@@ -91,6 +134,13 @@ pca_configs <- list(
   ssc_pca = list(
     input_matrix = "mat_avc_age_residualized",
     title = "SSc vs. Ctrl DEA subset PCA",
+    color_vars = c("cohort_group", "Sex", "Age"),
+    top_dim = 5
+  ),
+  
+  ssc_sa_pca = list(
+    input_matrix = "mat_avc_sa_res",
+    title = "SSc vs. Ctrl DEA sample age corr subset PCA",
     color_vars = c("cohort_group", "Sex", "Age"),
     top_dim = 5
   )
@@ -102,6 +152,19 @@ k_opt_configs <- list(
   opt_SvC_DEA_PCA = list(
     title = "Optimization: Age Regressed SvC DEA PCA",
     input_matrix = "ssc_pca_top_dims", 
+    k_range = 2:8,
+    gap_bootstraps = 0, 
+    algorithms = list(
+      pam = list(run=TRUE, metric="euclidean"),
+      kmeans = list(run=TRUE, nstart=25),
+      hclust = list(run=TRUE, distance="euclidean", method="ward.D2"),
+      louvain = list(run=TRUE, k_neighbors = 4, resolution_range = seq(0.1, 2.0, by=0.1))
+    )
+  ),
+  
+  opt_SvC_sampleage_DEA_PCA = list(
+    title = "Optimization: Age Regressed SvC DEA PCA",
+    input_matrix = "ssc_sa_pca_top_dims", 
     k_range = 2:8,
     gap_bootstraps = 0, 
     algorithms = list(
@@ -125,13 +188,43 @@ clustering_configs <- list(
     algorithms = list(
       kmeans = list(run=TRUE, nstart=25)
     )
+  ),
+  
+  job_svc_sa = list(
+    title = "Age Regressed SvC DEA sample_age_corr PCA Clustering",
+    input_matrix = "ssc_sa_pca_top_dims", # <--- UPDATE THIS 
+    k = 2, 
+    n_neighbors = 10,
+    color_vars = c("Age", "Sex", "cohort_group", "ACTIVE_AI"),
+    algorithms = list(
+      kmeans = list(run=TRUE, nstart=25)
+    )
   )
 )
 
+
 # 5. Diagnostic Targets
 diagnostic_configs <- list(
-  evaluate_jobs = c("job_svc"),
+  evaluate_jobs = c("job_svc", "job_svc_sa"),
   correlate_vars = c("cohort_group", "Age", "Sex")
+)
+
+# --- 8. Cross-Cluster Trajectory Configs ---
+cross_cluster_configs <- list(
+  cc_svc_vs_sa = list(
+    title = "Algorithm Stability: Standard SVC vs Sample-Age Corrected",
+    job_A = "job_svc",           # Must match a job in clustering_configs
+    algo_A = "kmeans",           # Target algorithm inside the payload
+    name_A = "Standard SVC",     # Display name for the plot
+    job_B = "job_svc_sa",
+    algo_B = "kmeans",
+    name_B = "SVC SA-Corrected",
+    clin_variables = clin_vars_to_include,
+    clin_highlight = clin_vars_to_highlight,
+    min_n_transition = 5,        # Minimum n to trigger Stayers vs Leavers stats
+    p_cutoff = 0.05,
+    must_include_vars = c()
+  )
 )
 
 ```
@@ -360,7 +453,7 @@ cross_contrast_configs <- list(
 
 `r what_this_does("Matrix Factory: Dynamically generates custom feature matrices by subsetting the Olink proteomics landscape.", "Transformation: Applies mathematical corrections (Residualization vs. Pruning) to isolate the clinical signature from the Age confounder.", "Audit: Tracks the inclusion/exclusion status of every feature against defined biological thresholds (FDR/FC) to ensure transparency in the dimensionality of your input space.")`
 
-```{r matrix_factory, results='asis'}
+```{r matrix_factory, results='asis', cache=TRUE}
 # Global storage for the prepared mathematical matrices
 prepared_matrices <- list()
 
@@ -409,7 +502,7 @@ for (prep_id in names(matrix_prep_configs)) {
 # PCA {.tabset}
 `r what_this_does("Ingested the dynamically pre-processed matrices and performs mean-imputation for complete cases.", "Automatically calculated the mathematical limit of variance (min(N-1, P)) to extract every statistically valid Principal Component.", "Transposed the PCA coordinate space so that Components act as 'Features' for correlation mapping.", "Generated interactive PCA scatterplots colored by requested clinical metadata.")`
 
-```{r PCA, results='asis', fig.width=8, fig.height=8}
+```{r PCA, results='asis', fig.width=8, fig.height=8, cache=TRUE}
 pca_results <- list()
 
 for (pca_id in names(pca_configs)) {
@@ -556,7 +649,7 @@ for (opt_id in names(k_opt_configs)) {
 `r what_this_does("Ingested the dynamically pre-processed matrices from the Matrix Factory.", "Calculated mathematical distances and assigned endotypes using true high-dimensional protein matrices.", "Calculated 2D UMAP coordinates exclusively for visualization, painting high-dimensional labels onto the squashed axes.")`
 
 `r why_is_this_done("Clustering on projected 2D UMAP space introduces manifold distortion. By calculating groupings mathematically across all protein dimensions, we ensure biological robustness, even if the 2D visual projection appears slightly overlapping.")`
-```{r unsupervised_clustering, results='asis', fig.height=14, fig.width=10}
+```{r unsupervised_clustering, results='asis', fig.height=14, fig.width=10, cache=TRUE}
 # Store the payload globally so the diagnostic chunk can access it later!
 global_cluster_payloads <- list()
 
@@ -589,7 +682,7 @@ cat("\n\n")
 
 `r what_this_does("Extracted the underlying distance matrices and specific patient assignments from the upstream multi-algorithm pipeline.", "Calculated the global Silhouette width for K-Means, PAM, and Hierarchical clustering.", "Generated comparative bar charts to guide algorithmic selection.")`
 
-```{r clustering_diagnostic,results='asis'}
+```{r clustering_diagnostic,results='asis', cache=TRUE}
 # Store diagnostic results to extract the "best_algo" for Consensus later
 global_diagnostic_payloads <- list()
 
@@ -623,12 +716,106 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
 }
 ```
 
+# Cluster Trajectory {.tabset}
+
+`r what_this_does("Evaluates the stability of patient endotypes when the underlying algorithm or matrix transformation changes.", "Uses the Hungarian algorithm to mathematically align arbitrary cluster labels by optimizing global patient consensus.", "Generates Sankey diagrams to track patient migration, and executes the full clinical phenotyping pipeline on 'Stayers' vs. 'Leavers' to determine if fracturing clusters represent distinct clinical sub-phenotypes or mathematical noise.")`
+
+```{r cross_cluster_trajectories, results='asis', fig.width=10, fig.height=8, warning=FALSE, cache=TRUE}
+
+for (cc_id in names(cross_cluster_configs)) {
+  conf <- cross_cluster_configs[[cc_id]]
+  
+  # Fetch the parent clustering payloads
+  payload_A <- global_cluster_payloads[[conf$job_A]]
+  payload_B <- global_cluster_payloads[[conf$job_B]]
+  
+  if (is.null(payload_A) || is.null(payload_B)) {
+    cat(sprintf("*Skipping %s: Required upstream clustering payloads not found.*\n\n", cc_id))
+    next
+  }
+  
+  # Parent Tab for the specific contrast
+  cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
+  
+  # Run the engine
+  cc_res <- run_cross_clustering_engine(
+    payload_A = payload_A, 
+    payload_B = payload_B, 
+    master_spine = master_spine, 
+    data_dictionary = data_dictionary, 
+    conf = conf, 
+    job_id = cc_id, 
+    output_dir = output_dir_data
+  )
+  
+  if (cc_res$status == "success") {
+    
+    # 1. Sankey Plot Tab
+    cat("\n\n### Patient Trajectories (Sankey)\n\n")
+    print(cc_res$plot)
+    cat("\n\n")
+    
+    # 2. Stayers vs Leavers Tabs
+    if (length(cc_res$phenotyping) > 0) {
+      
+      cat("\n\n### Phenotyping: Stayers vs Leavers {.tabset}\n\n")
+      
+      for (c_A in names(cc_res$phenotyping)) {
+        pheno_res <- cc_res$phenotyping[[c_A]]
+        
+        # Inject the Cluster Header
+        cat(sprintf("\n\n#### %s\n\n", c_A))
+        
+        if (pheno_res$status == "success") {
+          
+          # Notice we target "trajectory" because of our mock payload
+          algo_target <- "trajectory" 
+          
+          # Print the existing nested heatmaps/grids/tables exactly like your main chunk
+          if (length(pheno_res$plots[[algo_target]]$heatmap) > 0) {
+            for (h_name in names(pheno_res$plots[[algo_target]]$heatmap)) {
+              ComplexHeatmap::draw(pheno_res$plots[[algo_target]]$heatmap[[h_name]])
+              cat("\n\n")
+            }
+          }
+          
+          if (length(pheno_res$plots[[algo_target]]$highlights) > 0) {
+            for (g_name in names(pheno_res$plots[[algo_target]]$highlights)) {
+              print(pheno_res$plots[[algo_target]]$highlights[[g_name]])
+              cat("\n\n")
+            }
+          }
+          
+          if (!is.null(pheno_res$tables[[algo_target]])) {
+            tbl <- pheno_res$tables[[algo_target]] %>% 
+              gtsummary::as_kable_extra(caption = sprintf("Stayers vs Leavers: %s", c_A)) %>%
+              kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+              kableExtra::scroll_box(width = "100%", height = "500px")
+            print(tbl)
+            cat("\n\n")
+          }
+          
+        } else {
+          cat(sprintf("> %s\n\n", pheno_res$error_msg))
+        }
+      }
+    } else {
+      cat("\n\n### Phenotyping\n\n")
+      cat(sprintf("*Note: No cluster transitions met the minimum patient threshold (n >= %d) for robust statistical phenotyping.*\n\n", conf$min_n_transition))
+    }
+    
+  } else {
+    cat(sprintf("> Engine Failed: %s\n\n", cc_res$error_msg))
+  }
+}
+```
+
 # Clinical Phenotyping {.tabset}
 `r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
 
 `r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes. Uses nested categories for streamlined visual profiling.")`
 
-```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis'}
+```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis', cache=TRUE}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
   cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
@@ -679,7 +866,7 @@ for (p_id in names(pheno_configs)) {
 # Feature Phenotyping {.tabset}
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
-```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis'}
+```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis', cache=TRUE}
 # --- NEW: Initialize Global Storage for Cross-Contrasts ---
 global_dea_payloads <- list()
 
@@ -836,7 +1023,7 @@ for (f_id in names(feature_configs)) {
 # Cross-Contrast Comparisons {.tabset}
 `r what_this_does("Projects temporal and phenotypic shifts across orthogonal Differential Expression runs.", "Highlights specific and shared protein drivers bridging the gap between clinical baselines and algorithmically derived endotypes.")`
 
-```{r cross_contrast, results='asis', fig.width=9, fig.height=7}
+```{r cross_contrast, results='asis', fig.width=9, fig.height=7, cache=TRUE}
 # Ensure the export directory exists
 cc_dir <- file.path(output_dir_data, "Cross_Contrasts")
 if (!dir.exists(cc_dir)) dir.create(cc_dir, recursive = TRUE)

@@ -31,3 +31,7 @@ IV. HTML Report Generation & Rendering Stability
     - Primary Shielding Strategy: To prevent Pandoc DOM corruption, leverage knitr's native HTML preservation tags by directly calling `print(table_object)` at the end of the chunk rather than converting to strings.
     - Fallback Shielding Strategy: If string conversion via `as.character()` is strictly necessary, manually shield the naked HTML from the Pandoc parser by wrapping the `cat()` output inside Pandoc raw HTML blocks (```{=html} ... ```).
     - workflowr Interactive Trap: Never rely solely on `interactive()` for Viewer pane testing, as wflow_build() executes interactively. To prevent premature HTML dumping during compilation, strictly evaluate conditional prints using: `interactive() && !isTRUE(getOption('knitr.in.progress'))`.
+
+
+# Ideas for future improvements
+- in order to prevent the "side-effect trap" never delete any output or assets, if you do remove the cache = TRUE from the corresponding chunk header

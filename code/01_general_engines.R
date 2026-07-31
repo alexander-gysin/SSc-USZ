@@ -1024,52 +1024,37 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
     results$plots[[algo_name]][["highlights"]] <- list()
 
     plot_df <- clin_df %>% filter(Subject_ID %in% names(labels))
-
-    # Cast to character initially to allow string manipulation
     plot_df$Cluster <- as.character(labels[plot_df$Subject_ID])
 
-    # --- SUBCLUSTER FILTERING ---
+    # --- SUBCLUSTER & COMPOSITE GROUPING ---
     if (!is.null(conf$subset_filter)) {
       filt_col <- conf$subset_filter$column
       filt_val <- conf$subset_filter$value
-      if (filt_col %in% colnames(plot_df)) {
-        plot_df <- plot_df %>% filter(.data[[filt_col]] %in% filt_val)
-      }
+      if (filt_col %in% colnames(plot_df)) plot_df <- plot_df %>% filter(.data[[filt_col]] %in% filt_val)
     }
 
-    # --- NEW: COMPOSITE GROUPING ---
     if (!is.null(conf$composite_group)) {
       comp_col <- conf$composite_group
-      if (comp_col %in% colnames(plot_df)) {
-        # Concatenates into format: "Cluster 1_Active"
-        plot_df$Cluster <- paste(plot_df$Cluster, plot_df[[comp_col]], sep = "_")
-      }
+      if (comp_col %in% colnames(plot_df)) plot_df$Cluster <- paste(plot_df$Cluster, plot_df[[comp_col]], sep = "_")
     }
 
-    # Cast back to factor for downstream stats
     plot_df$Cluster <- as.factor(plot_df$Cluster)
     valid_df <- plot_df %>% filter(!grepl("Noise|Mixed", Cluster)) %>% droplevels()
-
     if (length(unique(valid_df$Cluster)) < 2) next
 
-    # --- Safely handle both flat vectors and named lists ---
     vars_list <- if (is.list(conf$variables)) conf$variables else list("Clinical_Phenotypes" = conf$variables)
     hl_list <- if (is.list(conf$highlight_variables)) conf$highlight_variables else list("Selected_Highlights" = conf$highlight_variables)
 
-    # 1. CLINICAL TABLE (Uses all variables unlisted for a single, master summary table)
+    # 1. CLINICAL TABLE (Forced Chi-squared to prevent OOM)
     all_vars <- unname(unlist(vars_list))
-    summary_obj <- valid_df %>%
-      select(any_of(all_vars), Cluster) %>%
+    summary_obj <- valid_df %>% select(any_of(all_vars), Cluster) %>%
       gtsummary::tbl_summary(by = Cluster, missing = "no") %>%
-      gtsummary::add_p() %>% gtsummary::sort_p() %>% gtsummary::bold_labels()
+      gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "kruskal.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
+      gtsummary::sort_p() %>% gtsummary::bold_labels()
 
     results$tables[[algo_name]] <- summary_obj
+    readr::write_csv(gtsummary::as_tibble(summary_obj), file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
 
-    # EXPORT RAW GTSUMMARY TO CSV
-    raw_tbl <- gtsummary::as_tibble(summary_obj)
-    readr::write_csv(raw_tbl, file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
-
-    # --- TARGETED HIGHLIGHT TABLES (Bypass Loop) ---
     if (!is.null(conf$highlight_variables)) {
       if (!("highlights" %in% names(results$tables))) results$tables$highlights <- list()
       results$tables$highlights[[algo_name]] <- list()
@@ -1077,32 +1062,21 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
       for (h_name in names(conf$highlight_variables)) {
         h_vars <- conf$highlight_variables[[h_name]]
         valid_h_vars <- intersect(h_vars, colnames(valid_df))
-
         if (length(valid_h_vars) > 0) {
           hl_df <- valid_df %>% select(all_of(c("Cluster", valid_h_vars)))
-
-          hl_tbl <- hl_df %>%
-            gtsummary::tbl_summary(
-              by = Cluster,
-              missing = "ifany",
-              missing_text = "Missing (NA)"
-            ) %>%
-            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "fisher.test")) %>%
+          hl_tbl <- hl_df %>% gtsummary::tbl_summary(by = Cluster, missing = "ifany", missing_text = "Missing (NA)") %>%
+            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
             gtsummary::bold_labels()
 
-          hl_html <- gtsummary::as_kable_extra(hl_tbl, format = "html", caption = sprintf("Subset Table: %s", gsub("_", " ", h_name))) %>%
+          results$tables$highlights[[algo_name]][[h_name]] <- gtsummary::as_kable_extra(hl_tbl, format = "html", caption = sprintf("Subset Table: %s", gsub("_", " ", h_name))) %>%
             kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
-
-          results$tables$highlights[[algo_name]][[h_name]] <- hl_html
         }
       }
     }
 
-    # --- OUTER LOOP FOR HEATMAPS ---
+    # 2. ENRICHMENT HEATMAPS
     for (cat_name in names(vars_list)) {
       cat_vars <- vars_list[[cat_name]]
-
-      # 2. ENRICHMENT DATA PREP
       enrichment_list <- list()
       mandatory_vars <- intersect(conf$must_include_vars, colnames(valid_df))
       discovery_vars <- setdiff(intersect(cat_vars, colnames(valid_df)), mandatory_vars)
@@ -1116,174 +1090,109 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
           p_val <- tryCatch(kruskal.test(vec ~ clust_vec)$p.value, error=function(e) NA)
           if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
           g_m <- mean(vec, na.rm=T); g_sd <- sd(vec, na.rm=T)
-          for (c_lvl in levels(clust_vec)) {
-            enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=v, Score=(mean(vec[clust_vec==c_lvl], na.rm=T)-g_m)/g_sd)
-          }
+          for (c_lvl in levels(clust_vec)) enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=v, Score=(mean(vec[clust_vec==c_lvl], na.rm=T)-g_m)/g_sd)
         } else {
           vec <- as.factor(vec); tbl <- table(vec, clust_vec)
           p_val <- tryCatch(chisq.test(tbl)$p.value, error=function(e) NA)
           if (!is_mandatory && (is.na(p_val) || p_val >= conf$p_cutoff)) next
           E <- rowSums(tbl) %o% colSums(tbl) / sum(tbl)
           resids <- (tbl - E) / sqrt(E)
-          for (lvl in rownames(resids)) {
-            for (c_lvl in colnames(resids)) {
-              enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=sprintf("%s (%s)", v, lvl), Score=resids[lvl, c_lvl])
-            }
-          }
+          for (lvl in rownames(resids)) for (c_lvl in colnames(resids)) enrichment_list[[length(enrichment_list)+1]] <- data.frame(Cluster=c_lvl, Feature=sprintf("%s (%s)", v, lvl), Score=resids[lvl, c_lvl])
         }
       }
 
-      # 3. RENDER COMPLEXHEATMAP
       if (length(enrichment_list) > 0) {
-        heat_df <- bind_rows(enrichment_list)
-
-        mat_wide <- heat_df %>%
-          pivot_wider(names_from=Cluster, values_from=Score, values_fill=0) %>%
-          column_to_rownames("Feature")
-
-        safe_cat_name <- gsub("_", " ", cat_name)
+        mat_wide <- bind_rows(enrichment_list) %>% pivot_wider(names_from=Cluster, values_from=Score, values_fill=0) %>% column_to_rownames("Feature")
         heatmap_file <- file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Heatmap_", cat_name, ".png"))
 
+        # --- GRAPHICS DEVICE SANDBOX (Guarantees dev.off) ---
         png(heatmap_file, width=1200, height=600)
-
-        ht <- ComplexHeatmap::Heatmap(
-          as.matrix(mat_wide),
-          name = "Enrichment",
-          column_title = sprintf("Clinical Enrichment: %s\nJob: %s | Algorithm: %s | (p < %s)",
-                                 safe_cat_name, job_id, toupper(algo_name), conf$p_cutoff),
-          column_names_rot = 0,
-          column_names_side = "bottom",
-          row_names_side = "right",
-          row_names_gp = grid::gpar(fontsize = 14),
-          clustering_distance_rows = "euclidean",
-          cluster_columns = FALSE,
-          col = circlize::colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b"))
-        )
-
-        ComplexHeatmap::draw(ht, heatmap_legend_side = "bottom")
-        dev.off()
-
-        results$plots[[algo_name]][["heatmap"]][[cat_name]] <- ht
-      }
-
-      # --- OUTER LOOP FOR HIGHLIGHT GRIDS ---
-      cluster_levels <- levels(valid_df$Cluster)
-      my_comparisons <- combn(cluster_levels, 2, simplify = FALSE)
-
-      for (hl_cat_name in names(hl_list)) {
-        hl_vars <- hl_list[[hl_cat_name]]
-        hl_plots <- list()
-
-        for (hv in hl_vars) {
-          if (!(hv %in% colnames(valid_df))) next
-
-          if (is.numeric(valid_df[[hv]])) {
-            y_max <- max(valid_df[[hv]], na.rm = TRUE)
-            y_min <- min(valid_df[[hv]], na.rm = TRUE)
-            y_range <- y_max - y_min
-
-            hl_plots[[hv]] <- ggplot(valid_df, aes(x = Cluster, y = .data[[hv]], fill = Cluster)) +
-              geom_boxplot(outlier.shape = NA, alpha = 0.7) +
-              geom_jitter(width = 0.2, alpha = 0.5, color = "grey30") +
-              ggpubr::stat_compare_means(
-                comparisons = my_comparisons,
-                method = "wilcox.test",
-                label = "p.format"
-              ) +
-              coord_cartesian(ylim = c(y_min, y_max + 0.15 * y_range)) +
-              theme_project_base() +
-              theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-              labs(title = hv, x = NULL)
-
-          } else {
-            p_vals <- sapply(my_comparisons, function(p) {
-              sub_df <- valid_df %>% filter(Cluster %in% p) %>% droplevels()
-              tbl <- table(sub_df$Cluster, sub_df[[hv]])
-              tryCatch(fisher.test(tbl, simulate.p.value = TRUE)$p.value, error = function(e) NA)
-            })
-
-            valid_idx <- !is.na(p_vals)
-            fdr_vals <- rep(NA, length(p_vals))
-            fdr_vals[valid_idx] <- p.adjust(p_vals[valid_idx], method = "fdr")
-
-            sig_pairs <- c()
-            for (i in seq_along(fdr_vals)) {
-              if (!is.na(fdr_vals[i]) && fdr_vals[i] < 0.05) {
-                # Safe regex replacement for composite names
-                n1 <- gsub("Cluster ", "C", my_comparisons[[i]][1])
-                n2 <- gsub("Cluster ", "C", my_comparisons[[i]][2])
-                sig_pairs <- c(sig_pairs, sprintf("%s vs %s (FDR=%.2f)", n1, n2, fdr_vals[i]))
-              }
-            }
-
-            subtitle_str <- if(length(sig_pairs) == 0) "Sig Pairs (FDR < 0.05): ns" else paste("Sig:", paste(sig_pairs, collapse = " | "))
-
-            hl_plots[[hv]] <- ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) +
-              geom_bar(position="stack", color = "black") +
-              theme_project_base() +
-              theme(axis.text.x = element_text(angle=45, hjust=1),
-                    plot.subtitle = element_text(size = 9, color = "grey40")) +
-              labs(title=hv, subtitle=subtitle_str, x=NULL, y="Count", fill=hv)
-          }
-        }
-
-        if (length(hl_plots) > 0) {
-          safe_hl_name <- gsub("_", " ", hl_cat_name)
-          master_grid <- patchwork::wrap_plots(hl_plots, ncol=5) +
-            patchwork::plot_annotation(title=sprintf("Parameters: %s | %s (%s)", safe_hl_name, job_id, toupper(algo_name)))
-
-          results$plots[[algo_name]][["highlights"]][[hl_cat_name]] <- master_grid
-          ggsave(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_HL_Grid_", hl_cat_name, ".png")), master_grid, width=9, height=4, bg="white")
-        }
+        tryCatch({
+          ht <- ComplexHeatmap::Heatmap(
+            as.matrix(mat_wide), name = "Enrichment",
+            column_title = sprintf("Clinical Enrichment: %s\nJob: %s | Algorithm: %s | (p < %s)", gsub("_", " ", cat_name), job_id, toupper(algo_name), conf$p_cutoff),
+            column_names_rot = 0, column_names_side = "bottom", row_names_side = "right", row_names_gp = grid::gpar(fontsize = 14),
+            clustering_distance_rows = "euclidean", cluster_columns = FALSE,
+            cluster_rows = if (nrow(mat_wide) > 1) TRUE else FALSE,
+            col = circlize::colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b"))
+          )
+          ComplexHeatmap::draw(ht, heatmap_legend_side = "bottom")
+          results$plots[[algo_name]][["heatmap"]][[cat_name]] <- ht
+        }, error = function(e) {
+          warning("Heatmap rendering failed for ", cat_name, ": ", e$message)
+        }, finally = {
+          if (names(dev.cur()) != "null device") dev.off()
+        })
       }
     }
-    return(results)
+
+    # 3. HIGHLIGHT GRIDS
+    cluster_levels <- levels(valid_df$Cluster)
+    my_comparisons <- combn(cluster_levels, 2, simplify = FALSE)
+
+    for (hl_cat_name in names(hl_list)) {
+      hl_vars <- hl_list[[hl_cat_name]]
+      hl_plots <- list()
+
+      for (hv in hl_vars) {
+        if (!(hv %in% colnames(valid_df))) next
+
+        if (is.numeric(valid_df[[hv]])) {
+          # --- GGPUBR SAFE-FAIL VALIDATION ---
+          valid_comparisons <- Filter(function(p) {
+            sum(!is.na(valid_df[[hv]][valid_df$Cluster == p[1]])) >= 1 &&
+              sum(!is.na(valid_df[[hv]][valid_df$Cluster == p[2]])) >= 1
+          }, my_comparisons)
+
+          y_max <- max(valid_df[[hv]], na.rm = TRUE); y_min <- min(valid_df[[hv]], na.rm = TRUE); y_range <- y_max - y_min
+
+          p_plot <- ggplot(valid_df, aes(x = Cluster, y = .data[[hv]], fill = Cluster)) +
+            geom_boxplot(outlier.shape = NA, alpha = 0.7) + geom_jitter(width = 0.2, alpha = 0.5, color = "grey30") +
+            coord_cartesian(ylim = c(y_min, y_max + 0.15 * y_range)) + theme_project_base() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = hv, x = NULL)
+
+          if (length(valid_comparisons) > 0) {
+            p_plot <- p_plot + ggpubr::stat_compare_means(comparisons = valid_comparisons, method = "wilcox.test", label = "p.format")
+          }
+          hl_plots[[hv]] <- p_plot
+
+        } else {
+          # --- CATEGORICAL SHIELD (Chi-Squared) ---
+          p_vals <- sapply(my_comparisons, function(p) {
+            sub_df <- valid_df %>% filter(Cluster %in% p) %>% droplevels()
+            tbl <- table(sub_df$Cluster, sub_df[[hv]])
+
+            if (nrow(tbl) < 2 || ncol(tbl) < 2 || any(rowSums(tbl) == 0) || sum(colSums(tbl) > 0) < 2) return(NA)
+
+            tryCatch(chisq.test(tbl)$p.value, error = function(e) NA)
+          })
+
+          valid_idx <- !is.na(p_vals); fdr_vals <- rep(NA, length(p_vals))
+          fdr_vals[valid_idx] <- p.adjust(p_vals[valid_idx], method = "fdr")
+
+          sig_pairs <- c()
+          for (i in seq_along(fdr_vals)) {
+            if (!is.na(fdr_vals[i]) && fdr_vals[i] < 0.05) {
+              sig_pairs <- c(sig_pairs, sprintf("%s vs %s (FDR=%.2f)", gsub("Cluster ", "C", my_comparisons[[i]][1]), gsub("Cluster ", "C", my_comparisons[[i]][2]), fdr_vals[i]))
+            }
+          }
+
+          hl_plots[[hv]] <- ggplot(valid_df, aes(x=Cluster, fill=as.factor(.data[[hv]]))) +
+            geom_bar(position="stack", color = "black") + theme_project_base() +
+            theme(axis.text.x = element_text(angle=45, hjust=1), plot.subtitle = element_text(size = 9, color = "grey40")) +
+            labs(title=hv, subtitle=if(length(sig_pairs)==0) "Sig Pairs (FDR < 0.05): ns" else paste("Sig:", paste(sig_pairs, collapse = " | ")), x=NULL, y="Count", fill=hv)
+        }
+      }
+
+      if (length(hl_plots) > 0) {
+        master_grid <- patchwork::wrap_plots(hl_plots, ncol=5) + patchwork::plot_annotation(title=sprintf("Parameters: %s | %s (%s)", gsub("_", " ", hl_cat_name), job_id, toupper(algo_name)))
+        results$plots[[algo_name]][["highlights"]][[hl_cat_name]] <- master_grid
+        ggsave(file.path(pheno_dir, paste0(job_id, "_", algo_name, "_HL_Grid_", hl_cat_name, ".png")), master_grid, width=9, height=4, bg="white")
+      }
+    }
+    # Flush backend memory
+    gc(verbose = FALSE)
   }
-}
-
-# 2.5 Predictive Modeling Pipeline Wrapper (LASSO)
-# Description:
-#   Sets up a penalized logistic regression (LASSO) using glmnet. This wrapper
-#   filters the cohorts to a binary classification task, runs cross-validation
-#   to find the optimal lambda, and extracts the features with non-zero weights.
-# Args:
-#   omics_mat: Cleaned omics matrix.
-#   clin_df: Clinical metadata dataframe.
-#   lasso_conf: Target column and the two groups to classify.
-#   model_id: String identifier for saving outputs.
-#   base_output_dir: Path for saving results.
-# Returns:
-#   List containing the CV curve plot, the coefficients bar chart, and weight data.
-wrap_predictive_pipeline <- function(omics_mat, clin_df, lasso_conf, model_id, base_output_dir) {
-
-  results <- list(status = "success", plots = list(), data = list())
-
-  # Setup Directories
-  pred_base_dir <- file.path(base_output_dir, "LASSO_Models")
-  pred_sub_dir <- file.path(pred_base_dir, model_id)
-  if (!dir.exists(pred_sub_dir)) dir.create(pred_sub_dir, recursive = TRUE)
-
-  # Run LASSO Engine
-  lasso_res <- run_lasso_engine(omics_mat, clin_df, lasso_conf$group_col,
-                                lasso_conf$target_groups, title = lasso_conf$title)
-
-  if (is.null(lasso_res)) {
-    results$status <- "failed"; results$error_msg <- "Model failed to converge or insufficient groups."; return(results)
-  }
-
-  # Package Results
-  results$data$lasso <- lasso_res$data
-  results$plots$lasso_cv <- lasso_res$cv_plot
-  results$plots$lasso_weights <- lasso_res$coeff_plot
-
-  # Automated Saving
-  write_csv(lasso_res$data, file.path(pred_sub_dir, paste0(model_id, "_LASSO_Coefficients.csv")))
-
-  png(file.path(pred_sub_dir, paste0(model_id, "_LASSO_CV.png")), width=7, height=6, units="in", res=300)
-  plot(lasso_res$cv_plot); title(main = sprintf("%s: LASSO Tuning", lasso_conf$title), line = 2.5); dev.off()
-
-  ggsave(file.path(pred_sub_dir, paste0(model_id, "_LASSO_Weights.png")), lasso_res$coeff_plot, width=7, height=6, dpi=300, bg="white")
-
   return(results)
 }
 
@@ -1537,6 +1446,168 @@ run_lasso_engine <- function(mat, clin, target_col, target_groups, title) {
          fill = "Direction")
 
   return(list(cv_plot = cv_fit, coeff_plot = p_lasso, data = df_coeffs))
+}
+
+#' Cross-Clustering Trajectory Engine (ggsankey version)
+#'
+#' @param payload_A Cluster payload from global_cluster_payloads (e.g., job_svc)
+#' @param payload_B Cluster payload from global_cluster_payloads (e.g., job_svc_sa)
+#' @param master_spine The clinical dataframe
+#' @param data_dictionary The data dictionary
+#' @param conf The specific configuration list for this run
+#' @param job_id The name of the config job
+#' @param output_dir The root output directory
+run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data_dictionary, conf, job_id, output_dir) {
+
+  # 1. Extract Assignments
+  assign_A <- payload_A$data$assignments[[conf$algo_A]]
+  assign_B <- payload_B$data$assignments[[conf$algo_B]]
+
+  if (is.null(assign_A) || is.null(assign_B)) {
+    return(list(status = "error", error_msg = "Could not find requested algorithms in the payloads."))
+  }
+
+  df_A <- data.frame(ID = names(assign_A), Cluster_A = as.character(assign_A))
+  df_B <- data.frame(ID = names(assign_B), Cluster_B = as.character(assign_B))
+
+  # 2. Merge and clean
+  df_merged <- merge(df_A, df_B, by = "ID", all = FALSE)
+  df_merged <- df_merged[df_merged$Cluster_A != "Noise" & df_merged$Cluster_B != "Noise", ]
+
+  if(nrow(df_merged) == 0) return(list(status = "error", error_msg = "No matching patients found."))
+
+  # 3. Hungarian Algorithm Alignment
+  overlap_mat <- table(df_merged$Cluster_A, df_merged$Cluster_B)
+  n_max <- max(nrow(overlap_mat), ncol(overlap_mat))
+  sq_mat <- matrix(0, nrow = n_max, ncol = n_max)
+  sq_mat[1:nrow(overlap_mat), 1:ncol(overlap_mat)] <- overlap_mat
+
+  sol <- clue::solve_LSAP(sq_mat, maximum = TRUE)
+
+  mapping_list <- list()
+  mapped_B_levels <- c()
+
+  for (i in 1:nrow(overlap_mat)) {
+    c_A <- rownames(overlap_mat)[i]
+    if (sol[i] <= ncol(overlap_mat)) {
+      c_B <- colnames(overlap_mat)[sol[i]]
+      mapping_list[[c_A]] <- c_B
+      mapped_B_levels <- c(mapped_B_levels, c_B)
+    } else {
+      mapping_list[[c_A]] <- NA
+    }
+  }
+
+  # 4. Sankey Plot Preparation (ggsankey specific)
+  df_plot <- df_merged
+
+  # Calculate cluster sizes to append to labels
+  counts_A <- table(df_plot$Cluster_A)
+  counts_B <- table(df_plot$Cluster_B)
+
+  # Ensure node names are unique strings by appending the N
+  df_plot$Node_A <- sprintf("%s\n(n=%d)", df_plot$Cluster_A, counts_A[as.character(df_plot$Cluster_A)])
+  df_plot$Node_B <- sprintf("%s\n(n=%d)", df_plot$Cluster_B, counts_B[as.character(df_plot$Cluster_B)])
+
+  # Enforce Hungarian ordering as factor levels so lines don't cross unnecessarily
+  order_A <- sprintf("%s\n(n=%d)", rownames(overlap_mat), counts_A[rownames(overlap_mat)])
+
+  orphans_B <- setdiff(colnames(overlap_mat), mapped_B_levels)
+  final_B_levels <- c(mapped_B_levels, orphans_B)
+  order_B <- sprintf("%s\n(n=%d)", final_B_levels, counts_B[final_B_levels])
+
+  df_plot$Node_A <- factor(df_plot$Node_A, levels = order_A)
+  df_plot$Node_B <- factor(df_plot$Node_B, levels = order_B)
+
+  # Convert standard dataframe to ggsankey "long" format
+  df_long <- ggsankey::make_long(df_plot, Node_A, Node_B)
+
+  # Build the ggsankey Plot
+  p_sankey <- ggplot2::ggplot(df_long, ggplot2::aes(x = x,
+                                                    next_x = next_x,
+                                                    node = node,
+                                                    next_node = next_node,
+                                                    fill = factor(node))) +
+    # The flows and nodes
+    ggsankey::geom_sankey(flow.alpha = 0.6, node.color = "grey30", smooth = 8) +
+
+    # Crisp white label boxes over the nodes
+    ggsankey::geom_sankey_label(ggplot2::aes(label = node), size = 3.5, color = "black", fill = "white", fontface = "bold") +
+
+    # Custom axes mapping based on config
+    ggplot2::scale_x_discrete(labels = c("Node_A" = conf$name_A, "Node_B" = conf$name_B)) +
+
+    # Theming
+    ggplot2::scale_fill_viridis_d(option = "turbo", alpha = 0.8) +
+    ggsankey::theme_sankey(base_size = 14) +
+    ggplot2::labs(
+      title = conf$title,
+      subtitle = "Clusters aligned via Hungarian maximum consensus (Gap spacing applied)",
+      x = NULL
+    ) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 12, face = "bold", color = "black"),
+      plot.title = ggplot2::element_text(face = "bold"),
+      legend.position = "none"
+    )
+
+  # 5. Dynamic Phenotyping (Tricking the wrapper)
+  pheno_results <- list()
+
+  for (c_A in names(mapping_list)) {
+    c_B_target <- mapping_list[[c_A]]
+    if (is.na(c_B_target)) next
+
+    pts_in_A <- df_merged[df_merged$Cluster_A == c_A, ]
+    pts_in_A$Trajectory <- ifelse(pts_in_A$Cluster_B == c_B_target, "Stayer", "Leaver")
+
+    n_stayer <- sum(pts_in_A$Trajectory == "Stayer")
+    n_leaver <- sum(pts_in_A$Trajectory == "Leaver")
+
+    # Check minimum thresholds
+    if (n_stayer >= conf$min_n_transition && n_leaver >= conf$min_n_transition) {
+
+      # Build the assignment vector (Names = Subject_ID, Values = "Stayer" / "Leaver")
+      traj_vec <- setNames(factor(pts_in_A$Trajectory, levels = c("Stayer", "Leaver")), pts_in_A$ID)
+
+      # Create a mock payload to feed into your standard phenotyping wrapper
+      mock_payload <- list(
+        status = "success",
+        data = list(assignments = list(trajectory = traj_vec))
+      )
+
+      # Create a temporary config for the wrapper
+      temp_conf <- list(
+        target_job = job_id,
+        title = sprintf("%s (Stayers vs Leavers)", c_A),
+        target_algorithms = c("trajectory"),
+        subset_filter = NULL,
+        variables = conf$clin_variables,
+        highlight_variables = conf$clin_highlight,
+        p_cutoff = conf$p_cutoff,
+        must_include_vars = c()
+      )
+
+      # Call your standard wrapper
+      res <- wrap_clinical_phenotyping(
+        payload = mock_payload,
+        master_spine = master_spine,
+        data_dictionary = data_dictionary,
+        conf = temp_conf,
+        job_id = paste0(job_id, "_", c_A),
+        output_dir = output_dir
+      )
+
+      pheno_results[[c_A]] <- res
+    }
+  }
+
+  return(list(
+    status = "success",
+    plot = p_sankey,
+    phenotyping = pheno_results,
+    mapping = mapping_list
+  ))
 }
 
 # WRAPPERS 3: Machine Learning -----------------------------------
