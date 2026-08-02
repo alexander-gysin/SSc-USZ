@@ -1,0 +1,21 @@
+---
+title: "test_cores"
+author: "alexander-gysin"
+date: "2026-08-02"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+# 1. Hardware cores
+cat("Physical Cores:", parallel::detectCores(logical = FALSE), "\n")
+
+# 2. Parallelly limits
+cat("\nParallelly detected (All methods):\n")
+print(parallelly::availableCores(methods = c("Slurm", "cgroups2.cpu.max", "system")))
+
+```
+
