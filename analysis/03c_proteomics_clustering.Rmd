@@ -99,7 +99,7 @@ total_features <- nrow(olink_mat)
 ```
 
 # Configurations
-`r what_this_does("Configured the Matrix Factory, Algorithm Optimization, Clustering, and dual Phenotyping (Clinical & Feature) parameters.")`
+`r what_this_does("Configured the central data parameters for the Matrix Factory, Algorithm Optimization, and Clustering.", "Established target mappings for downstream analytics including Clinical Phenotyping, Feature Phenotyping (DEA), Cluster Trajectory (Stability), and Cross-Contrast mapping.")`
 ## Clustering
 ```{r config}
 # 0. Data Dictionary Shield & Base Excludes
@@ -141,7 +141,7 @@ pca_configs <- list(
   ssc_sa_pca = list(
     input_matrix = "mat_avc_sa_res",
     title = "SSc vs. Ctrl DEA sample age corr subset PCA",
-    color_vars = c("cohort_group", "Sex", "Age"),
+    color_vars = c("cohort_group", "Sex", "Age", "Sample_Age"),
     top_dim = 5
   )
 )
@@ -209,6 +209,16 @@ diagnostic_configs <- list(
   correlate_vars = c("cohort_group", "Age", "Sex")
 )
 
+clin_vars_to_highlight <- list(
+  "SSc clinical parameters" = ssc_clinical_parameters,
+  "Medication" = clinical_domains$Medications,
+  "Demographics_and_Scores" = clinical_domains$Demographics_and_Scores
+)
+
+clin_vars_to_include <- list(
+  "Exploratory" = c(clinical_domains$Pulmonary, clinical_domains$Cardiac, clinical_domains$Labs_and_Biomarkers, clinical_domains$Cutaneous_and_Vascular, clinical_domains$Musculoskeletal, clinical_domains$Gastrointestinal, clinical_domains$Medications) 
+)
+
 # --- 8. Cross-Cluster Trajectory Configs ---
 cross_cluster_configs <- list(
   cc_svc_vs_sa = list(
@@ -234,15 +244,7 @@ cross_cluster_configs <- list(
 # 6. Clinical Phenotyping Targets ---------
 # , "hclust","louvain"
 #Note: For the value argument, I used %in% under the hood instead of ==, so you can even pass multiple values like value = c("Nonactive", "Mildly Active") if you ever need to group ordinal tiers together!
-clin_vars_to_highlight <- list(
-  "SSc clinical parameters" = ssc_clinical_parameters,
-  "Medication" = clinical_domains$Medications,
-  "Demographics_and_Scores" = clinical_domains$Demographics_and_Scores
-)
 
-clin_vars_to_include <- list(
-  "Exploratory" = c(clinical_domains$Pulmonary, clinical_domains$Cardiac, clinical_domains$Labs_and_Biomarkers, clinical_domains$Cutaneous_and_Vascular, clinical_domains$Musculoskeletal, clinical_domains$Gastrointestinal, clinical_domains$Medications) 
-)
 
 pheno_configs <- list(
   pheno_svc = list(
@@ -293,6 +295,65 @@ pheno_configs <- list(
   pheno_composite_groups = list(
     target_job = "job_svc",
     title = "Cluster x Cohort Composite",
+    target_algorithms = c("kmeans"),
+    composite_group = "cohort_group", # <--- Activates the composite engine logic
+    subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+  ),
+  
+  # Sample_Age Corrected ----------------------------------------------------------------
+  
+  pheno_svc_sa = list(
+    target_job = "job_svc_sa",
+    title = "SSc Only Sample_Age corrected",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
+    p_cutoff = 0.05,
+    must_include_vars = c("cohort_group")
+  ),
+  
+    pheno_nvn_sa = list(
+    target_job = "job_svc_sa",
+    title = "Nonactive Only Sample_Age corrected",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "cohort_group", value = c("Non-Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+    ),
+  
+  pheno_ava_sa = list(
+    target_job = "job_svc_sa",
+    title = "Active Only Sample_Age corrected",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "cohort_group", value = c("Active")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+    ),
+  
+    pheno_NEvNE_sa = list(
+    target_job = "job_svc_sa",
+    title = "Nonactive EUSTAR Only Sample_Age corrected",
+    target_algorithms = c("kmeans"),
+        subset_filter = list(column = "ACTIVE_AI", value = c("0")),
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight ,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+    ),
+  
+    # --- Composite Grouping Config ---
+  pheno_composite_groups_sa = list(
+    target_job = "job_svc_sa",
+    title = "Cluster x Cohort Composite Sample_Age corrected",
     target_algorithms = c("kmeans"),
     composite_group = "cohort_group", # <--- Activates the composite engine logic
     subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")),
@@ -380,6 +441,85 @@ feature_configs <- list(
     ),
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
+  ),
+  
+  
+  # Sample age corrected ---------------------------------------------------
+  
+  feat_svc_sa = list(
+    target_job = "job_svc_sa",
+    title = "SSc Only Sample_Age corrected",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Ssc only Sample_Age corrected", desc = "Both mixed active and nonacctive", 
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
+                          subset_filter = list(column = "cohort_group", value = c("Active", "Non-Active")))
+        )
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_nvn_sa = list(
+    target_job = "job_svc_sa",
+    title = "Nonactive Only Sample_Age corrected",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Nonactive only Sample_Age corrected", desc = "", 
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
+                          subset_filter = list(column = "cohort_group", value = c("Non-Active")))
+        )
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_ava_sa = list(
+    target_job = "job_svc_sa",
+    title = "Active Only Sample_Age corrected",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 Active only Sample_Age corrected", desc = "", 
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
+                          subset_filter = list(column = "cohort_group", value = c("Active")))
+        )
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  
+  feat_nvn_eustar_sa = list(
+    target_job = "job_svc_sa",
+    title = "Nonactive EUSTAR Only Sample_Age corrected",
+    input_matrix = "raw", 
+    covariates = c("Age"),
+    # Algorithms are now the primary key to enable contrast-per-algorithm
+    algorithms = list(
+      kmeans = list(
+        contrasts = list(
+          c1_vs_c2 = list(title = "Cluster 1 vs Cluster 2 nonactive EUSTAR only Sample_Age corrected", desc = "", 
+                          target=c("Cluster 2"), ref=c("Cluster 1"),
+                          subset_filter = list(column = "ACTIVE_AI", value = c("0")))
+        )
+      )
+    ),
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
   )
 )
 
@@ -443,7 +583,55 @@ cross_contrast_configs <- list(
     top_n_shared = 8,
     p_cutoff = 0.05,   
     fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
+  ),
+  
+  # Sample_Age corrected -----------------------------------------------------
+  
+  cc_svc_vs_nvn_sa = list(
+    title = "SSc vs Control VS N1 vs N2 (both SA corrected)",
+    x_source = "ssc_vs_ctrl_DEA",                # Must map to the variable name loaded in Setup
+    y_source = "feat_nvn_kmeans_c1_vs_c2",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "SSc vs Control",
+    y_label = "C1(Nonact) vs C2(Nonact)",
+    color_x = "#e67e22",                      # Orange
+    color_y = "#2980b9",                      # Blue
+    highlight_color = "#27ae60",              # Green
+    top_n_specific = 8,
+    top_n_shared = 8,
+    p_cutoff = 0.05,   
+    fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
+  ),
+  
+  cc_ava_vs_nvn_sa = list(
+    title = "A1 vs A2 VS N1 vs N2 (both SA corrected)",
+    x_source = "feat_ava_kmeans_c1_vs_c2",                # Must map to the variable name loaded in Setup
+    y_source = "feat_nvn_kmeans_c1_vs_c2",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "C1(Act) vs C2(Act)",
+    y_label = "C1(Nonact) vs C2(Nonact)",
+    color_x = "#e67e22",                      # Orange
+    color_y = "#2980b9",                      # Blue
+    highlight_color = "#27ae60",              # Green
+    top_n_specific = 8,
+    top_n_shared = 8,
+    p_cutoff = 0.05,   
+    fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
+  ),
+  
+    cc_nnv_our_vs_nvn_EUSTAR_sa = list(
+    title = "N_EUSTAR1 vs N_EUSTAR2 VS N1 vs N2 (both Sample_Age corrected)",
+    x_source = "feat_nvn_eustar_kmeans_c1_vs_c2",                # Must map to the variable name loaded in Setup
+    y_source = "feat_nvn_kmeans_c1_vs_c2",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "N_EUSTAR1 vs N_EUSTAR2",
+    y_label = "N1 vs N2",
+    color_x = "#e67e22",                      # Orange
+    color_y = "#2980b9",                      # Blue
+    highlight_color = "#27ae60",              # Green
+    top_n_specific = 8,
+    top_n_shared = 8,
+    p_cutoff = 0.05,   
+    fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
   )
+  
 )
 ```
 
@@ -1250,4 +1438,3 @@ cat("Script 03c Complete! \n")
   #   dea_fc_cutoff = 0.58
   # )
 ```
-
