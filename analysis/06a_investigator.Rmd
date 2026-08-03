@@ -128,6 +128,14 @@ investigation_jobs <- list(
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
     residualize_conf = NULL
+  ),
+  
+    job_eda2r = list(
+    title = "Investigate RNF213",
+    targets = c("RNF213"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
   )
 )
 
