@@ -35,46 +35,6 @@ assets_dir <- here::here("docs", "assets", current_file)
 # Global DEA Path
 proteomics_dea_path <- here::here("output", "03b_proteomics_differential")
 
-# Knitr Config & Caching Setup
-knitr::opts_chunk$set(
-  cache = TRUE, 
-  autodep = TRUE,
-  cache.path = paste0(scratch_dir, "/cache/", current_file)
-)
-
-# Automated Engine-Tracking Hook (Monitors external .R files for changes)
-knitr::opts_hooks$set(cache = function(options) {
-  if (isTRUE(options$cache)) {
-    # Isolate all custom functions currently loaded in the global environment
-    custom_funcs <- Filter(is.function, eapply(.GlobalEnv, identity))
-    func_names <- names(custom_funcs)
-    
-    if (length(func_names) > 0) {
-      chunk_code <- paste(options$code, collapse = "\n")
-      
-      # Find which custom functions are explicitly called in this chunk's code
-      used_top <- func_names[sapply(func_names, function(f) grepl(paste0("\\b", f, "\\b"), chunk_code))]
-      
-      all_deps <- used_top
-      unprocessed <- used_top
-      
-      # Recursively dig into the code of those functions to find nested helpers
-      while(length(unprocessed) > 0) {
-        bodies <- paste(lapply(unprocessed, function(f) paste(deparse(custom_funcs[[f]]), collapse = "\n")), collapse = "\n")
-        found <- func_names[sapply(func_names, function(f) grepl(paste0("\\b", f, "\\b"), bodies))]
-        unprocessed <- setdiff(found, all_deps)
-        all_deps <- unique(c(all_deps, unprocessed))
-      }
-      
-      # Hash the final family tree of functions and attach it to the chunk's cache fingerprint
-      if (length(all_deps) > 0) {
-        options$cache.extra <- sapply(all_deps, function(f) digest::digest(custom_funcs[[f]]))
-      }
-    }
-  }
-  return(options)
-})
-
 
 
 # Source Engines
@@ -641,7 +601,7 @@ cross_contrast_configs <- list(
 
 `r what_this_does("Matrix Factory: Dynamically generates custom feature matrices by subsetting the Olink proteomics landscape.", "Transformation: Applies mathematical corrections (Residualization vs. Pruning) to isolate the clinical signature from the Age confounder.", "Audit: Tracks the inclusion/exclusion status of every feature against defined biological thresholds (FDR/FC) to ensure transparency in the dimensionality of your input space.")`
 
-```{r matrix_factory, results='asis', cache=TRUE}
+```{r matrix_factory, results='asis', cache=FALSE}
 # Global storage for the prepared mathematical matrices
 prepared_matrices <- list()
 
@@ -690,7 +650,7 @@ for (prep_id in names(matrix_prep_configs)) {
 # PCA {.tabset}
 `r what_this_does("Ingested the dynamically pre-processed matrices and performs mean-imputation for complete cases.", "Automatically calculated the mathematical limit of variance (min(N-1, P)) to extract every statistically valid Principal Component.", "Transposed the PCA coordinate space so that Components act as 'Features' for correlation mapping.", "Generated interactive PCA scatterplots colored by requested clinical metadata.")`
 
-```{r PCA, results='asis', fig.width=8, fig.height=8, cache=TRUE}
+```{r PCA, results='asis', fig.width=8, fig.height=8, cache=FALSE}
 pca_results <- list()
 
 for (pca_id in names(pca_configs)) {
@@ -837,7 +797,7 @@ for (opt_id in names(k_opt_configs)) {
 `r what_this_does("Ingested the dynamically pre-processed matrices from the Matrix Factory.", "Calculated mathematical distances and assigned endotypes using true high-dimensional protein matrices.", "Calculated 2D UMAP coordinates exclusively for visualization, painting high-dimensional labels onto the squashed axes.")`
 
 `r why_is_this_done("Clustering on projected 2D UMAP space introduces manifold distortion. By calculating groupings mathematically across all protein dimensions, we ensure biological robustness, even if the 2D visual projection appears slightly overlapping.")`
-```{r unsupervised_clustering, results='asis', fig.height=14, fig.width=10, cache=TRUE}
+```{r unsupervised_clustering, results='asis', fig.height=14, fig.width=10, cache=FALSE}
 # Store the payload globally so the diagnostic chunk can access it later!
 global_cluster_payloads <- list()
 
@@ -870,7 +830,7 @@ cat("\n\n")
 
 `r what_this_does("Extracted the underlying distance matrices and specific patient assignments from the upstream multi-algorithm pipeline.", "Calculated the global Silhouette width for K-Means, PAM, and Hierarchical clustering.", "Generated comparative bar charts to guide algorithmic selection.")`
 
-```{r clustering_diagnostic,results='asis', cache=TRUE}
+```{r clustering_diagnostic,results='asis', cache=FALSE}
 # Store diagnostic results to extract the "best_algo" for Consensus later
 global_diagnostic_payloads <- list()
 
@@ -908,7 +868,7 @@ for (job_id in diagnostic_configs$evaluate_jobs) {
 
 `r what_this_does("Evaluates the stability of patient endotypes when the underlying algorithm or matrix transformation changes.", "Uses the Hungarian algorithm to mathematically align arbitrary cluster labels by optimizing global patient consensus.", "Generates Sankey diagrams to track patient migration, and executes the full clinical phenotyping pipeline on 'Stayers' vs. 'Leavers' to determine if fracturing clusters represent distinct clinical sub-phenotypes or mathematical noise.")`
 
-```{r cross_cluster_trajectories, results='asis', fig.width=10, fig.height=8, warning=FALSE, cache=TRUE}
+```{r cross_cluster_trajectories, results='asis', fig.width=10, fig.height=8, warning=FALSE, cache=FALSE}
 
 for (cc_id in names(cross_cluster_configs)) {
   conf <- cross_cluster_configs[[cc_id]]
@@ -1003,7 +963,7 @@ for (cc_id in names(cross_cluster_configs)) {
 
 `r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes. Uses nested categories for streamlined visual profiling.")`
 
-```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis', cache=TRUE}
+```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis', cache=FALSE}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
   cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
@@ -1054,7 +1014,7 @@ for (p_id in names(pheno_configs)) {
 # Feature Phenotyping {.tabset}
 `r what_this_does("Runs rigorous Differential Expression Analysis directly between the new, algorithmically discovered endotypes.")`
 
-```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis', cache=TRUE}
+```{r feature_phenotyping, fig.width=12, fig.height=10, results='asis', cache=FALSE}
 # --- NEW: Initialize Global Storage for Cross-Contrasts ---
 global_dea_payloads <- list()
 
@@ -1211,7 +1171,7 @@ for (f_id in names(feature_configs)) {
 # Cross-Contrast Comparisons {.tabset}
 `r what_this_does("Projects temporal and phenotypic shifts across orthogonal Differential Expression runs.", "Highlights specific and shared protein drivers bridging the gap between clinical baselines and algorithmically derived endotypes.")`
 
-```{r cross_contrast, results='asis', fig.width=9, fig.height=7, cache=TRUE}
+```{r cross_contrast, results='asis', fig.width=9, fig.height=7, cache=FALSE}
 # Ensure the export directory exists
 cc_dir <- file.path(output_dir_data, "Cross_Contrasts")
 if (!dir.exists(cc_dir)) dir.create(cc_dir, recursive = TRUE)

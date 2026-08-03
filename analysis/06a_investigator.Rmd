@@ -130,7 +130,7 @@ investigation_jobs <- list(
     residualize_conf = NULL
   ),
   
-    job_eda2r = list(
+    job_RNF213 = list(
     title = "Investigate RNF213",
     targets = c("RNF213"),
     highlight_vars = highlights,
