@@ -5,21 +5,6 @@ scratch_dir <- "~/scratch/SSc-USZ"
 # Project: Systemic Sclerosis Disease Activity Multi-Omics
 
 
-# 1. . AUTOMATIC MASTER LIST -------------------------
-
-generate_all_scripts <- function() {
-  c(
-    base_scripts,
-    clinical_scripts,
-    proteomics_scripts,
-    lipidomics_scripts,
-    multiomics_scripts,
-    sideproject_scripts
-  )
-}
-
-# The canonical pipeline order. No manual maintenance required.
-all_scripts <- generate_all_scripts()
 
 # 3. SYNC FUNCTION -------------------------------
 sync <- function(files = NULL, all = FALSE, publish = FALSE, preview = FALSE) {
