@@ -907,7 +907,7 @@ for (cc_id in names(cross_cluster_configs)) {
     print(cc_res$plot)
     cat("\n\n")
     
-    # 2. Stayers vs Leavers Tabs
+    # 2. Stayers vs Leavers Tabs (Statistical Phenotyping)
     if (length(cc_res$phenotyping) > 0) {
       
       cat("\n\n### Phenotyping: Stayers vs Leavers {.tabset}\n\n")
@@ -919,11 +919,8 @@ for (cc_id in names(cross_cluster_configs)) {
         cat(sprintf("\n\n#### %s\n\n", c_A))
         
         if (pheno_res$status == "success") {
-          
-          # Notice we target "trajectory" because of our mock payload
           algo_target <- "trajectory" 
           
-          # Print the existing nested heatmaps/grids/tables exactly like your main chunk
           if (length(pheno_res$plots[[algo_target]]$heatmap) > 0) {
             for (h_name in names(pheno_res$plots[[algo_target]]$heatmap)) {
               ComplexHeatmap::draw(pheno_res$plots[[algo_target]]$heatmap[[h_name]])
@@ -946,27 +943,30 @@ for (cc_id in names(cross_cluster_configs)) {
             print(tbl)
             cat("\n\n")
           }
-          
         } else {
           cat(sprintf("> %s\n\n", pheno_res$error_msg))
-        }
-        
-        # --- NEW: Print the Leaver Patient Table ---
-        if (!is.null(cc_res$leaver_tables[[c_A]])) {
-          cat(sprintf("\n\n#### Leavers Details: %s\n\n", c_A))
-          
-          l_tbl <- cc_res$leaver_tables[[c_A]] %>%
-            kableExtra::kbl(format = "html", caption = sprintf("Individual Leaver Profiles: %s", c_A)) %>%
-            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
-            kableExtra::scroll_box(width = "100%", height = "400px")
-            
-          print(l_tbl)
-          cat("\n\n")
         }
       }
     } else {
       cat("\n\n### Phenotyping\n\n")
       cat(sprintf("*Note: No cluster transitions met the minimum patient threshold (n >= %d) for robust statistical phenotyping.*\n\n", conf$min_n_transition))
+    }
+    
+    # 3. NEW: Independent Leaver Profiles Tab
+    if (length(cc_res$leaver_tables) > 0) {
+      cat("\n\n### Leaver Profiles {.tabset}\n\n")
+      
+      for (c_A in names(cc_res$leaver_tables)) {
+        cat(sprintf("\n\n#### %s\n\n", c_A))
+        
+        l_tbl <- cc_res$leaver_tables[[c_A]] %>%
+          kableExtra::kbl(format = "html", caption = sprintf("Individual Leaver Profiles from %s", c_A)) %>%
+          kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
+          kableExtra::scroll_box(width = "100%", height = "400px")
+          
+        print(l_tbl)
+        cat("\n\n")
+      }
     }
     
   } else {

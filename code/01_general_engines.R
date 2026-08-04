@@ -1546,7 +1546,11 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
       valid_features <- intersect(conf$leaver_features, colnames(master_spine))
 
       if (length(valid_features) > 0) {
-        leaver_clin <- master_spine[master_spine$Subject_ID %in% leavers_only$ID, c("Subject_ID", valid_features), drop = FALSE]
+
+        # FIX: Safe tidyverse extraction ensuring unique columns
+        leaver_clin <- master_spine %>%
+          dplyr::filter(Subject_ID %in% leavers_only$ID) %>%
+          dplyr::select(dplyr::all_of(unique(c("Subject_ID", valid_features))))
 
         leaver_df <- merge(
           leavers_only[, c("ID", "Cluster_B")],
