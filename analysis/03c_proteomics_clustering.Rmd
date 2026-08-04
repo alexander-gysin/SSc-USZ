@@ -1090,18 +1090,20 @@ for (f_id in names(feature_configs)) {
       job_name_full <- sprintf("%s_%s_%s", f_id, algo_name, contrast_name)
       
       # Push the pre-filtered dataframe directly into the core Limma wrapper
-      res <- wrap_dea_pipeline(
+      res <- suppressWarnings(suppressMessages(
+        wrap_dea_pipeline(
                 target_matrix, 
                 contrast_df, 
                 dea_conf, 
                 job_name_full, 
                 output_dir_data, 
-                go_genesets, 
+                pathway_dbs,       # OR go_genesets, depending on what you defined earlier
                 omics_config, 
                 heatmap_config, 
                 get_project_colors,
                 assets_dir = assets_dir
               )
+      ))
       
       if (res$status == "success") {
         
