@@ -483,7 +483,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">03 August, 2026</h4>
+<h4 class="date">04 August, 2026</h4>
 
 </div>
 
@@ -512,7 +512,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-08-03
+<strong>Last updated:</strong> 2026-08-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -643,15 +643,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree494fde1fb83c49b1ccf0bb1e5b29cfa32c9c6ddctargetblank494fde1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeda9fc5d9a7e8285829ba4320762d67149d72bf3btargetblankda9fc5da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/494fde1fb83c49b1ccf0bb1e5b29cfa32c9c6ddc" target="_blank">494fde1</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/da9fc5d9a7e8285829ba4320762d67149d72bf3b" target="_blank">da9fc5d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree494fde1fb83c49b1ccf0bb1e5b29cfa32c9c6ddctargetblank494fde1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeda9fc5d9a7e8285829ba4320762d67149d72bf3btargetblankda9fc5da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -661,7 +661,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/494fde1fb83c49b1ccf0bb1e5b29cfa32c9c6ddc" target="_blank">494fde1</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/da9fc5d9a7e8285829ba4320762d67149d72bf3b" target="_blank">da9fc5d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -702,13 +702,6 @@ Ignored files:
     Ignored:    output/z02_sideproject_vascular_2/
     Ignored:    renv/library/
     Ignored:    renv/staging/
-
-Untracked files:
-    Untracked:  code/06_multiomics_engines.R
-
-Unstaged changes:
-    Modified:   code/00_config.R
-    Modified:   protocols/Coding_SOP
 
 </code></pre>
 <p>
@@ -754,6 +747,74 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/893fb77966eb1988e9b87669ffbf3ff314d28958/analysis/03c_proteomics_clustering.Rmd" target="_blank">893fb77</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+added individual leaver profiles
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/338a6d65058fd6b6c50ee4784445b3c8da74eec6/analysis/03c_proteomics_clustering.Rmd" target="_blank">338a6d6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+added small leaver feature table
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/ffa25f5bd1b86e93c3326c1d7d6506f67f90a56d/analysis/03c_proteomics_clustering.Rmd" target="_blank">ffa25f5</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+<td>
+after docs recovery
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/03c_proteomics_clustering.html" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1699,46 +1760,6 @@ assets_dir &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file)
 # Global DEA Path
 proteomics_dea_path &lt;- here::here(&quot;output&quot;, &quot;03b_proteomics_differential&quot;)
 
-# Knitr Config &amp; Caching Setup
-knitr::opts_chunk$set(
-  cache = TRUE, 
-  autodep = TRUE,
-  cache.path = paste0(scratch_dir, &quot;/cache/&quot;, current_file)
-)
-
-# Automated Engine-Tracking Hook (Monitors external .R files for changes)
-knitr::opts_hooks$set(cache = function(options) {
-  if (isTRUE(options$cache)) {
-    # Isolate all custom functions currently loaded in the global environment
-    custom_funcs &lt;- Filter(is.function, eapply(.GlobalEnv, identity))
-    func_names &lt;- names(custom_funcs)
-    
-    if (length(func_names) &gt; 0) {
-      chunk_code &lt;- paste(options$code, collapse = &quot;\n&quot;)
-      
-      # Find which custom functions are explicitly called in this chunk&#39;s code
-      used_top &lt;- func_names[sapply(func_names, function(f) grepl(paste0(&quot;\\b&quot;, f, &quot;\\b&quot;), chunk_code))]
-      
-      all_deps &lt;- used_top
-      unprocessed &lt;- used_top
-      
-      # Recursively dig into the code of those functions to find nested helpers
-      while(length(unprocessed) &gt; 0) {
-        bodies &lt;- paste(lapply(unprocessed, function(f) paste(deparse(custom_funcs[[f]]), collapse = &quot;\n&quot;)), collapse = &quot;\n&quot;)
-        found &lt;- func_names[sapply(func_names, function(f) grepl(paste0(&quot;\\b&quot;, f, &quot;\\b&quot;), bodies))]
-        unprocessed &lt;- setdiff(found, all_deps)
-        all_deps &lt;- unique(c(all_deps, unprocessed))
-      }
-      
-      # Hash the final family tree of functions and attach it to the chunk&#39;s cache fingerprint
-      if (length(all_deps) &gt; 0) {
-        options$cache.extra &lt;- sapply(all_deps, function(f) digest::digest(custom_funcs[[f]]))
-      }
-    }
-  }
-  return(options)
-})
-
 
 
 # Source Engines
@@ -1908,6 +1929,10 @@ cross_cluster_configs &lt;- list(
     name_B = &quot;SVC SA-Corrected&quot;,
     clin_variables = clin_vars_to_include,
     clin_highlight = clin_vars_to_highlight,
+    
+    # NEW: Define exactly which columns to pull for the Leaver Table
+    leaver_features = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;cohort_group&quot;, &quot;ACTIVE_AI&quot;),
+    
     min_n_transition = 5,        # Minimum n to trigger Stayers vs Leavers stats
     p_cutoff = 0.05,
     must_include_vars = c()
@@ -4068,6 +4093,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/PCA-1.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/PCA-1.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -4140,6 +4176,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/PCA-2.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/PCA-2.png" target="_blank">44d0edb</a>
@@ -4216,6 +4263,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/PCA-3.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/PCA-3.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -4290,6 +4348,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/PCA-4.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/PCA-4.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -4362,6 +4431,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/PCA-5.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/PCA-5.png" target="_blank">44d0edb</a>
@@ -4497,6 +4577,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-1.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -4599,6 +4690,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-2.png" target="_blank">44d0edb</a>
@@ -4705,6 +4807,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-3.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -4807,6 +4920,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/algorithm_optimization-4.png" target="_blank">44d0edb</a>
@@ -5003,6 +5127,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/unsupervised_clustering-1.png" target="_blank">44d0edb</a>
@@ -5604,8 +5739,120 @@ Silhouette: 0.330
 </table>
 <pre><code>`geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-4.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-4">
+Past versions of clustering_diagnostic-4.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-4.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>`geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-5.png" alt="" width="672" style="display: block; margin: auto;" /><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-5.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-5">
+Past versions of clustering_diagnostic-5.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-5.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-6.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clustering_diagnostic-6">
+Past versions of clustering_diagnostic-6.png
+</button>
+</p>
+<div id="fig-clustering_diagnostic-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clustering_diagnostic-6.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cluster-trajectory" class="section level1 tabset">
 <h1 class="tabset">Cluster Trajectory</h1>
@@ -5661,7 +5908,7 @@ sub-phenotypes or mathematical noise.
     print(cc_res$plot)
     cat(&quot;\n\n&quot;)
     
-    # 2. Stayers vs Leavers Tabs
+    # 2. Stayers vs Leavers Tabs (Statistical Phenotyping)
     if (length(cc_res$phenotyping) &gt; 0) {
       
       cat(&quot;\n\n### Phenotyping: Stayers vs Leavers {.tabset}\n\n&quot;)
@@ -5673,11 +5920,8 @@ sub-phenotypes or mathematical noise.
         cat(sprintf(&quot;\n\n#### %s\n\n&quot;, c_A))
         
         if (pheno_res$status == &quot;success&quot;) {
-          
-          # Notice we target &quot;trajectory&quot; because of our mock payload
           algo_target &lt;- &quot;trajectory&quot; 
           
-          # Print the existing nested heatmaps/grids/tables exactly like your main chunk
           if (length(pheno_res$plots[[algo_target]]$heatmap) &gt; 0) {
             for (h_name in names(pheno_res$plots[[algo_target]]$heatmap)) {
               ComplexHeatmap::draw(pheno_res$plots[[algo_target]]$heatmap[[h_name]])
@@ -5700,7 +5944,6 @@ sub-phenotypes or mathematical noise.
             print(tbl)
             cat(&quot;\n\n&quot;)
           }
-          
         } else {
           cat(sprintf(&quot;&gt; %s\n\n&quot;, pheno_res$error_msg))
         }
@@ -5708,6 +5951,23 @@ sub-phenotypes or mathematical noise.
     } else {
       cat(&quot;\n\n### Phenotyping\n\n&quot;)
       cat(sprintf(&quot;*Note: No cluster transitions met the minimum patient threshold (n &gt;= %d) for robust statistical phenotyping.*\n\n&quot;, conf$min_n_transition))
+    }
+    
+    # 3. NEW: Independent Leaver Profiles Tab
+    if (length(cc_res$leaver_tables) &gt; 0) {
+      cat(&quot;\n\n### Leaver Profiles {.tabset}\n\n&quot;)
+      
+      for (c_A in names(cc_res$leaver_tables)) {
+        cat(sprintf(&quot;\n\n#### %s\n\n&quot;, c_A))
+        
+        l_tbl &lt;- cc_res$leaver_tables[[c_A]] %&gt;%
+          kableExtra::kbl(format = &quot;html&quot;, caption = sprintf(&quot;Individual Leaver Profiles from %s&quot;, c_A)) %&gt;%
+          kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = TRUE) %&gt;%
+          kableExtra::scroll_box(width = &quot;100%&quot;, height = &quot;400px&quot;)
+          
+        print(l_tbl)
+        cat(&quot;\n\n&quot;)
+      }
     }
     
   } else {
@@ -5721,11 +5981,126 @@ Corrected</h2>
 <div id="patient-trajectories-sankey" class="section level3">
 <h3>Patient Trajectories (Sankey)</h3>
 <p><img src="figure/03c_proteomics_clustering.Rmd/cross_cluster_trajectories-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cross_cluster_trajectories-1">
+Past versions of cross_cluster_trajectories-1.png
+</button>
+</p>
+<div id="fig-cross_cluster_trajectories-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/cross_cluster_trajectories-1.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="phenotyping-1" class="section level3">
 <h3>Phenotyping</h3>
 <p><em>Note: No cluster transitions met the minimum patient threshold (n
 &gt;= 5) for robust statistical phenotyping.</em></p>
+</div>
+<div id="leaver-profiles" class="section level3 tabset">
+<h3 class="tabset">Leaver Profiles</h3>
+<div id="cluster-2" class="section level4">
+<h4>Cluster 2</h4>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+Individual Leaver Profiles from Cluster 2
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ID
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Migrated_To
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Age
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Sex
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+cohort_group
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+ACTIVE_AI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Nonact_26
+</td>
+<td style="text-align:left;">
+Cluster 1
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:left;">
+Male
+</td>
+<td style="text-align:left;">
+Non-Active
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nonact_28
+</td>
+<td style="text-align:left;">
+Cluster 1
+</td>
+<td style="text-align:right;">
+74
+</td>
+<td style="text-align:left;">
+Female
+</td>
+<td style="text-align:left;">
+Non-Active
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -6085,6 +6460,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-2.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -6181,6 +6567,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-3.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-3.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -6264,6 +6661,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-4.png" target="_blank">44d0edb</a>
@@ -9043,6 +9451,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-6.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-6.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -9128,6 +9547,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-7.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-7.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -9189,6 +9619,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-8.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-8.png" target="_blank">44d0edb</a>
@@ -12187,6 +12628,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-10.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-10.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -12228,6 +12680,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-11.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-11.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -12267,6 +12730,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-12.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-12.png" target="_blank">44d0edb</a>
@@ -15020,6 +15494,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-14.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-14.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -15061,6 +15546,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-15.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-15.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -15100,6 +15596,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-16.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-16.png" target="_blank">44d0edb</a>
@@ -18049,6 +18556,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-18.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-18.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -18090,6 +18608,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-19.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-19.png" target="_blank">44d0edb</a>
 </td>
 <td>
@@ -18129,6 +18658,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-20.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/44d0edb720b13c47a82f504794f60655d14de8d4/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-20.png" target="_blank">44d0edb</a>
@@ -21632,18 +22172,166 @@ The following warnings were returned during `add_p()`:
 <div id="heatmap-exploratory-5" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-21.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-21">
+Past versions of clinical_phenotyping-21.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-21" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-21.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-ssc-clinical-parameters-5" class="section level4">
 <h4>Grid: SSc clinical parameters</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-22.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-22">
+Past versions of clinical_phenotyping-22.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-22" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-22.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-medication-5" class="section level4">
 <h4>Grid: Medication</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-23.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-23">
+Past versions of clinical_phenotyping-23.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-23" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-23.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-demographics-and-scores-5" class="section level4">
 <h4>Grid: Demographics and Scores</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-24.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-24">
+Past versions of clinical_phenotyping-24.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-24" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-24.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary-table-5" class="section level4">
 <h4>Summary Table</h4>
@@ -24248,18 +24936,166 @@ The following warnings were returned during `add_p()`:
 <div id="heatmap-exploratory-6" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-25.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-25">
+Past versions of clinical_phenotyping-25.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-25" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-25.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-ssc-clinical-parameters-6" class="section level4">
 <h4>Grid: SSc clinical parameters</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-26.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-26">
+Past versions of clinical_phenotyping-26.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-26" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-26.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-medication-6" class="section level4">
 <h4>Grid: Medication</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-27.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-27">
+Past versions of clinical_phenotyping-27.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-27" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-27.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-demographics-and-scores-6" class="section level4">
 <h4>Grid: Demographics and Scores</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-28.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-28">
+Past versions of clinical_phenotyping-28.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-28" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-28.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary-table-6" class="section level4">
 <h4>Summary Table</h4>
@@ -27135,18 +27971,166 @@ The following warnings were returned during `add_p()`:
 <div id="heatmap-exploratory-7" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-29.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-29">
+Past versions of clinical_phenotyping-29.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-29" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-29.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-ssc-clinical-parameters-7" class="section level4">
 <h4>Grid: SSc clinical parameters</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-30.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-30">
+Past versions of clinical_phenotyping-30.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-30" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-30.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-medication-7" class="section level4">
 <h4>Grid: Medication</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-31.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-31">
+Past versions of clinical_phenotyping-31.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-31" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-31.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-demographics-and-scores-7" class="section level4">
 <h4>Grid: Demographics and Scores</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-32.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-32">
+Past versions of clinical_phenotyping-32.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-32" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-32.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary-table-7" class="section level4">
 <h4>Summary Table</h4>
@@ -29829,18 +30813,166 @@ The following warnings were returned during `add_p()`:
 <div id="heatmap-exploratory-8" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-33.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-33">
+Past versions of clinical_phenotyping-33.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-33" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-33.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-ssc-clinical-parameters-8" class="section level4">
 <h4>Grid: SSc clinical parameters</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-34.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-34">
+Past versions of clinical_phenotyping-34.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-34" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-34.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-medication-8" class="section level4">
 <h4>Grid: Medication</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-35.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-35">
+Past versions of clinical_phenotyping-35.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-35" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-35.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-demographics-and-scores-8" class="section level4">
 <h4>Grid: Demographics and Scores</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-36.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-36">
+Past versions of clinical_phenotyping-36.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-36" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-36.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary-table-8" class="section level4">
 <h4>Summary Table</h4>
@@ -32711,18 +33843,166 @@ The following warnings were returned during `add_p()`:
 <div id="heatmap-exploratory-9" class="section level4">
 <h4>Heatmap: Exploratory</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-37.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-37">
+Past versions of clinical_phenotyping-37.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-37" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-37.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-ssc-clinical-parameters-9" class="section level4">
 <h4>Grid: SSc clinical parameters</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-38.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-38">
+Past versions of clinical_phenotyping-38.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-38" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-38.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-medication-9" class="section level4">
 <h4>Grid: Medication</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-39.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-39">
+Past versions of clinical_phenotyping-39.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-39" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-39.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="grid-demographics-and-scores-9" class="section level4">
 <h4>Grid: Demographics and Scores</h4>
 <p><img src="figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-40.png" alt="" width="1344" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clinical_phenotyping-40">
+Past versions of clinical_phenotyping-40.png
+</button>
+</p>
+<div id="fig-clinical_phenotyping-40" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5ebc3ed1daa6d06381d938e66186e01cc0a0c8c6/docs/figure/03c_proteomics_clustering.Rmd/clinical_phenotyping-40.png" target="_blank">5ebc3ed</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary-table-9" class="section level4">
 <h4>Summary Table</h4>
@@ -56779,18 +58059,13 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
 
   # 4. Sankey Plot Preparation (ggsankey specific)
   df_plot &lt;- df_merged
-
-  # Calculate cluster sizes to append to labels
   counts_A &lt;- table(df_plot$Cluster_A)
   counts_B &lt;- table(df_plot$Cluster_B)
 
-  # Ensure node names are unique strings by appending the N
   df_plot$Node_A &lt;- sprintf(&quot;%s\n(n=%d)&quot;, df_plot$Cluster_A, counts_A[as.character(df_plot$Cluster_A)])
   df_plot$Node_B &lt;- sprintf(&quot;%s\n(n=%d)&quot;, df_plot$Cluster_B, counts_B[as.character(df_plot$Cluster_B)])
 
-  # Enforce Hungarian ordering as factor levels so lines don&#39;t cross unnecessarily
   order_A &lt;- sprintf(&quot;%s\n(n=%d)&quot;, rownames(overlap_mat), counts_A[rownames(overlap_mat)])
-
   orphans_B &lt;- setdiff(colnames(overlap_mat), mapped_B_levels)
   final_B_levels &lt;- c(mapped_B_levels, orphans_B)
   order_B &lt;- sprintf(&quot;%s\n(n=%d)&quot;, final_B_levels, counts_B[final_B_levels])
@@ -56798,40 +58073,21 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
   df_plot$Node_A &lt;- factor(df_plot$Node_A, levels = order_A)
   df_plot$Node_B &lt;- factor(df_plot$Node_B, levels = order_B)
 
-  # Convert standard dataframe to ggsankey &quot;long&quot; format
   df_long &lt;- ggsankey::make_long(df_plot, Node_A, Node_B)
 
-  # Build the ggsankey Plot
-  p_sankey &lt;- ggplot2::ggplot(df_long, ggplot2::aes(x = x,
-                                                    next_x = next_x,
-                                                    node = node,
-                                                    next_node = next_node,
-                                                    fill = factor(node))) +
-    # The flows and nodes
+  p_sankey &lt;- ggplot2::ggplot(df_long, ggplot2::aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node))) +
     ggsankey::geom_sankey(flow.alpha = 0.6, node.color = &quot;grey30&quot;, smooth = 8) +
-
-    # Crisp white label boxes over the nodes
     ggsankey::geom_sankey_label(ggplot2::aes(label = node), size = 3.5, color = &quot;black&quot;, fill = &quot;white&quot;, fontface = &quot;bold&quot;) +
-
-    # Custom axes mapping based on config
     ggplot2::scale_x_discrete(labels = c(&quot;Node_A&quot; = conf$name_A, &quot;Node_B&quot; = conf$name_B)) +
-
-    # Theming
     ggplot2::scale_fill_viridis_d(option = &quot;turbo&quot;, alpha = 0.8) +
     ggsankey::theme_sankey(base_size = 14) +
-    ggplot2::labs(
-      title = conf$title,
-      subtitle = &quot;Clusters aligned via Hungarian maximum consensus (Gap spacing applied)&quot;,
-      x = NULL
-    ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(size = 12, face = &quot;bold&quot;, color = &quot;black&quot;),
-      plot.title = ggplot2::element_text(face = &quot;bold&quot;),
-      legend.position = &quot;none&quot;
-    )
+    ggplot2::labs(title = conf$title, subtitle = &quot;Clusters aligned via Hungarian maximum consensus (Gap spacing applied)&quot;, x = NULL) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 12, face = &quot;bold&quot;, color = &quot;black&quot;), plot.title = ggplot2::element_text(face = &quot;bold&quot;), legend.position = &quot;none&quot;)
 
-  # 5. Dynamic Phenotyping (Tricking the wrapper)
+
+  # 5. Dynamic Phenotyping &amp; Leaver Tables
   pheno_results &lt;- list()
+  leaver_tables &lt;- list() # NEW: Storage for the raw patient tables
 
   for (c_A in names(mapping_list)) {
     c_B_target &lt;- mapping_list[[c_A]]
@@ -56843,19 +58099,35 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
     n_stayer &lt;- sum(pts_in_A$Trajectory == &quot;Stayer&quot;)
     n_leaver &lt;- sum(pts_in_A$Trajectory == &quot;Leaver&quot;)
 
-    # Check minimum thresholds
+    # --- NEW: Extract Raw Leaver Table ---
+    if (n_leaver &gt; 0 &amp;&amp; !is.null(conf$leaver_features)) {
+      leavers_only &lt;- pts_in_A[pts_in_A$Trajectory == &quot;Leaver&quot;, ]
+      valid_features &lt;- intersect(conf$leaver_features, colnames(master_spine))
+
+      if (length(valid_features) &gt; 0) {
+
+        # FIX: Safe tidyverse extraction ensuring unique columns
+        leaver_clin &lt;- master_spine %&gt;%
+          dplyr::filter(Subject_ID %in% leavers_only$ID) %&gt;%
+          dplyr::select(dplyr::all_of(unique(c(&quot;Subject_ID&quot;, valid_features))))
+
+        leaver_df &lt;- merge(
+          leavers_only[, c(&quot;ID&quot;, &quot;Cluster_B&quot;)],
+          leaver_clin,
+          by.x = &quot;ID&quot;, by.y = &quot;Subject_ID&quot;
+        )
+
+        colnames(leaver_df)[2] &lt;- &quot;Migrated_To&quot;
+        leaver_tables[[c_A]] &lt;- leaver_df
+      }
+    }
+
+    # Check minimum thresholds for statistical phenotyping wrapper
     if (n_stayer &gt;= conf$min_n_transition &amp;&amp; n_leaver &gt;= conf$min_n_transition) {
 
-      # Build the assignment vector (Names = Subject_ID, Values = &quot;Stayer&quot; / &quot;Leaver&quot;)
       traj_vec &lt;- setNames(factor(pts_in_A$Trajectory, levels = c(&quot;Stayer&quot;, &quot;Leaver&quot;)), pts_in_A$ID)
+      mock_payload &lt;- list(status = &quot;success&quot;, data = list(assignments = list(trajectory = traj_vec)))
 
-      # Create a mock payload to feed into your standard phenotyping wrapper
-      mock_payload &lt;- list(
-        status = &quot;success&quot;,
-        data = list(assignments = list(trajectory = traj_vec))
-      )
-
-      # Create a temporary config for the wrapper
       temp_conf &lt;- list(
         target_job = job_id,
         title = sprintf(&quot;%s (Stayers vs Leavers)&quot;, c_A),
@@ -56867,7 +58139,7 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
         must_include_vars = c()
       )
 
-      # Call your standard wrapper
+      # NOTE: This uses the exact legacy wrapper call from your code
       res &lt;- wrap_clinical_phenotyping(
         payload = mock_payload,
         master_spine = master_spine,
@@ -56885,58 +58157,9 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
     status = &quot;success&quot;,
     plot = p_sankey,
     phenotyping = pheno_results,
+    leaver_tables = leaver_tables, # Output the tables to the main script
     mapping = mapping_list
   ))
-}
-
-# WRAPPERS 3: Machine Learning -----------------------------------
-
-#&#39; Wrapper: ML Data Preparation
-#&#39; Routes omics types, applies hybrid sparsity logic for lipidomics,
-#&#39; applies SMOTE for proteomics, and standardizes matrices.
-wrap_ml_data_prep &lt;- function(mat, clin_df, config) {
-
-  # 1. Align Clinical and Omics Data
-  clin_sub &lt;- clin_df %&gt;%
-    dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups)) %&gt;%
-    dplyr::filter(!is.na(.data[[config$test_var]]))
-
-  common_samples &lt;- intersect(colnames(mat), clin_sub$Subject_ID)
-  if (length(common_samples) &lt; 10) stop(&quot;Insufficient overlapping samples.&quot;)
-
-  mat_sub &lt;- mat[, common_samples, drop = FALSE]
-  clin_sub &lt;- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
-
-  # 2. Define Y (Target)
-  Y &lt;- ifelse(clin_sub[[config$test_var]] %in% config$target_groups, &quot;Target&quot;, &quot;Reference&quot;)
-  Y &lt;- as.factor(Y)
-
-  # 3. Define X (Features) based on Omics Topology
-  X_raw &lt;- t(mat_sub)
-
-  if (config$omics_type == &quot;lipidomics&quot;) {
-    # Hybrid Matrix Logic: 0/1 for sparse, scaled continuous for dense
-    missing_rates &lt;- colMeans(is.na(X_raw) | X_raw == 0)
-
-    sparse_cols &lt;- names(missing_rates[missing_rates &gt;= 0.30])
-    dense_cols &lt;- names(missing_rates[missing_rates &lt; 0.30])
-
-    X_hybrid &lt;- matrix(nrow = nrow(X_raw), ncol = ncol(X_raw), dimnames = dimnames(X_raw))
-
-    # Binarize sparse
-    if(length(sparse_cols) &gt; 0) X_hybrid[, sparse_cols] &lt;- ifelse(is.na(X_raw[, sparse_cols]) | X_raw[, sparse_cols] == 0, 0, 1)
-
-    # Scale dense
-    if(length(dense_cols) &gt; 0) X_hybrid[, dense_cols] &lt;- scale(X_raw[, dense_cols, drop = FALSE])
-
-    X &lt;- X_hybrid
-
-  } else if (config$omics_type == &quot;proteomics&quot;) {
-    # Pure continuous logic: Impute missing (if any) and scale
-    X &lt;- scale(X_raw) # Assuming 100% complete as discussed. Imputation step goes here if needed.
-  }
-
-  return(list(X = X, Y = Y))
 }
 
 
@@ -58876,20 +60099,20 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] furrr_0.3.1              car_3.1-5                carData_3.0-6           
- [4] future.apply_1.20.2      future_1.70.0            variancePartition_1.40.2
- [7] BiocParallel_1.44.0      ggVennDiagram_1.5.7      UpSetR_1.4.1            
-[10] ggridges_0.5.7           ggrepel_0.9.8            enrichplot_1.30.5       
-[13] clusterProfiler_4.18.4   limma_3.66.0             ComplexHeatmap_2.26.1   
-[16] pheatmap_1.0.13          circlize_0.4.18          missForest_1.6.1        
-[19] glmnet_5.0               Matrix_1.7-5             factoextra_2.1.0        
-[22] FactoMineR_2.16          ggsankey_0.0.99999       msigdbr_26.1.0          
-[25] gtsummary_2.5.1          igraph_2.3.3             dbscan_1.2.5            
-[28] cluster_2.1.8.2          umap_0.2.10.0            here_1.0.2              
-[31] patchwork_1.3.2          lubridate_1.9.5          forcats_1.0.1           
-[34] stringr_1.6.0            dplyr_1.2.1              purrr_1.2.2             
-[37] readr_2.2.0              tidyr_1.3.2              tibble_3.3.1            
-[40] tidyverse_2.0.0          ggplot2_4.0.3            workflowr_1.7.2         
+ [1] car_3.1-5                carData_3.0-6            future.apply_1.20.2     
+ [4] future_1.70.0            variancePartition_1.40.2 BiocParallel_1.44.0     
+ [7] ggVennDiagram_1.5.7      UpSetR_1.4.1             ggridges_0.5.7          
+[10] ggrepel_0.9.8            enrichplot_1.30.5        clusterProfiler_4.18.4  
+[13] limma_3.66.0             ComplexHeatmap_2.26.1    pheatmap_1.0.13         
+[16] circlize_0.4.18          missForest_1.6.1         glmnet_5.0              
+[19] Matrix_1.7-5             factoextra_2.1.0         FactoMineR_2.16         
+[22] ggsankey_0.0.99999       msigdbr_26.1.0           gtsummary_2.5.1         
+[25] igraph_2.3.3             dbscan_1.2.5             cluster_2.1.8.2         
+[28] umap_0.2.10.0            here_1.0.2               patchwork_1.3.2         
+[31] lubridate_1.9.5          forcats_1.0.1            stringr_1.6.0           
+[34] dplyr_1.2.1              purrr_1.2.2              readr_2.2.0             
+[37] tidyr_1.3.2              tibble_3.3.1             tidyverse_2.0.0         
+[40] ggplot2_4.0.3            workflowr_1.7.2         
 
 loaded via a namespace (and not attached):
   [1] IRanges_2.44.0          R.methodsS3_1.8.2       vroom_1.7.1            
@@ -58911,53 +60134,54 @@ loaded via a namespace (and not attached):
  [49] rstudioapi_0.19.0       generics_0.1.4          DOSE_4.4.0             
  [52] processx_3.9.0          babelgene_22.9          curl_7.1.0             
  [55] S4Vectors_0.48.1        polyclip_1.10-7         randomForest_4.7-1.2   
- [58] doParallel_1.0.17       evaluate_1.0.5          hms_1.1.4              
- [61] irlba_2.3.7             colorspace_2.1-3        reticulate_1.46.0      
- [64] magrittr_2.0.5          later_1.4.8             ggtree_4.0.5           
- [67] lattice_0.22-9          getPass_0.2-4           cowplot_1.2.0          
- [70] matrixStats_1.5.0       pillar_1.11.1           nlme_3.1-170           
- [73] iterators_1.0.14        caTools_1.18.3          compiler_4.5.2         
- [76] RSpectra_0.16-2         stringi_1.8.7           showtext_0.9-8         
- [79] minqa_1.2.8             plyr_1.8.9              crayon_1.5.3           
- [82] abind_1.4-8             gridGraphics_0.5-1      ggtext_0.1.2           
- [85] bit_4.6.0               fastmatch_1.1-8         whisker_0.4.1          
- [88] codetools_0.2-20        textshaping_1.0.5       openssl_2.4.2          
- [91] bslib_0.11.0            GetoptLong_1.1.1        remaCor_0.0.20         
- [94] splines_4.5.2           Rcpp_1.1.2              tidydr_0.0.6           
- [97] leaps_3.2               gridtext_0.1.6          knitr_1.51             
-[100] blob_1.3.0              clue_0.3-68             lme4_2.0-6             
-[103] itertools_0.1-3         fs_2.1.0                listenv_1.0.0          
-[106] Rdpack_2.6.6            ggsignif_0.6.4          ggplotify_0.1.3        
-[109] estimability_2.0.0      callr_3.8.0             statmod_1.5.2          
-[112] tzdb_0.5.0              svglite_2.2.2           fANCOVA_0.6-1          
-[115] tweenr_2.0.3            pkgconfig_2.0.3         tools_4.5.2            
-[118] cachem_1.1.0            RhpcBLASctl_0.23-42     rbibutils_2.4.1        
-[121] RSQLite_3.53.3          viridisLite_0.4.3       DBI_1.3.0              
-[124] numDeriv_2016.8-1.1     gt_1.3.0                fastmap_1.2.0          
-[127] rmarkdown_2.31          scales_1.4.0            cards_0.8.1            
-[130] broom_1.0.13            sass_0.4.10             cardx_0.3.4            
-[133] BiocManager_1.30.27     farver_2.1.2            reformulas_0.4.4       
-[136] aod_1.3.3               scatterpie_0.2.6        mgcv_1.9-4             
-[139] yaml_2.3.12             cli_3.6.6               stats4_4.5.2           
-[142] lifecycle_1.0.5         askpass_1.2.1           Biobase_2.70.0         
-[145] mvtnorm_1.4-2           backports_1.5.1         timechange_0.4.0       
-[148] gtable_0.3.6            rjson_0.2.23            parallel_4.5.2         
-[151] ape_5.8-1               jsonlite_2.0.0          bitops_1.0-9           
-[154] kableExtra_1.4.1        multcompView_0.1-11     bit64_4.8.2            
-[157] assertthat_0.2.1        yulab.utils_0.2.4       ranger_0.18.0          
-[160] jquerylib_0.1.4         GOSemSim_2.36.0         R.utils_2.13.0         
-[163] pbkrtest_0.5.5          lazyeval_0.2.3          htmltools_0.5.9        
-[166] GO.db_3.22.0            rappdirs_0.3.4          glue_1.8.1             
-[169] XVector_0.50.0          gdtools_0.5.1           rprojroot_2.1.1        
-[172] treeio_1.34.0           gridExtra_2.3.1         EnvStats_3.1.0         
-[175] boot_1.3-32             flashClust_1.1-4        R6_2.6.1               
-[178] ggiraph_0.9.6           gplots_3.3.0            labeling_0.4.3         
-[181] rngtools_1.5.2          aplot_0.3.1             nloptr_2.2.1           
-[184] tidyselect_1.2.1        ggforce_0.5.0           xml2_1.6.0             
-[187] fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0    KernSmooth_2.23-26     
-[190] S7_0.2.2                fontquiver_0.2.1        data.table_1.18.4      
-[193] htmlwidgets_1.6.4       fgsea_1.36.2            RColorBrewer_1.1-3     
-[196] rlang_1.3.0             lmerTest_3.2-1          ggnewscale_0.5.2       </code></pre>
+ [58] xtable_1.8-8            doParallel_1.0.17       evaluate_1.0.5         
+ [61] hms_1.1.4               irlba_2.3.7             colorspace_2.1-3       
+ [64] reticulate_1.46.0       magrittr_2.0.5          later_1.4.8            
+ [67] ggtree_4.0.5            lattice_0.22-9          getPass_0.2-4          
+ [70] cowplot_1.2.0           matrixStats_1.5.0       pillar_1.11.1          
+ [73] nlme_3.1-170            iterators_1.0.14        caTools_1.18.3         
+ [76] compiler_4.5.2          RSpectra_0.16-2         stringi_1.8.7          
+ [79] showtext_0.9-8          minqa_1.2.8             plyr_1.8.9             
+ [82] crayon_1.5.3            abind_1.4-8             gridGraphics_0.5-1     
+ [85] ggtext_0.1.2            bit_4.6.0               fastmatch_1.1-8        
+ [88] whisker_0.4.1           codetools_0.2-20        textshaping_1.0.5      
+ [91] openssl_2.4.2           bslib_0.11.0            GetoptLong_1.1.1       
+ [94] remaCor_0.0.20          splines_4.5.2           Rcpp_1.1.2             
+ [97] tidydr_0.0.6            leaps_3.2               gridtext_0.1.6         
+[100] knitr_1.51              blob_1.3.0              clue_0.3-68            
+[103] lme4_2.0-6              itertools_0.1-3         fs_2.1.0               
+[106] listenv_1.0.0           Rdpack_2.6.6            ggsignif_0.6.4         
+[109] ggplotify_0.1.3         estimability_2.0.0      callr_3.8.0            
+[112] statmod_1.5.2           tzdb_0.5.0              svglite_2.2.2          
+[115] fANCOVA_0.6-1           tweenr_2.0.3            pkgconfig_2.0.3        
+[118] tools_4.5.2             cachem_1.1.0            RhpcBLASctl_0.23-42    
+[121] rbibutils_2.4.1         RSQLite_3.53.3          viridisLite_0.4.3      
+[124] DBI_1.3.0               numDeriv_2016.8-1.1     gt_1.3.0               
+[127] fastmap_1.2.0           rmarkdown_2.31          scales_1.4.0           
+[130] cards_0.8.1             broom_1.0.13            sass_0.4.10            
+[133] cardx_0.3.4             BiocManager_1.30.27     farver_2.1.2           
+[136] reformulas_0.4.4        aod_1.3.3               scatterpie_0.2.6       
+[139] mgcv_1.9-4              yaml_2.3.12             cli_3.6.6              
+[142] stats4_4.5.2            lifecycle_1.0.5         askpass_1.2.1          
+[145] Biobase_2.70.0          mvtnorm_1.4-2           backports_1.5.1        
+[148] timechange_0.4.0        gtable_0.3.6            rjson_0.2.23           
+[151] parallel_4.5.2          ape_5.8-1               jsonlite_2.0.0         
+[154] bitops_1.0-9            kableExtra_1.4.1        multcompView_0.1-11    
+[157] bit64_4.8.2             assertthat_0.2.1        yulab.utils_0.2.4      
+[160] ranger_0.18.0           jquerylib_0.1.4         GOSemSim_2.36.0        
+[163] R.utils_2.13.0          pbkrtest_0.5.5          lazyeval_0.2.3         
+[166] htmltools_0.5.9         GO.db_3.22.0            rappdirs_0.3.4         
+[169] glue_1.8.1              XVector_0.50.0          gdtools_0.5.1          
+[172] rprojroot_2.1.1         treeio_1.34.0           gridExtra_2.3.1        
+[175] EnvStats_3.1.0          boot_1.3-32             flashClust_1.1-4       
+[178] R6_2.6.1                ggiraph_0.9.6           gplots_3.3.0           
+[181] labeling_0.4.3          rngtools_1.5.2          aplot_0.3.1            
+[184] nloptr_2.2.1            tidyselect_1.2.1        ggforce_0.5.0          
+[187] xml2_1.6.0              fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0   
+[190] KernSmooth_2.23-26      S7_0.2.2                fontquiver_0.2.1       
+[193] data.table_1.18.4       htmlwidgets_1.6.4       fgsea_1.36.2           
+[196] RColorBrewer_1.1-3      rlang_1.3.0             lmerTest_3.2-1         
+[199] ggnewscale_0.5.2       </code></pre>
 </div>
 </div>
 </div>
