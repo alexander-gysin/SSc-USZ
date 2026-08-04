@@ -24,6 +24,7 @@ library(igraph)
 library(ggpubr)
 library(grid)      # Required for ggraph arrows
 library(httr)
+library(msigdbr)
 
 # Knitr Config
 knitr::opts_chunk$set(
@@ -51,6 +52,13 @@ lipid_mat <- readRDS(here::here("output", "04b_lipidomics_differential", "lipid_
 # Load External Grouping Sources (Example: Clustering output)
 # Note: Ensure this dataframe has a 'Subject_ID' column for joining
 clustering_res <- readRDS(here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc","job_svc_Master_Assignments.rds"))
+
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
 
 ```
 
@@ -91,7 +99,11 @@ if (!is.null(api_res) && httr::status_code(api_res) == 200) {
 # 2. Global Investigator Configurations
 investigator_config <- list(
   cor_fdr_cutoff = 0.05,
-  plot_theme = theme_minimal()
+  plot_theme = theme_minimal(),
+  # --- GSEA Parameters ---
+  gsea_p_cutoff = 0.05,
+  network_p_cutoff = 0.05,
+  gsea_min_size = 15
 )
 
 # Common highlight list
@@ -149,7 +161,7 @@ plot_configs <- list(
 # Target Investigation {.tabset .ignore-toc}
 `r what_this_does("Iterated through the defined targets to compute baseline distributions, categorical highlights, and cross-domain correlation statistics (Proteomics, Lipidomics, Clinical).", " Automatically aligned and subsetted data matrices based on configuration, and prepared tables displaying both statistically significant hits and top non-significant runners-up.")`
 
-```{r target_investigator, results='asis'}
+```{r target_investigator, results='asis', fig.width=10, fig.height=8}
 # Global list to store data intended for the Network Chunk
 network_queue <- list()
 master_investigation_results <- list()
@@ -158,12 +170,16 @@ for (j_name in names(investigation_jobs)) {
   conf <- investigation_jobs[[j_name]]
   cat(sprintf("\n\n## %s \n\n", conf$title))
   
+  # Job-Specific Subdirectory
+  job_dir <- file.path(output_dir_data, j_name)
+  if (!dir.exists(job_dir)) dir.create(job_dir, recursive = TRUE)
+  
   # 1. Base Matrices
   w_olink <- omics_mat
   w_lipid <- lipid_mat
   w_spine <- master_spine
   
-  # 2. Apply Subsetting Filter (if configured)
+  # 2. Apply Subsetting Filter
   if (!is.null(conf$subset_filter)) {
     filter_var <- conf$subset_filter$var
     filter_keep <- conf$subset_filter$keep
@@ -175,8 +191,9 @@ for (j_name in names(investigation_jobs)) {
   
   valid_subjects <- w_spine$Subject_ID
   
-  # 3. Align Matrices (FIXED INTERSECTION LOGIC)
-  w_clin_temp <- numeric_spine %>% select(Subject_ID, any_of(conf$clin_test_list)) %>% column_to_rownames("Subject_ID") %>% as.matrix() %>% t()
+  # 3. Align Matrices (Pull clinical targets into the matrix if requested)
+  clin_vars_to_pull <- unique(c(conf$clin_test_list, conf$targets))
+  w_clin_temp <- numeric_spine %>% select(Subject_ID, any_of(clin_vars_to_pull)) %>% column_to_rownames("Subject_ID") %>% as.matrix() %>% t()
   
   common_subjects <- Reduce(intersect, list(colnames(w_olink), colnames(w_lipid), colnames(w_clin_temp), valid_subjects))
   
@@ -186,7 +203,9 @@ for (j_name in names(investigation_jobs)) {
   
   cat(sprintf("> *Diagnostic: Matrices aligned. %d patients common across Olink, Lipids, and Clinical data.*\n\n", length(common_subjects)))
   
-  all_valid_targets <- intersect(conf$targets, c(rownames(w_olink), rownames(w_lipid)))
+  # Include Clinical matrix in valid target search
+  all_valid_targets <- intersect(conf$targets, c(rownames(w_olink), rownames(w_lipid), rownames(w_clin)))
+  
   if (length(all_valid_targets) == 0) { 
     cat(sprintf("> <span style='color:red;'>**SKIPPED:** None of the targets found.</span>\n\n"))
     next 
@@ -194,19 +213,28 @@ for (j_name in names(investigation_jobs)) {
   
   for (target in all_valid_targets) {
     
-    cat(sprintf("\n\n### Target: %s {.toc-ignore}\n\n", target))
+    cat(sprintf("\n\n### Target: %s\n\n", target))
     
+    # Reset temp variable for GSEA so it doesn't bleed between targets
+    prot_cor_df <- NULL 
+    
+    # Universal Target Routing
     if (target %in% rownames(w_olink)) {
       t_vec <- w_olink[target, ]
       t_type <- "Continuous"
-    } else {
+    } else if (target %in% rownames(w_lipid)) {
       t_vec <- w_lipid[target, ]
       t_type <- "Categorical_Binary"
+    } else {
+      t_vec <- w_clin[target, ]
+      t_type <- if(!is.null(clin_dict) && target %in% clin_dict$Variable) clin_dict$Class[clin_dict$Variable == target] else "Continuous"
+      if (grepl("Categorical", t_type)) t_type <- "Categorical_Binary" else t_type <- "Continuous"
     }
     
-    # --- TAB A: Overall Distribution ---
+    # ====================================================================
+    # TABSET 1: Data Profile & Highlights
+    # ====================================================================
     cat(sprintf("\n\n#### Data Profile & Highlights {.tabset .tabset-pills}\n\n"))
-    
     cat(sprintf("\n\n##### Overall Population Profile\n\n"))
     
     df_dist <- data.frame(Value = t_vec) %>% drop_na()
@@ -226,12 +254,9 @@ for (j_name in names(investigation_jobs)) {
     
     print(p_hist)
     cat("\n\n")
-    ggsave(file.path(output_dir_data, sprintf("%s_%s_histogram.png", j_name, target)), p_hist, width=5, height=4)
-    
-    # --- TAB B: Specific Highlights ---
+    ggsave(file.path(job_dir, sprintf("%s_histogram.png", target)), p_hist, width=5, height=4)
     
     for (hl_conf in conf$highlight_vars) {
-      # FIXED: Added \n\n to the start of the string
       cat(sprintf("\n\n##### %s\n\n", hl_conf$var))
       
       res_hl <- wrap_highlight_plot(
@@ -243,26 +268,28 @@ for (j_name in names(investigation_jobs)) {
       if (res_hl$status == "success") {
         print(res_hl$plot)
         cat("\n\n")
-        ggsave(file.path(output_dir_data, sprintf("%s_%s.png", j_name, res_hl$p_name)), res_hl$plot, width=5, height=4)
+        ggsave(file.path(job_dir, sprintf("%s_%s.png", target, res_hl$p_name)), res_hl$plot, width=5, height=4)
       } else {
         cat(sprintf("> Highlight failed for '%s' (Source: %s): %s\n\n", hl_conf$var, hl_conf$source, res_hl$msg))
       }
     }
     
-    # --- TAB C: Correlation Results (Table Split Logic) ---
+    # ====================================================================
+    # TABSET 2: Correlates
+    # ====================================================================
     cat(sprintf("\n\n#### Correlates {.tabset .tabset-pills}\n\n"))
     
     cor_results <- wrap_investigator_correlation(target_vec = t_vec, target_type = t_type, olink_mat = w_olink, lipid_mat = w_lipid, clin_mat = w_clin, clin_dict = clin_dict)
     
     for (domain in names(cor_results)) {
-      # FIXED: Added \n\n to the start of the string
       cat(sprintf("\n\n##### %s Domain\n\n", domain))
       
       domain_df_full <- cor_results[[domain]] %>% filter(Feature != target) %>% arrange(FDR)
       
-      # Queue Proteomics Data for the Network Chunk
+      # Queue Proteomics Data for Network & Extract for GSEA
       if (domain == "Proteomics") {
-        network_queue[[paste(j_name, target, sep="_")]] <- list(target = target, df = domain_df_full)
+        network_queue[[paste(j_name, target, sep="_")]] <- list(target = target, df = domain_df_full, job_dir = job_dir)
+        prot_cor_df <- domain_df_full # Save to use in Tabset 3
       }
       
       # Table Splitting
@@ -270,7 +297,9 @@ for (j_name in names(investigation_jobs)) {
       df_nonsig <- domain_df_full %>% filter(FDR >= investigator_config$cor_fdr_cutoff) %>% head(10) %>% mutate(Status = "Top Non-Sig")
       
       df_display <- bind_rows(df_sig, df_nonsig)
-      master_investigation_results[[paste(j_name, target, domain, sep="_")]] <- domain_df_full
+      
+      # Save metadata for the export chunk
+      master_investigation_results[[paste(j_name, target, domain, sep="_")]] <- list(df = domain_df_full, job_dir = job_dir, domain = domain, target = target)
       
       if (nrow(df_display) > 0) {
         if (isTRUE(getOption('knitr.in.progress'))) {
@@ -286,6 +315,58 @@ for (j_name in names(investigation_jobs)) {
         cat("> No features evaluated.\n")
       }
       cat("\n\n")
+    }
+    
+    # ====================================================================
+    # TABSET 3: Pathway Enrichment (GSEA)
+    # ====================================================================
+    if (!is.null(prot_cor_df) && exists("pathway_dbs") && exists("run_gsea_engine")) {
+      
+      cat(sprintf("\n\n#### Pathway Enrichment (GSEA) {.tabset .tabset-pills}\n\n"))
+      
+      # Create the required 't' column using the Pi-score formula once for all DBs
+      gsea_input <- prot_cor_df %>%
+        filter(!is.na(P_Val), !is.na(Effect)) %>%
+        mutate(
+          safe_p = ifelse(P_Val == 0, 1e-10, P_Val),
+          t = Effect * -log10(safe_p) 
+        )
+      
+      # Loop through every database in the list
+      for (db_name in names(pathway_dbs)) {
+        
+        cat(sprintf("\n\n##### %s\n\n", db_name))
+        
+        current_db <- pathway_dbs[[db_name]]
+        
+        gsea_res <- run_gsea_engine(
+          dea_res = gsea_input,
+          go_db = current_db,
+          omics_config = investigator_config,
+          title = target,
+          db_name = db_name
+        )
+        
+        if (!is.null(gsea_res)) {
+          if (!is.null(gsea_res$dotplot)) {
+              print(gsea_res$dotplot)
+              cat("\n\n")
+              ggsave(file.path(job_dir, sprintf("%s_%s_GSEA_dotplot.png", target, db_name)), gsea_res$dotplot, width=8, height=6)
+          }
+          if (!is.null(gsea_res$ridgeplot)) {
+              print(gsea_res$ridgeplot)
+              cat("\n\n")
+              ggsave(file.path(job_dir, sprintf("%s_%s_GSEA_ridgeplot.png", target, db_name)), gsea_res$ridgeplot, width=8, height=6)
+          }
+          if (!is.null(gsea_res$emap)) {
+              print(gsea_res$emap)
+              cat("\n\n")
+              ggsave(file.path(job_dir, sprintf("%s_%s_GSEA_emap.png", target, db_name)), gsea_res$emap, width=8, height=8)
+          }
+        } else {
+          cat(sprintf("> *No significant enrichment found for %s, or too few genes mapped.*\n\n", db_name))
+        }
+      }
     }
   }
 }
@@ -309,7 +390,7 @@ for (net_job in names(network_queue)) {
   
   if (!is.null(p_net)) {
     print(p_net)
-    ggsave(file.path(output_dir_data, sprintf("%s_directed_network.png", net_job)), p_net, width=10, height=10)
+    ggsave(file.path(meta$job_dir, sprintf("%s_directed_network.png", meta$target)), p_net, width=10, height=10)
   } else {
     cat("> *API returned no high-confidence biological network for this target, or internet is disconnected.*\n\n")
   }
@@ -322,9 +403,9 @@ for (net_job in names(network_queue)) {
 
 ```{r export}
 for (res_name in names(master_investigation_results)) {
-  # Save to dynamic output directory
-  target_file <- file.path(output_dir_data, paste0("investigator_", res_name, ".csv"))
-  write.csv(master_investigation_results[[res_name]], target_file, row.names = FALSE)
+  meta <- master_investigation_results[[res_name]]
+  target_file <- file.path(meta$job_dir, paste0(meta$target, "_", meta$domain, "_correlates.csv"))
+  write.csv(meta$df, target_file, row.names = FALSE)
 }
 ```
 
