@@ -213,7 +213,7 @@ for (j_name in names(investigation_jobs)) {
   
   for (target in all_valid_targets) {
     
-    cat(sprintf("\n\n### Target: %s\n\n", target))
+    cat(sprintf("\n\n### Target: %s{ignore-toc}\n\n", target))
     
     # Reset temp variable for GSEA so it doesn't bleed between targets
     prot_cor_df <- NULL 
