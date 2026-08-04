@@ -14,7 +14,7 @@ source(here::here("code", "00_config.R"))
 # Setup and Import
 `r what_this_does("Loaded bioinformatics and graphics packages, including httr for API requests.",  "Imported the Olink proteomics, binary lipidomics, and clinical matrices, and sourced the required computational engines.")`
 
-```{r setup_and_import, error=FALSE, message=FALSE}
+```{r setup_and_import, error=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(patchwork)
 library(here)
@@ -370,30 +370,7 @@ for (j_name in names(investigation_jobs)) {
 }
 ```
 
-# Directed Biological Networks {.tabset}
-`r what_this_does("Rendered high-resolution, directed biological network graphs leveraging a database-first API query to OmniPath, mapping dataset significance onto validated primary and secondary biological interactions.")`
 
-```{r directed_biological_networks, fig.height=12, fig.width=12, results='asis'}
-for (net_job in names(network_queue)) {
-  meta <- network_queue[[net_job]]
-  
-  cat(sprintf("\n\n## Network: %s\n\n", meta$target))
-  
-  p_net <- wrap_directed_network(
-    target = meta$target, 
-    prot_cor_df = meta$df, 
-    fdr_cutoff = investigator_config$cor_fdr_cutoff, 
-    plot_theme = investigator_config$plot_theme
-  )
-  
-  if (!is.null(p_net)) {
-    print(p_net)
-    ggsave(file.path(meta$job_dir, sprintf("%s_directed_network.png", meta$target)), p_net, width=10, height=10)
-  } else {
-    cat("> *API returned no high-confidence biological network for this target, or internet is disconnected.*\n\n")
-  }
-}
-```
 
 
 # Export
