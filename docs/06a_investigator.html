@@ -643,15 +643,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree013c31b21860a2cdae4eb8f22a67ad1ce647d033targetblank013c31ba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebdf812f8dff145511a357d64ef0f653199b1a2b9targetblankbdf812fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/013c31b21860a2cdae4eb8f22a67ad1ce647d033" target="_blank">013c31b</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bdf812f8dff145511a357d64ef0f653199b1a2b9" target="_blank">bdf812f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree013c31b21860a2cdae4eb8f22a67ad1ce647d033targetblank013c31ba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreebdf812f8dff145511a357d64ef0f653199b1a2b9targetblankbdf812fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -661,7 +661,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/013c31b21860a2cdae4eb8f22a67ad1ce647d033" target="_blank">013c31b</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/bdf812f8dff145511a357d64ef0f653199b1a2b9" target="_blank">bdf812f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -701,6 +701,9 @@ Ignored files:
     Ignored:    output/z02_sideproject_vascular_2/
     Ignored:    renv/library/
     Ignored:    renv/staging/
+
+Unstaged changes:
+    Modified:   code/06_multiomics_engines.R
 
 </code></pre>
 <p>
@@ -745,6 +748,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/bdf812f8dff145511a357d64ef0f653199b1a2b9/analysis/06a_investigator.Rmd" target="_blank">bdf812f</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+removed network plot from investigator
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/7ba031c88935f514650233e51d5cead091d5e008/docs/06a_investigator.html" target="_blank">7ba031c</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1085,16 +1122,6 @@ pathway_dbs &lt;- list(
   &quot;Immunologic_Signature&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C7&quot;) %&gt;% select(gs_name, gene_symbol),
   &quot;Reactome&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C2&quot;, subcategory = &quot;CP:REACTOME&quot;) %&gt;% select(gs_name, gene_symbol)
 )</code></pre>
-<pre><code>Warning: The `category` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
-ℹ Please use the `collection` argument instead.
-This warning is displayed once per session.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
-<pre><code>Warning: The `subcategory` argument of `msigdbr()` is deprecated as of msigdbr 10.0.0.
-ℹ Please use the `subcollection` argument instead.
-This warning is displayed once per session.
-Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-generated.</code></pre>
 </div>
 <div id="omnipath-import" class="section level1">
 <h1>Omnipath Import</h1>
@@ -19621,6 +19648,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7ba031c88935f514650233e51d5cead091d5e008/docs/figure/06a_investigator.Rmd/target_investigator-29.png" target="_blank">7ba031c</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/85c97101ff85b9e8609f54e8ff3d7826fc2cadb0/docs/figure/06a_investigator.Rmd/target_investigator-29.png" target="_blank">85c9710</a>
@@ -49421,455 +49459,6 @@ alexander-gysin
 </div>
 </div>
 </div>
-<div id="directed-biological-networks" class="section level1 tabset">
-<h1 class="tabset">Directed Biological Networks</h1>
-<div class="info-box">
-<strong>What this code does:</strong>
-<ul>
-<li>
-Rendered high-resolution, directed biological network graphs leveraging
-a database-first API query to OmniPath, mapping dataset significance
-onto validated primary and secondary biological interactions.
-</li>
-</ul>
-</div>
-<pre class="r"><code>for (net_job in names(network_queue)) {
-  meta &lt;- network_queue[[net_job]]
-  
-  cat(sprintf(&quot;\n\n## Network: %s\n\n&quot;, meta$target))
-  
-  p_net &lt;- wrap_directed_network(
-    target = meta$target, 
-    prot_cor_df = meta$df, 
-    fdr_cutoff = investigator_config$cor_fdr_cutoff, 
-    plot_theme = investigator_config$plot_theme
-  )
-  
-  if (!is.null(p_net)) {
-    print(p_net)
-    ggsave(file.path(meta$job_dir, sprintf(&quot;%s_directed_network.png&quot;, meta$target)), p_net, width=10, height=10)
-  } else {
-    cat(&quot;&gt; *API returned no high-confidence biological network for this target, or internet is disconnected.*\n\n&quot;)
-  }
-}</code></pre>
-<div id="network-casp4" class="section level2">
-<h2>Network: CASP4</h2>
-<p><img src="figure/06a_investigator.Rmd/directed_biological_networks-1.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-directed_biological_networks-1">
-Past versions of directed_biological_networks-1.png
-</button>
-</p>
-<div id="fig-directed_biological_networks-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/85c97101ff85b9e8609f54e8ff3d7826fc2cadb0/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">85c9710</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/61cf0f4362185ce6175b522a591c14a4e2c2e337/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">61cf0f4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2f7b4dc9c899f66a0ac6740d6ec63d029df2fe37/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">2f7b4dc</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/926c65bf4be47cfed5fe7c0dd9cfa4d33de7177a/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">926c65b</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1c7b72d000c0d07db3665aaabbf47f9aa3b6dd98/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">1c7b72d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a47313c83482f4f3ce6338d8ed9cbcfc8870081f/docs/figure/06a_investigator.Rmd/directed_biological_networks-1.png" target="_blank">a47313c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="network-ido1" class="section level2">
-<h2>Network: IDO1</h2>
-<p><img src="figure/06a_investigator.Rmd/directed_biological_networks-2.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-directed_biological_networks-2">
-Past versions of directed_biological_networks-2.png
-</button>
-</p>
-<div id="fig-directed_biological_networks-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/85c97101ff85b9e8609f54e8ff3d7826fc2cadb0/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">85c9710</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/61cf0f4362185ce6175b522a591c14a4e2c2e337/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">61cf0f4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2f7b4dc9c899f66a0ac6740d6ec63d029df2fe37/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">2f7b4dc</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/926c65bf4be47cfed5fe7c0dd9cfa4d33de7177a/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">926c65b</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1c7b72d000c0d07db3665aaabbf47f9aa3b6dd98/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">1c7b72d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a47313c83482f4f3ce6338d8ed9cbcfc8870081f/docs/figure/06a_investigator.Rmd/directed_biological_networks-2.png" target="_blank">a47313c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="network-eda2r" class="section level2">
-<h2>Network: EDA2R</h2>
-<p><img src="figure/06a_investigator.Rmd/directed_biological_networks-3.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-directed_biological_networks-3">
-Past versions of directed_biological_networks-3.png
-</button>
-</p>
-<div id="fig-directed_biological_networks-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/85c97101ff85b9e8609f54e8ff3d7826fc2cadb0/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">85c9710</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/61cf0f4362185ce6175b522a591c14a4e2c2e337/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">61cf0f4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2f7b4dc9c899f66a0ac6740d6ec63d029df2fe37/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">2f7b4dc</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/926c65bf4be47cfed5fe7c0dd9cfa4d33de7177a/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">926c65b</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1c7b72d000c0d07db3665aaabbf47f9aa3b6dd98/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">1c7b72d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/06a_investigator.Rmd/directed_biological_networks-3.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="network-rnf213" class="section level2">
-<h2>Network: RNF213</h2>
-<p><img src="figure/06a_investigator.Rmd/directed_biological_networks-4.png" alt="" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-directed_biological_networks-4">
-Past versions of directed_biological_networks-4.png
-</button>
-</p>
-<div id="fig-directed_biological_networks-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/85c97101ff85b9e8609f54e8ff3d7826fc2cadb0/docs/figure/06a_investigator.Rmd/directed_biological_networks-4.png" target="_blank">85c9710</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/61cf0f4362185ce6175b522a591c14a4e2c2e337/docs/figure/06a_investigator.Rmd/directed_biological_networks-4.png" target="_blank">61cf0f4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/2f7b4dc9c899f66a0ac6740d6ec63d029df2fe37/docs/figure/06a_investigator.Rmd/directed_biological_networks-4.png" target="_blank">2f7b4dc</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/926c65bf4be47cfed5fe7c0dd9cfa4d33de7177a/docs/figure/06a_investigator.Rmd/directed_biological_networks-4.png" target="_blank">926c65b</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
 <div id="export" class="section level1">
 <h1>Export</h1>
 <div class="info-box">
@@ -53530,98 +53119,8 @@ wrap_highlight_plot &lt;- function(t_vec, target_name, t_type, hl_conf, env, plo
 }
 
 
-wrap_directed_network &lt;- function(target, prot_cor_df, fdr_cutoff, plot_theme) {
-
-  # Fetch from memory instead of internet
-  edges_bio &lt;- worker_fetch_omnipath_memory(target, min_resources = 2)
-  if(is.null(edges_bio) || nrow(edges_bio) == 0) return(NULL)
-
-  # Extract unique nodes
-  bio_nodes &lt;- unique(c(edges_bio$from, edges_bio$to))
-
-  # Build Nodes and Map Statistical Colors
-  nodes &lt;- data.frame(name = bio_nodes) %&gt;%
-    left_join(prot_cor_df %&gt;% select(Feature, Statistical_Direction, FDR), by = c(&quot;name&quot; = &quot;Feature&quot;)) %&gt;%
-    mutate(
-      node_shape = ifelse(name == target, &quot;square&quot;, &quot;circle&quot;),
-      node_color = case_when(
-        name == target ~ &quot;grey20&quot;,
-        is.na(FDR) ~ &quot;grey80&quot;,
-        FDR &gt;= fdr_cutoff ~ &quot;mediumpurple3&quot;,
-        grepl(&quot;Positive&quot;, Statistical_Direction) ~ &quot;firebrick4&quot;,
-        grepl(&quot;Negative&quot;, Statistical_Direction) ~ &quot;dodgerblue4&quot;,
-        TRUE ~ &quot;grey50&quot;
-      )
-    )
-
-  # Plot Graph
-  g &lt;- graph_from_data_frame(d = edges_bio, vertices = nodes, directed = TRUE)
-
-  p &lt;- ggraph(g, layout = &quot;fr&quot;) +
-    geom_edge_link(aes(filter = mechanism == &quot;Stimulation&quot;), arrow = arrow(length = unit(4, &quot;mm&quot;), type = &quot;closed&quot;), end_cap = circle(6, &quot;mm&quot;), color = &quot;grey40&quot;) +
-    geom_edge_link(aes(filter = mechanism == &quot;Inhibition&quot;), arrow = arrow(angle = 90, length = unit(3, &quot;mm&quot;), type = &quot;open&quot;), end_cap = circle(6, &quot;mm&quot;), color = &quot;grey40&quot;) +
-    geom_edge_link(aes(filter = mechanism == &quot;Dual/Complex&quot;), color = &quot;grey40&quot;, end_cap = circle(6, &quot;mm&quot;)) +
-    geom_edge_link(aes(filter = mechanism == &quot;Physical/Unknown&quot;), linetype = &quot;dashed&quot;, color = &quot;grey60&quot;, end_cap = circle(6, &quot;mm&quot;)) +
-
-    geom_node_point(aes(color = node_color, shape = node_shape), size = 7) +
-    geom_node_text(aes(label = name), repel = TRUE, size = 4, fontface = &quot;bold&quot;) +
-    scale_color_identity() + scale_shape_identity() +
-    theme_void() +
-    labs(title = sprintf(&quot;Directed Network: %s&quot;, target),
-         subtitle = &quot;Red=Up, Blue=Down, Purple=Non-Sig, Grey=Missing | Arrow=Stim, Blunt=Inhib, Dashed=Physical&quot;) +
-    plot_theme + theme(legend.position = &quot;none&quot;, plot.background = element_rect(fill = &quot;white&quot;, color = NA))
-
-  return(p)
-}
-
-
 # WORKERS -----------------------------------------------------
 
-worker_fetch_omnipath_memory &lt;- function(target, db_df = omnipath_full_db, min_resources = 2) {
-
-  if (is.null(db_df) || nrow(db_df) == 0) return(NULL)
-
-  # 1. Primary Query
-  df_main &lt;- db_df %&gt;%
-    filter(source_genesymbol == target | target_genesymbol == target)
-
-  if (nrow(df_main) == 0) return(NULL)
-
-  if(&quot;n_resources&quot; %in% colnames(df_main)) {
-    df_main &lt;- df_main %&gt;% filter(as.numeric(n_resources) &gt;= min_resources)
-  }
-
-  # 2. Secondary Query (Interactions between partners)
-  partners &lt;- unique(c(df_main$source_genesymbol, df_main$target_genesymbol))
-  partners &lt;- partners[!is.na(partners) &amp; partners != target]
-
-  if(length(partners) &gt; 0) {
-    df_sec &lt;- db_df %&gt;% filter(source_genesymbol %in% partners &amp; target_genesymbol %in% partners)
-
-    if (nrow(df_sec) &gt; 0) {
-      if(&quot;n_resources&quot; %in% colnames(df_sec)) {
-        df_sec &lt;- df_sec %&gt;% filter(as.numeric(n_resources) &gt;= min_resources)
-      }
-      df_main &lt;- bind_rows(df_main, df_sec) %&gt;% distinct()
-    }
-  }
-
-  # 3. Format edges for ggraph
-  edges &lt;- df_main %&gt;%
-    mutate(
-      edge_type = &quot;Biological&quot;,
-      mechanism = case_when(
-        is_stimulation == 1 &amp; is_inhibition == 0 ~ &quot;Stimulation&quot;,
-        is_stimulation == 0 &amp; is_inhibition == 1 ~ &quot;Inhibition&quot;,
-        is_stimulation == 1 &amp; is_inhibition == 1 ~ &quot;Dual/Complex&quot;,
-        TRUE ~ &quot;Physical/Unknown&quot;
-      )
-    ) %&gt;%
-    select(from = source_genesymbol, to = target_genesymbol, edge_type, mechanism) %&gt;%
-    distinct()
-
-  return(edges)
-}
 
 run_fisher_cor_binary &lt;- function(data_mat, score_vec) {
   # (Your existing run_fisher_cor_binary remains exactly the same here)
