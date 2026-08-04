@@ -1500,18 +1500,13 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
 
   # 4. Sankey Plot Preparation (ggsankey specific)
   df_plot <- df_merged
-
-  # Calculate cluster sizes to append to labels
   counts_A <- table(df_plot$Cluster_A)
   counts_B <- table(df_plot$Cluster_B)
 
-  # Ensure node names are unique strings by appending the N
   df_plot$Node_A <- sprintf("%s\n(n=%d)", df_plot$Cluster_A, counts_A[as.character(df_plot$Cluster_A)])
   df_plot$Node_B <- sprintf("%s\n(n=%d)", df_plot$Cluster_B, counts_B[as.character(df_plot$Cluster_B)])
 
-  # Enforce Hungarian ordering as factor levels so lines don't cross unnecessarily
   order_A <- sprintf("%s\n(n=%d)", rownames(overlap_mat), counts_A[rownames(overlap_mat)])
-
   orphans_B <- setdiff(colnames(overlap_mat), mapped_B_levels)
   final_B_levels <- c(mapped_B_levels, orphans_B)
   order_B <- sprintf("%s\n(n=%d)", final_B_levels, counts_B[final_B_levels])
@@ -1519,40 +1514,21 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
   df_plot$Node_A <- factor(df_plot$Node_A, levels = order_A)
   df_plot$Node_B <- factor(df_plot$Node_B, levels = order_B)
 
-  # Convert standard dataframe to ggsankey "long" format
   df_long <- ggsankey::make_long(df_plot, Node_A, Node_B)
 
-  # Build the ggsankey Plot
-  p_sankey <- ggplot2::ggplot(df_long, ggplot2::aes(x = x,
-                                                    next_x = next_x,
-                                                    node = node,
-                                                    next_node = next_node,
-                                                    fill = factor(node))) +
-    # The flows and nodes
+  p_sankey <- ggplot2::ggplot(df_long, ggplot2::aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node))) +
     ggsankey::geom_sankey(flow.alpha = 0.6, node.color = "grey30", smooth = 8) +
-
-    # Crisp white label boxes over the nodes
     ggsankey::geom_sankey_label(ggplot2::aes(label = node), size = 3.5, color = "black", fill = "white", fontface = "bold") +
-
-    # Custom axes mapping based on config
     ggplot2::scale_x_discrete(labels = c("Node_A" = conf$name_A, "Node_B" = conf$name_B)) +
-
-    # Theming
     ggplot2::scale_fill_viridis_d(option = "turbo", alpha = 0.8) +
     ggsankey::theme_sankey(base_size = 14) +
-    ggplot2::labs(
-      title = conf$title,
-      subtitle = "Clusters aligned via Hungarian maximum consensus (Gap spacing applied)",
-      x = NULL
-    ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(size = 12, face = "bold", color = "black"),
-      plot.title = ggplot2::element_text(face = "bold"),
-      legend.position = "none"
-    )
+    ggplot2::labs(title = conf$title, subtitle = "Clusters aligned via Hungarian maximum consensus (Gap spacing applied)", x = NULL) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 12, face = "bold", color = "black"), plot.title = ggplot2::element_text(face = "bold"), legend.position = "none")
 
-  # 5. Dynamic Phenotyping (Tricking the wrapper)
+
+  # 5. Dynamic Phenotyping & Leaver Tables
   pheno_results <- list()
+  leaver_tables <- list() # NEW: Storage for the raw patient tables
 
   for (c_A in names(mapping_list)) {
     c_B_target <- mapping_list[[c_A]]
@@ -1564,19 +1540,31 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
     n_stayer <- sum(pts_in_A$Trajectory == "Stayer")
     n_leaver <- sum(pts_in_A$Trajectory == "Leaver")
 
-    # Check minimum thresholds
+    # --- NEW: Extract Raw Leaver Table ---
+    if (n_leaver > 0 && !is.null(conf$leaver_features)) {
+      leavers_only <- pts_in_A[pts_in_A$Trajectory == "Leaver", ]
+      valid_features <- intersect(conf$leaver_features, colnames(master_spine))
+
+      if (length(valid_features) > 0) {
+        leaver_clin <- master_spine[master_spine$Subject_ID %in% leavers_only$ID, c("Subject_ID", valid_features), drop = FALSE]
+
+        leaver_df <- merge(
+          leavers_only[, c("ID", "Cluster_B")],
+          leaver_clin,
+          by.x = "ID", by.y = "Subject_ID"
+        )
+
+        colnames(leaver_df)[2] <- "Migrated_To"
+        leaver_tables[[c_A]] <- leaver_df
+      }
+    }
+
+    # Check minimum thresholds for statistical phenotyping wrapper
     if (n_stayer >= conf$min_n_transition && n_leaver >= conf$min_n_transition) {
 
-      # Build the assignment vector (Names = Subject_ID, Values = "Stayer" / "Leaver")
       traj_vec <- setNames(factor(pts_in_A$Trajectory, levels = c("Stayer", "Leaver")), pts_in_A$ID)
+      mock_payload <- list(status = "success", data = list(assignments = list(trajectory = traj_vec)))
 
-      # Create a mock payload to feed into your standard phenotyping wrapper
-      mock_payload <- list(
-        status = "success",
-        data = list(assignments = list(trajectory = traj_vec))
-      )
-
-      # Create a temporary config for the wrapper
       temp_conf <- list(
         target_job = job_id,
         title = sprintf("%s (Stayers vs Leavers)", c_A),
@@ -1588,7 +1576,7 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
         must_include_vars = c()
       )
 
-      # Call your standard wrapper
+      # NOTE: This uses the exact legacy wrapper call from your code
       res <- wrap_clinical_phenotyping(
         payload = mock_payload,
         master_spine = master_spine,
@@ -1606,58 +1594,9 @@ run_cross_clustering_engine <- function(payload_A, payload_B, master_spine, data
     status = "success",
     plot = p_sankey,
     phenotyping = pheno_results,
+    leaver_tables = leaver_tables, # Output the tables to the main script
     mapping = mapping_list
   ))
-}
-
-# WRAPPERS 3: Machine Learning -----------------------------------
-
-#' Wrapper: ML Data Preparation
-#' Routes omics types, applies hybrid sparsity logic for lipidomics,
-#' applies SMOTE for proteomics, and standardizes matrices.
-wrap_ml_data_prep <- function(mat, clin_df, config) {
-
-  # 1. Align Clinical and Omics Data
-  clin_sub <- clin_df %>%
-    dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups)) %>%
-    dplyr::filter(!is.na(.data[[config$test_var]]))
-
-  common_samples <- intersect(colnames(mat), clin_sub$Subject_ID)
-  if (length(common_samples) < 10) stop("Insufficient overlapping samples.")
-
-  mat_sub <- mat[, common_samples, drop = FALSE]
-  clin_sub <- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
-
-  # 2. Define Y (Target)
-  Y <- ifelse(clin_sub[[config$test_var]] %in% config$target_groups, "Target", "Reference")
-  Y <- as.factor(Y)
-
-  # 3. Define X (Features) based on Omics Topology
-  X_raw <- t(mat_sub)
-
-  if (config$omics_type == "lipidomics") {
-    # Hybrid Matrix Logic: 0/1 for sparse, scaled continuous for dense
-    missing_rates <- colMeans(is.na(X_raw) | X_raw == 0)
-
-    sparse_cols <- names(missing_rates[missing_rates >= 0.30])
-    dense_cols <- names(missing_rates[missing_rates < 0.30])
-
-    X_hybrid <- matrix(nrow = nrow(X_raw), ncol = ncol(X_raw), dimnames = dimnames(X_raw))
-
-    # Binarize sparse
-    if(length(sparse_cols) > 0) X_hybrid[, sparse_cols] <- ifelse(is.na(X_raw[, sparse_cols]) | X_raw[, sparse_cols] == 0, 0, 1)
-
-    # Scale dense
-    if(length(dense_cols) > 0) X_hybrid[, dense_cols] <- scale(X_raw[, dense_cols, drop = FALSE])
-
-    X <- X_hybrid
-
-  } else if (config$omics_type == "proteomics") {
-    # Pure continuous logic: Impute missing (if any) and scale
-    X <- scale(X_raw) # Assuming 100% complete as discussed. Imputation step goes here if needed.
-  }
-
-  return(list(X = X, Y = Y))
 }
 
 
