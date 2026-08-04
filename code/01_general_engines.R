@@ -1047,10 +1047,12 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
 
     # 1. CLINICAL TABLE (Forced Chi-squared to prevent OOM)
     all_vars <- unname(unlist(vars_list))
-    summary_obj <- valid_df %>% select(any_of(all_vars), Cluster) %>%
-      gtsummary::tbl_summary(by = Cluster, missing = "no") %>%
-      gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "kruskal.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
-      gtsummary::sort_p() %>% gtsummary::bold_labels()
+    summary_obj <- suppressWarnings(suppressMessages(
+      valid_df %>% dplyr::select(dplyr::any_of(all_vars), Cluster) %>%
+        gtsummary::tbl_summary(by = Cluster, missing = "no") %>%
+        gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "kruskal.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
+        gtsummary::sort_p() %>% gtsummary::bold_labels()
+    ))
 
     results$tables[[algo_name]] <- summary_obj
     readr::write_csv(gtsummary::as_tibble(summary_obj), file.path(pheno_dir, paste0(job_id, "_", algo_name, "_Clinical_Table.csv")))
@@ -1064,9 +1066,11 @@ wrap_clinical_phenotyping <- function(clustering_payload, clin_df, dict_df, conf
         valid_h_vars <- intersect(h_vars, colnames(valid_df))
         if (length(valid_h_vars) > 0) {
           hl_df <- valid_df %>% select(all_of(c("Cluster", valid_h_vars)))
-          hl_tbl <- hl_df %>% gtsummary::tbl_summary(by = Cluster, missing = "ifany", missing_text = "Missing (NA)") %>%
-            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
-            gtsummary::bold_labels()
+          hl_tbl <- suppressWarnings(suppressMessages(
+            hl_df %>% gtsummary::tbl_summary(by = Cluster, missing = "ifany", missing_text = "Missing (NA)") %>%
+              gtsummary::add_p(test = list(gtsummary::all_continuous() ~ "wilcox.test", gtsummary::all_categorical() ~ "chisq.test")) %>%
+              gtsummary::bold_labels()
+          ))
 
           results$tables$highlights[[algo_name]][[h_name]] <- gtsummary::as_kable_extra(hl_tbl, format = "html", caption = sprintf("Subset Table: %s", gsub("_", " ", h_name))) %>%
             kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE, position = "left")
