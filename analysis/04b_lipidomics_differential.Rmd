@@ -163,7 +163,7 @@ dea_configs <- list(
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 1.0,
     external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_sa_Master_Assignments.rds"),
       join_col = "Subject_ID"
     )
   ),
@@ -178,7 +178,7 @@ dea_configs <- list(
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 1.0,
     external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_Master_Assignments.rds"),
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_sa_Master_Assignments.rds"),
       join_col = "Subject_ID"
     )
   ),
@@ -536,7 +536,7 @@ for (job_id in names(dea_configs)) {
     cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
   }
 }
-}
+
 ```
 
 

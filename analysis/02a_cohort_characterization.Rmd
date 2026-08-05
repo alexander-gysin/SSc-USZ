@@ -135,6 +135,15 @@ figure_configs <- list(
         y_label = "Sample Storage Time (Years)", 
         add_stat_test = TRUE,
         pairwise = TRUE
+      ),
+       plot_3 = list(
+        title = "Age", 
+        type = "violin",
+        y_var = "Age",
+        x_var = "cohort_group",
+        y_label = "Participant Age (Years)", 
+        add_stat_test = TRUE,
+        pairwise = TRUE
       )
     )
   ),
