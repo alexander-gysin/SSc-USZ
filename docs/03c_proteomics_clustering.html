@@ -483,7 +483,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">04 August, 2026</h4>
+<h4 class="date">05 August, 2026</h4>
 
 </div>
 
@@ -512,7 +512,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-08-04
+<strong>Last updated:</strong> 2026-08-05
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -643,15 +643,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree03168bb20acbddf3d3fba1c62bd9509e623a557etargetblank03168bba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef90c9a3b7b7e0915e040d3c83ce56cfd908a1290targetblankf90c9a3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/03168bb20acbddf3d3fba1c62bd9509e623a557e" target="_blank">03168bb</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f90c9a3b7b7e0915e040d3c83ce56cfd908a1290" target="_blank">f90c9a3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree03168bb20acbddf3d3fba1c62bd9509e623a557etargetblank03168bba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreef90c9a3b7b7e0915e040d3c83ce56cfd908a1290targetblankf90c9a3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -661,7 +661,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/03168bb20acbddf3d3fba1c62bd9509e623a557e" target="_blank">03168bb</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/f90c9a3b7b7e0915e040d3c83ce56cfd908a1290" target="_blank">f90c9a3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -678,6 +678,7 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/01a_data_import_and_qc/
     Ignored:    output/01a_data_import_and_qc_lod_filtered/
     Ignored:    output/01b_clinical_feature_engineering/
@@ -703,7 +704,7 @@ Ignored files:
     Ignored:    renv/staging/
 
 Unstaged changes:
-    Modified:   code/01_general_engines.R
+    Modified:   analysis/04b_lipidomics_differential.Rmd
 
 </code></pre>
 <p>
@@ -749,6 +750,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/f90c9a3b7b7e0915e040d3c83ce56cfd908a1290/analysis/03c_proteomics_clustering.Rmd" target="_blank">f90c9a3</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+<td>
+wflow_publish("analysis/03c_proteomics_clustering.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c05740060b9d646727c77432a0c54e35ba9c5821/docs/03c_proteomics_clustering.html" target="_blank">c057400</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -54127,41 +54162,55 @@ downstream Lipidomics Differential engine.
 </ul>
 </div>
 <pre class="r"><code># 1. Extract the payload for the target job
-target_job &lt;- &quot;job_svc&quot;
-payload &lt;- global_cluster_payloads[[target_job]]
+target_jobs &lt;- c(&quot;job_svc&quot;, &quot;job_svc_sa&quot;)
 
-if (!is.null(payload) &amp;&amp; payload$status == &quot;success&quot;) {
-  
-  # 2. Extract the k-means assignments (Named vector: Names = Subject_ID, Values = Cluster)
-  kmeans_raw &lt;- payload$data$assignments[[&quot;kmeans&quot;]]
-  
-  if (!is.null(kmeans_raw)) {
-    # 3. Transform into the exact format required by the Lipidomics pipeline
-    bridge_df &lt;- data.frame(
-      Subject_ID = names(kmeans_raw),
-      kmeans_Cluster = paste(as.character(kmeans_raw)),
-      stringsAsFactors = FALSE
+for (target_job in target_jobs) {
+  payload &lt;- global_cluster_payloads[[target_job]]
+
+  if (!is.null(payload) &amp;&amp; payload$status == &quot;success&quot;) {
+    
+    # 2. Extract the k-means assignments (Named vector: Names = Subject_ID, Values = Cluster)
+    kmeans_raw &lt;- payload$data$assignments[[&quot;kmeans&quot;]]
+    
+    if (!is.null(kmeans_raw)) {
+      # 3. Transform into the exact format required by the Lipidomics pipeline
+      bridge_df &lt;- data.frame(
+        Subject_ID = names(kmeans_raw),
+        kmeans_Cluster = paste(as.character(kmeans_raw)),
+        stringsAsFactors = FALSE
+      )
+      
+      # 4. Define export directory and ensure it exists
+      export_dir &lt;- file.path(output_dir_data, &quot;Clustering&quot;, target_job)
+      if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
+      
+      # 5. Export the bridge file
+      export_path &lt;- file.path(export_dir, paste0(target_job, &quot;_Master_Assignments.rds&quot;))
+      saveRDS(bridge_df, export_path)
+      
+      write_csv(
+  bridge_df,
+  file = here::here(
+    file.path(
+      &quot;output/03c_proteomics_clustering/Clustering&quot;,
+      target_job,
+      &quot;master_assignment.csv&quot;
     )
-    
-    # 4. Define export directory and ensure it exists
-    export_dir &lt;- file.path(output_dir_data, &quot;Clustering&quot;, target_job)
-    if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
-    
-    # 5. Export the bridge file
-    export_path &lt;- file.path(export_dir, paste0(target_job, &quot;_Master_Assignments.rds&quot;))
-    saveRDS(bridge_df, export_path)
-    
-    write_csv(bridge_df, file = here::here(&quot;output/03c_proteomics_clustering/Clustering/job_svc/job_svc_master_assignment.csv&quot;))
-    
-    cat(sprintf(&quot;**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n&quot;, nrow(bridge_df), export_path))
+  )
+)
+      
+      cat(sprintf(&quot;**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n&quot;, nrow(bridge_df), export_path))
+    } else {
+      cat(&quot;*Error: k-means assignments not found in the payload.*\n&quot;)
+    }
   } else {
-    cat(&quot;*Error: k-means assignments not found in the payload.*\n&quot;)
+    cat(&quot;*Error: Clustering payload is missing or failed.*\n&quot;)
   }
-} else {
-  cat(&quot;*Error: Clustering payload for &#39;job_svc&#39; is missing or failed.*\n&quot;)
 }</code></pre>
 <pre><code>**Success!** Exported 130 k-means assignments to cross-omics bridge:
-`/users/agysin/SSc-USZ/output/03c_proteomics_clustering/Clustering/job_svc/job_svc_Master_Assignments.rds`</code></pre>
+`/users/agysin/SSc-USZ/output/03c_proteomics_clustering/Clustering/job_svc/job_svc_Master_Assignments.rds`
+**Success!** Exported 130 k-means assignments to cross-omics bridge:
+`/users/agysin/SSc-USZ/output/03c_proteomics_clustering/Clustering/job_svc_sa/job_svc_sa_Master_Assignments.rds`</code></pre>
 </div>
 <div id="appendix" class="section level1">
 <h1>Appendix</h1>
