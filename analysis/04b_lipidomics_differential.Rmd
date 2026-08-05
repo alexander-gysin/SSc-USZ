@@ -138,6 +138,66 @@ dea_configs <- list(
     )
   ),
   
+  job_n1_vs_n2 = list(
+    title = "Cluster 1 vs Cluster 2 (Non-Active)",
+    test_var = "kmeans_Cluster",
+    target_groups = c("Cluster 2"),
+    ref_groups = c("Cluster 1"),
+    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
+    bin_continuous = FALSE,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0,
+    external_data = list(
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
+      join_col = "Subject_ID"
+    )
+  ),
+  
+   job_n1_vs_n2 = list(
+    title = "Cluster 1 vs Cluster 2 (Non-Active EUSTAR)",
+    test_var = "kmeans_Cluster",
+    target_groups = c("Cluster 2"),
+    ref_groups = c("Cluster 1"),
+    subset_filter = list(column = "ACTIVE_AI", value = c("0")),
+    bin_continuous = FALSE,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0,
+    external_data = list(
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
+      join_col = "Subject_ID"
+    )
+  ),
+  
+  job_SA_n1_vs_n2 = list(
+    title = "SA Cluster 1 vs Cluster 2 (Non-Active)",
+    test_var = "kmeans_Cluster",
+    target_groups = c("Cluster 2"),
+    ref_groups = c("Cluster 1"),
+    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
+    bin_continuous = FALSE,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0,
+    external_data = list(
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_Master_Assignments.rds"),
+      join_col = "Subject_ID"
+    )
+  ),
+  
+   job_SA_n1_vs_n2 = list(
+    title = "SA Cluster 1 vs Cluster 2 (Non-Active EUSTAR)",
+    test_var = "kmeans_Cluster",
+    target_groups = c("Cluster 2"),
+    ref_groups = c("Cluster 1"),
+    subset_filter = list(column = "ACTIVE_AI", value = c("0")),
+    bin_continuous = FALSE,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 1.0,
+    external_data = list(
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_Master_Assignments.rds"),
+      join_col = "Subject_ID"
+    )
+  ),
+  
     job_med_ccb = list(
     title = "Calcium Channel Blockers",
     test_var = "Med_ccb",
@@ -230,6 +290,13 @@ for (job_id in names(dea_configs)) {
     if (!(job$test_var %in% data_dictionary$Variable)) {
       data_dictionary <- bind_rows(data_dictionary, data.frame(Variable = job$test_var, Class = "Categorical"))
     }
+  }
+  
+  # NEW: Dynamic Subsetting
+  if (!is.null(job$subset_filter)) {
+    filt_col <- job$subset_filter$column
+    filt_val <- job$subset_filter$value
+    temp_spine <- temp_spine %>% dplyr::filter(.data[[filt_col]] %in% filt_val)
   }
   
   # 2. Dictionary Lookup & Pre-processing ---------------------------
@@ -339,11 +406,18 @@ for (job_id in names(dea_configs)) {
   
   cat(sprintf("\n\n## %s\n\n", job$title))
   
-  # External Data Injection & Continuous Binning
+  # External Data Injection 
   temp_spine <- master_spine
   if (!is.null(job$external_data)) {
     ext_df <- readRDS(job$external_data$file_path)
     temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # NEW: Dynamic Subsetting
+  if (!is.null(job$subset_filter)) {
+    filt_col <- job$subset_filter$column
+    filt_val <- job$subset_filter$value
+    temp_spine <- temp_spine %>% dplyr::filter(.data[[filt_col]] %in% filt_val)
   }
   
   temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
@@ -419,6 +493,13 @@ for (job_id in names(dea_configs)) {
     temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
   }
   
+  # NEW: Dynamic Subsetting
+  if (!is.null(job$subset_filter)) {
+    filt_col <- job$subset_filter$column
+    filt_val <- job$subset_filter$value
+    temp_spine <- temp_spine %>% dplyr::filter(.data[[filt_col]] %in% filt_val)
+  }
+  
   # 2. Filter NAs and handle binning
   temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
   if (isTRUE(job$bin_continuous)) {
@@ -454,6 +535,7 @@ for (job_id in names(dea_configs)) {
   } else {
     cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
   }
+}
 }
 ```
 
