@@ -1309,39 +1309,53 @@ for (cc_id in names(cross_contrast_configs)) {
 
 ```{r omics_bridge_export}
 # 1. Extract the payload for the target job
-target_job <- "job_svc"
-payload <- global_cluster_payloads[[target_job]]
+target_jobs <- c("job_svc", "job_svc_sa")
 
-if (!is.null(payload) && payload$status == "success") {
-  
-  # 2. Extract the k-means assignments (Named vector: Names = Subject_ID, Values = Cluster)
-  kmeans_raw <- payload$data$assignments[["kmeans"]]
-  
-  if (!is.null(kmeans_raw)) {
-    # 3. Transform into the exact format required by the Lipidomics pipeline
-    bridge_df <- data.frame(
-      Subject_ID = names(kmeans_raw),
-      kmeans_Cluster = paste(as.character(kmeans_raw)),
-      stringsAsFactors = FALSE
+for (target_job in target_jobs) {
+  payload <- global_cluster_payloads[[target_job]]
+
+  if (!is.null(payload) && payload$status == "success") {
+    
+    # 2. Extract the k-means assignments (Named vector: Names = Subject_ID, Values = Cluster)
+    kmeans_raw <- payload$data$assignments[["kmeans"]]
+    
+    if (!is.null(kmeans_raw)) {
+      # 3. Transform into the exact format required by the Lipidomics pipeline
+      bridge_df <- data.frame(
+        Subject_ID = names(kmeans_raw),
+        kmeans_Cluster = paste(as.character(kmeans_raw)),
+        stringsAsFactors = FALSE
+      )
+      
+      # 4. Define export directory and ensure it exists
+      export_dir <- file.path(output_dir_data, "Clustering", target_job)
+      if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
+      
+      # 5. Export the bridge file
+      export_path <- file.path(export_dir, paste0(target_job, "_Master_Assignments.rds"))
+      saveRDS(bridge_df, export_path)
+      
+      write_csv(
+  bridge_df,
+  file = here::here(
+    file.path(
+      "output/03c_proteomics_clustering/Clustering",
+      target_job,
+      "master_assignment.csv"
     )
-    
-    # 4. Define export directory and ensure it exists
-    export_dir <- file.path(output_dir_data, "Clustering", target_job)
-    if (!dir.exists(export_dir)) dir.create(export_dir, recursive = TRUE)
-    
-    # 5. Export the bridge file
-    export_path <- file.path(export_dir, paste0(target_job, "_Master_Assignments.rds"))
-    saveRDS(bridge_df, export_path)
-    
-    write_csv(bridge_df, file = here::here("output/03c_proteomics_clustering/Clustering/job_svc/job_svc_master_assignment.csv"))
-    
-    cat(sprintf("**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n", nrow(bridge_df), export_path))
+  )
+)
+      
+      cat(sprintf("**Success!** Exported %d k-means assignments to cross-omics bridge:\n`%s`\n", nrow(bridge_df), export_path))
+    } else {
+      cat("*Error: k-means assignments not found in the payload.*\n")
+    }
   } else {
-    cat("*Error: k-means assignments not found in the payload.*\n")
+    cat("*Error: Clustering payload is missing or failed.*\n")
   }
-} else {
-  cat("*Error: Clustering payload for 'job_svc' is missing or failed.*\n")
 }
+
+
 ```
 
 # Appendix
