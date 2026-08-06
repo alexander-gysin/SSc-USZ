@@ -983,3 +983,220 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
   return(grid_plot)
 }
 
+
+# PART 8: PLS-DA & IMPUTATION WORKERS -----------------------------------------
+
+#' Worker: Global Imputation (1/5th Minimum Positive Value)
+#' @param mat Unimputed lipidomics matrix (Lipids as rows, Samples as cols).
+worker_impute_min_fifth <- function(mat) {
+  imputed_count <- 0
+
+  # Apply row-wise (lipid-wise)
+  imputed_mat <- t(apply(mat, 1, function(x) {
+    pos_x <- x[!is.na(x) & x > 0]
+
+    # Fail loudly if triage failed to catch an all-zero/NA lipid
+    if (length(pos_x) == 0) {
+      stop("Imputation failed: A lipid has zero measured positive values. Please review global triage thresholds.", call. = FALSE)
+    }
+
+    min_val <- min(pos_x) / 5
+
+    # Count missing values being imputed for the audit trail
+    missing_idx <- is.na(x) | x == 0
+    imputed_count <<- imputed_count + sum(missing_idx)
+
+    x[missing_idx] <- min_val
+    return(x)
+  }))
+  colnames(imputed_mat) <- colnames(mat)
+
+  return(list(mat = imputed_mat, imputed_count = imputed_count))
+}
+
+#' Worker: Run ropls PLS-DA & Extract VIP
+#' @param mat_sub Imputed, subset matrix
+#' @param clin_vec Character vector of group assignments
+worker_run_plsda <- function(mat_sub, clin_vec) {
+  # ropls expects samples as rows, variables (lipids) as columns
+  X <- t(mat_sub)
+  Y <- as.factor(clin_vec)
+
+  # Auto-scaling is handled by scaleC = "standard". figI = 0 silences default plots.
+  plsda_res <- try(ropls::opls(x = X, y = Y, predI = 2, scaleC = "standard", figI = 0, info.txtC = "none"), silent = TRUE)
+
+  if (inherits(plsda_res, "try-error")) {
+    return(list(status = "error", error_msg = "ropls PLS-DA failed to converge."))
+  }
+
+  # Extract VIP scores
+  vip_comp1 <- ropls::getVipVn(plsda_res)
+
+  # Determine which group has the highest mean for biological context
+  group_means <- apply(X, 2, function(col) tapply(col, Y, mean, na.rm = TRUE))
+  enriched_group <- apply(group_means, 2, function(col) names(which.max(col)))
+
+  vip_df <- data.frame(
+    Lipid = names(vip_comp1),
+    VIP = as.numeric(vip_comp1),
+    Enriched_In = enriched_group[names(vip_comp1)],
+    stringsAsFactors = FALSE
+  ) %>% dplyr::arrange(dplyr::desc(VIP))
+
+  return(list(status = "success", model = plsda_res, vip = vip_df, X = X, Y = Y))
+}
+
+#' Worker: Plot PLS-DA Scores
+worker_plot_plsda_scores <- function(model, Y, config, col_map) {
+  # Extract variates (scores) using ropls accessors
+  scores_mat <- ropls::getScoreMN(model)
+
+  df_scores <- data.frame(
+    Comp1 = scores_mat[, 1],
+    Comp2 = scores_mat[, 2],
+    Group = Y
+  )
+
+  # Extract variance explained per component
+  var_expl <- round(model@modelDF$R2X * 100, 1)
+
+  p <- ggplot(df_scores, aes(x = Comp1, y = Comp2, color = Group, fill = Group)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
+    geom_point(size = 3, alpha = 0.8) +
+    stat_ellipse(geom = "polygon", alpha = 0.2, type = "norm", level = 0.95) +
+    scale_color_manual(values = col_map) +
+    scale_fill_manual(values = col_map) +
+    theme_minimal() +
+    theme(
+      legend.position = "right",
+      panel.grid.minor = element_blank()
+    ) +
+    labs(
+      title = paste("PLS-DA:", config$title),
+      x = sprintf("Component 1 (%.1f%%)", var_expl[1]),
+      y = sprintf("Component 2 (%.1f%%)", var_expl[2])
+    )
+
+  return(p)
+}
+
+#' Worker: Plot VIP Scores
+worker_plot_vip <- function(vip_df, config, col_map, top_n = 20) {
+  plot_df <- head(vip_df, top_n) %>%
+    dplyr::mutate(Lipid = factor(Lipid, levels = rev(Lipid)))
+
+  p <- ggplot(plot_df, aes(x = VIP, y = Lipid, fill = Enriched_In)) +
+    geom_bar(stat = "identity", color = "black", width = 0.7) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "firebrick") +
+    scale_fill_manual(values = col_map) +
+    theme_minimal() +
+    theme(
+      legend.position = "right",
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank()
+    ) +
+    labs(
+      title = paste("Top", top_n, "VIP Scores"),
+      subtitle = "Dashed line indicates standard threshold of VIP = 1.0",
+      x = "Variable Importance in Projection (VIP)",
+      y = "Lipid Species",
+      fill = "Enriched In"
+    )
+
+  return(p)
+}
+
+# PART 9: PLS-DA WRAPPER ------------------------------------------------------
+
+#' Wrapper: PLS-DA Pipeline
+wrap_plsda_pipeline <- function(mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
+
+  audit <- list()
+  audit$start_samples <- ncol(mat)
+
+  # 1. Filter to requested contrast groups
+  if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
+    clin_df <- clin_df %>% dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
+  }
+
+  common_samples <- intersect(colnames(mat), clin_df$Subject_ID)
+  if (length(common_samples) < 5) return(list(status = "error", error_msg = "Insufficient subjects."))
+
+  mat_sub <- mat[, common_samples, drop = FALSE]
+  clin_sub <- clin_df %>% dplyr::filter(Subject_ID %in% common_samples)
+  clin_sub <- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
+
+  audit$filtered_samples <- ncol(mat_sub)
+
+  # 2. Formatting Groups
+  target_name <- paste(config$target_groups, collapse = "+")
+  ref_name <- paste(config$ref_groups, collapse = "+")
+
+  clin_sub$Plot_Group <- dplyr::case_when(
+    clin_sub[[config$test_var]] %in% config$target_groups ~ target_name,
+    clin_sub[[config$test_var]] %in% config$ref_groups ~ ref_name,
+    TRUE ~ NA_character_
+  )
+
+  # Filter out any NAs in the classification target
+  valid_idx <- !is.na(clin_sub$Plot_Group)
+  audit$dropped_na_labels <- sum(!valid_idx)
+
+  clin_sub <- clin_sub[valid_idx, ]
+  mat_sub <- mat_sub[, valid_idx, drop = FALSE]
+
+  if (length(unique(clin_sub$Plot_Group)) < 2) {
+    return(list(status = "error", error_msg = "Requires at least 2 groups for PLS-DA."))
+  }
+
+  audit$final_samples <- ncol(mat_sub)
+
+  # 3. Variance Check (Zero-Variance Exclusion)
+  # Prevents ropls auto-scaling from dividing by zero and crashing
+  lipid_variances <- apply(mat_sub, 1, var)
+  zero_var_lipids <- names(lipid_variances[lipid_variances == 0 | is.na(lipid_variances)])
+  audit$zero_var_dropped <- length(zero_var_lipids)
+
+  if (length(zero_var_lipids) > 0) {
+    mat_sub <- mat_sub[!rownames(mat_sub) %in% zero_var_lipids, , drop = FALSE]
+  }
+
+  audit$final_lipids <- nrow(mat_sub)
+
+  if (nrow(mat_sub) < 5) {
+    return(list(status = "error", error_msg = "Too few lipids remained after removing zero-variance features.", audit = audit))
+  }
+
+  # 4. Colors
+  base_levels <- c(config$target_groups[1], config$ref_groups[1])
+  assigned_colors <- project_colors_func(base_levels)
+  col_map <- setNames(assigned_colors, c(target_name, ref_name))
+
+  # 5. Math Worker
+  res <- worker_run_plsda(mat_sub, clin_sub$Plot_Group)
+  if (res$status == "error") {
+    res$audit <- audit
+    return(res)
+  }
+
+  # 6. Plot Workers
+  p_scores <- worker_plot_plsda_scores(res$model, res$Y, config, col_map)
+  p_vip <- worker_plot_vip(res$vip, config, col_map, top_n = config$vip_top_n)
+
+  # 7. Save Artifacts
+  ggsave(file.path(out_dir, paste0(job_name, "_plsda_scores.png")), p_scores, width = 7, height = 6, bg = "white")
+  ggsave(file.path(out_dir, paste0(job_name, "_plsda_vip.png")), p_vip, width = 8, height = 7, bg = "white")
+
+  if (!is.null(assets_dir)) {
+    ggsave(file.path(assets_dir, paste0(job_name, "_plsda_scores.png")), p_scores, width = 7, height = 6, bg = "white")
+    ggsave(file.path(assets_dir, paste0(job_name, "_plsda_vip.png")), p_vip, width = 8, height = 7, bg = "white")
+  }
+
+  return(list(
+    status = "success",
+    plots = list(scores = p_scores, vip = p_vip),
+    tables = list(vip = res$vip),
+    audit = audit
+  ))
+}
