@@ -1,0 +1,207 @@
+---
+title: "PLS-DA & VIP Biomarker Discovery"
+author: "alexander-gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r init, include=FALSE}
+rm(list = ls())
+source(here::here("code", "00_config.R"))
+```
+
+# Setup and Import
+`r what_this_does("Loaded mixOmics for multivariate statistical modeling.", "Imported the pre-cleaned clinical spine and lipidomics matrix.", "Sourced custom lipid omics engines.")`
+
+```{r setup_and_import, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(ropls)   # Core PLS-DA engine
+library(kableExtra) # HTML tables
+
+# Knitr Config
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+# Output paths
+current_file <- "04d_lipidomics_plsda"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Asset paths (Public/GitHub accessible)
+assets_dir <- here::here("docs", "assets", current_file)
+if (!dir.exists(assets_dir)) dir.create(assets_dir, recursive = TRUE)
+
+# Source Configuration & Engines
+source(here::here("code", "03_lipidomics_engines.R"))
+
+# Load Pre-Cleaned Data
+master_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
+lipid_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "raw_lipid_matrix.rds"))
+
+# Dynamic Feature Count
+total_features <- nrow(lipid_mat)
+```
+
+
+# Configurations
+`r what_this_does("Configured the strict Sparsity Triage threshold (50%) to prevent modeling heavily fabricated data.", "Parameterized the PLS-DA contrast jobs.")`
+
+```{r configurations}
+# 1. Sparsity Triage Configs ---------------------------
+# PLS-DA requires stricter missingness thresholds than standard DEA
+sparsity_configs <- list(
+  global_triage = list(
+    min_detect_rate = 0.25  # Must be measured in at least 25% of the cohort
+  )
+)
+
+# 2. PLS-DA Routing Configs ---------------------------
+plsda_configs <- list(
+  job_active_vs_nonactive = list(
+    title = "Active vs. Non-Active",
+    test_var = "cohort_group",
+    target_groups = c("Active"),
+    ref_groups = c("Non-Active"),
+    bin_continuous = FALSE,
+    vip_top_n = 20
+  ),
+  
+  job_ssc_vs_ctrl = list(
+    title = "SSc vs. Control",
+    test_var = "cohort_group",
+    target_groups = c("Active", "Non-Active"),
+    ref_groups = c("Control"),
+    bin_continuous = FALSE,
+    vip_top_n = 20
+  )
+)
+```
+
+# Sparsity Triage & Global Imputation
+
+`r what_this_does("Evaluates global missingness and filters out ultra-sparse features.", "Imputes the remaining gaps by substituting missing values with 1/5 of the lowest positive measurement observed for that specific lipid across the entire cohort.", "Outputs a detailed data manipulation audit trail.")`
+
+```{r sparsity_triage_and_global_imputation, results='asis'}
+# 1. Triage Math ---------------------------
+conf <- sparsity_configs$global_triage
+
+binary_mat <- ifelse(is.na(lipid_mat) | lipid_mat == 0, 0, 1)
+detection_rates <- rowMeans(binary_mat, na.rm = TRUE)
+
+testable_lipids <- names(detection_rates[detection_rates >= conf$min_detect_rate])
+removed_lipids <- names(detection_rates[detection_rates < conf$min_detect_rate])
+mat_triage <- lipid_mat[testable_lipids, , drop = FALSE]
+
+# 2. Imputation Engine ---------------------------
+imputation_res <- worker_impute_min_fifth(mat_triage)
+mat_imputed <- imputation_res$mat
+
+cat(c(sprintf("### Triage & Imputation Audit {.unlisted .unnumbered}\n\n"), 
+    sprintf("* **Starting Lipids:** %d\n", nrow(lipid_mat)),
+    sprintf("* **Removed by Triage (Failed %.0f%% threshold):** %d\n", conf$min_detect_rate * 100, length(removed_lipids)),
+    sprintf("* **Surviving Lipids:** %d\n", nrow(mat_triage)),
+    sprintf("* **Data Points Imputed:** %d (Using 1/5th MNAR minimum rule)\n\n", imputation_res$imputed_count)))
+
+# Save Imputed Matrix for downstream use
+saveRDS(mat_imputed, file.path(output_dir_data, "imputed_lipid_matrix.rds"))
+
+# Cleanup ---------------------------
+rm(binary_mat, detection_rates, conf, mat_triage, imputation_res, removed_lipids)
+invisible(gc())
+```
+
+# Discriminant Analysis {.tabset}
+`r what_this_does("Performs sub-setting and data wrangling for the specific contrast.", "Calculates variance to dynamically exclude constant features.", "Executes auto-scaled Partial Least Squares Discriminant Analysis (PLS-DA).", "Extracts and visualizes Variable Importance in Projection (VIP) scores to identify primary driving biomarkers.")`
+
+```{r discriminant_analysis}
+# Global storage for VIP lists
+vip_results_list <- list()
+
+for (job_id in names(plsda_configs)) {
+  job <- plsda_configs[[job_id]]
+  
+  cat(sprintf("\n\n## %s\n\n", job$title))
+  
+  # Continuous variable handling (binning for classification model)
+  temp_spine <- master_spine %>% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
+    cat(sprintf("*Note: Continuous variable %s was binned at median (%.2f) to permit classification modeling.*\n\n", job$test_var, median_val))
+  }
+  
+  # Execute Wrapper
+  res <- wrap_plsda_pipeline(
+    mat = mat_imputed, 
+    clin_df = temp_spine, 
+    config = job, 
+    job_name = job_id,
+    out_dir = output_dir_data,
+    assets_dir = assets_dir,
+    project_colors_func = get_project_colors
+  )
+  
+  # Print the Data Wrangling Audit Trail
+  if (!is.null(res$audit)) {
+    cat(c(sprintf("### Data Wrangling Audit {.unlisted .unnumbered}\n\n"),
+          sprintf("* **Starting cohort:** %d samples\n", res$audit$start_samples),
+          sprintf("* **Filtered to target groups:** %d samples\n", res$audit$filtered_samples),
+          sprintf("* **Dropped due to missing clinical labels:** %d samples\n", res$audit$dropped_na_labels),
+          sprintf("* **Variance Check:** %d lipids had zero variance in this specific subset and were excluded.\n", res$audit$zero_var_dropped),
+          sprintf("* **Final input to PLS-DA:** %d samples x %d lipids\n\n", res$audit$final_samples, res$audit$final_lipids)))
+  }
+  
+  if (res$status == "success") {
+    
+    vip_results_list[[job_id]] <- res$tables$vip
+    saveRDS(res$tables$vip, file.path(output_dir_data, sprintf("%s_vip_stats.rds", job_id)))
+    
+    # Render Plots side-by-side using Patchwork
+    cat(sprintf("### Model & VIP: %s {.unlisted .unnumbered}\n\n", job$title))
+    
+    combined_plot <- res$plots$scores + res$plots$vip + patchwork::plot_layout(widths = c(1, 1.2))
+    
+    if (interactive() && !isTRUE(getOption('knitr.in.progress'))) { 
+      print(combined_plot); cat("\n\n")
+    } else { 
+      # Print directly to chunk to leverage HTML knitr embedding 
+      print(combined_plot)
+      cat("\n\n") 
+    }
+    
+    # Render Table
+    cat(sprintf("### Top VIP Biomarkers {.unlisted .unnumbered}\n\n"))
+    
+    tbl <- head(res$tables$vip, 15) %>% 
+      mutate(VIP = round(VIP, 3)) %>%
+      kableExtra::kbl(format = "html", caption = sprintf("Top 15 VIP Features: %s", job$title)) %>% 
+      kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+    
+    print(tbl)
+    cat("\n\n")
+    
+    # Safely clear the plotting objects now that they are inside the success loop
+    rm(combined_plot, tbl)
+    
+  } else {
+     cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
+  }
+  
+  rm(temp_spine, res)
+}
+```
+
+# Appendix
+
+`r what_this_does("Appended the raw underlying R code from the custom lipid omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+
+```{r print_engine, code=readLines(here::here("code", "03_lipidomics_engines.R")), eval=FALSE}
+
+```
+
+```{r complete}
+cat("Script 04d Complete! \n")
+```
