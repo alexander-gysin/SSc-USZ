@@ -8,6 +8,7 @@ library(patchwork)
 library(ComplexHeatmap)
 library(ggrepel)
 library(scales)
+library(circlize)
 
 # PART 1: WRAPPERS -------------------------------------------------------------
 
@@ -590,6 +591,16 @@ wrap_sparse_dea <- function(mat, clin_df, config, engine, job_name, out_dir, ass
   full_res$FDR <- p.adjust(full_res$P_Value, method = "BH")
   full_res <- full_res %>% arrange(FDR, P_Value)
 
+  # FIX: Sanitize Inf/-Inf in Log2OR before significance tagging and plotting
+  full_res <- full_res %>%
+    mutate(Log2OR_Plot = case_when(
+      is.infinite(Log2OR) & Log2OR > 0 ~ 10,
+      is.infinite(Log2OR) & Log2OR < 0 ~ -10,
+      Log2OR > 10 ~ 10,
+      Log2OR < -10 ~ -10,
+      TRUE ~ Log2OR
+    ))
+
   sig_res <- full_res %>% filter(FDR < config$dea_p_cutoff & abs(Log2OR) > config$dea_fc_cutoff)
 
   # 4. Generate Volcano Plot
@@ -598,30 +609,40 @@ wrap_sparse_dea <- function(mat, clin_df, config, engine, job_name, out_dir, ass
     plot_df <- full_res %>%
       mutate(
         Sig = case_when(
-          FDR < config$dea_p_cutoff & Log2OR > config$dea_fc_cutoff ~ "Up",
-          FDR < config$dea_p_cutoff & Log2OR < -config$dea_fc_cutoff ~ "Down",
+          FDR < config$dea_p_cutoff & Log2OR_Plot > config$dea_fc_cutoff ~ "Up",
+          FDR < config$dea_p_cutoff & Log2OR_Plot < -config$dea_fc_cutoff ~ "Down",
           TRUE ~ "NS"
         ),
-        NegLog10P = -log10(P_Value)
+        # FIX: explicitly plotting FDR on the Y-axis
+        NegLog10FDR = -log10(FDR)
       )
 
-    volcano_plot <- ggplot(plot_df, aes(x = Log2OR, y = NegLog10P, color = Sig)) +
+    volcano_plot <- ggplot(plot_df, aes(x = Log2OR_Plot, y = NegLog10FDR, color = Sig)) +
       geom_point(alpha = 0.8) +
       scale_color_manual(values = c("Up" = "firebrick", "Down" = "steelblue", "NS" = "grey80")) +
-      geom_hline(yintercept = -log10(max(full_res$P_Value[full_res$FDR < config$dea_p_cutoff], na.rm=T)), linetype = "dashed") +
+      geom_hline(yintercept = -log10(config$dea_p_cutoff), linetype = "dashed") +
       geom_vline(xintercept = c(-config$dea_fc_cutoff, config$dea_fc_cutoff), linetype = "dashed") +
+      # NEW: Add ggrepel specifically for non-NS features
+      ggrepel::geom_text_repel(
+        data = dplyr::filter(plot_df, Sig != "NS"),
+        aes(label = Lipid),
+        size = 3,
+        show.legend = FALSE,
+        max.overlaps = Inf # Ensures no labels are hidden even if they get close
+      ) +
       theme_minimal() +
-      labs(title = sprintf("Volcano: %s", config$title), x = "Log2 Odds Ratio", y = "-Log10 P-Value")
+      labs(title = sprintf("Volcano: %s", config$title), x = "Log2 Odds Ratio", y = "-Log10(FDR)")
 
     ggsave(file.path(out_dir, paste0(job_name, "_volcano.png")), volcano_plot, width = 8, height = 6, bg = "white")
     if (!is.null(assets_dir)) ggsave(file.path(assets_dir, paste0(job_name, "_volcano.png")), volcano_plot, width = 8, height = 6, bg = "white")
   }
 
   # 5. Generate Heatmap (Top Hits)
+  # FIX: Removed if(nrow(sig_res) > 2) trap. Now always plots top 25 regardless of significance.
   hm_plot <- NULL
-  if (nrow(sig_res) > 2) {
-    top_lipids <- head(sig_res$Lipid, 25)
-    hm_mat <- mat_sub[top_lipids, ]
+  if (nrow(full_res) > 2) {
+    top_lipids <- head(full_res$Lipid, 25)
+    hm_mat <- mat_sub[top_lipids, , drop = FALSE]
 
     col_fun <- colorRamp2(c(0, 1), c("white", "darkblue"))
 
@@ -1023,10 +1044,11 @@ worker_run_plsda <- function(mat_sub, clin_vec) {
   Y <- as.factor(clin_vec)
 
   # Auto-scaling is handled by scaleC = "standard". figI = 0 silences default plots.
-  plsda_res <- try(ropls::opls(x = X, y = Y, predI = 2, scaleC = "standard", figI = 0, info.txtC = "none"), silent = TRUE)
+  plsda_res <- try(ropls::opls(x = X, y = Y, predI = 2, scaleC = "standard", fig.pdfC = "none", info.txtC = "none"), silent = TRUE)
 
+  # Print the ACTUAL error instead of a generic one
   if (inherits(plsda_res, "try-error")) {
-    return(list(status = "error", error_msg = "ropls PLS-DA failed to converge."))
+    return(list(status = "error", error_msg = paste("ropls crash:", as.character(plsda_res))))
   }
 
   # Extract VIP scores

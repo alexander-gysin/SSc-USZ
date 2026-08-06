@@ -159,21 +159,25 @@ for (job_id in names(plsda_configs)) {
     vip_results_list[[job_id]] <- res$tables$vip
     saveRDS(res$tables$vip, file.path(output_dir_data, sprintf("%s_vip_stats.rds", job_id)))
     
-    # Render Plots side-by-side using Patchwork
-    cat(sprintf("### Model & VIP: %s {.unlisted .unnumbered}\n\n", job$title))
-    
-    combined_plot <- res$plots$scores + res$plots$vip + patchwork::plot_layout(widths = c(1, 1.2))
-    
+    # Render Plots Individually
+    cat(sprintf("### PLS-DA Scores: %s {.unlisted .unnumbered}\n\n", job$title))
     if (interactive() && !isTRUE(getOption('knitr.in.progress'))) { 
-      print(combined_plot); cat("\n\n")
+      print(res$plots$scores); cat("\n\n")
     } else { 
-      # Print directly to chunk to leverage HTML knitr embedding 
-      print(combined_plot)
+      print(res$plots$scores)
+      cat("\n\n") 
+    }
+    
+    cat(sprintf("### VIP Biomarkers Plot: %s {.unlisted .unnumbered}\n\n", job$title))
+    if (interactive() && !isTRUE(getOption('knitr.in.progress'))) { 
+      print(res$plots$vip); cat("\n\n")
+    } else { 
+      print(res$plots$vip)
       cat("\n\n") 
     }
     
     # Render Table
-    cat(sprintf("### Top VIP Biomarkers {.unlisted .unnumbered}\n\n"))
+    cat(sprintf("### Top VIP Biomarkers Table {.unlisted .unnumbered}\n\n"))
     
     tbl <- head(res$tables$vip, 15) %>% 
       mutate(VIP = round(VIP, 3)) %>%
@@ -184,7 +188,7 @@ for (job_id in names(plsda_configs)) {
     cat("\n\n")
     
     # Safely clear the plotting objects now that they are inside the success loop
-    rm(combined_plot, tbl)
+    rm(tbl)
     
   } else {
      cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
