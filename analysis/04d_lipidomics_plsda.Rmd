@@ -76,6 +76,15 @@ plsda_configs <- list(
     ref_groups = c("Control"),
     bin_continuous = FALSE,
     vip_top_n = 20
+  ),
+  
+  job_act_vs_ctrl = list(
+    title = "Active vs. Control",
+    test_var = "ACTIVE_AI",
+    target_groups = c("1"),
+    ref_groups = c("-1"),
+    bin_continuous = FALSE,
+    vip_top_n = 20
   )
 )
 ```

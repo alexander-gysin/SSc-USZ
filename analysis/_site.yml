@@ -39,6 +39,20 @@ navbar:
       href: 04b_lipidomics_differential.html
     - text: Machine Learning
       href: 04c_lipidomics_machine_learning.html
+    - text: PLS-DA
+      href: 04d_lipidomics_plsda.html
+  - text: sRNA
+    menu:
+    - text: QC & Preprocessing
+      href: 05a_sRNA_qc_and_preprocessing.html
+    - text: Align & Count
+      href: 05b_sRNA_align_and_count.html
+    - text: Normalization & Exploration
+      href: 05c_sRNA_norm_and_explore.html
+    - text: Differential
+      href: 05d_sRNA_differential.html
+    - text: Machine Learning
+      href: 05e_sRNA_machine_learning.html
   - text: Multi-Omics
     menu:
     - text: Investigator

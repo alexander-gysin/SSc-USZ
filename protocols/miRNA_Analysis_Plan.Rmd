@@ -24,13 +24,14 @@ Illumina adapter: 34bp long? (does not really matter)
 
 ## Structure
 
--   05a_qc_and_preprocessing.Rmd (raw fastq to quality-assessed,
+- 05a_qc_and_preprocessing.Rmd (raw fastq to quality-assessed,
     extracted and trimmed pre-processed fastq) FastQC/MultiQC, UMI-tools
     extract, cutadapt, FastQC/MultiQC again
--   05b_alignment_and_counting.Rmd (preprocessed fastq to raw count
+- 05b_alignment_and_counting.Rmd (preprocessed fastq to raw count
     matrix) Rsubread::align, UMI-tools dedup, Rsubread::featureCounts
-    -05c_normalization_and_exploration (from raw count to normalized
-    count to PCA) DESeq2::... -05d_differential_expression.Rmd
+-05c_normalization_and_exploration (from raw count to normalized
+    count to PCA) DESeq2::... 
+ -05d_differential_expression.Rmd
     DESeq2::... (volcano plots and MA plots multiMiR:: for target
     prediction
 
