@@ -418,6 +418,33 @@ div.tocify {
     <li>
       <a href="04c_lipidomics_machine_learning.html">Machine Learning</a>
     </li>
+    <li>
+      <a href="04d_lipidomics_plsda.html">PLS-DA</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    sRNA
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="05a_sRNA_qc_and_preprocessing.html">QC &amp; Preprocessing</a>
+    </li>
+    <li>
+      <a href="05b_sRNA_align_and_count.html">Align &amp; Count</a>
+    </li>
+    <li>
+      <a href="05c_sRNA_norm_and_explore.html">Normalization &amp; Exploration</a>
+    </li>
+    <li>
+      <a href="05d_sRNA_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="05e_sRNA_machine_learning.html">Machine Learning</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -483,7 +510,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">03 August, 2026</h4>
+<h4 class="date">07 August, 2026</h4>
 
 </div>
 
@@ -512,7 +539,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-08-03
+<strong>Last updated:</strong> 2026-08-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -643,15 +670,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecf6ac8ebf1817dcd5c7a412a5eeefce6914a34b6targetblankcf6ac8ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cf6ac8ebf1817dcd5c7a412a5eeefce6914a34b6" target="_blank">cf6ac8e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreecf6ac8ebf1817dcd5c7a412a5eeefce6914a34b6targetblankcf6ac8ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -661,7 +688,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/cf6ac8ebf1817dcd5c7a412a5eeefce6914a34b6" target="_blank">cf6ac8e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -692,6 +719,7 @@ Ignored files:
     Ignored:    output/03e_proteomics_correlations/
     Ignored:    output/04a_lipidomics_topography/
     Ignored:    output/04b_lipidomics_differential/
+    Ignored:    output/04d_lipidomics_plsda/
     Ignored:    output/05_machine_learning/
     Ignored:    output/05a_qc_and_preprocessing/
     Ignored:    output/06a_investigator/
@@ -703,10 +731,16 @@ Ignored files:
     Ignored:    renv/staging/
 
 Untracked files:
-    Untracked:  code/06_multiomics_engines.R
+    Untracked:  analysis/05a_sRNA_qc_and_preprocessing.Rmd
+    Untracked:  analysis/05b_sRNA_align_and_count.Rmd
+    Untracked:  analysis/05c_sRNA_norm_and_explore.Rmd
+    Untracked:  analysis/05d_sRNA_differential.Rmd
 
 Unstaged changes:
-    Modified:   analysis/03c_proteomics_clustering.Rmd
+    Modified:   analysis/04d_lipidomics_plsda.Rmd
+    Deleted:    analysis/05a_qc_and_preprocessing.Rmd
+    Modified:   analysis/_site.yml
+    Modified:   protocols/miRNA_Analysis_Plan.Rmd
 
 </code></pre>
 <p>
@@ -752,6 +786,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/c622179c53be7051996b92ad8434d7e43c23da96/docs/03a_proteomics_variance.html" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+<td>
+wflow_git_commit("docs/")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/03a_proteomics_variance.html" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/03a_proteomics_variance.html" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1724,6 +1809,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/exploratory_vpa_execution-1.png" target="_blank">fc00521</a>
@@ -3163,6 +3281,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -3289,6 +3440,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-2.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-2.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-2.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_qc_checkpoint-2.png" target="_blank">fc00521</a>
@@ -3801,6 +3985,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/dea_selector_engine-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/dea_selector_engine-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/dea_selector_engine-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/dea_selector_engine-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4071,6 +4288,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4173,6 +4423,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-2.png" target="_blank">fc00521</a>
@@ -4290,6 +4573,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-3.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4392,6 +4708,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-4.png" target="_blank">fc00521</a>
@@ -4498,6 +4847,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-5.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-5.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-5.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-5.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4591,6 +4973,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-6.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-6.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-6.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-6.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4671,6 +5086,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-7.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-7.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-7.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-7.png" target="_blank">fc00521</a>
@@ -4758,6 +5206,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-8.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-8.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-8.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-8.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -4838,6 +5319,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-9.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-9.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-9.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-9.png" target="_blank">fc00521</a>
@@ -4933,6 +5447,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-10.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-10.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-10.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-10.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -5015,6 +5562,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-11.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-11.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-11.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-11.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -5095,6 +5675,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-12.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-12.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-12.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-12.png" target="_blank">fc00521</a>
@@ -5190,6 +5803,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-13.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-13.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-13.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-13.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -5270,6 +5916,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-14.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-14.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-14.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-14.png" target="_blank">fc00521</a>
@@ -5374,6 +6053,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-15.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-15.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-15.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/execution_engine_PCA-15.png" target="_blank">fc00521</a>
@@ -5547,6 +6259,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -5682,6 +6427,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-2.png" target="_blank">fc00521</a>
@@ -5824,6 +6602,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-3.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -5937,6 +6748,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-4.png" target="_blank">fc00521</a>
@@ -6059,6 +6903,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-5.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -6172,6 +7049,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-6.png" target="_blank">fc00521</a>
@@ -6293,6 +7203,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-7.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -6406,6 +7349,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-8.png" target="_blank">fc00521</a>
@@ -6527,6 +7503,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-9.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -6640,6 +7649,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/targeted_vpa_engine-10.png" target="_blank">fc00521</a>
@@ -6825,6 +7867,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -6938,6 +8013,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-2.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-2.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-2.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-2.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -7044,6 +8152,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-3.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-3.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-3.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-3.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -7136,6 +8277,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-4.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-4.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-4.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-4.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -7218,6 +8392,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-5.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-5.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-5.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-5.png" target="_blank">fc00521</a>
@@ -7322,6 +8529,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-6.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-6.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-6.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-6.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -7415,6 +8655,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-7.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-7.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-7.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-7.png" target="_blank">fc00521</a>
@@ -7519,6 +8792,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-8.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-8.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-8.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-8.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -7601,6 +8907,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-9.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-9.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-9.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-9.png" target="_blank">fc00521</a>
@@ -7687,6 +9026,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-10.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-10.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-10.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/vpa_scatter_diagnostics-10.png" target="_blank">fc00521</a>
@@ -8489,6 +9861,39 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/global_variance_filter-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/global_variance_filter-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/global_variance_filter-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/global_variance_filter-1.png" target="_blank">fc00521</a>
 </td>
 <td>
@@ -8600,6 +10005,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/scedasticity_plot-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/scedasticity_plot-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/scedasticity_plot-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/scedasticity_plot-1.png" target="_blank">fc00521</a>
@@ -8737,6 +10175,39 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03a_proteomics_variance.Rmd/diagnostic_graveyard-1.png" target="_blank">c622179</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03a_proteomics_variance.Rmd/diagnostic_graveyard-1.png" target="_blank">7c5ab5e</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03a_proteomics_variance.Rmd/diagnostic_graveyard-1.png" target="_blank">a851fc0</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03a_proteomics_variance.Rmd/diagnostic_graveyard-1.png" target="_blank">fc00521</a>
@@ -9900,10 +11371,12 @@ wrap_clinical_phenotyping &lt;- function(clustering_payload, clin_df, dict_df, c
 
     # 1. CLINICAL TABLE (Forced Chi-squared to prevent OOM)
     all_vars &lt;- unname(unlist(vars_list))
-    summary_obj &lt;- valid_df %&gt;% select(any_of(all_vars), Cluster) %&gt;%
-      gtsummary::tbl_summary(by = Cluster, missing = &quot;no&quot;) %&gt;%
-      gtsummary::add_p(test = list(gtsummary::all_continuous() ~ &quot;kruskal.test&quot;, gtsummary::all_categorical() ~ &quot;chisq.test&quot;)) %&gt;%
-      gtsummary::sort_p() %&gt;% gtsummary::bold_labels()
+    summary_obj &lt;- suppressWarnings(suppressMessages(
+      valid_df %&gt;% dplyr::select(dplyr::any_of(all_vars), Cluster) %&gt;%
+        gtsummary::tbl_summary(by = Cluster, missing = &quot;no&quot;) %&gt;%
+        gtsummary::add_p(test = list(gtsummary::all_continuous() ~ &quot;kruskal.test&quot;, gtsummary::all_categorical() ~ &quot;chisq.test&quot;)) %&gt;%
+        gtsummary::sort_p() %&gt;% gtsummary::bold_labels()
+    ))
 
     results$tables[[algo_name]] &lt;- summary_obj
     readr::write_csv(gtsummary::as_tibble(summary_obj), file.path(pheno_dir, paste0(job_id, &quot;_&quot;, algo_name, &quot;_Clinical_Table.csv&quot;)))
@@ -9917,9 +11390,11 @@ wrap_clinical_phenotyping &lt;- function(clustering_payload, clin_df, dict_df, c
         valid_h_vars &lt;- intersect(h_vars, colnames(valid_df))
         if (length(valid_h_vars) &gt; 0) {
           hl_df &lt;- valid_df %&gt;% select(all_of(c(&quot;Cluster&quot;, valid_h_vars)))
-          hl_tbl &lt;- hl_df %&gt;% gtsummary::tbl_summary(by = Cluster, missing = &quot;ifany&quot;, missing_text = &quot;Missing (NA)&quot;) %&gt;%
-            gtsummary::add_p(test = list(gtsummary::all_continuous() ~ &quot;wilcox.test&quot;, gtsummary::all_categorical() ~ &quot;chisq.test&quot;)) %&gt;%
-            gtsummary::bold_labels()
+          hl_tbl &lt;- suppressWarnings(suppressMessages(
+            hl_df %&gt;% gtsummary::tbl_summary(by = Cluster, missing = &quot;ifany&quot;, missing_text = &quot;Missing (NA)&quot;) %&gt;%
+              gtsummary::add_p(test = list(gtsummary::all_continuous() ~ &quot;wilcox.test&quot;, gtsummary::all_categorical() ~ &quot;chisq.test&quot;)) %&gt;%
+              gtsummary::bold_labels()
+          ))
 
           results$tables$highlights[[algo_name]][[h_name]] &lt;- gtsummary::as_kable_extra(hl_tbl, format = &quot;html&quot;, caption = sprintf(&quot;Subset Table: %s&quot;, gsub(&quot;_&quot;, &quot; &quot;, h_name))) %&gt;%
             kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;), full_width = FALSE, position = &quot;left&quot;)
@@ -10353,18 +11828,13 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
 
   # 4. Sankey Plot Preparation (ggsankey specific)
   df_plot &lt;- df_merged
-
-  # Calculate cluster sizes to append to labels
   counts_A &lt;- table(df_plot$Cluster_A)
   counts_B &lt;- table(df_plot$Cluster_B)
 
-  # Ensure node names are unique strings by appending the N
   df_plot$Node_A &lt;- sprintf(&quot;%s\n(n=%d)&quot;, df_plot$Cluster_A, counts_A[as.character(df_plot$Cluster_A)])
   df_plot$Node_B &lt;- sprintf(&quot;%s\n(n=%d)&quot;, df_plot$Cluster_B, counts_B[as.character(df_plot$Cluster_B)])
 
-  # Enforce Hungarian ordering as factor levels so lines don&#39;t cross unnecessarily
   order_A &lt;- sprintf(&quot;%s\n(n=%d)&quot;, rownames(overlap_mat), counts_A[rownames(overlap_mat)])
-
   orphans_B &lt;- setdiff(colnames(overlap_mat), mapped_B_levels)
   final_B_levels &lt;- c(mapped_B_levels, orphans_B)
   order_B &lt;- sprintf(&quot;%s\n(n=%d)&quot;, final_B_levels, counts_B[final_B_levels])
@@ -10372,40 +11842,21 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
   df_plot$Node_A &lt;- factor(df_plot$Node_A, levels = order_A)
   df_plot$Node_B &lt;- factor(df_plot$Node_B, levels = order_B)
 
-  # Convert standard dataframe to ggsankey &quot;long&quot; format
   df_long &lt;- ggsankey::make_long(df_plot, Node_A, Node_B)
 
-  # Build the ggsankey Plot
-  p_sankey &lt;- ggplot2::ggplot(df_long, ggplot2::aes(x = x,
-                                                    next_x = next_x,
-                                                    node = node,
-                                                    next_node = next_node,
-                                                    fill = factor(node))) +
-    # The flows and nodes
+  p_sankey &lt;- ggplot2::ggplot(df_long, ggplot2::aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node))) +
     ggsankey::geom_sankey(flow.alpha = 0.6, node.color = &quot;grey30&quot;, smooth = 8) +
-
-    # Crisp white label boxes over the nodes
     ggsankey::geom_sankey_label(ggplot2::aes(label = node), size = 3.5, color = &quot;black&quot;, fill = &quot;white&quot;, fontface = &quot;bold&quot;) +
-
-    # Custom axes mapping based on config
     ggplot2::scale_x_discrete(labels = c(&quot;Node_A&quot; = conf$name_A, &quot;Node_B&quot; = conf$name_B)) +
-
-    # Theming
     ggplot2::scale_fill_viridis_d(option = &quot;turbo&quot;, alpha = 0.8) +
     ggsankey::theme_sankey(base_size = 14) +
-    ggplot2::labs(
-      title = conf$title,
-      subtitle = &quot;Clusters aligned via Hungarian maximum consensus (Gap spacing applied)&quot;,
-      x = NULL
-    ) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(size = 12, face = &quot;bold&quot;, color = &quot;black&quot;),
-      plot.title = ggplot2::element_text(face = &quot;bold&quot;),
-      legend.position = &quot;none&quot;
-    )
+    ggplot2::labs(title = conf$title, subtitle = &quot;Clusters aligned via Hungarian maximum consensus (Gap spacing applied)&quot;, x = NULL) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 12, face = &quot;bold&quot;, color = &quot;black&quot;), plot.title = ggplot2::element_text(face = &quot;bold&quot;), legend.position = &quot;none&quot;)
 
-  # 5. Dynamic Phenotyping (Tricking the wrapper)
+
+  # 5. Dynamic Phenotyping &amp; Leaver Tables
   pheno_results &lt;- list()
+  leaver_tables &lt;- list() # NEW: Storage for the raw patient tables
 
   for (c_A in names(mapping_list)) {
     c_B_target &lt;- mapping_list[[c_A]]
@@ -10417,19 +11868,35 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
     n_stayer &lt;- sum(pts_in_A$Trajectory == &quot;Stayer&quot;)
     n_leaver &lt;- sum(pts_in_A$Trajectory == &quot;Leaver&quot;)
 
-    # Check minimum thresholds
+    # --- NEW: Extract Raw Leaver Table ---
+    if (n_leaver &gt; 0 &amp;&amp; !is.null(conf$leaver_features)) {
+      leavers_only &lt;- pts_in_A[pts_in_A$Trajectory == &quot;Leaver&quot;, ]
+      valid_features &lt;- intersect(conf$leaver_features, colnames(master_spine))
+
+      if (length(valid_features) &gt; 0) {
+
+        # FIX: Safe tidyverse extraction ensuring unique columns
+        leaver_clin &lt;- master_spine %&gt;%
+          dplyr::filter(Subject_ID %in% leavers_only$ID) %&gt;%
+          dplyr::select(dplyr::all_of(unique(c(&quot;Subject_ID&quot;, valid_features))))
+
+        leaver_df &lt;- merge(
+          leavers_only[, c(&quot;ID&quot;, &quot;Cluster_B&quot;)],
+          leaver_clin,
+          by.x = &quot;ID&quot;, by.y = &quot;Subject_ID&quot;
+        )
+
+        colnames(leaver_df)[2] &lt;- &quot;Migrated_To&quot;
+        leaver_tables[[c_A]] &lt;- leaver_df
+      }
+    }
+
+    # Check minimum thresholds for statistical phenotyping wrapper
     if (n_stayer &gt;= conf$min_n_transition &amp;&amp; n_leaver &gt;= conf$min_n_transition) {
 
-      # Build the assignment vector (Names = Subject_ID, Values = &quot;Stayer&quot; / &quot;Leaver&quot;)
       traj_vec &lt;- setNames(factor(pts_in_A$Trajectory, levels = c(&quot;Stayer&quot;, &quot;Leaver&quot;)), pts_in_A$ID)
+      mock_payload &lt;- list(status = &quot;success&quot;, data = list(assignments = list(trajectory = traj_vec)))
 
-      # Create a mock payload to feed into your standard phenotyping wrapper
-      mock_payload &lt;- list(
-        status = &quot;success&quot;,
-        data = list(assignments = list(trajectory = traj_vec))
-      )
-
-      # Create a temporary config for the wrapper
       temp_conf &lt;- list(
         target_job = job_id,
         title = sprintf(&quot;%s (Stayers vs Leavers)&quot;, c_A),
@@ -10441,7 +11908,7 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
         must_include_vars = c()
       )
 
-      # Call your standard wrapper
+      # NOTE: This uses the exact legacy wrapper call from your code
       res &lt;- wrap_clinical_phenotyping(
         payload = mock_payload,
         master_spine = master_spine,
@@ -10459,58 +11926,9 @@ run_cross_clustering_engine &lt;- function(payload_A, payload_B, master_spine, d
     status = &quot;success&quot;,
     plot = p_sankey,
     phenotyping = pheno_results,
+    leaver_tables = leaver_tables, # Output the tables to the main script
     mapping = mapping_list
   ))
-}
-
-# WRAPPERS 3: Machine Learning -----------------------------------
-
-#&#39; Wrapper: ML Data Preparation
-#&#39; Routes omics types, applies hybrid sparsity logic for lipidomics,
-#&#39; applies SMOTE for proteomics, and standardizes matrices.
-wrap_ml_data_prep &lt;- function(mat, clin_df, config) {
-
-  # 1. Align Clinical and Omics Data
-  clin_sub &lt;- clin_df %&gt;%
-    dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups)) %&gt;%
-    dplyr::filter(!is.na(.data[[config$test_var]]))
-
-  common_samples &lt;- intersect(colnames(mat), clin_sub$Subject_ID)
-  if (length(common_samples) &lt; 10) stop(&quot;Insufficient overlapping samples.&quot;)
-
-  mat_sub &lt;- mat[, common_samples, drop = FALSE]
-  clin_sub &lt;- clin_sub[match(common_samples, clin_sub$Subject_ID), ]
-
-  # 2. Define Y (Target)
-  Y &lt;- ifelse(clin_sub[[config$test_var]] %in% config$target_groups, &quot;Target&quot;, &quot;Reference&quot;)
-  Y &lt;- as.factor(Y)
-
-  # 3. Define X (Features) based on Omics Topology
-  X_raw &lt;- t(mat_sub)
-
-  if (config$omics_type == &quot;lipidomics&quot;) {
-    # Hybrid Matrix Logic: 0/1 for sparse, scaled continuous for dense
-    missing_rates &lt;- colMeans(is.na(X_raw) | X_raw == 0)
-
-    sparse_cols &lt;- names(missing_rates[missing_rates &gt;= 0.30])
-    dense_cols &lt;- names(missing_rates[missing_rates &lt; 0.30])
-
-    X_hybrid &lt;- matrix(nrow = nrow(X_raw), ncol = ncol(X_raw), dimnames = dimnames(X_raw))
-
-    # Binarize sparse
-    if(length(sparse_cols) &gt; 0) X_hybrid[, sparse_cols] &lt;- ifelse(is.na(X_raw[, sparse_cols]) | X_raw[, sparse_cols] == 0, 0, 1)
-
-    # Scale dense
-    if(length(dense_cols) &gt; 0) X_hybrid[, dense_cols] &lt;- scale(X_raw[, dense_cols, drop = FALSE])
-
-    X &lt;- X_hybrid
-
-  } else if (config$omics_type == &quot;proteomics&quot;) {
-    # Pure continuous logic: Impute missing (if any) and scale
-    X &lt;- scale(X_raw) # Assuming 100% complete as discussed. Imputation step goes here if needed.
-  }
-
-  return(list(X = X, Y = Y))
 }
 
 
@@ -12484,54 +13902,54 @@ loaded via a namespace (and not attached):
  [43] scatterplot3d_0.3-45    httr_1.4.8              rstatix_1.0.0          
  [46] globals_0.19.1          ps_1.9.3                rstudioapi_0.19.0      
  [49] DOSE_4.4.0              processx_3.9.0          S4Vectors_0.48.1       
- [52] polyclip_1.10-7         randomForest_4.7-1.2    doParallel_1.0.17      
- [55] evaluate_1.0.5          preprocessCore_1.72.0   hms_1.1.4              
- [58] irlba_2.3.7             colorspace_2.1-3        reticulate_1.46.0      
- [61] magrittr_2.0.5          later_1.4.8             ggtree_4.0.5           
- [64] lattice_0.22-9          getPass_0.2-4           cowplot_1.2.0          
- [67] matrixStats_1.5.0       pillar_1.11.1           nlme_3.1-170           
- [70] iterators_1.0.14        caTools_1.18.3          compiler_4.5.2         
- [73] RSpectra_0.16-2         stringi_1.8.7           showtext_0.9-8         
- [76] minqa_1.2.8             plyr_1.8.9              crayon_1.5.3           
- [79] abind_1.4-8             gridGraphics_0.5-1      ggtext_0.1.2           
- [82] bit_4.6.0               fastmatch_1.1-8         whisker_0.4.1          
- [85] codetools_0.2-20        textshaping_1.0.5       openssl_2.4.2          
- [88] bslib_0.11.0            GetoptLong_1.1.1        remaCor_0.0.20         
- [91] splines_4.5.2           Rcpp_1.1.2              tidydr_0.0.6           
- [94] leaps_3.2               gridtext_0.1.6          knitr_1.51             
- [97] blob_1.3.0              clue_0.3-68             lme4_2.0-6             
-[100] itertools_0.1-3         fs_2.1.0                listenv_1.0.0          
-[103] Rdpack_2.6.6            ggsignif_0.6.4          ggplotify_0.1.3        
-[106] estimability_2.0.0      callr_3.8.0             statmod_1.5.2          
-[109] tzdb_0.5.0              svglite_2.2.2           fANCOVA_0.6-1          
-[112] tweenr_2.0.3            pkgconfig_2.0.3         tools_4.5.2            
-[115] cachem_1.1.0            RhpcBLASctl_0.23-42     rbibutils_2.4.1        
-[118] RSQLite_3.53.3          viridisLite_0.4.3       DBI_1.3.0              
-[121] numDeriv_2016.8-1.1     fastmap_1.2.0           rmarkdown_2.31         
-[124] scales_1.4.0            broom_1.0.13            sass_0.4.10            
-[127] BiocManager_1.30.27     snow_0.4-4              farver_2.1.2           
-[130] reformulas_0.4.4        mgcv_1.9-4              aod_1.3.3              
-[133] scatterpie_0.2.6        yaml_2.3.12             cli_3.6.6              
-[136] stats4_4.5.2            lifecycle_1.0.5         askpass_1.2.1          
-[139] mvtnorm_1.4-2           backports_1.5.1         timechange_0.4.0       
-[142] gtable_0.3.6            rjson_0.2.23            parallel_4.5.2         
-[145] ape_5.8-1               jsonlite_2.0.0          bitops_1.0-9           
-[148] kableExtra_1.4.1        multcompView_0.1-11     bit64_4.8.2            
-[151] yulab.utils_0.2.4       ranger_0.18.0           jquerylib_0.1.4        
-[154] GOSemSim_2.36.0         R.utils_2.13.0          pbkrtest_0.5.5         
-[157] lazyeval_0.2.3          htmltools_0.5.9         affy_1.88.0            
-[160] GO.db_3.22.0            rappdirs_0.3.4          glue_1.8.1             
-[163] XVector_0.50.0          gdtools_0.5.1           rprojroot_2.1.1        
-[166] treeio_1.34.0           gridExtra_2.3.1         EnvStats_3.1.0         
-[169] boot_1.3-32             flashClust_1.1-4        R6_2.6.1               
-[172] ggiraph_0.9.6           gplots_3.3.0            labeling_0.4.3         
-[175] rngtools_1.5.2          aplot_0.3.1             nloptr_2.2.1           
-[178] tidyselect_1.2.1        ggforce_0.5.0           xml2_1.6.0             
-[181] fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0    KernSmooth_2.23-26     
-[184] S7_0.2.2                affyio_1.80.0           fontquiver_0.2.1       
-[187] data.table_1.18.4       htmlwidgets_1.6.4       fgsea_1.36.2           
-[190] RColorBrewer_1.1-3      rlang_1.3.0             lmerTest_3.2-1         
-[193] ggnewscale_0.5.2       </code></pre>
+ [52] polyclip_1.10-7         randomForest_4.7-1.2    xtable_1.8-8           
+ [55] doParallel_1.0.17       evaluate_1.0.5          preprocessCore_1.72.0  
+ [58] hms_1.1.4               irlba_2.3.7             colorspace_2.1-3       
+ [61] reticulate_1.46.0       magrittr_2.0.5          later_1.4.8            
+ [64] ggtree_4.0.5            lattice_0.22-9          getPass_0.2-4          
+ [67] cowplot_1.2.0           matrixStats_1.5.0       pillar_1.11.1          
+ [70] nlme_3.1-170            iterators_1.0.14        caTools_1.18.3         
+ [73] compiler_4.5.2          RSpectra_0.16-2         stringi_1.8.7          
+ [76] showtext_0.9-8          minqa_1.2.8             plyr_1.8.9             
+ [79] crayon_1.5.3            abind_1.4-8             gridGraphics_0.5-1     
+ [82] ggtext_0.1.2            bit_4.6.0               fastmatch_1.1-8        
+ [85] whisker_0.4.1           codetools_0.2-20        textshaping_1.0.5      
+ [88] openssl_2.4.2           bslib_0.11.0            GetoptLong_1.1.1       
+ [91] remaCor_0.0.20          splines_4.5.2           Rcpp_1.1.2             
+ [94] tidydr_0.0.6            leaps_3.2               gridtext_0.1.6         
+ [97] knitr_1.51              blob_1.3.0              clue_0.3-68            
+[100] lme4_2.0-6              itertools_0.1-3         fs_2.1.0               
+[103] listenv_1.0.0           Rdpack_2.6.6            ggsignif_0.6.4         
+[106] ggplotify_0.1.3         estimability_2.0.0      callr_3.8.0            
+[109] statmod_1.5.2           tzdb_0.5.0              svglite_2.2.2          
+[112] fANCOVA_0.6-1           tweenr_2.0.3            pkgconfig_2.0.3        
+[115] tools_4.5.2             cachem_1.1.0            RhpcBLASctl_0.23-42    
+[118] rbibutils_2.4.1         RSQLite_3.53.3          viridisLite_0.4.3      
+[121] DBI_1.3.0               numDeriv_2016.8-1.1     fastmap_1.2.0          
+[124] rmarkdown_2.31          scales_1.4.0            broom_1.0.13           
+[127] sass_0.4.10             BiocManager_1.30.27     snow_0.4-4             
+[130] farver_2.1.2            reformulas_0.4.4        mgcv_1.9-4             
+[133] aod_1.3.3               scatterpie_0.2.6        yaml_2.3.12            
+[136] cli_3.6.6               stats4_4.5.2            lifecycle_1.0.5        
+[139] askpass_1.2.1           mvtnorm_1.4-2           backports_1.5.1        
+[142] timechange_0.4.0        gtable_0.3.6            rjson_0.2.23           
+[145] parallel_4.5.2          ape_5.8-1               jsonlite_2.0.0         
+[148] bitops_1.0-9            kableExtra_1.4.1        multcompView_0.1-11    
+[151] bit64_4.8.2             yulab.utils_0.2.4       ranger_0.18.0          
+[154] jquerylib_0.1.4         GOSemSim_2.36.0         R.utils_2.13.0         
+[157] pbkrtest_0.5.5          lazyeval_0.2.3          htmltools_0.5.9        
+[160] affy_1.88.0             GO.db_3.22.0            rappdirs_0.3.4         
+[163] glue_1.8.1              XVector_0.50.0          gdtools_0.5.1          
+[166] rprojroot_2.1.1         treeio_1.34.0           gridExtra_2.3.1        
+[169] EnvStats_3.1.0          boot_1.3-32             flashClust_1.1-4       
+[172] R6_2.6.1                ggiraph_0.9.6           gplots_3.3.0           
+[175] labeling_0.4.3          rngtools_1.5.2          aplot_0.3.1            
+[178] nloptr_2.2.1            tidyselect_1.2.1        ggforce_0.5.0          
+[181] xml2_1.6.0              fontBitstreamVera_0.1.1 AnnotationDbi_1.72.0   
+[184] KernSmooth_2.23-26      S7_0.2.2                affyio_1.80.0          
+[187] fontquiver_0.2.1        data.table_1.18.4       htmlwidgets_1.6.4      
+[190] fgsea_1.36.2            RColorBrewer_1.1-3      rlang_1.3.0            
+[193] lmerTest_3.2-1          ggnewscale_0.5.2       </code></pre>
 </div>
 </div>
 </div>
