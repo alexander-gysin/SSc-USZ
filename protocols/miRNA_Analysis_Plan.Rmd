@@ -11,10 +11,11 @@ editor_options:
 ## Anatomy of the sequencing read:
 
 5'-miRNA-3'adapter-UMI-Illumina adapter-sample index
+-- ~20bp -- 19bp - 12bp -- 34bp -- ??bp
 
 3'-Adaptor: (5’-3’, 19bp) AACTGTAGGCACCATCAAT (source:
-<https://www.qiagen.com/us/resources/faq/3671>) UMI: start at 0bp after
-3'-Adaptor, length 12bp (source:
+<https://www.qiagen.com/us/resources/faq/3671>) 
+UMI: start at 0bp after 3'-Adaptor, length 12bp (source:
 <https://resources.qiagenbioinformatics.com/manuals/biomedicalgenomicsanalysis/2600/index.php?manual=Create_UMI_Reads_miRNA.html>)
 Illumina adapter: 34bp long? (does not really matter)
 
@@ -67,8 +68,8 @@ Illumina adapter: 34bp long? (does not really matter)
 
 ## Read Alignment & Feature Counting
 
-1.  Index the reference genome using Rsubread::featureCounts (using the
-    GRCh38(h38) geome fasta file)
+1.  Index the reference genome using Rsubread::buildindex (using the
+    GRCh38(h38) genome fasta file)
 2.  Map the preprocessed reads using Rsubread::align (creates BAM file)
 3.  Run UMI-tools dedup via command-line on the BAM files (groups reads
     by their mapping coordinate and UMI (creates a deduplicated BAM
