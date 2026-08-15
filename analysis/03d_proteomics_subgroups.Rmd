@@ -8,21 +8,16 @@ editor_options:
 ---
 
 # Introduction
-Goal: To mathematically triangulate the molecular phenotype of "Non-Active" SSc patients. Because they exhibit extreme clinical heterogeneity, we hypothesize this group contains distinct molecular sub-populations (Active-like vs Control-like). 
+Goal: To define a robust molecular boundary differentiating "Active-like" from "Control-like" profiles within the clinical "Non-Active" SSc cohort. 
 
-We will derive three independent, continuous scores aligning Non-Active patients along the Control-to-Active molecular axis.
-
-<div style='border: 2px solid #e74c3c; padding: 15px; border-radius: 5px; background-color: #fdf2e9; margin-bottom: 20px;'>
-<h4 style='margin-top: 0 !important; color: #c0392b;'>⚠️ NOTE: Medication Confounders</h4>
-The computational pipeline currently lacks patient medication histories. If a Non-Active patient presents with a highly "Control-like" molecular signature, consider that this may represent successful pharmacological immunosuppression rather than a naturally benign disease state.
-</div>
+We generate a continuous polarity-aligned heatmap score based on the SSc disease signature. We then perform a sensitivity analysis by slicing this continuous score at three distinct thresholds (50/50, 40/60, and 60/40) and executing parallel downstream Clinical Phenotyping, Differential Expression Analysis (DEA), and Gene Set Enrichment Analysis (GSEA). Finally, cross-contrast trajectory mapping validates the biological stability of the molecular boundary.
 
 ```{r setup_boxes, include=FALSE}
 source(here::here("code", "00_config.R"))
 ```
 
 # Setup and Import
-`r what_this_does("Imported the clinical spine, numeric spine, data dictionary, and proteomics matrix.", "Loaded the pre-calculated Active vs Control DEA results to extract the master disease signature.", "Sourced the updated omics engines, including the Smart Correlation Engine.")`
+`r what_this_does("Sourced configuration and engine scripts. Imported clinical spines, data dictionary, proteomics matrices, and the master Active vs Control DEA signature.", "Defined pathway database targets for downstream GSEA.")`
 
 ```{r setup_and_import, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -31,7 +26,7 @@ library(here)
 library(ComplexHeatmap)
 library(circlize)
 library(kableExtra)
-library(ggpubr)
+library(ggrepel)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
@@ -46,16 +41,20 @@ source(here::here("code", "02_proteomics_engines.R"))
 
 # Load Data
 master_spine  <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine.rds"))
-numeric_spine <- readRDS(here::here("output", "01b_clinical_feature_engineering", "curated_clinical_spine_numeric.rds"))
 data_dict     <- readRDS(here::here("output", "01b_clinical_feature_engineering", "clinical_data_dictionary.rds")) 
 olink_mat     <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink_matrix.rds"))
+Svc_dea       <- readRDS(here::here("output", "03b_proteomics_differential", "dea_ssc_vs_control.rds"))
 
-# Load DEA Signature (Active vs Control)
-avc_dea <- readRDS(here::here("output", "03b_proteomics_differential", "dea_active_vs_control.rds"))
+pathway_dbs <- list(
+  "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
+  "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
+  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
+  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+)
 ```
 
 # Configuration
-`r what_this_does("Defined the exact clinical subgroup labels to target the Non-Active cohort.", "Parameterised the biological axis definition to use the top 260 Active vs Control proteins across 5 Principal Components.", "Configured strict FDR and Rho thresholds independently for the proteomics and clinical discovery engines.", "Set global plotting aesthetics.")`
+`r what_this_does("Established highly parameterized lists controlling heatmap extraction, subgroup quantiles, DEA model parameters, clinical phenotyping parameters, and cross-contrast trajectory mapping.")`
 
 ```{r configuration}
 # 1. Subgroup Definitions
@@ -65,152 +64,100 @@ groups <- list(
   target = GRP_NON_ACTIVE
 )
 
-# 2. Score Generation Configurations
-score_conf <- list(
-  top_n_proteins = 260, # Number of highly variable/significant proteins to define the axis
-  pca_dimensions = 5    # Compute centroid distances across PC1-PC5
-)
-
-# 3. Discovery Correlation Thresholds
-cor_conf <- list(
-  max_rows = 30,
-  prot_fdr = 0.05,
-  prot_rho = 0.40,
-  clin_fdr = 0.10,
-  clin_rho = 0.30
-)
-
-# 4. Plot Configurations
-plot_conf <- list(
-  dist_bins = 20,
-  hm_font = 8
-)
-
-# Heatmaps
-
+# 2. Heatmap & Split Threshold Configs
 hm_conf <- list(
   top_n_prot = 30
 )
+
+split_conf <- list(
+  # Formatted as Name = Percentile Cutoff (Higher Score = Active-Like)
+  # e.g., 40/60 means 40% Active-like, so we cut at the 60th percentile
+  Split_50_50 = 0.50,
+  Split_40_60 = 0.60, 
+  Split_60_40 = 0.40  
+)
+
+# 3. DEA & Heatmap Engines Config
+dea_base_conf <- list(
+  target_groups = "Active-Like",
+  ref_groups = "Control-Like",
+  covariates = c("Age", "Sex")
+)
+
+omics_config <- list(
+  logFC_cutoff = log2(1.2),
+  p_val_cutoff = 0.05,
+  gsea_p_cutoff = 0.05
+)
+
+heatmap_config <- list(
+  top_n = 30,
+  split_by_group = TRUE,
+  annotation_vars = c("Age", "Sex")
+)
+
+# 4. Phenotyping Config
+pheno_vars_to_include <- data_dict %>% filter(QC_Flag == "PASS") %>% pull(Variable)
+
+clin_vars_to_highlight <- list(
+  "SSc clinical parameters" = ssc_clinical_parameters,
+  "Medication" = clinical_domains$Medications,
+  "Demographics_and_Scores" = clinical_domains$Demographics_and_Scores
+)
+
+clin_vars_to_include <- list(
+  "Exploratory" = c(clinical_domains$Pulmonary, clinical_domains$Cardiac, clinical_domains$Labs_and_Biomarkers, clinical_domains$Cutaneous_and_Vascular, clinical_domains$Musculoskeletal, clinical_domains$Gastrointestinal, clinical_domains$Medications) 
+)
+
+pheno_base_conf <- list(
+  target_algorithms = c("SSc_Splits"),
+  subset_filter = NULL,
+  composite_group = NULL,
+  variables = clin_vars_to_include,
+  highlight_variables = clin_vars_to_highlight,
+  p_cutoff = 0.05,
+  must_include_vars = c() # Dynamically updated in loop
+)
+
+# 5. Trajectory Mapping Configs
+traj_configs <- list(
+  vs_40_60 = list(
+    x_axis_contrast = "Split_50_50", 
+    y_axis_contrast = "Split_40_60",
+    pathway_rank_var = "p.adjust",
+    top_n_pathways = 8
+  ),
+  vs_60_40 = list(
+    x_axis_contrast = "Split_50_50", 
+    y_axis_contrast = "Split_60_40",
+    pathway_rank_var = "p.adjust",
+    top_n_pathways = 8
+  )
+)
+
+# Map dynamic variables to custom colors wrapper
+custom_colors <- setNames(c("#c0392b", "#2980b9"), c("Active-Like", "Control-Like"))
 ```
 
-# Scores
-`r analysis_decision("Signature Definition: We defined the molecular axis using the Top 260 most significant proteins from the Active vs Control DEA. This guarantees all three scores measure specifically where the Non-Active patient falls on the SSc disease spectrum.", "Polarity Alignment: All scores are mathematically aligned so that 100 = Maximally Active-Like, and 0 = Maximally Control-Like.")`
-
-## 5D PCA Centroid Ratio
-`r what_this_does("Ran a Principal Component Analysis on the signature proteins.", "Calculated the exact geometric centroid (average coordinate) of the true Active patients and true Control patients across PC1-PC5.", "Calculated the Euclidean distance of each Non-Active patient to both centroids.", "Computed a ratio (Control Distance / Total Distance) scaled 0-100.")`
-```{r score_1_pca, fig.width=14, fig.height=8}
-# Extract Top 260 Proteins
-sig_prots <- avc_dea %>% slice_min(adj.P.Val, n = score_conf$top_n_proteins) %>% pull(Feature)
+# Scoring
+`r analysis_decision("Signature Selection: Defined the molecular axis using the top 30 most significant proteins from the global SSc vs Control DEA.", "Polarity Validation: Generated a strict complete hierarchical clustering of all samples, dynamically aligning the left-to-right percentile score so that 100 always points toward the 'Active' side")`
+`r what_this_does("Generated a complete hierarchical clustering dendrogram of all patients. Extracted physical leaf order to assign a 0-100 percentile rank score for every Non-Active patient.")`
+```{r scoring, fig.width=14, fig.height=8}
+# 1. Isolate Matrix to Master Signature
+sig_prots <- avc_dea %>% slice_min(adj.P.Val, n = hm_conf$top_n_prot) %>% pull(Feature)
 valid_sig <- intersect(sig_prots, rownames(olink_mat))
 
-# Restrict Matrix and deal with any NAs for PCA
-sub_mat <- olink_mat[valid_sig, ]
-sub_mat[is.na(sub_mat)] <- 0 
-pca_mat <- t(scale(t(sub_mat)))
-
-# Run PCA
-pca_res <- prcomp(t(pca_mat), center = FALSE, scale. = FALSE)
-pca_df <- as.data.frame(pca_res$x[, 1:score_conf$pca_dimensions]) %>% rownames_to_column("Subject_ID")
-pca_df <- pca_df %>% inner_join(master_spine %>% select(Subject_ID, cohort_group), by="Subject_ID")
-
-# Calculate Centroids
-cent_active <- pca_df %>% filter(cohort_group == groups$active) %>% select(starts_with("PC")) %>% colMeans()
-cent_control <- pca_df %>% filter(cohort_group == groups$control) %>% select(starts_with("PC")) %>% colMeans()
-
-# Calculate Euclidean Distances for Non-Actives
-na_pca <- pca_df %>% filter(cohort_group == groups$target)
-dist_df <- data.frame(Subject_ID = na_pca$Subject_ID)
-
-dist_df$Dist_Active <- apply(na_pca %>% select(starts_with("PC")), 1, function(x) sqrt(sum((x - cent_active)^2)))
-dist_df$Dist_Control <- apply(na_pca %>% select(starts_with("PC")), 1, function(x) sqrt(sum((x - cent_control)^2)))
-
-# Score: Ratio of distances (100 = sits exactly on Active Centroid)
-dist_df <- dist_df %>% mutate(PCA_Active_Score = (Dist_Control / (Dist_Active + Dist_Control)) * 100)
-
-# Plots: Scree
-var_exp <- (pca_res$sdev^2 / sum(pca_res$sdev^2)) * 100
-plot_df_scree <- data.frame(PC = 1:10, Var = var_exp[1:10])
-
-p_scree <- ggplot(plot_df_scree, aes(x=factor(PC), y=Var)) +
-  geom_bar(stat="identity", fill="steelblue", color="black") +
-  geom_text(aes(label = sprintf("%.1f%%", Var)), vjust = -0.5, size = 5, fontface = "bold") +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) + # Expands Y-axis so text fits
-  theme_project_base() + 
-  labs(title="PCA Scree Plot", x="Principal Component", y="% Variance")
-
-print(p_scree)
-cat("\n\n")
-
-# Plots: PC1-PC5 Drivers
-pc_plots <- list()
-for(i in 1:5) {
-  pc_name <- paste0("PC", i)
-  pc_loads <- as.data.frame(pca_res$rotation) %>% select(all_of(pc_name)) %>% 
-    arrange(desc(abs(.data[[pc_name]]))) %>% head(10) %>% rownames_to_column("Protein")
-  
-  pc_plots[[i]] <- ggplot(pc_loads, aes(x=reorder(Protein, .data[[pc_name]]), y=.data[[pc_name]], fill=.data[[pc_name]]>0)) +
-    geom_bar(stat="identity", color="black") + coord_flip() + theme_project_base(10) + 
-    scale_fill_manual(values = c("TRUE" = "#c0392b", "FALSE" = "#2980b9")) +
-    theme(legend.position="none", plot.title = element_text(size = 12)) + 
-    labs(title=sprintf("%s Drivers", pc_name), x=NULL, y="Loading")
-}
-
-p_load_grid <- wrap_plots(pc_plots, ncol=5)
-print(p_load_grid)
-```
-
-## Signature Correlation
-`r what_this_does("Extracted the log2 Fold-Change vector from the Active vs Control DEA.", "Ran a Spearman correlation between this master signature vector and the raw protein vector of each individual Non-Active patient.", "Normalized the Spearman Rho to a 0-100 scale.")`
-
-```{r signature_correlation_score}
-# Extract logFC Signature
-logfc_sig <- avc_dea %>% filter(Feature %in% valid_sig) %>% select(Feature, logFC) %>% deframe()
-
-# Calculate Spearman for each Non-Active Patient
-cor_scores <- sapply(dist_df$Subject_ID, function(id) {
-  pt_vec <- olink_mat[valid_sig, id]
-  cor(pt_vec, logfc_sig[names(pt_vec)], method="spearman", use="complete.obs")
-})
-
-sig_df <- data.frame(
-  Subject_ID = names(cor_scores),
-  Raw_Rho = cor_scores
-) %>%
-  # Min-Max Scale to 0-100
-  mutate(Sig_Active_Score = ((Raw_Rho - min(Raw_Rho)) / (max(Raw_Rho) - min(Raw_Rho))) * 100)
-```
-
-## Heatmap based Score
-`r what_this_does("Generated a complete hierarchical clustering dendrogram of all patients using the signature proteins.", "Extracted the strict left-to-right physical ordering of the leaves.", "Aligned the polarity (ensuring the side where Actives cluster is 100) and assigned continuous percentile scores to the Non-Active patients based on their physical placement.")`
-
-```{r score_3_heatmap, fig.width=10, fig.height=7}
-# 1. Build Heatmap Data
-hm_clin <- master_spine %>% 
-  filter(Subject_ID %in% pca_df$Subject_ID, !is.na(cohort_group)) %>%
-  droplevels()
-
+hm_clin <- master_spine %>% filter(!is.na(cohort_group)) %>% droplevels()
 hm_mat <- t(scale(t(olink_mat[valid_sig, hm_clin$Subject_ID])))
 
-# 2. Fetch proper colors using the actual levels
-group_colors <- get_project_colors(levels(hm_clin$cohort_group))
+# 2. Strict Complete Clustering
+hm <- Heatmap(hm_mat, clustering_distance_columns = "euclidean", clustering_method_columns = "complete")
+hm_drawn <- draw(hm, padding = unit(c(2, 2, 2, 2), "mm")) # Draw implicitly constructs the object
 
-# 3. Build Heatmap
-hm <- Heatmap(hm_mat, 
-              name = "Z-Score",
-              show_row_names = FALSE,
-              show_column_names = FALSE,
-              top_annotation = HeatmapAnnotation(Group = hm_clin$cohort_group, col = list(Group = group_colors)),
-              clustering_distance_columns = "euclidean",
-              clustering_method_columns = "complete")
-
-# 4. Draw directly to the HTML
-hm_drawn <- draw(hm)
-
-# Extract order
+# 3. Extract Order and Map to 0-100 Percentile Rank
 order_idx <- column_order(hm_drawn)
 ordered_ids <- colnames(hm_mat)[order_idx]
 
-# 5. Map Order to 0-100 Percentile
 hm_df <- data.frame(
   Subject_ID = ordered_ids,
   HM_Rank = 1:length(ordered_ids)
@@ -218,7 +165,7 @@ hm_df <- data.frame(
   mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
   inner_join(hm_clin %>% select(Subject_ID, cohort_group), by="Subject_ID")
 
-# Check Polarity (Are Actives on the Left (0) or Right (100)?)
+# 4. Polarity Check & Correction
 mean_active <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$active])
 mean_control <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$control])
 
@@ -229,278 +176,199 @@ if (mean_active < mean_control) {
 }
 
 hm_final <- hm_df %>% filter(cohort_group == groups$target) %>% select(Subject_ID, HM_Active_Score)
+
+# Memory Cleanup
+rm(hm_mat, hm_drawn, hm, hm_df); invisible(gc())
 ```
 
+# Sensitivity Subgroup Thresholding
+`r analysis_decision("Data Isolation: Filtering exclusively to the Non-Active cohort before calculating quantiles ensures the 50/50, 40/60, and 60/40 splits accurately reflect distributions within the target group, untainted by actual Active/Control samples.")`
+`r what_this_does("Computed exact quantile thresholds based on the Non-Active patient scores. Assigned strict binary labels ('Active-Like' vs 'Control-Like'). Exported the master splitting index as an RDS.")`
 
-## Score Characterization
-`r what_this_does("Merged the three scores into a master Non-Active index.", "Plotted density histograms to visually evaluate if the Non-Active cohort is continuous (bell curve) or comprised of two distinct subgroups (bimodal).", "Rendered a standalone overlaid density plot to compare the distributions of the three scoring methods.", "Plotted the pairwise correlations between the three independent mathematical approaches.")`
+```{rsensitivity_subgroup_thresholding}
+# 1. Calculate Cutoffs
+cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
+cutoff_40 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_40_60, na.rm=TRUE)
+cutoff_60 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_60_40, na.rm=TRUE)
 
-```{r score_characterization, fig.width=14, fig.height=6}
-# Merge Master Score Dataframe
-score_master <- dist_df %>% select(Subject_ID, PCA_Active_Score) %>%
-  inner_join(sig_df %>% select(Subject_ID, Sig_Active_Score), by="Subject_ID") %>%
-  inner_join(hm_final, by="Subject_ID")
+# 2. Append Binary Columns
+split_spine <- hm_final %>%
+  mutate(
+    Split_50_50 = ifelse(HM_Active_Score > cutoff_50, "Active-Like", "Control-Like"),
+    Split_40_60 = ifelse(HM_Active_Score > cutoff_40, "Active-Like", "Control-Like"),
+    Split_60_40 = ifelse(HM_Active_Score > cutoff_60, "Active-Like", "Control-Like")
+  )
 
-# 1. Density Distributions (Faceted)
-score_long <- score_master %>% pivot_longer(-Subject_ID, names_to="Score_Type", values_to="Score")
+# Merge back into clinical spine for DEA
+eval_spine <- master_spine %>% inner_join(split_spine, by="Subject_ID")
 
-p_dens_facet <- ggplot(score_long, aes(x=Score, fill=Score_Type)) +
-  geom_density(alpha=0.6) +
-  facet_wrap(~Score_Type, scales="free_y") +
-  theme_project_base() + theme(legend.position="none") +
-  labs(title="Faceted Score Distributions", x="Score (100 = Active-Like, 0 = Control-Like)", y="Density")
+# 3. Save Master Splits
+saveRDS(split_spine, file.path(output_dir_data, "non_active_splits.rds"))
 
-print(p_dens_facet)
-cat("\n\n")
-
-# 2. Density Distributions (Overlaid Standalone)
-p_dens_overlay <- ggplot(score_long, aes(x=Score, fill=Score_Type, color=Score_Type)) +
-  geom_density(alpha=0.4, linewidth=1) +
-  theme_project_base() + theme(legend.position="bottom", legend.title=element_blank()) +
-  labs(title="Overlaid Score Distributions", x="Score (100 = Active-Like, 0 = Control-Like)", y="Density") +
-  theme(plot.margin = margin(t = 10, r = 150, b = 10, l = 150, unit = "pt"))
- 
-
-print(p_dens_overlay)
-cat("\n\n")
-
-# 3. Pairwise Correlations with ggpubr Stats
-p1 <- ggplot(score_master, aes(x=PCA_Active_Score, y=Sig_Active_Score)) + 
-  geom_point(alpha=0.7) + geom_smooth(method="lm", color="red") + 
-  stat_cor(label.y.npc = "top") + stat_regline_equation(label.y.npc = 0.9) +
-  theme_project_base()
-
-p2 <- ggplot(score_master, aes(x=PCA_Active_Score, y=HM_Active_Score)) + 
-  geom_point(alpha=0.7) + geom_smooth(method="lm", color="red") + 
-  stat_cor(label.y.npc = "top") + stat_regline_equation(label.y.npc = 0.9) +
-  theme_project_base()
-
-p3 <- ggplot(score_master, aes(x=Sig_Active_Score, y=HM_Active_Score)) + 
-  geom_point(alpha=0.7) + geom_smooth(method="lm", color="red") + 
-  stat_cor(label.y.npc = "top") + stat_regline_equation(label.y.npc = 0.9) +
-  theme_project_base()
-
-p_corrs <- (p1 | p2 | p3) + plot_annotation(title="Pairwise Agreement of Mathematical Scoring Methods")
-print(p_corrs)
-
-# Export Score Master for downstream integration with UMAP Clustering (Script 03c)
-saveRDS(score_master, file.path(output_dir_data, "score_master.rds"))
+# Print Diagnostics
+cat("=== Subgroup Sizes ===\n")
+cat(sprintf("50/50 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_50_50=="Active-Like"), sum(split_spine$Split_50_50=="Control-Like")))
+cat(sprintf("40/60 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_40_60=="Active-Like"), sum(split_spine$Split_40_60=="Control-Like")))
+cat(sprintf("60/40 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_60_40=="Active-Like"), sum(split_spine$Split_60_40=="Control-Like")))
 ```
 
-# Subgrouping
-## Subgroup Drivers {.tabset}
-`r what_this_does("Deployed the Smart Correlation Engine.", "Correlated all 3,000 proteins against the three scores to find the exact biological drivers pulling Non-Actives toward the Active phenotype.", "Mapped the numeric clinical spine (using Data Type logic) to find the physiological markers of 'Active-like' Non-Active patients.")`
+# Phenotyping & DEA
+`r analysis_decision("Dynamic Covariate Validation: Before executing Limma for each split, the script dynamically verifies variance for requested covariates. If a covariate lacks variance within a specific binary split (e.g., all 'Active-Like' happen to be Female), it is automatically dropped from the statistical model to prevent algebraic crashes.", "Mock Clustering Payload: By wrapping our binary split column into a list structure mirroring standard clustering outputs, we can seamlessly leverage the existing wrap_clinical_phenotyping function without architectural changes.")`
+`r what_this_does("Iterated through the three predefined splits. Injected binary labels into the clinical phenotyping engine to evaluate physical patient traits. Constructed custom Limma configurations, evaluated covariate stability, and deployed the DEA/GSEA engine. Stored all results in unified master lists.")`
 
-```{r subgroup_drivers, results='asis', warning=FALSE}
-# Prepare Matrices (Non-Actives Only)
-na_ids <- score_master$Subject_ID
-prot_mat_na <- olink_mat[, na_ids]
+```{r phenotyping_and_dea}
+master_dea_res <- list()
+master_gsea_res <- list()
+master_pheno_res <- list()
+split_names <- c("Split_50_50", "Split_40_60", "Split_60_40")
 
-clin_df_na <- numeric_spine %>% filter(Subject_ID %in% na_ids)
+for (s_name in split_names) {
+  
+  cat(sprintf("\nProcessing %s...\n", s_name))
+  
+  # ---------------------------------------------------------
+  # A. Clinical Phenotyping
+  # ---------------------------------------------------------
+  # Create Mock Clustering Payload
+  mock_payload <- list(data = list(assignments = list()))
+  mock_payload$data$assignments[["SSc_Splits"]] <- setNames(eval_spine[[s_name]], eval_spine$Subject_ID)
+  
+  # Configure Pheno
+  s_pheno_conf <- pheno_base_conf
+  s_pheno_conf$must_include_vars <- c(s_pheno_conf$must_include_vars, s_name)
+  
+  pheno_res <- wrap_clinical_phenotyping(
+    clustering_payload = mock_payload,
+    clin_df = eval_spine,
+    dict_df = data_dict,
+    conf = s_pheno_conf,
+    job_id = s_name,
+    base_output_dir = output_dir_data
+  )
+  master_pheno_res[[s_name]] <- pheno_res
 
-# 1. Filter clinical matrix (Our first successful fix)
-valid_clin_vars <- intersect(colnames(clin_df_na), data_dict$Variable)
+  # ---------------------------------------------------------
+  # B. Differential Expression (Limma + GSEA)
+  # ---------------------------------------------------------
+  s_dea_conf <- dea_base_conf
+  s_dea_conf$group_col <- s_name
+  s_dea_conf$title <- paste("Non-Active:", gsub("_", " ", s_name))
+  s_dea_conf$custom_color_map <- custom_colors
+  
+  # 1. Variance-based Covariate Selection (Failsafe)
+  valid_covs <- c()
+  for (cov in s_dea_conf$covariates) {
+    if (cov %in% colnames(eval_spine) && length(unique(na.omit(eval_spine[[cov]]))) > 1) {
+      valid_covs <- c(valid_covs, cov)
+    } else {
+      message(sprintf("Warning: Covariate '%s' dropped for %s due to zero variance.", cov, s_name))
+    }
+  }
+  s_dea_conf$covariates <- valid_covs
+  
+  # 2. Add annotation vars (must be valid in subset)
+  s_heatmap_conf <- heatmap_config
+  s_heatmap_conf$annotation_vars <- intersect(heatmap_config$annotation_vars, valid_covs)
+  
+  # 3. Execute Wrap
+  dea_res <- wrap_dea_pipeline(
+    omics_mat = olink_mat,
+    clin_df = eval_spine,
+    dea_conf = s_dea_conf,
+    dea_id = s_name,
+    base_output_dir = output_dir_data,
+    go_db = NULL, # Handled directly by pathway_dbs loop in function
+    omics_config = omics_config,
+    heatmap_config = s_heatmap_conf,
+    project_colors_func = function(x) get_project_colors(x, custom_colors)
+  )
+  
+  # 4. Store
+  if (dea_res$status == "success") {
+    master_dea_res[[s_name]] <- dea_res$data$dea
+    # Assumes a primary DB (e.g., GO_BP) is first in pathway_dbs list
+    primary_db_name <- names(pathway_dbs)[1]
+    master_gsea_res[[s_name]] <- dea_res$data$gsea[[primary_db_name]] 
+  } else {
+    warning("DEA Failed for ", s_name, ": ", dea_res$error_msg)
+  }
+}
 
-clin_mat_na <- t(clin_df_na %>% 
-                   column_to_rownames("Subject_ID") %>% 
-                   select(all_of(valid_clin_vars)) %>% 
-                   select(where(is.numeric)))
+# Cleanup RAM
+rm(mock_payload, s_pheno_conf, s_dea_conf, s_heatmap_conf, dea_res, pheno_res); invisible(gc())
+```
 
-# --- THE NEW FIX: Create a Master Dictionary ---
-# Find a known continuous clinical variable (Age) to act as our template
-ref_row <- data_dict %>% filter(Variable == "Age") %>% head(1)
-if(nrow(ref_row) == 0) ref_row <- data_dict[1, ] # Fallback just in case
+# Trajectories {.tabset}
+`r what_this_does("Rendered multi-modal sensitivity metrics contrasting the foundational 50/50 split against both asymmetric splits. Includes Venn intersections of significant proteins, scatter trajectories mapping log Fold-Change stability, and quadrant analyses of Gene Set Enrichment Normalized Enrichment Scores (NES).")`
 
-# Clone this row for all 3,000 proteins and insert the protein names
-dummy_prot_dict <- ref_row[rep(1, nrow(prot_mat_na)), ]
-dummy_prot_dict$Variable <- rownames(prot_mat_na)
-
-# Staple them together so the engine finds every single feature
-master_dict <- bind_rows(data_dict, dummy_prot_dict)
-# -----------------------------------------------
-
-score_targets <- c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score")
-modalities <- list(proteomics = prot_mat_na, clinical = clin_mat_na)
+```{r trajectories}
+contrast_dummy <- list(
+  Split_50_50 = list(title = "50/50 Split", target_groups = "Active-Like"),
+  Split_40_60 = list(title = "40/60 Split", target_groups = "Active-Like"),
+  Split_60_40 = list(title = "60/40 Split", target_groups = "Active-Like")
+)
 
 html_out <- ""
 
-for (mod_name in names(modalities)) {
-  if (!interactive()) html_out <- paste0(html_out, sprintf("\n\n## %s {.tabset}\n\n", tools::toTitleCase(mod_name)))
+for (traj_id in names(traj_configs)) {
   
-  for (score_name in score_targets) {
-    clean_score <- gsub("_", " ", score_name)
-    if (!interactive()) html_out <- paste0(html_out, sprintf("\n\n### %s\n\n", clean_score))
+  conf <- traj_configs[[traj_id]]
+  title_str <- sprintf("%s vs %s", conf$x_axis_contrast, conf$y_axis_contrast)
+  
+  if (!interactive()) html_out <- paste0(html_out, sprintf("\n\n## %s\n\n", title_str))
+  
+  traj_res <- wrap_trajectory_pipeline(
+    cross_conf = conf,
+    cross_id = traj_id,
+    master_dea = master_dea_res,
+    master_gsea = master_gsea_res,
+    contrast_configs = contrast_dummy,
+    base_output_dir = output_dir_data,
+    project_colors_func = function(x) get_project_colors(x, custom_colors),
+    highlight_color = "#f39c12",
+    omics_config = omics_config
+  )
+  
+  if (traj_res$status == "success") {
+    p_grid <- (traj_res$plots$venn | traj_res$plots$protein_trajectory) / traj_res$plots$pathway_trajectory
+    p_grid <- p_grid + plot_annotation(title = sprintf("Sensitivity Analysis: %s", title_str))
     
-    # Calculate using Smart Engine
-    score_vec <- setNames(score_master[[score_name]], score_master$Subject_ID)
-    
-    # Pass our new master_dict for BOTH modalities so it never hits a dead end
-    res_df <- run_smart_mass_cor(modalities[[mod_name]], score_vec, dict_df = master_dict)
-    
-    # Export full dataset
-    export_name <- sprintf("Drivers_%s_vs_%s.csv", tools::toTitleCase(mod_name), score_name)
-    write_csv(res_df, file.path(output_dir_data, export_name))
-    
-    # Filter
-    thresh_fdr <- if(mod_name == "proteomics") cor_conf$prot_fdr else cor_conf$clin_fdr
-    thresh_rho <- if(mod_name == "proteomics") cor_conf$prot_rho else cor_conf$clin_rho
-    
-    sig_df <- res_df %>% filter(FDR < thresh_fdr & abs(Effect) >= thresh_rho)
-    
-    # Comprehensive Descriptive Header
-    caption <- sprintf("
-<div style='background-color:#f9f9f9; padding: 10px; border-left: 4px solid #2980b9; margin-bottom: 15px;'>
-  <b>Statistical Overview</b><br>
-  <i>Cohort Size:</i> %d Non-Active patients<br>
-  <i>Thresholds:</i> FDR < %s, |Effect| >= %s<br>
-  <i>Note:</i> 'Effect' represents Spearman's Rho for continuous variables, and Wilcoxon Effect Size (r) for binary categoricals. Displaying top %d.
-</div>", length(na_ids), thresh_fdr, thresh_rho, min(nrow(sig_df), cor_conf$max_rows))
-    
-    if (nrow(sig_df) > 0) {
-      tbl_html <- sig_df %>% head(cor_conf$max_rows) %>%
-        kbl(format = "html", digits = 3, align = "c") %>%
-        kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = TRUE) %>%
-        scroll_box(height = "500px")
-      
-      if (interactive()) {
-        cat(sprintf("\n=== %s vs %s ===\n", tools::toTitleCase(mod_name), clean_score))
-        cat(caption, "\n")
-        print(tbl_html)
-      } else {
-        html_out <- paste0(html_out, caption, "\n", tbl_html, "\n\n")
-      }
+    if (interactive()) {
+      print(p_grid)
     } else {
-      empty_msg <- "> No features passed the significance thresholds.\n\n"
-      if (interactive()) {
-        cat(sprintf("\n=== %s vs %s ===\n", tools::toTitleCase(mod_name), clean_score))
-        cat(caption, "\n", empty_msg)
-      } else {
-        html_out <- paste0(html_out, caption, "\n", empty_msg)
-      }
+      # Render plot directly to HTML doc
+      print(p_grid) 
+      cat("\n\n")
     }
+  } else {
+    warning("Trajectory failed: ", traj_res$error_msg)
   }
 }
 
 if (!interactive()) cat(html_out)
-
-# Cleanup RAM
-rm(prot_mat_na, clin_mat_na, clin_df_na, na_ids, html_out, master_dict, dummy_prot_dict)
 ```
 
-## Phenotypic Alignment Heatmaps {.tabset}
-`r analysis_decision("Fixed Ordering: For these heatmaps, hierarchical clustering of columns was disabled. Patients are ordered strictly from 0 (Control-like) to 100 (Active-like) based on the specific score in each tab.", "Clinical Splitting: To maintain mathematical integrity, categorical clinical variables (e.g., ACA, Subsets) were moved to the top annotation, while only continuous variables were Z-scored and plotted in the heatmap body.")`
+# Clinical Table {.tabset}
+`r what_this_does("Rendered the HTML clinical statistical tables constructed during the evaluation loop to compare phenotypic outcomes generated by altering the molecular splitting threshold.")`
 
-`r what_this_does("Visualized the molecular and clinical 'Active-like' gradient by fixing the patient order strictly according to the mathematical scores.", "Generated a Proteomic Heatmap using the Top 30 proteins from the global SSc vs Control signature.", "Generated a Clinical Heatmap using the pre-defined SSc clinical parameters, splitting continuous data (Z-scored) into the body and categorical data into the annotations.", "Annotated Age and Sex at the top to anchor demographic trends.")`
-
-```{r alignment_heatmaps, results='asis', fig.width=12, fig.height=14}
-# 1. Setup Data for Non-Active Cohort
-na_ids <- score_master$Subject_ID
-prot_mat_na <- olink_mat[, na_ids]
-
-# 2. Extract Top 30 Protein Signature
-top_hm_prots <- avc_dea %>% slice_min(adj.P.Val, n = hm_conf$top_n_prot) %>% pull(Feature)
-valid_top_hm_prot <- intersect(top_hm_prots, rownames(prot_mat_na))
-
-# 3. Setup Clinical Variables
-# Filter out anything that was excluded in the dictionary, and remove Age/Sex to prevent duplication
-valid_clin_vars <- data_dict %>% 
-  filter(Variable %in% ssc_clinical_parameters & QC_Flag == "PASS") %>% 
-  pull(Variable)
-valid_clin_vars <- setdiff(valid_clin_vars, c("Age", "Sex"))
-
-clin_df_na <- master_spine %>% filter(Subject_ID %in% na_ids)
-
-# 4. Loop through the three scores
-score_targets <- c("PCA_Active_Score", "Sig_Active_Score", "HM_Active_Score")
-
-for (s_name in score_targets) {
-  cat(sprintf("\n\n### %s Alignment\n\n", gsub("_", " ", s_name)))
+```{r clincal_table}
+for (s_name in split_names) {
+  cat(sprintf("\n\n## %s\n\n", gsub("_", " ", s_name)))
   
-  # Determine patient order for this score
-  score_vec <- setNames(score_master[[s_name]], score_master$Subject_ID)
-  ordered_ids <- names(sort(score_vec)) # Order from 0 to 100
+  tbl_obj <- master_pheno_res[[s_name]]$tables[["SSc_Splits"]]
   
-  # Prepare Clinical Subset FIRST so we can use Age/Sex in the top annotation
-  sub_clin <- clin_df_na %>% 
-    filter(Subject_ID %in% ordered_ids) %>% 
-    arrange(match(Subject_ID, ordered_ids)) %>%
-    as.data.frame()
-  
-  # --- A. PROTEIN HEATMAP (Top 30 Signature) ---
-  p_mat <- t(scale(t(prot_mat_na[valid_top_hm_prot, ordered_ids])))
-  
-  # Score, Age, and Sex annotation for the top
-  ha_top <- HeatmapAnnotation(
-    Score = anno_barplot(score_vec[ordered_ids], gp = gpar(fill = "grey40", col = "grey40"), height = unit(1.5, "cm")),
-    Sex = sub_clin$Sex,
-    Age = sub_clin$Age,
-    col = list(
-      Sex = setNames(c(COLOR_FEMALE, COLOR_MALE), c("Female", "Male")),
-      Age = colorRamp2(c(min(sub_clin$Age, na.rm=TRUE), max(sub_clin$Age, na.rm=TRUE)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
-    ),
-    na_col = "gray90"
-  )
-
-  hp <- Heatmap(p_mat, 
-                name = "Protein Z-Score",
-                column_title = sprintf("Proteomic Signature Alignment (%s)", gsub("_", " ", s_name)),
-                top_annotation = ha_top,
-                cluster_columns = FALSE, 
-                cluster_rows = TRUE,
-                show_column_names = FALSE,
-                col = colorRamp2(c(-2, 0, 2), c("#2980b9", "white", "#c0392b")))
-
-  # --- B. CLINICAL HEATMAP (SSC Parameters) ---
-  # 1. Identify variables by type
-  all_numeric_vars <- valid_clin_vars[sapply(sub_clin[valid_clin_vars], is.numeric)]
-  cat_vars <- setdiff(valid_clin_vars, all_numeric_vars)
-  
-  # 2. DYNAMIC VARIANCE FILTER: Keep only numeric variables with variance > 0 in THIS subset
-  cont_vars <- all_numeric_vars[sapply(sub_clin[all_numeric_vars], function(x) sd(x, na.rm=TRUE) > 0)]
-  
-  # Optional: Log dropped variables to the console for transparency
-  dropped_vars <- setdiff(all_numeric_vars, cont_vars)
-  if(length(dropped_vars) > 0) {
-    message(sprintf("Note: Dropped '%s' from %s heatmap due to zero variance in subset.", 
-                    paste(dropped_vars, collapse = ", "), s_name))
-  }
-
-  # 3. Build Categorical Annotation
-  anno_df <- sub_clin %>% select(all_of(cat_vars))
-  col_list <- list()
-  for(cv in cat_vars) {
-    lvls <- levels(as.factor(anno_df[[cv]]))
-    pal <- c("darkgreen", "darkorange")
-    # Failsafe in case a categorical variable has more than 2 levels
-    if(length(lvls) > 2) pal <- (if(exists("FALLBACK_CAT_PALETTE")) FALLBACK_CAT_PALETTE else c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7"))[1:length(lvls)]
-    col_list[[cv]] <- setNames(pal[1:length(lvls)], lvls)
-  }
-  
-  ha_clin <- HeatmapAnnotation(df = as.data.frame(anno_df), col = col_list, na_col = "white")
-
-  # 4. Z-score Continuous Clinical Variables
-  if(length(cont_vars) > 0) {
-    c_mat <- t(scale(sub_clin %>% select(all_of(cont_vars))))
-    colnames(c_mat) <- sub_clin$Subject_ID
-
-    hc <- Heatmap(c_mat, 
-                  name = "Clinical Z-Score",
-                  column_title = "Clinical Parameter Alignment",
-                  top_annotation = ha_clin,
-                  cluster_columns = FALSE, 
-                  cluster_rows = TRUE,
-                  show_column_names = FALSE,
-                  row_names_side = "left",
-                  col = colorRamp2(c(-2, 0, 2), c("darkgreen", "white", "darkorange")))
-    
-    # Draw both together
-    draw(hp %v% hc)
+  if (!is.null(tbl_obj)) {
+    # Shield HTML Output via raw markdown tags
+    cat("```{=html}\n")
+    print(gtsummary::as_kable_extra(tbl_obj, format = "html") %>%
+            kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE))
+    cat("\n```\n\n")
   } else {
-    draw(hp %v% ha_clin)
-    cat("\n\n")
+    cat("> No clinical table generated for this split.\n\n")
   }
 }
 ```
+
 
 # Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
