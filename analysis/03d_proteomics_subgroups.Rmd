@@ -54,8 +54,10 @@ svc_dea       <- readRDS(here::here("output", "03b_proteomics_differential", "ss
 pathway_dbs <- list(
   "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
   "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
-  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
-  "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
+  "GO_Cell_Death" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% filter(gs_name == "GOBP_CELL_DEATH") %>% select(gs_name, gene_symbol),
+  "Reactome_programmed_cell_death" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% filter(gs_name == "REACTOME_PROGRAMMED_CELL_DEATH") %>% select(gs_name, gene_symbol),
+  "GO_Pyroptosis" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% filter(gs_name == "GOBP_PYROPTOSIS") %>% select(gs_name, gene_symbol),
+  "GO_Regulation_of_pyroptosis" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% filter(gs_name == "GOBP_REGULATION_OF_PYROPTOSIS") %>% select(gs_name, gene_symbol)
 )
 ```
 
