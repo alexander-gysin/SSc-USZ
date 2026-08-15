@@ -59,6 +59,7 @@ pathway_dbs <- list(
 )
 ```
 
+
 # Configuration
 `r what_this_does("Established highly parameterized lists controlling heatmap extraction, subgroup quantiles, clinical phenotyping parameters, DEA models, and cross-contrast algorithms to exactly mirror the architecture of the 03c clustering script.")`
 
@@ -75,10 +76,12 @@ hm_conf <- list(
 )
 
 split_conf <- list(
-  # Formatted as Name = Percentile Cutoff (Higher Score = Active-Like)
+  # Standard Percentile Cutoff (Higher Score = Active-Like)
   Split_50_50 = 0.50,
-  Split_40_60 = 0.60, 
-  Split_60_40 = 0.40  
+  
+  # Control-Bound Cutoff
+  # 1.00 = 100th percentile (Strict Max). Change to 0.95 to drop top 5% of healthy outliers.
+  control_bound_percentile = 1.00 
 )
 
 # 2. Variable Definitions
@@ -102,7 +105,7 @@ pheno_configs <- list(
   pheno_splits = list(
     target_job = "job_splits",
     title = "Non-Active Subgroup Phenotyping",
-    target_algorithms = c("Split_50_50", "Split_40_60", "Split_60_40"),
+    target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
     subset_filter = NULL,
     variables = clin_vars_to_include,
     highlight_variables = clin_vars_to_highlight,
@@ -120,26 +123,14 @@ feature_configs <- list(
     covariates = c("Age", "Sex"),
     algorithms = list(
       Split_50_50 = list(
-        contrasts = list(
-          active_vs_control = list(title = "50/50: Active-Like vs Control-Like", desc = "Split at median", 
-                                   target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL)
-        )
+        contrasts = list(active_vs_control = list(title = "50/50: Active-Like vs Control-Like", desc = "Split at median", target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
       ),
-      Split_40_60 = list(
-        contrasts = list(
-          active_vs_control = list(title = "40/60: Active-Like vs Control-Like", desc = "Top 40% Active", 
-                                   target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL)
-        )
-      ),
-      Split_60_40 = list(
-        contrasts = list(
-          active_vs_control = list(title = "60/40: Active-Like vs Control-Like", desc = "Top 60% Active", 
-                                   target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL)
-        )
+      Split_Control_Bound = list( 
+        contrasts = list(active_vs_control = list(title = "Control-Bound: Active-Like vs Control-Like", desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls"), target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
       )
     ),
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = log2(1.5)
+    dea_fc_cutoff = 0.58
   )
 )
 
@@ -159,107 +150,111 @@ omics_config <- list(
 
 # 6. Cross-Contrast Configs (Stability Analysis)
 cross_contrast_configs <- list(
-  cc_50_vs_40 = list(
-    title = "Stability: 50/50 vs 40/60 Split",
-    x_source = "feat_splits_Split_50_50_active_vs_control", # Dynamic mapping from DEA pipeline
-    y_source = "feat_splits_Split_40_60_active_vs_control",
-    x_label = "50/50 Split",
-    y_label = "40/60 Split",
-    color_x = "#e67e22", 
-    color_y = "#2980b9", 
-    highlight_color = "#27ae60", 
-    top_n_specific = 10,
-    top_n_shared = 10,
-    p_cutoff = 0.05,  
-    fc_cutoff = log2(1.5)
-  ),
-  cc_50_vs_60 = list(
-    title = "Stability: 50/50 vs 60/40 Split",
+  cc_50_vs_cb = list( 
+    title = "Stability: 50/50 vs Control-Bound Split",
     x_source = "feat_splits_Split_50_50_active_vs_control", 
-    y_source = "feat_splits_Split_60_40_active_vs_control",
+    y_source = "feat_splits_Split_Control_Bound_active_vs_control",
     x_label = "50/50 Split",
-    y_label = "60/40 Split",
+    y_label = "Control Bound",
     color_x = "#e67e22", 
     color_y = "#2980b9", 
     highlight_color = "#27ae60", 
     top_n_specific = 10,
     top_n_shared = 10,
     p_cutoff = 0.05,  
-    fc_cutoff = log2(1.5)
+    fc_cutoff = 0.58
   )
 )
 ```
 
 # Scoring
-`r analysis_decision("Data Isolation: Filtering exclusively to the Non-Active cohort before calculating quantiles ensures the 50/50, 40/60, and 60/40 splits accurately reflect distributions within the target group, untainted by actual Active/Control samples.", "Payload Injection: Emulated the clustering engine structure to allow downstream DEA and Phenotyping modules to analyze rule-based thresholds flawlessly.")`
-`r what_this_does("Generated a complete hierarchical clustering dendrogram of all patients. Extracted physical leaf order to assign a 0-100 percentile rank score. Split continuous scores by predefined percentiles, building a unified global_cluster_payloads object.")`
-```{r scoring, fig.width=14, fig.height=8}
-# 1. Isolate Matrix to Master Signature
-sig_prots <- svc_dea %>% slice_min(adj.P.Val, n = hm_conf$top_n_prot) %>% pull(Feature)
-valid_sig <- intersect(sig_prots, rownames(olink_mat))
+`r analysis_decision("Data Isolation: Filtering exclusively to the Non-Active cohort before calculating quantiles ensures the arbitrary splits accurately reflect distributions within the target group.", "Biological Anchoring: The 'Control-Bound' split defines the threshold using the true maximum observed molecular score of the healthy control cohort, anchoring the categorization to a physiological baseline.", "Payload Injection: Emulated the clustering engine structure to allow downstream DEA and Phenotyping modules to analyze rule-based thresholds flawlessly.")`
+`r what_this_does("Generates a Master Pi-score Heatmap using the central engine. Extracts the unbroken physical leaf order to assign a 0-100 percentile rank score. Splits continuous scores by predefined percentiles and the maximum Control score, building a unified global_cluster_payloads object.")`
 
+```{r scoring, fig.width=12, fig.height=10}
+# 1. Prepare Clinical Data
 hm_clin <- master_spine %>% filter(!is.na(cohort_group)) %>% droplevels()
-hm_mat <- t(scale(t(olink_mat[valid_sig, hm_clin$Subject_ID])))
 
-# 2. Strict Complete Clustering
-hm <- Heatmap(hm_mat, clustering_distance_columns = "euclidean", clustering_method_columns = "complete")
-hm_drawn <- draw(hm, padding = unit(c(2, 2, 2, 2), "mm"))
+# 2. Generate Heatmap via Engine (Uses Pi-score & Project Aesthetics)
+hm_obj <- run_heatmap_engine(
+  mat = olink_mat,
+  clin = hm_clin,
+  dea_res = svc_dea,
+  title = "Global SSc Disease Signature",
+  n_top = hm_conf$top_n_prot,
+  split_by_group = FALSE, # MUST be FALSE to maintain an unbroken dendrogram for ranking
+  show_top_n_title = TRUE,
+  annotation_vars = heatmap_config$annotation_vars
+)
 
-# 3. Extract Order and Map to 0-100 Percentile Rank
+# 3. Draw Heatmap & Extract Order
+hm_drawn <- draw(hm_obj, padding = unit(c(2, 2, 2, 2), "mm"))
+
 order_idx <- column_order(hm_drawn)
-ordered_ids <- colnames(hm_mat)[order_idx]
 
+# Reconstruct the exact clinical subset used inside the engine to map indices safely
+valid_ids <- intersect(hm_clin$Subject_ID, colnames(olink_mat))
+engine_clin_sub <- hm_clin %>% filter(Subject_ID %in% valid_ids)
+ordered_ids <- engine_clin_sub$Subject_ID[order_idx]
+
+# 4. Map to 0-100 Percentile Rank
 hm_df <- data.frame(Subject_ID = ordered_ids, HM_Rank = 1:length(ordered_ids)) %>%
   mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
-  inner_join(hm_clin %>% select(Subject_ID, cohort_group), by="Subject_ID")
+  inner_join(engine_clin_sub %>% select(Subject_ID, cohort_group), by="Subject_ID")
 
-# 4. Polarity Check & Correction
+# 5. Polarity Check & Correction
 mean_active <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$active])
 mean_control <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$control])
 
 if (mean_active < mean_control) { hm_df$HM_Active_Score <- 100 - hm_df$HM_Percentile } else { hm_df$HM_Active_Score <- hm_df$HM_Percentile }
 
+# --- Extract Control Threshold BEFORE filtering ---
+control_scores <- hm_df %>% filter(cohort_group == groups$control) %>% pull(HM_Active_Score)
+cutoff_cb <- quantile(control_scores, probs = split_conf$control_bound_percentile, na.rm=TRUE)
+
+# Filter down to Non-Actives
 hm_final <- hm_df %>% filter(cohort_group == groups$target) %>% select(Subject_ID, HM_Active_Score)
 
-# 5. Calculate Thresholds & Append Binary Columns
+# 6. Calculate Internal Thresholds & Append Binary Columns
 cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
-cutoff_40 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_40_60, na.rm=TRUE)
-cutoff_60 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_60_40, na.rm=TRUE)
 
 split_spine <- hm_final %>%
   mutate(
     Split_50_50 = ifelse(HM_Active_Score > cutoff_50, "Active-Like", "Control-Like"),
-    Split_40_60 = ifelse(HM_Active_Score > cutoff_40, "Active-Like", "Control-Like"),
-    Split_60_40 = ifelse(HM_Active_Score > cutoff_60, "Active-Like", "Control-Like")
+    Split_Control_Bound = ifelse(HM_Active_Score > cutoff_cb, "Active-Like", "Control-Like") 
   )
 
 # Update Master Spine globally for downstream engines
 master_spine <- master_spine %>% left_join(split_spine %>% select(-HM_Active_Score), by="Subject_ID")
 
-# 6. Initialize Global Target Dummy Payload (Trick the 03c Engine Architecture)
+# 7. Initialize Global Target Dummy Payload
 global_cluster_payloads <- list()
 global_cluster_payloads[["job_splits"]] <- list(
   status = "success",
   data = list(
     assignments = list(
       Split_50_50 = setNames(split_spine$Split_50_50, split_spine$Subject_ID),
-      Split_40_60 = setNames(split_spine$Split_40_60, split_spine$Subject_ID),
-      Split_60_40 = setNames(split_spine$Split_60_40, split_spine$Subject_ID)
+      Split_Control_Bound = setNames(split_spine$Split_Control_Bound, split_spine$Subject_ID) 
     )
   )
 )
 
 saveRDS(split_spine, file.path(output_dir_data, "non_active_splits.rds"))
 
+# Print Diagnostics to verify group sizes
+cat("=== Subgroup Sizes ===\n")
+cat(sprintf("50/50 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_50_50=="Active-Like"), sum(split_spine$Split_50_50=="Control-Like")))
+cat(sprintf("Control-Bound Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_Control_Bound=="Active-Like"), sum(split_spine$Split_Control_Bound=="Control-Like")))
+
 # Cleanup
-rm(hm_mat, hm_drawn, hm, hm_df); invisible(gc())
+rm(hm_obj, hm_drawn, hm_df); invisible(gc())
 ```
 
 # Clinical Phenotyping {.tabset}
 `r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
 `r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes. Uses nested categories for streamlined visual profiling.")`
 
-```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis}
+```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis'}
 for (p_id in names(pheno_configs)) {
   conf <- pheno_configs[[p_id]]
   cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
