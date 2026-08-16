@@ -510,7 +510,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">07 August, 2026</h4>
+<h4 class="date">16 August, 2026</h4>
 
 </div>
 
@@ -539,7 +539,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-08-07
+<strong>Last updated:</strong> 2026-08-16
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -670,15 +670,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0246e8a7afb05d856ea7a88d6db15bee2b103bf0targetblank0246e8aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0246e8a7afb05d856ea7a88d6db15bee2b103bf0" target="_blank">0246e8a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0246e8a7afb05d856ea7a88d6db15bee2b103bf0targetblank0246e8aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -688,7 +688,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0246e8a7afb05d856ea7a88d6db15bee2b103bf0" target="_blank">0246e8a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -737,10 +737,7 @@ Untracked files:
     Untracked:  analysis/05d_sRNA_differential.Rmd
 
 Unstaged changes:
-    Modified:   analysis/04d_lipidomics_plsda.Rmd
-    Deleted:    analysis/05a_qc_and_preprocessing.Rmd
-    Modified:   analysis/_site.yml
-    Modified:   protocols/miRNA_Analysis_Plan.Rmd
+    Modified:   code/03_lipidomics_engines.R
 
 </code></pre>
 <p>
@@ -786,6 +783,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/936cc25fe9e0dc98db7e4e9f18bfc542ae6435ce/analysis/04b_lipidomics_differential.Rmd" target="_blank">936cc25</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-16
+</td>
+<td>
+added absolute lsea
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/3ab2ab47a0f761ec1c100a31b122b48b84ee98d6/docs/04b_lipidomics_differential.html" target="_blank">3ab2ab4</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1415,7 +1446,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;Non-Active&quot;),
     bin_continuous = FALSE,  
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_ssc_vs_ctrl = list(
@@ -1425,7 +1456,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;Control&quot;),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_inflammatory = list(
@@ -1435,7 +1466,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;no&quot;),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_vascular = list(
@@ -1445,7 +1476,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;no&quot;),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_fibrotic = list(
@@ -1455,7 +1486,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;no&quot;),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_eustar = list(
@@ -1465,36 +1496,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;0&quot;),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
-  ),
-  
-  job_cluster_1_vs_2 = list(
-    title = &quot;Cluster 1 vs Cluster 2&quot;,
-    test_var = &quot;kmeans_Cluster&quot;,
-    target_groups = c(&quot;Cluster 2&quot;),
-    ref_groups = c(&quot;Cluster 1&quot;),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc&quot;, &quot;job_svc_Master_Assignments.rds&quot;),
-      join_col = &quot;Subject_ID&quot;
-    )
-  ),
-  
-  job_n1_vs_n2 = list(
-    title = &quot;Cluster 1 vs Cluster 2 (Non-Active)&quot;,
-    test_var = &quot;kmeans_Cluster&quot;,
-    target_groups = c(&quot;Cluster 2&quot;),
-    ref_groups = c(&quot;Cluster 1&quot;),
-    subset_filter = list(column = &quot;cohort_group&quot;, value = c(&quot;Non-Active&quot;)),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc&quot;, &quot;job_svc_Master_Assignments.rds&quot;),
-      join_col = &quot;Subject_ID&quot;
-    )
+    dea_fc_cutoff = 1.5
   ),
   
    job_n1_vs_n2 = list(
@@ -1505,39 +1507,9 @@ dea_configs &lt;- list(
     subset_filter = list(column = &quot;ACTIVE_AI&quot;, value = c(&quot;0&quot;)),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
+    dea_fc_cutoff = 1.5,
     external_data = list(
-      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc&quot;, &quot;job_svc_sa_Master_Assignments.rds&quot;),
-      join_col = &quot;Subject_ID&quot;
-    )
-  ),
-  
-  job_SA_n1_vs_n2 = list(
-    title = &quot;SA Cluster 1 vs Cluster 2 (Non-Active)&quot;,
-    test_var = &quot;kmeans_Cluster&quot;,
-    target_groups = c(&quot;Cluster 2&quot;),
-    ref_groups = c(&quot;Cluster 1&quot;),
-    subset_filter = list(column = &quot;cohort_group&quot;, value = c(&quot;Non-Active&quot;)),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc_sa&quot;, &quot;job_svc_sa_Master_Assignments.rds&quot;),
-      join_col = &quot;Subject_ID&quot;
-    )
-  ),
-  
-   job_SA_n1_vs_n2 = list(
-    title = &quot;SA Cluster 1 vs Cluster 2 (Non-Active EUSTAR)&quot;,
-    test_var = &quot;kmeans_Cluster&quot;,
-    target_groups = c(&quot;Cluster 2&quot;),
-    ref_groups = c(&quot;Cluster 1&quot;),
-    subset_filter = list(column = &quot;ACTIVE_AI&quot;, value = c(&quot;0&quot;)),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc_sa&quot;, &quot;job_svc_Master_Assignments.rds&quot;),
+      file_path = here::here(&quot;output&quot;, &quot;03c_proteomics_clustering&quot;, &quot;Clustering&quot;, &quot;job_svc&quot;, &quot;job_svc_Master_Assignments.rds&quot;),
       join_col = &quot;Subject_ID&quot;
     )
   ),
@@ -1549,7 +1521,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;no&quot;),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
     job_med_asa = list(
@@ -1559,7 +1531,7 @@ dea_configs &lt;- list(
     ref_groups = c(&quot;no&quot;),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   )
 )
 
@@ -1991,183 +1963,38 @@ groups.</p>
 <p><em>All lipids possessed sufficient variance to be tested.</em></p>
 </div>
 </div>
-<div id="cluster-1-vs-cluster-2" class="section level2">
-<h2>Cluster 1 vs Cluster 2</h2>
-<div id="overview-cluster-1-vs-cluster-2"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Overview: Cluster 1 vs Cluster 2</h3>
-<p><em>Note: kmeans_Cluster is categorical/binary and was routed to
-Fisher’s Exact Test.</em></p>
-</div>
-<div id="significant-lipids-cluster-1-vs-cluster-2"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Significant Lipids: Cluster 1 vs Cluster
-2</h3>
-<p><em>No significant features survived FDR correction.</em></p>
-</div>
-<div id="volcano-plot-cluster-1-vs-cluster-2"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Volcano Plot: Cluster 1 vs Cluster
-2</h3>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_volcano.png' width='100%' /></p>
-</div>
-<div id="heatmap-cluster-1-vs-cluster-2"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Heatmap: Cluster 1 vs Cluster 2</h3>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_heatmap.png' width='100%' /></p>
-</div>
-<div id="exclusion-report-cluster-1-vs-cluster-2"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Exclusion Report: Cluster 1 vs Cluster
-2</h3>
-<p>Out of the 14 globally testable lipids, the following were excluded
-from this specific contrast due to zero mathematical variance between
-groups.</p>
-<p><em>All lipids possessed sufficient variance to be tested.</em></p>
-</div>
-</div>
-<div id="cluster-1-vs-cluster-2-non-active" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="overview-cluster-1-vs-cluster-2-non-active"
+<div id="cluster-1-vs-cluster-2-non-active-eustar"
+class="section level2">
+<h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
+<div id="overview-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Overview: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
+(Non-Active EUSTAR)</h3>
 <p><em>Note: kmeans_Cluster is categorical/binary and was routed to
 Fisher’s Exact Test.</em></p>
 </div>
-<div id="significant-lipids-cluster-1-vs-cluster-2-non-active"
+<div id="significant-lipids-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Significant Lipids: Cluster 1 vs Cluster
-2 (Non-Active)</h3>
+2 (Non-Active EUSTAR)</h3>
 <p><em>No significant features survived FDR correction.</em></p>
 </div>
-<div id="volcano-plot-cluster-1-vs-cluster-2-non-active"
+<div id="volcano-plot-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Volcano Plot: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
+(Non-Active EUSTAR)</h3>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_volcano.png' width='100%' /></p>
 </div>
-<div id="heatmap-cluster-1-vs-cluster-2-non-active"
+<div id="heatmap-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Heatmap: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
+(Non-Active EUSTAR)</h3>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_heatmap.png' width='100%' /></p>
 </div>
-<div id="exclusion-report-cluster-1-vs-cluster-2-non-active"
+<div id="exclusion-report-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Exclusion Report: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p>Out of the 14 globally testable lipids, the following were excluded
-from this specific contrast due to zero mathematical variance between
-groups.</p>
-<p><em>All lipids possessed sufficient variance to be tested.</em></p>
-</div>
-</div>
-<div id="cluster-1-vs-cluster-2-non-active-1" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="overview-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Overview: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><em>Note: kmeans_Cluster is categorical/binary and was routed to
-Fisher’s Exact Test.</em></p>
-</div>
-<div id="significant-lipids-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Significant Lipids: Cluster 1 vs Cluster
-2 (Non-Active)</h3>
-<p><em>No significant features survived FDR correction.</em></p>
-</div>
-<div id="volcano-plot-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Volcano Plot: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_volcano.png' width='100%' /></p>
-</div>
-<div id="heatmap-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Heatmap: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_heatmap.png' width='100%' /></p>
-</div>
-<div id="exclusion-report-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Exclusion Report: Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p>Out of the 14 globally testable lipids, the following were excluded
-from this specific contrast due to zero mathematical variance between
-groups.</p>
-<p><em>All lipids possessed sufficient variance to be tested.</em></p>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="overview-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Overview: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><em>Note: kmeans_Cluster is categorical/binary and was routed to
-Fisher’s Exact Test.</em></p>
-</div>
-<div id="significant-lipids-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Significant Lipids: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p><em>No significant features survived FDR correction.</em></p>
-</div>
-<div id="volcano-plot-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Volcano Plot: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_volcano.png' width='100%' /></p>
-</div>
-<div id="heatmap-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Heatmap: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_heatmap.png' width='100%' /></p>
-</div>
-<div id="exclusion-report-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Exclusion Report: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p>Out of the 14 globally testable lipids, the following were excluded
-from this specific contrast due to zero mathematical variance between
-groups.</p>
-<p><em>All lipids possessed sufficient variance to be tested.</em></p>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active-1" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="overview-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Overview: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><em>Note: kmeans_Cluster is categorical/binary and was routed to
-Fisher’s Exact Test.</em></p>
-</div>
-<div id="significant-lipids-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Significant Lipids: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p><em>No significant features survived FDR correction.</em></p>
-</div>
-<div id="volcano-plot-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Volcano Plot: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_volcano.png' width='100%' /></p>
-</div>
-<div id="heatmap-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Heatmap: SA Cluster 1 vs Cluster 2
-(Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_heatmap.png' width='100%' /></p>
-</div>
-<div id="exclusion-report-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Exclusion Report: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
+(Non-Active EUSTAR)</h3>
 <p>Out of the 14 globally testable lipids, the following were excluded
 from this specific contrast due to zero mathematical variance between
 groups.</p>
@@ -2244,8 +2071,8 @@ groups.</p>
 </div>
 </div>
 </div>
-<div id="lipid-set-enrichment-analysis-lsea" class="section level1">
-<h1>Lipid Set Enrichment Analysis (LSEA)</h1>
+<div id="binary-lipid-set-enrichment-analysis" class="section level1">
+<h1>Binary Lipid Set Enrichment Analysis</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2463,115 +2290,40 @@ class="section level3 tabset unlisted unnumbered">
 </div>
 </div>
 </div>
-<div id="cluster-1-vs-cluster-2-1" class="section level2">
-<h2>Cluster 1 vs Cluster 2</h2>
+<div id="cluster-1-vs-cluster-2-non-active-eustar-1"
+class="section level2">
+<h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
 <div id="lsea-burden-6"
 class="section level3 tabset unlisted unnumbered">
 <h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
 <div id="by-precursor-6" class="section level4">
 <h4>By Precursor</h4>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_precursor_LSEA_burden.png' width='100%' /></p>
+<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
 </div>
 <div id="by-class-6" class="section level4">
 <h4>By Class</h4>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_class_LSEA_burden.png' width='100%' /></p>
+<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_class_LSEA_burden.png' width='100%' /></p>
 </div>
 <div id="by-function-6" class="section level4">
 <h4>By Function</h4>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_function_LSEA_burden.png' width='100%' /></p>
-</div>
-</div>
-</div>
-<div id="cluster-1-vs-cluster-2-non-active-2" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="lsea-burden-7"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-7" class="section level4">
-<h4>By Precursor</h4>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-class-7" class="section level4">
-<h4>By Class</h4>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_class_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-function-7" class="section level4">
-<h4>By Function</h4>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_function_LSEA_burden.png' width='100%' /></p>
-</div>
-</div>
-</div>
-<div id="cluster-1-vs-cluster-2-non-active-3" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="lsea-burden-8"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-8" class="section level4">
-<h4>By Precursor</h4>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-class-8" class="section level4">
-<h4>By Class</h4>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_class_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-function-8" class="section level4">
-<h4>By Function</h4>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_function_LSEA_burden.png' width='100%' /></p>
-</div>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active-2" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="lsea-burden-9"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-9" class="section level4">
-<h4>By Precursor</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-class-9" class="section level4">
-<h4>By Class</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_class_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-function-9" class="section level4">
-<h4>By Function</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_function_LSEA_burden.png' width='100%' /></p>
-</div>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active-3" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="lsea-burden-10"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-10" class="section level4">
-<h4>By Precursor</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-class-10" class="section level4">
-<h4>By Class</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_class_LSEA_burden.png' width='100%' /></p>
-</div>
-<div id="by-function-10" class="section level4">
-<h4>By Function</h4>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_function_LSEA_burden.png' width='100%' /></p>
 </div>
 </div>
 </div>
 <div id="calcium-channel-blockers-1" class="section level2">
 <h2>Calcium Channel Blockers</h2>
-<div id="lsea-burden-11"
+<div id="lsea-burden-7"
 class="section level3 tabset unlisted unnumbered">
 <h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-11" class="section level4">
+<div id="by-precursor-7" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_precursor_LSEA_burden.png' width='100%' /></p>
 </div>
-<div id="by-class-11" class="section level4">
+<div id="by-class-7" class="section level4">
 <h4>By Class</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_class_LSEA_burden.png' width='100%' /></p>
 </div>
-<div id="by-function-11" class="section level4">
+<div id="by-function-7" class="section level4">
 <h4>By Function</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_function_LSEA_burden.png' width='100%' /></p>
 </div>
@@ -2579,20 +2331,297 @@ class="section level3 tabset unlisted unnumbered">
 </div>
 <div id="acetylsalicylic-acid-1" class="section level2">
 <h2>Acetylsalicylic Acid</h2>
-<div id="lsea-burden-12"
+<div id="lsea-burden-8"
 class="section level3 tabset unlisted unnumbered">
 <h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
-<div id="by-precursor-12" class="section level4">
+<div id="by-precursor-8" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_asa_precursor_LSEA_burden.png' width='100%' /></p>
 </div>
-<div id="by-class-12" class="section level4">
+<div id="by-class-8" class="section level4">
 <h4>By Class</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_asa_class_LSEA_burden.png' width='100%' /></p>
 </div>
-<div id="by-function-12" class="section level4">
+<div id="by-function-8" class="section level4">
 <h4>By Function</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_asa_function_LSEA_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+</div>
+<div id="absolute-lipid-set-enrichment-analysis" class="section level1">
+<h1>Absolute Lipid Set Enrichment Analysis</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Executes a Lipid Set Enrichment Analysis (LSEA) using an ‘Absolute
+Burden’ approach.
+</li>
+<li>
+Aggregates raw continuous MS intensities within an ontology (imputing
+NAs to 0), serving as a quantitative complement to the presence/absence
+binary LSEA.
+</li>
+<li>
+Applies Category-Specific FDR correction identically to the binary
+pipeline.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Prepare Absolute Matrix
+abs_mat &lt;- mat_testable_raw
+abs_mat[is.na(abs_mat)] &lt;- 0
+
+# (Note: mapped_lipids and ontologies are inherited from the Binary LSEA chunk above)
+
+# 2. Execution Loop (Jobs)
+for (job_id in names(dea_configs)) {
+  job &lt;- dea_configs[[job_id]]
+  
+  cat(sprintf(&quot;\n\n## %s\n\n&quot;, job$title))
+  
+  # External Data Injection 
+  temp_spine &lt;- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df &lt;- readRDS(job$external_data$file_path)
+    temp_spine &lt;- temp_spine %&gt;% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # Dynamic Subsetting
+  if (!is.null(job$subset_filter)) {
+    filt_col &lt;- job$subset_filter$column
+    filt_val &lt;- job$subset_filter$value
+    temp_spine &lt;- temp_spine %&gt;% dplyr::filter(.data[[filt_col]] %in% filt_val)
+  }
+  
+  temp_spine &lt;- temp_spine %&gt;% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val &lt;- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine &lt;- temp_spine %&gt;% mutate(!!job$test_var := ifelse(.data[[job$test_var]] &gt; median_val, &quot;High&quot;, &quot;Low&quot;))
+  }
+  
+  # Set up the parent tabset for the ontologies
+  cat(sprintf(&quot;### Absolute Burden {.tabset .unlisted .unnumbered}\n\n&quot;))
+  
+  # 3. Nested Execution Loop (Ontologies)
+  for (ontology in ontologies) {
+    
+    # Create a dynamic markdown tab for this specific ontology
+    cat(sprintf(&quot;\n\n#### By %s\n\n&quot;, ontology))
+    
+   # Look up the ontology label for the specific lipids present in abs_mat, in the exact order
+    target_labels &lt;- mapped_lipids[[ontology]][match(rownames(abs_mat), mapped_lipids$Mediator)]
+
+    # Now tapply will have perfectly matching lengths
+    burden_mat &lt;- apply(abs_mat, 2, function(col) {
+      tapply(col, target_labels, sum, na.rm = TRUE)
+    })
+    
+    # Override the job title/id dynamically
+    temp_job &lt;- job
+    temp_job$title &lt;- sprintf(&quot;%s (%s)&quot;, job$title, ontology)
+    temp_job_id &lt;- paste0(job_id, &quot;_&quot;, tolower(ontology))
+    
+    # Call LSEA Wrapper with absolute = TRUE 
+    res &lt;- wrap_lsea(
+      burden_mat = burden_mat, 
+      clin_df = temp_spine, 
+      config = temp_job, 
+      job_name = temp_job_id,
+      out_dir = output_dir_data,
+      assets_dir = assets_dir,
+      project_colors_func = get_project_colors,
+      absolute = TRUE
+    )
+    
+    if (res$status == &quot;success&quot;) {
+      if (!is.null(res$plot)) { 
+        if (interactive()) { 
+          print(res$plot)
+          cat(&quot;\n\n&quot;)
+        } else { 
+          # Note the updated file path to match absolute = TRUE
+          cat(sprintf(&quot;&lt;img src=&#39;assets/%s/%s_LSEA_absolute_burden.png&#39; width=&#39;100%%&#39; /&gt;\n\n&quot;, current_file, temp_job_id))
+          cat(&quot;\n\n&quot;) 
+        }
+      } else {
+        cat(sprintf(&quot;*No valid %s data to plot.* \n\n&quot;, ontology))
+      }
+    } else {
+      cat(sprintf(&quot;**FAILED:** %s\n\n&quot;, res$error_msg))
+    }
+  } # End Ontology Loop
+} # End Job Loop</code></pre>
+<div id="active-vs.-non-active-2" class="section level2">
+<h2>Active vs. Non-Active</h2>
+<div id="absolute-burden"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-9" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-9" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-9" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="ssc-vs.-control-2" class="section level2">
+<h2>SSc vs. Control</h2>
+<div id="absolute-burden-1"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-10" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-10" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-10" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="inflammatory-2" class="section level2">
+<h2>Inflammatory</h2>
+<div id="absolute-burden-2"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-11" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_inflammatory_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-11" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_inflammatory_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-11" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_inflammatory_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="vascular-2" class="section level2">
+<h2>Vascular</h2>
+<div id="absolute-burden-3"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-12" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_vascular_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-12" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_vascular_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-12" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_vascular_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="fibrotic-2" class="section level2">
+<h2>Fibrotic</h2>
+<div id="absolute-burden-4"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-13" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_fibrotic_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-13" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_fibrotic_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-13" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_fibrotic_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="eustar-act-vs-nonact-2" class="section level2">
+<h2>EUSTAR act vs nonact</h2>
+<div id="absolute-burden-5"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-14" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_eustar_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-14" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_eustar_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-14" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_eustar_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="cluster-1-vs-cluster-2-non-active-eustar-2"
+class="section level2">
+<h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
+<div id="absolute-burden-6"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-15" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-15" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-15" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="calcium-channel-blockers-2" class="section level2">
+<h2>Calcium Channel Blockers</h2>
+<div id="absolute-burden-7"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-16" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-16" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-16" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_ccb_function_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+</div>
+</div>
+<div id="acetylsalicylic-acid-2" class="section level2">
+<h2>Acetylsalicylic Acid</h2>
+<div id="absolute-burden-8"
+class="section level3 tabset unlisted unnumbered">
+<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+<div id="by-precursor-17" class="section level4">
+<h4>By Precursor</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_precursor_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-class-17" class="section level4">
+<h4>By Class</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_class_LSEA_absolute_burden.png' width='100%' /></p>
+</div>
+<div id="by-function-17" class="section level4">
+<h4>By Function</h4>
+<p><img src='assets/04b_lipidomics_differential/job_med_asa_function_LSEA_absolute_burden.png' width='100%' /></p>
 </div>
 </div>
 </div>
@@ -2665,7 +2694,7 @@ standardized reference.
     cat(sprintf(&quot;**FAILED:** %s\n\n&quot;, res$error_msg))
   }
 }</code></pre>
-<div id="active-vs.-non-active-2" class="section level2">
+<div id="active-vs.-non-active-3" class="section level2">
 <h2>Active vs. Non-Active</h2>
 <div id="jitter-distributions-active-vs.-non-active"
 class="section level3 unlisted unnumbered">
@@ -2674,7 +2703,7 @@ vs. Non-Active</h3>
 <p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="ssc-vs.-control-2" class="section level2">
+<div id="ssc-vs.-control-3" class="section level2">
 <h2>SSc vs. Control</h2>
 <div id="jitter-distributions-ssc-vs.-control"
 class="section level3 unlisted unnumbered">
@@ -2683,7 +2712,7 @@ vs. Control</h3>
 <p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="inflammatory-2" class="section level2">
+<div id="inflammatory-3" class="section level2">
 <h2>Inflammatory</h2>
 <div id="jitter-distributions-inflammatory"
 class="section level3 unlisted unnumbered">
@@ -2691,7 +2720,7 @@ class="section level3 unlisted unnumbered">
 <p><img src='assets/04b_lipidomics_differential/job_inflammatory_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="vascular-2" class="section level2">
+<div id="vascular-3" class="section level2">
 <h2>Vascular</h2>
 <div id="jitter-distributions-vascular"
 class="section level3 unlisted unnumbered">
@@ -2699,7 +2728,7 @@ class="section level3 unlisted unnumbered">
 <p><img src='assets/04b_lipidomics_differential/job_vascular_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="fibrotic-2" class="section level2">
+<div id="fibrotic-3" class="section level2">
 <h2>Fibrotic</h2>
 <div id="jitter-distributions-fibrotic"
 class="section level3 unlisted unnumbered">
@@ -2707,7 +2736,7 @@ class="section level3 unlisted unnumbered">
 <p><img src='assets/04b_lipidomics_differential/job_fibrotic_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="eustar-act-vs-nonact-2" class="section level2">
+<div id="eustar-act-vs-nonact-3" class="section level2">
 <h2>EUSTAR act vs nonact</h2>
 <div id="jitter-distributions-eustar-act-vs-nonact"
 class="section level3 unlisted unnumbered">
@@ -2716,52 +2745,17 @@ nonact</h3>
 <p><img src='assets/04b_lipidomics_differential/job_eustar_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="cluster-1-vs-cluster-2-2" class="section level2">
-<h2>Cluster 1 vs Cluster 2</h2>
-<div id="jitter-distributions-cluster-1-vs-cluster-2"
+<div id="cluster-1-vs-cluster-2-non-active-eustar-3"
+class="section level2">
+<h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
+<div id="jitter-distributions-cluster-1-vs-cluster-2-non-active-eustar"
 class="section level3 unlisted unnumbered">
 <h3 class="unlisted unnumbered">Jitter Distributions: Cluster 1 vs
-Cluster 2</h3>
-<p><img src='assets/04b_lipidomics_differential/job_cluster_1_vs_2_raw_intensities.png' width='100%' /></p>
-</div>
-</div>
-<div id="cluster-1-vs-cluster-2-non-active-4" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="jitter-distributions-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Jitter Distributions: Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
+Cluster 2 (Non-Active EUSTAR)</h3>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="cluster-1-vs-cluster-2-non-active-5" class="section level2">
-<h2>Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="jitter-distributions-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Jitter Distributions: Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_raw_intensities.png' width='100%' /></p>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active-4" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="jitter-distributions-sa-cluster-1-vs-cluster-2-non-active"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Jitter Distributions: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_raw_intensities.png' width='100%' /></p>
-</div>
-</div>
-<div id="sa-cluster-1-vs-cluster-2-non-active-5" class="section level2">
-<h2>SA Cluster 1 vs Cluster 2 (Non-Active)</h2>
-<div id="jitter-distributions-sa-cluster-1-vs-cluster-2-non-active-1"
-class="section level3 unlisted unnumbered">
-<h3 class="unlisted unnumbered">Jitter Distributions: SA Cluster 1 vs
-Cluster 2 (Non-Active)</h3>
-<p><img src='assets/04b_lipidomics_differential/job_SA_n1_vs_n2_raw_intensities.png' width='100%' /></p>
-</div>
-</div>
-<div id="calcium-channel-blockers-2" class="section level2">
+<div id="calcium-channel-blockers-3" class="section level2">
 <h2>Calcium Channel Blockers</h2>
 <div id="jitter-distributions-calcium-channel-blockers"
 class="section level3 unlisted unnumbered">
@@ -2770,7 +2764,7 @@ Blockers</h3>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_raw_intensities.png' width='100%' /></p>
 </div>
 </div>
-<div id="acetylsalicylic-acid-2" class="section level2">
+<div id="acetylsalicylic-acid-3" class="section level2">
 <h2>Acetylsalicylic Acid</h2>
 <div id="jitter-distributions-acetylsalicylic-acid"
 class="section level3 unlisted unnumbered">
@@ -3629,21 +3623,23 @@ worker_plot_raw_intensities &lt;- function(mat_raw, clin_vec, stats_df, is_cont,
       g_counts &lt;- table(df_clean$Pheno)
       n_t &lt;- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
       n_r &lt;- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
-      sub_str &lt;- sprintf(&quot;%s | %s (n=%d) vs %s (n=%d)&quot;, fdr_str, target_name, n_t, ref_name, n_r)
+      sub_str &lt;- sprintf(&quot;%s \n %s (n=%d) vs %s (n=%d)&quot;, fdr_str, target_name, n_t, ref_name, n_r)
       p_cols &lt;- col_map
     } else {
-      sub_str &lt;- sprintf(&quot;%s | Total (n=%d)&quot;, fdr_str, nrow(df_clean))
+      sub_str &lt;- sprintf(&quot;%s \n Total (n=%d)&quot;, fdr_str, nrow(df_clean))
       p_cols &lt;- setNames(viridis::viridis(3), c(&quot;Low&quot;, &quot;Mid&quot;, &quot;High&quot;))
     }
 
-    p &lt;- ggplot(df_clean, aes(x = Pheno, y = Log10Value, color = Pheno)) +
+    p &lt;- ggplot(df_clean, aes(x = Pheno, y = Log10Value, color = Pheno, fill = Pheno)) +
       geom_jitter(width = 0.2, alpha = 0.8, size = 2) +
+      geom_boxplot(alpha = 0.3, outlier.shape = NA, width = 0.5) +
+      scale_fill_manual(values = p_cols) +
       scale_color_manual(values = p_cols) +
       theme_minimal() +
       theme(
         legend.position = &quot;none&quot;,
         plot.title = element_text(size = 11, face = &quot;bold&quot;),
-        plot.subtitle = element_text(size = 8, color = &quot;grey30&quot;),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
@@ -3658,7 +3654,7 @@ worker_plot_raw_intensities &lt;- function(mat_raw, clin_vec, stats_df, is_cont,
   # 4 Column Patchwork Layout
   grid_plot &lt;- patchwork::wrap_plots(plot_list, ncol = 4) +
     patchwork::plot_annotation(
-      title = sprintf(&quot;Raw Conditional Abundances: %s&quot;, config$title),
+      title = sprintf(&quot;Abundances: %s&quot;, config$title),
       subtitle = &quot;Values strictly log10-transformed after excluding non-detected features.&quot;,
       theme = theme(plot.title = element_text(size = 16, face = &quot;bold&quot;))
     )
@@ -3668,8 +3664,8 @@ worker_plot_raw_intensities &lt;- function(mat_raw, clin_vec, stats_df, is_cont,
 
 # PART 7: LIPID SET ENRICHMENT ANALYSIS (LSEA) --------------------------------------
 
-#&#39; Wrapper: Lipid Set Enrichment Analysis (Binary Burden)
-wrap_lsea &lt;- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
+#&#39; Wrapper: Lipid Set Enrichment Analysis (Binary &amp; Absolute Burden)
+wrap_lsea &lt;- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func, absolute = FALSE) {
 
   if (!is.null(config$target_groups) &amp;&amp; !is.null(config$ref_groups)) {
     clin_df &lt;- clin_df %&gt;% dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
@@ -3701,7 +3697,7 @@ wrap_lsea &lt;- function(burden_mat, clin_df, config, job_name, out_dir, assets_
     clin_vec_plot &lt;- clin_sub[[config$test_var]]
   }
 
-  # 2. Statistical Testing (Binary Burden)
+  # 2. Statistical Testing (Burden)
   stats_list &lt;- lapply(rownames(mat_sub), function(family) {
     v_valid &lt;- mat_sub[family, ]
     g_valid &lt;- clin_vec_plot
@@ -3728,29 +3724,114 @@ wrap_lsea &lt;- function(burden_mat, clin_df, config, job_name, out_dir, assets_
   stats_df &lt;- do.call(rbind, stats_list)
   stats_df$FDR &lt;- p.adjust(stats_df$P_Value, method = &quot;BH&quot;)
 
-  write.csv(stats_df, file.path(out_dir, paste0(job_name, &quot;_LSEA_results.csv&quot;)), row.names = FALSE)
+  # Setup file prefixes for dynamic export
+  file_prefix &lt;- ifelse(absolute, &quot;_LSEA_absolute&quot;, &quot;_LSEA&quot;)
 
-  # 3. Call Plotting Worker
-  p_lsea &lt;- worker_plot_lsea(
-    burden_mat = mat_sub,
-    clin_vec = clin_vec_plot,
-    stats_df = stats_df,
-    is_cont = is_cont,
-    target_name = target_name,
-    ref_name = ref_name,
-    config = config,
-    project_colors_func = project_colors_func
-  )
+  write.csv(stats_df, file.path(out_dir, paste0(job_name, file_prefix, &quot;_results.csv&quot;)), row.names = FALSE)
+
+  # 3. Call Plotting Worker Route
+  if (absolute) {
+    p_lsea &lt;- worker_plot_lsea_absolute(
+      burden_mat = mat_sub, clin_vec = clin_vec_plot, stats_df = stats_df,
+      is_cont = is_cont, target_name = target_name, ref_name = ref_name,
+      config = config, project_colors_func = project_colors_func
+    )
+  } else {
+    p_lsea &lt;- worker_plot_lsea(
+      burden_mat = mat_sub, clin_vec = clin_vec_plot, stats_df = stats_df,
+      is_cont = is_cont, target_name = target_name, ref_name = ref_name,
+      config = config, project_colors_func = project_colors_func
+    )
+  }
 
   # 4. Save dynamically scaled image
   if (!is.null(p_lsea)) {
     grid_height &lt;- max(4, ceiling(nrow(mat_sub) / 4) * 4)
-    file_name &lt;- paste0(job_name, &quot;_LSEA_burden.png&quot;)
+    file_name &lt;- paste0(job_name, file_prefix, &quot;_burden.png&quot;)
     ggsave(file.path(out_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = &quot;white&quot;)
     if (!is.null(assets_dir)) ggsave(file.path(assets_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = &quot;white&quot;)
   }
 
   return(list(status = &quot;success&quot;, plot = p_lsea, tables = list(lsea_stats = stats_df)))
+}
+
+#&#39; Worker: Plot Absolute LSEA (Patchwork Boxplots + Jitter)
+worker_plot_lsea_absolute &lt;- function(burden_mat, clin_vec, stats_df, is_cont, target_name, ref_name, config, project_colors_func) {
+
+  target_families &lt;- sort(rownames(burden_mat))
+  if (length(target_families) == 0) return(NULL)
+
+  plot_list &lt;- list()
+
+  if (is_cont) {
+    plot_x &lt;- as.factor(dplyr::ntile(clin_vec, 3))
+    levels(plot_x) &lt;- c(&quot;Low&quot;, &quot;Mid&quot;, &quot;High&quot;)
+  } else {
+    plot_x &lt;- factor(clin_vec, levels = c(ref_name, target_name))
+
+    # Safe Color Mapping
+    base_levels &lt;- c(config$target_groups[1], config$ref_groups[1])
+    assigned_colors &lt;- project_colors_func(base_levels)
+    col_map &lt;- setNames(assigned_colors, c(target_name, ref_name))
+  }
+
+  for (family in target_families) {
+    df &lt;- data.frame(Pheno = plot_x, Burden = burden_mat[family, ])
+    df_clean &lt;- df %&gt;% dplyr::filter(!is.na(Burden) &amp; !is.na(Pheno))
+
+    if (nrow(df_clean) == 0) next
+
+    # NEW: Log10 transform with pseudocount for 0s
+    df_clean$Log10Burden &lt;- log10(df_clean$Burden + 1)
+
+    # Dynamic Headers (FDR + N counts)
+    fdr_val &lt;- stats_df$FDR[stats_df$Family == family]
+    test_str &lt;- if(is_cont) &quot;Spearman&quot; else &quot;MWU&quot;
+    fdr_str &lt;- if(is.na(fdr_val)) sprintf(&quot;%s FDR: NA&quot;, test_str) else sprintf(&quot;%s FDR: %.2f&quot;, test_str, fdr_val)
+
+    if (!is_cont) {
+      g_counts &lt;- table(df_clean$Pheno)
+      n_t &lt;- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
+      n_r &lt;- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
+      sub_str &lt;- sprintf(&quot;%s \n %s (n=%d) vs %s (n=%d)&quot;, fdr_str, target_name, n_t, ref_name, n_r)
+      p_cols &lt;- col_map
+    } else {
+      sub_str &lt;- sprintf(&quot;%s \n Total (n=%d)&quot;, fdr_str, nrow(df_clean))
+      p_cols &lt;- setNames(viridis::viridis(3), c(&quot;Low&quot;, &quot;Mid&quot;, &quot;High&quot;))
+    }
+
+    # Boxplot + Jitter visualization
+    p &lt;- ggplot(df_clean, aes(x = Pheno, y = Log10Burden, fill = Pheno, color = Pheno)) +
+      geom_boxplot(alpha = 0.3, outlier.shape = NA, width = 0.5) +
+      geom_jitter(width = 0.2, height = 0, alpha = 0.8, size = 2) +
+      scale_fill_manual(values = p_cols) +
+      scale_color_manual(values = p_cols) +
+      # REMOVED: scale_y_continuous(breaks = ...) so continuous limits take over natively
+      theme_minimal() +
+      theme(
+        legend.position = &quot;none&quot;,
+        plot.title = element_text(size = 11, face = &quot;bold&quot;),
+        plot.subtitle = element_text(size = 10),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 0, size = 10),
+        panel.grid.minor = element_blank()
+      ) +
+      labs(title = family, subtitle = sub_str, y = &quot;Log10(Absolute Intensity + 1)&quot;)
+
+    plot_list[[family]] &lt;- p
+  }
+
+  if (length(plot_list) == 0) return(NULL)
+
+  # 4 Column Patchwork Layout
+  grid_plot &lt;- patchwork::wrap_plots(plot_list, ncol = 4) +
+    patchwork::plot_annotation(
+      title = sprintf(&quot;Absolute LSEA Burden: %s&quot;, config$title),
+      subtitle = &quot;Boxplots representing the summed raw intensities (log10 + 1) per biological group&quot;,
+      theme = theme(plot.title = element_text(size = 16, face = &quot;bold&quot;))
+    )
+
+  return(grid_plot)
 }
 
 #&#39; Worker: Plot LSEA (Patchwork Boxplots + Jitter)
@@ -3788,10 +3869,10 @@ worker_plot_lsea &lt;- function(burden_mat, clin_vec, stats_df, is_cont, target_
       g_counts &lt;- table(df_clean$Pheno)
       n_t &lt;- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
       n_r &lt;- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
-      sub_str &lt;- sprintf(&quot;%s | %s (n=%d) vs %s (n=%d)&quot;, fdr_str, target_name, n_t, ref_name, n_r)
+      sub_str &lt;- sprintf(&quot;%s \n %s (n=%d) vs %s (n=%d)&quot;, fdr_str, target_name, n_t, ref_name, n_r)
       p_cols &lt;- col_map
     } else {
-      sub_str &lt;- sprintf(&quot;%s | Total (n=%d)&quot;, fdr_str, nrow(df_clean))
+      sub_str &lt;- sprintf(&quot;%s \n Total (n=%d)&quot;, fdr_str, nrow(df_clean))
       p_cols &lt;- setNames(viridis::viridis(3), c(&quot;Low&quot;, &quot;Mid&quot;, &quot;High&quot;))
     }
 
@@ -3808,7 +3889,7 @@ worker_plot_lsea &lt;- function(burden_mat, clin_vec, stats_df, is_cont, target_
       theme(
         legend.position = &quot;none&quot;,
         plot.title = element_text(size = 11, face = &quot;bold&quot;),
-        plot.subtitle = element_text(size = 8, color = &quot;grey30&quot;),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
