@@ -61,7 +61,7 @@ pathway_dbs <- list(
 
 
 # Configuration
-`r what_this_does("Established highly parameterized lists controlling heatmap extraction, subgroup quantiles, clinical phenotyping parameters, DEA models, and cross-contrast algorithms to exactly mirror the architecture of the 03c clustering script.")`
+`r what_this_does("Established parameterized lists controlling heatmap extraction, subgroup quantiles, clinical phenotyping parameters, DEA models, and cross-contrast algorithms to exactly mirror the architecture of the 03c clustering script.")`
 
 ```{r configuration}
 # 1. Subgroup Definitions
@@ -169,7 +169,8 @@ cross_contrast_configs <- list(
 
 # Scoring
 `r analysis_decision("Data Isolation: Filtering exclusively to the Non-Active cohort before calculating quantiles ensures the arbitrary splits accurately reflect distributions within the target group.", "Biological Anchoring: The 'Control-Bound' split defines the threshold using the true maximum observed molecular score of the healthy control cohort, anchoring the categorization to a physiological baseline.", "Payload Injection: Emulated the clustering engine structure to allow downstream DEA and Phenotyping modules to analyze rule-based thresholds flawlessly.")`
-`r what_this_does("Generates a Master Pi-score Heatmap using the central engine. Extracts the unbroken physical leaf order to assign a 0-100 percentile rank score. Splits continuous scores by predefined percentiles and the maximum Control score, building a unified global_cluster_payloads object.")`
+
+`r what_this_does("Generates a Master Pi-score Heatmap using the heatmap engine.", "Extracts the unbroken physical leaf order to assign a 0-100 percentile rank score.", "Splits continuous scores by predefined percentiles and the maximum Control score, building a unified global_cluster_payloads object.")`
 
 ```{r scoring, fig.width=12, fig.height=10}
 # 1. Prepare Clinical Data
@@ -252,7 +253,8 @@ rm(hm_obj, hm_drawn, hm_df); invisible(gc())
 
 # Clinical Phenotyping {.tabset}
 `r analysis_decision("Muted non-significant phenotypes (p >= 0.05) to zero on the heatmap, ensuring visual emphasis is strictly placed on true biological drivers rather than random noise.")`
-`r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes. Uses nested categories for streamlined visual profiling.")`
+
+`r what_this_does("Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint of the discovered endotypes.", "Uses nested categories for streamlined visual profiling.")`
 
 ```{r clinical_phenotyping, fig.height=16, fig.width=14, warning=FALSE, results='asis'}
 for (p_id in names(pheno_configs)) {
@@ -306,7 +308,7 @@ for (p_id in names(pheno_configs)) {
 
 # Differential Expression {.tabset}
 `r analysis_decision("Dynamic Covariate Validation: Before executing Limma for each split, the script dynamically verifies variance for requested covariates. If a covariate lacks variance within a specific split, it is dropped to prevent algebraic crashes.")`
-`r what_this_does("Runs rigorous Differential Expression Analysis directly comparing Active-Like vs Control-Like groups across all requested splits. Calculates pathway enrichment via GSEA.")`
+`r what_this_does("Runs Differential Expression Analysis directly comparing Active-Like vs Control-Like groups across all requested splits.", "Calculates pathway enrichment via GSEA engine.")`
 
 ```{r differential_expression, fig.width=12, fig.height=10, results='asis'}
 global_dea_payloads <- list()
@@ -436,7 +438,7 @@ for (f_id in names(feature_configs)) {
 
 
 # Cross-Contrast {.tabset}
-`r what_this_does("Projects biological stability across varying subgroup thresholds.", "Generates logFC-to-logFC scatterplots mapping the expression stability of individual proteins regardless of exactly where the boundary percentile was drawn.", "Extracts highly specific and fundamentally shared drivers via data tables.")`
+`r what_this_does("Projects biological stability across varying subgroup thresholds.", "Generates logFC-to-logFC scatterplots mapping the expression stability of individual proteins regardless of exactly where the boundary percentile was drawn.", "Extracts specific and shared drivers via data tables.")`
 
 ```{r cross_contrast, results='asis', fig.width=9, fig.height=7}
 cc_dir <- file.path(output_dir_data, "Cross_Contrasts")
