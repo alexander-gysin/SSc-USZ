@@ -670,15 +670,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree40c259e4947e34af281b3b5303140aef716f5958targetblank40c259ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedf14753758acaeb9afdc77efbf007ad72d7a6344targetblankdf14753a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/40c259e4947e34af281b3b5303140aef716f5958" target="_blank">40c259e</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/df14753758acaeb9afdc77efbf007ad72d7a6344" target="_blank">df14753</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree40c259e4947e34af281b3b5303140aef716f5958targetblank40c259ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreedf14753758acaeb9afdc77efbf007ad72d7a6344targetblankdf14753a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -688,7 +688,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/40c259e4947e34af281b3b5303140aef716f5958" target="_blank">40c259e</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/df14753758acaeb9afdc77efbf007ad72d7a6344" target="_blank">df14753</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -737,7 +737,7 @@ Untracked files:
     Untracked:  analysis/05d_sRNA_differential.Rmd
 
 Unstaged changes:
-    Modified:   code/00_config.R
+    Modified:   code/02_proteomics_engines.R
 
 </code></pre>
 <p>
@@ -783,6 +783,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/df14753758acaeb9afdc77efbf007ad72d7a6344/analysis/03d_proteomics_subgroups.Rmd" target="_blank">df14753</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-16
+</td>
+<td>
+added eustar colors, corrected the description boxes
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/38402ad7e73ad31188e39d57c4bc9484b78a2ea9/docs/03d_proteomics_subgroups.html" target="_blank">38402ad</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1402,8 +1436,8 @@ pathway_dbs &lt;- list(
 <strong>What this code does:</strong>
 <ul>
 <li>
-Established highly parameterized lists controlling heatmap extraction,
-subgroup quantiles, clinical phenotyping parameters, DEA models, and
+Established parameterized lists controlling heatmap extraction, subgroup
+quantiles, clinical phenotyping parameters, DEA models, and
 cross-contrast algorithms to exactly mirror the architecture of the 03c
 clustering script.
 </li>
@@ -1537,11 +1571,15 @@ flawlessly.
 <strong>What this code does:</strong>
 <ul>
 <li>
-Generates a Master Pi-score Heatmap using the central engine. Extracts
-the unbroken physical leaf order to assign a 0-100 percentile rank
-score. Splits continuous scores by predefined percentiles and the
-maximum Control score, building a unified global_cluster_payloads
-object.
+Generates a Master Pi-score Heatmap using the heatmap engine.
+</li>
+<li>
+Extracts the unbroken physical leaf order to assign a 0-100 percentile
+rank score.
+</li>
+<li>
+Splits continuous scores by predefined percentiles and the maximum
+Control score, building a unified global_cluster_payloads object.
 </li>
 </ul>
 </div>
@@ -1689,8 +1727,10 @@ rather than random noise.
 <ul>
 <li>
 Calculates Log-Odds Ratios and Z-Scores to map the clinical fingerprint
-of the discovered endotypes. Uses nested categories for streamlined
-visual profiling.
+of the discovered endotypes.
+</li>
+<li>
+Uses nested categories for streamlined visual profiling.
 </li>
 </ul>
 </div>
@@ -4555,9 +4595,11 @@ prevent algebraic crashes.
 <strong>What this code does:</strong>
 <ul>
 <li>
-Runs rigorous Differential Expression Analysis directly comparing
-Active-Like vs Control-Like groups across all requested splits.
-Calculates pathway enrichment via GSEA.
+Runs Differential Expression Analysis directly comparing Active-Like vs
+Control-Like groups across all requested splits.
+</li>
+<li>
+Calculates pathway enrichment via GSEA engine.
 </li>
 </ul>
 </div>
@@ -5134,8 +5176,7 @@ of individual proteins regardless of exactly where the boundary
 percentile was drawn.
 </li>
 <li>
-Extracts highly specific and fundamentally shared drivers via data
-tables.
+Extracts specific and shared drivers via data tables.
 </li>
 </ul>
 </div>
@@ -8677,6 +8718,11 @@ run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_b
   # Explicit Trap: Age
   if (&quot;Age&quot; %in% valid_vars) {
     col_list[[&quot;Age&quot;]] &lt;- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+  }
+
+  # Explicit Trap: ACTIVE_AI
+  if (&quot;ACTIVE_AI&quot; %in% valid_vars) {
+    col_list[[&quot;ACTIVE_AI&quot;]] &lt;- get_project_colors(as.character(unique(clin_sub[[&quot;ACTIVE_AI&quot;]])))
   }
 
 
