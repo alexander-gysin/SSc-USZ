@@ -802,7 +802,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
       g_counts <- table(df_clean$Pheno)
       n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
       n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
-      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      sub_str <- sprintf("%s \n %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
       sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
@@ -818,7 +818,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 9),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
@@ -833,7 +833,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
   # 4 Column Patchwork Layout
   grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
     patchwork::plot_annotation(
-      title = sprintf("Raw Abundances: %s", config$title),
+      title = sprintf("Abundances: %s", config$title),
       subtitle = "Values strictly log10-transformed after excluding non-detected features.",
       theme = theme(plot.title = element_text(size = 16, face = "bold"))
     )
@@ -972,7 +972,7 @@ worker_plot_lsea_absolute <- function(burden_mat, clin_vec, stats_df, is_cont, t
       g_counts <- table(df_clean$Pheno)
       n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
       n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
-      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      sub_str <- sprintf("%s \n %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
       sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
@@ -990,7 +990,7 @@ worker_plot_lsea_absolute <- function(burden_mat, clin_vec, stats_df, is_cont, t
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 9),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
@@ -1048,7 +1048,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
       g_counts <- table(df_clean$Pheno)
       n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
       n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
-      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      sub_str <- sprintf("%s \n %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
       sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
@@ -1068,7 +1068,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 9),
+        plot.subtitle = element_text(size = 10),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
