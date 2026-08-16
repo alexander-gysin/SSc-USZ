@@ -805,18 +805,20 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
       sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
-      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
       p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
     }
 
-    p <- ggplot(df_clean, aes(x = Pheno, y = Log10Value, color = Pheno)) +
+    p <- ggplot(df_clean, aes(x = Pheno, y = Log10Value, color = Pheno, fill = Pheno)) +
       geom_jitter(width = 0.2, alpha = 0.8, size = 2) +
+      geom_boxplot(alpha = 0.3, outlier.shape = NA, width = 0.5) +
+      scale_fill_manual(values = p_cols) +
       scale_color_manual(values = p_cols) +
       theme_minimal() +
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 8, color = "grey30"),
+        plot.subtitle = element_text(size = 9),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
@@ -831,7 +833,7 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
   # 4 Column Patchwork Layout
   grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
     patchwork::plot_annotation(
-      title = sprintf("Raw Conditional Abundances: %s", config$title),
+      title = sprintf("Raw Abundances: %s", config$title),
       subtitle = "Values strictly log10-transformed after excluding non-detected features.",
       theme = theme(plot.title = element_text(size = 16, face = "bold"))
     )
@@ -973,7 +975,7 @@ worker_plot_lsea_absolute <- function(burden_mat, clin_vec, stats_df, is_cont, t
       sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
-      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
       p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
     }
 
@@ -988,7 +990,7 @@ worker_plot_lsea_absolute <- function(burden_mat, clin_vec, stats_df, is_cont, t
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 8, color = "grey30"),
+        plot.subtitle = element_text(size = 9),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
@@ -1049,7 +1051,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
       sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
       p_cols <- col_map
     } else {
-      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      sub_str <- sprintf("%s \n Total (n=%d)", fdr_str, nrow(df_clean))
       p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
     }
 
@@ -1066,7 +1068,7 @@ worker_plot_lsea <- function(burden_mat, clin_vec, stats_df, is_cont, target_nam
       theme(
         legend.position = "none",
         plot.title = element_text(size = 11, face = "bold"),
-        plot.subtitle = element_text(size = 8, color = "grey30"),
+        plot.subtitle = element_text(size = 9),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 0, size = 10),
         panel.grid.minor = element_blank()
