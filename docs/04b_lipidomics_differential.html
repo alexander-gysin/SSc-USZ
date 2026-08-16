@@ -670,15 +670,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0246e8a7afb05d856ea7a88d6db15bee2b103bf0targetblank0246e8aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb345383852820c038ae2b15ddd23e669e2a3e1aatargetblankb345383a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0246e8a7afb05d856ea7a88d6db15bee2b103bf0" target="_blank">0246e8a</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b345383852820c038ae2b15ddd23e669e2a3e1aa" target="_blank">b345383</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0246e8a7afb05d856ea7a88d6db15bee2b103bf0targetblank0246e8aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeb345383852820c038ae2b15ddd23e669e2a3e1aatargetblankb345383a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -688,7 +688,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0246e8a7afb05d856ea7a88d6db15bee2b103bf0" target="_blank">0246e8a</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/b345383852820c038ae2b15ddd23e669e2a3e1aa" target="_blank">b345383</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -736,9 +736,6 @@ Untracked files:
     Untracked:  analysis/05c_sRNA_norm_and_explore.Rmd
     Untracked:  analysis/05d_sRNA_differential.Rmd
 
-Unstaged changes:
-    Modified:   code/03_lipidomics_engines.R
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -783,6 +780,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b345383852820c038ae2b15ddd23e669e2a3e1aa/analysis/04b_lipidomics_differential.Rmd" target="_blank">b345383</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-16
+</td>
+<td>
+added tabsets and changed sub tabs to tabpills
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/b13c374a08ce993b279975c82191210eedec12e6/docs/04b_lipidomics_differential.html" target="_blank">b13c374</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2071,8 +2102,9 @@ groups.</p>
 </div>
 </div>
 </div>
-<div id="binary-lipid-set-enrichment-analysis" class="section level1">
-<h1>Binary Lipid Set Enrichment Analysis</h1>
+<div id="binary-lipid-set-enrichment-analysis"
+class="section level1 tabset">
+<h1 class="tabset">Binary Lipid Set Enrichment Analysis</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2129,7 +2161,7 @@ for (job_id in names(dea_configs)) {
   }
   
   # Set up the parent tabset for the ontologies
-  cat(sprintf(&quot;### LSEA Burden {.tabset .unlisted .unnumbered}\n\n&quot;))
+  cat(sprintf(&quot;### LSEA Burden {.tabset .unlisted .unnumbered .tabset-pills}\n\n&quot;))
   
   # 3. Nested Execution Loop (Ontologies)
   for (ontology in ontologies) {
@@ -2179,8 +2211,9 @@ for (job_id in names(dea_configs)) {
 } # End Job Loop</code></pre>
 <div id="active-vs.-non-active-1" class="section level2">
 <h2>Active vs. Non-Active</h2>
-<div id="lsea-burden" class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+<div id="lsea-burden"
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2198,8 +2231,8 @@ for (job_id in names(dea_configs)) {
 <div id="ssc-vs.-control-1" class="section level2">
 <h2>SSc vs. Control</h2>
 <div id="lsea-burden-1"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-1" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2217,8 +2250,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="inflammatory-1" class="section level2">
 <h2>Inflammatory</h2>
 <div id="lsea-burden-2"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-2" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_inflammatory_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2236,8 +2269,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="vascular-1" class="section level2">
 <h2>Vascular</h2>
 <div id="lsea-burden-3"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-3" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_vascular_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2255,8 +2288,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="fibrotic-1" class="section level2">
 <h2>Fibrotic</h2>
 <div id="lsea-burden-4"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-4" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_fibrotic_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2274,8 +2307,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="eustar-act-vs-nonact-1" class="section level2">
 <h2>EUSTAR act vs nonact</h2>
 <div id="lsea-burden-5"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-5" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_eustar_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2294,8 +2327,8 @@ class="section level3 tabset unlisted unnumbered">
 class="section level2">
 <h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
 <div id="lsea-burden-6"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-6" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2313,8 +2346,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="calcium-channel-blockers-1" class="section level2">
 <h2>Calcium Channel Blockers</h2>
 <div id="lsea-burden-7"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-7" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2332,8 +2365,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="acetylsalicylic-acid-1" class="section level2">
 <h2>Acetylsalicylic Acid</h2>
 <div id="lsea-burden-8"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">LSEA Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">LSEA Burden</h3>
 <div id="by-precursor-8" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_asa_precursor_LSEA_burden.png' width='100%' /></p>
@@ -2349,8 +2382,9 @@ class="section level3 tabset unlisted unnumbered">
 </div>
 </div>
 </div>
-<div id="absolute-lipid-set-enrichment-analysis" class="section level1">
-<h1>Absolute Lipid Set Enrichment Analysis</h1>
+<div id="absolute-lipid-set-enrichment-analysis"
+class="section level1 tabset">
+<h1 class="tabset">Absolute Lipid Set Enrichment Analysis</h1>
 <div class="info-box">
 <strong>What this code does:</strong>
 <ul>
@@ -2402,7 +2436,7 @@ for (job_id in names(dea_configs)) {
   }
   
   # Set up the parent tabset for the ontologies
-  cat(sprintf(&quot;### Absolute Burden {.tabset .unlisted .unnumbered}\n\n&quot;))
+  cat(sprintf(&quot;### Absolute Burden {.tabset .unlisted .unnumbered .tabset-pills}\n\n&quot;))
   
   # 3. Nested Execution Loop (Ontologies)
   for (ontology in ontologies) {
@@ -2456,8 +2490,8 @@ for (job_id in names(dea_configs)) {
 <div id="active-vs.-non-active-2" class="section level2">
 <h2>Active vs. Non-Active</h2>
 <div id="absolute-burden"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-9" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_active_vs_nonactive_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2475,8 +2509,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="ssc-vs.-control-2" class="section level2">
 <h2>SSc vs. Control</h2>
 <div id="absolute-burden-1"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-10" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_ssc_vs_ctrl_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2494,8 +2528,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="inflammatory-2" class="section level2">
 <h2>Inflammatory</h2>
 <div id="absolute-burden-2"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-11" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_inflammatory_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2513,8 +2547,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="vascular-2" class="section level2">
 <h2>Vascular</h2>
 <div id="absolute-burden-3"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-12" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_vascular_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2532,8 +2566,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="fibrotic-2" class="section level2">
 <h2>Fibrotic</h2>
 <div id="absolute-burden-4"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-13" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_fibrotic_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2551,8 +2585,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="eustar-act-vs-nonact-2" class="section level2">
 <h2>EUSTAR act vs nonact</h2>
 <div id="absolute-burden-5"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-14" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_eustar_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2571,8 +2605,8 @@ class="section level3 tabset unlisted unnumbered">
 class="section level2">
 <h2>Cluster 1 vs Cluster 2 (Non-Active EUSTAR)</h2>
 <div id="absolute-burden-6"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-15" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_n1_vs_n2_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2590,8 +2624,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="calcium-channel-blockers-2" class="section level2">
 <h2>Calcium Channel Blockers</h2>
 <div id="absolute-burden-7"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-16" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_ccb_precursor_LSEA_absolute_burden.png' width='100%' /></p>
@@ -2609,8 +2643,8 @@ class="section level3 tabset unlisted unnumbered">
 <div id="acetylsalicylic-acid-2" class="section level2">
 <h2>Acetylsalicylic Acid</h2>
 <div id="absolute-burden-8"
-class="section level3 tabset unlisted unnumbered">
-<h3 class="tabset unlisted unnumbered">Absolute Burden</h3>
+class="section level3 tabset unlisted unnumbered tabset-pills">
+<h3 class="tabset unlisted unnumbered tabset-pills">Absolute Burden</h3>
 <div id="by-precursor-17" class="section level4">
 <h4>By Precursor</h4>
 <p><img src='assets/04b_lipidomics_differential/job_med_asa_precursor_LSEA_absolute_burden.png' width='100%' /></p>
