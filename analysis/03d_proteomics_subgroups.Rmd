@@ -10,8 +10,6 @@ editor_options:
 # Introduction
 Goal: To define a robust molecular boundary differentiating "Active-like" from "Control-like" profiles within the clinical "Non-Active" SSc cohort. 
 
-We generate a continuous polarity-aligned heatmap score based on the SSc disease signature. We then perform a sensitivity analysis by slicing this continuous score at three distinct thresholds (50/50, 40/60, and 60/40) and executing parallel downstream Clinical Phenotyping, Differential Expression Analysis (DEA), and Gene Set Enrichment Analysis (GSEA). Finally, cross-contrast visualization validates the biological stability of the molecular boundary.
-
 ```{r setup_boxes, include=FALSE}
 source(here::here("code", "00_config.R"))
 ```
