@@ -698,6 +698,11 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
     col_list[["Age"]] <- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
   }
 
+  # Explicit Trap: ACTIVE_AI
+  if ("ACTIVE_AI" %in% valid_vars) {
+    col_list[["ACTIVE_AI"]] <- get_project_colors(as.character(unique(clin_sub[["ACTIVE_AI"]])))
+  }
+
 
 
   # 4. Construct the HeatmapAnnotation object dynamically
