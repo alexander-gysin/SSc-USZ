@@ -841,8 +841,8 @@ worker_plot_raw_intensities <- function(mat_raw, clin_vec, stats_df, is_cont, ta
 
 # PART 7: LIPID SET ENRICHMENT ANALYSIS (LSEA) --------------------------------------
 
-#' Wrapper: Lipid Set Enrichment Analysis (Binary Burden)
-wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func) {
+#' Wrapper: Lipid Set Enrichment Analysis (Binary & Absolute Burden)
+wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir, project_colors_func, absolute = FALSE) {
 
   if (!is.null(config$target_groups) && !is.null(config$ref_groups)) {
     clin_df <- clin_df %>% dplyr::filter(.data[[config$test_var]] %in% c(config$target_groups, config$ref_groups))
@@ -874,7 +874,7 @@ wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir
     clin_vec_plot <- clin_sub[[config$test_var]]
   }
 
-  # 2. Statistical Testing (Binary Burden)
+  # 2. Statistical Testing (Burden)
   stats_list <- lapply(rownames(mat_sub), function(family) {
     v_valid <- mat_sub[family, ]
     g_valid <- clin_vec_plot
@@ -901,29 +901,114 @@ wrap_lsea <- function(burden_mat, clin_df, config, job_name, out_dir, assets_dir
   stats_df <- do.call(rbind, stats_list)
   stats_df$FDR <- p.adjust(stats_df$P_Value, method = "BH")
 
-  write.csv(stats_df, file.path(out_dir, paste0(job_name, "_LSEA_results.csv")), row.names = FALSE)
+  # Setup file prefixes for dynamic export
+  file_prefix <- ifelse(absolute, "_LSEA_absolute", "_LSEA")
 
-  # 3. Call Plotting Worker
-  p_lsea <- worker_plot_lsea(
-    burden_mat = mat_sub,
-    clin_vec = clin_vec_plot,
-    stats_df = stats_df,
-    is_cont = is_cont,
-    target_name = target_name,
-    ref_name = ref_name,
-    config = config,
-    project_colors_func = project_colors_func
-  )
+  write.csv(stats_df, file.path(out_dir, paste0(job_name, file_prefix, "_results.csv")), row.names = FALSE)
+
+  # 3. Call Plotting Worker Route
+  if (absolute) {
+    p_lsea <- worker_plot_lsea_absolute(
+      burden_mat = mat_sub, clin_vec = clin_vec_plot, stats_df = stats_df,
+      is_cont = is_cont, target_name = target_name, ref_name = ref_name,
+      config = config, project_colors_func = project_colors_func
+    )
+  } else {
+    p_lsea <- worker_plot_lsea(
+      burden_mat = mat_sub, clin_vec = clin_vec_plot, stats_df = stats_df,
+      is_cont = is_cont, target_name = target_name, ref_name = ref_name,
+      config = config, project_colors_func = project_colors_func
+    )
+  }
 
   # 4. Save dynamically scaled image
   if (!is.null(p_lsea)) {
     grid_height <- max(4, ceiling(nrow(mat_sub) / 4) * 4)
-    file_name <- paste0(job_name, "_LSEA_burden.png")
+    file_name <- paste0(job_name, file_prefix, "_burden.png")
     ggsave(file.path(out_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = "white")
     if (!is.null(assets_dir)) ggsave(file.path(assets_dir, file_name), plot = p_lsea, width = 16, height = grid_height, dpi = 300, bg = "white")
   }
 
   return(list(status = "success", plot = p_lsea, tables = list(lsea_stats = stats_df)))
+}
+
+#' Worker: Plot Absolute LSEA (Patchwork Boxplots + Jitter)
+worker_plot_lsea_absolute <- function(burden_mat, clin_vec, stats_df, is_cont, target_name, ref_name, config, project_colors_func) {
+
+  target_families <- sort(rownames(burden_mat))
+  if (length(target_families) == 0) return(NULL)
+
+  plot_list <- list()
+
+  if (is_cont) {
+    plot_x <- as.factor(dplyr::ntile(clin_vec, 3))
+    levels(plot_x) <- c("Low", "Mid", "High")
+  } else {
+    plot_x <- factor(clin_vec, levels = c(ref_name, target_name))
+
+    # Safe Color Mapping
+    base_levels <- c(config$target_groups[1], config$ref_groups[1])
+    assigned_colors <- project_colors_func(base_levels)
+    col_map <- setNames(assigned_colors, c(target_name, ref_name))
+  }
+
+  for (family in target_families) {
+    df <- data.frame(Pheno = plot_x, Burden = burden_mat[family, ])
+    df_clean <- df %>% dplyr::filter(!is.na(Burden) & !is.na(Pheno))
+
+    if (nrow(df_clean) == 0) next
+
+    # NEW: Log10 transform with pseudocount for 0s
+    df_clean$Log10Burden <- log10(df_clean$Burden + 1)
+
+    # Dynamic Headers (FDR + N counts)
+    fdr_val <- stats_df$FDR[stats_df$Family == family]
+    test_str <- if(is_cont) "Spearman" else "MWU"
+    fdr_str <- if(is.na(fdr_val)) sprintf("%s FDR: NA", test_str) else sprintf("%s FDR: %.2f", test_str, fdr_val)
+
+    if (!is_cont) {
+      g_counts <- table(df_clean$Pheno)
+      n_t <- if (target_name %in% names(g_counts)) g_counts[[target_name]] else 0
+      n_r <- if (ref_name %in% names(g_counts)) g_counts[[ref_name]] else 0
+      sub_str <- sprintf("%s | %s (n=%d) vs %s (n=%d)", fdr_str, target_name, n_t, ref_name, n_r)
+      p_cols <- col_map
+    } else {
+      sub_str <- sprintf("%s | Total (n=%d)", fdr_str, nrow(df_clean))
+      p_cols <- setNames(viridis::viridis(3), c("Low", "Mid", "High"))
+    }
+
+    # Boxplot + Jitter visualization
+    p <- ggplot(df_clean, aes(x = Pheno, y = Log10Burden, fill = Pheno, color = Pheno)) +
+      geom_boxplot(alpha = 0.3, outlier.shape = NA, width = 0.5) +
+      geom_jitter(width = 0.2, height = 0, alpha = 0.8, size = 2) +
+      scale_fill_manual(values = p_cols) +
+      scale_color_manual(values = p_cols) +
+      # REMOVED: scale_y_continuous(breaks = ...) so continuous limits take over natively
+      theme_minimal() +
+      theme(
+        legend.position = "none",
+        plot.title = element_text(size = 11, face = "bold"),
+        plot.subtitle = element_text(size = 8, color = "grey30"),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 0, size = 10),
+        panel.grid.minor = element_blank()
+      ) +
+      labs(title = family, subtitle = sub_str, y = "Log10(Absolute Intensity + 1)")
+
+    plot_list[[family]] <- p
+  }
+
+  if (length(plot_list) == 0) return(NULL)
+
+  # 4 Column Patchwork Layout
+  grid_plot <- patchwork::wrap_plots(plot_list, ncol = 4) +
+    patchwork::plot_annotation(
+      title = sprintf("Absolute LSEA Burden: %s", config$title),
+      subtitle = "Boxplots representing the summed raw intensities (log10 + 1) per biological group",
+      theme = theme(plot.title = element_text(size = 16, face = "bold"))
+    )
+
+  return(grid_plot)
 }
 
 #' Worker: Plot LSEA (Patchwork Boxplots + Jitter)

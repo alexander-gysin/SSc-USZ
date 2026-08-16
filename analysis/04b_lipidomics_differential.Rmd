@@ -71,7 +71,7 @@ dea_configs <- list(
     ref_groups = c("Non-Active"),
     bin_continuous = FALSE,  
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_ssc_vs_ctrl = list(
@@ -81,7 +81,7 @@ dea_configs <- list(
     ref_groups = c("Control"),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_inflammatory = list(
@@ -91,7 +91,7 @@ dea_configs <- list(
     ref_groups = c("no"),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_vascular = list(
@@ -101,7 +101,7 @@ dea_configs <- list(
     ref_groups = c("no"),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_fibrotic = list(
@@ -111,7 +111,7 @@ dea_configs <- list(
     ref_groups = c("no"),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
   job_eustar = list(
@@ -121,36 +121,7 @@ dea_configs <- list(
     ref_groups = c("0"),
     bin_continuous = FALSE, 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
-  ),
-  
-  job_cluster_1_vs_2 = list(
-    title = "Cluster 1 vs Cluster 2",
-    test_var = "kmeans_Cluster",
-    target_groups = c("Cluster 2"),
-    ref_groups = c("Cluster 1"),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
-      join_col = "Subject_ID"
-    )
-  ),
-  
-  job_n1_vs_n2 = list(
-    title = "Cluster 1 vs Cluster 2 (Non-Active)",
-    test_var = "kmeans_Cluster",
-    target_groups = c("Cluster 2"),
-    ref_groups = c("Cluster 1"),
-    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
-      join_col = "Subject_ID"
-    )
+    dea_fc_cutoff = 1.5
   ),
   
    job_n1_vs_n2 = list(
@@ -161,39 +132,9 @@ dea_configs <- list(
     subset_filter = list(column = "ACTIVE_AI", value = c("0")),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
+    dea_fc_cutoff = 1.5,
     external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_sa_Master_Assignments.rds"),
-      join_col = "Subject_ID"
-    )
-  ),
-  
-  job_SA_n1_vs_n2 = list(
-    title = "SA Cluster 1 vs Cluster 2 (Non-Active)",
-    test_var = "kmeans_Cluster",
-    target_groups = c("Cluster 2"),
-    ref_groups = c("Cluster 1"),
-    subset_filter = list(column = "cohort_group", value = c("Non-Active")),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_sa_Master_Assignments.rds"),
-      join_col = "Subject_ID"
-    )
-  ),
-  
-   job_SA_n1_vs_n2 = list(
-    title = "SA Cluster 1 vs Cluster 2 (Non-Active EUSTAR)",
-    test_var = "kmeans_Cluster",
-    target_groups = c("Cluster 2"),
-    ref_groups = c("Cluster 1"),
-    subset_filter = list(column = "ACTIVE_AI", value = c("0")),
-    bin_continuous = FALSE,
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0,
-    external_data = list(
-      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc_sa", "job_svc_Master_Assignments.rds"),
+      file_path = here::here("output", "03c_proteomics_clustering", "Clustering", "job_svc", "job_svc_Master_Assignments.rds"),
       join_col = "Subject_ID"
     )
   ),
@@ -205,7 +146,7 @@ dea_configs <- list(
     ref_groups = c("no"),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   ),
   
     job_med_asa = list(
@@ -215,7 +156,7 @@ dea_configs <- list(
     ref_groups = c("no"),
     bin_continuous = FALSE,
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 1.0
+    dea_fc_cutoff = 1.5
   )
 )
 
@@ -383,7 +324,7 @@ for (job_id in names(dea_configs)) {
 }
 ```
 
-# Lipid Set Enrichment Analysis (LSEA)
+# Binary Lipid Set Enrichment Analysis
 
 `r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using a 'Binary Burden' approach.", "Iterates across three distinct biological ontologies (Precursor, Class, Function) to provide orthogonal views of lipidomic shifts.", "Applies Category-Specific FDR correction to maximize statistical power while controlling for false positives.")`
 
@@ -465,6 +406,97 @@ for (job_id in names(dea_configs)) {
           cat("\n\n")
         } else { 
           cat(sprintf("<img src='assets/%s/%s_LSEA_burden.png' width='100%%' />\n\n", current_file, temp_job_id))
+          cat("\n\n") 
+        }
+      } else {
+        cat(sprintf("*No valid %s data to plot.* \n\n", ontology))
+      }
+    } else {
+      cat(sprintf("**FAILED:** %s\n\n", res$error_msg))
+    }
+  } # End Ontology Loop
+} # End Job Loop
+```
+
+# Absolute Lipid Set Enrichment Analysis
+
+`r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using an 'Absolute Burden' approach.", "Aggregates raw continuous MS intensities within an ontology (imputing NAs to 0), serving as a quantitative complement to the presence/absence binary LSEA.", "Applies Category-Specific FDR correction identically to the binary pipeline.")`
+
+```{r lsea_absolute_execution, fig.width=14, fig.height=10, results='asis'}
+# 1. Prepare Absolute Matrix
+abs_mat <- mat_testable_raw
+abs_mat[is.na(abs_mat)] <- 0
+
+# (Note: mapped_lipids and ontologies are inherited from the Binary LSEA chunk above)
+
+# 2. Execution Loop (Jobs)
+for (job_id in names(dea_configs)) {
+  job <- dea_configs[[job_id]]
+  
+  cat(sprintf("\n\n## %s\n\n", job$title))
+  
+  # External Data Injection 
+  temp_spine <- master_spine
+  if (!is.null(job$external_data)) {
+    ext_df <- readRDS(job$external_data$file_path)
+    temp_spine <- temp_spine %>% dplyr::inner_join(ext_df, by = job$external_data$join_col)
+  }
+  
+  # Dynamic Subsetting
+  if (!is.null(job$subset_filter)) {
+    filt_col <- job$subset_filter$column
+    filt_val <- job$subset_filter$value
+    temp_spine <- temp_spine %>% dplyr::filter(.data[[filt_col]] %in% filt_val)
+  }
+  
+  temp_spine <- temp_spine %>% filter(!is.na(.data[[job$test_var]]))
+  if (isTRUE(job$bin_continuous)) {
+    median_val <- median(temp_spine[[job$test_var]], na.rm = TRUE)
+    temp_spine <- temp_spine %>% mutate(!!job$test_var := ifelse(.data[[job$test_var]] > median_val, "High", "Low"))
+  }
+  
+  # Set up the parent tabset for the ontologies
+  cat(sprintf("### Absolute Burden {.tabset .unlisted .unnumbered}\n\n"))
+  
+  # 3. Nested Execution Loop (Ontologies)
+  for (ontology in ontologies) {
+    
+    # Create a dynamic markdown tab for this specific ontology
+    cat(sprintf("\n\n#### By %s\n\n", ontology))
+    
+   # Look up the ontology label for the specific lipids present in abs_mat, in the exact order
+    target_labels <- mapped_lipids[[ontology]][match(rownames(abs_mat), mapped_lipids$Mediator)]
+
+    # Now tapply will have perfectly matching lengths
+    burden_mat <- apply(abs_mat, 2, function(col) {
+      tapply(col, target_labels, sum, na.rm = TRUE)
+    })
+    
+    # Override the job title/id dynamically
+    temp_job <- job
+    temp_job$title <- sprintf("%s (%s)", job$title, ontology)
+    temp_job_id <- paste0(job_id, "_", tolower(ontology))
+    
+    # Call LSEA Wrapper with absolute = TRUE 
+    res <- wrap_lsea(
+      burden_mat = burden_mat, 
+      clin_df = temp_spine, 
+      config = temp_job, 
+      job_name = temp_job_id,
+      out_dir = output_dir_data,
+      assets_dir = assets_dir,
+      project_colors_func = get_project_colors,
+      absolute = TRUE
+    )
+    
+    if (res$status == "success") {
+      if (!is.null(res$plot)) { 
+        if (interactive()) { 
+          print(res$plot)
+          cat("\n\n")
+        } else { 
+          # Note the updated file path to match absolute = TRUE
+          cat(sprintf("<img src='assets/%s/%s_LSEA_absolute_burden.png' width='100%%' />\n\n", current_file, temp_job_id))
           cat("\n\n") 
         }
       } else {
