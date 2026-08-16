@@ -68,9 +68,9 @@ pathway_dbs <- list(
 ```{r configuration}
 # 1. Subgroup Definitions
 groups <- list(
-  active = GRP_ACTIVE,
-  control = GRP_CONTROL,
-  target = GRP_NON_ACTIVE
+  active = 1,
+  control = -1,
+  target = 0
 )
 
 hm_conf <- list(
@@ -141,7 +141,7 @@ heatmap_config <- list(
   top_n = 30,
   split_by_group = TRUE, 
   row_font_size = 8,
-  annotation_vars = c("cohort_group", "Age", "Sex")
+  annotation_vars = c("ACTIVE_AI", "Age", "Sex")
 )
 
 omics_config <- list(
@@ -175,7 +175,7 @@ cross_contrast_configs <- list(
 
 ```{r scoring, fig.width=12, fig.height=10}
 # 1. Prepare Clinical Data
-hm_clin <- master_spine %>% filter(!is.na(cohort_group)) %>% droplevels()
+hm_clin <- master_spine %>% filter(!is.na(ACTIVE_AI)) %>% droplevels()
 
 # 2. Generate Heatmap via Engine (Uses Pi-score & Project Aesthetics)
 hm_obj <- run_heatmap_engine(
@@ -202,20 +202,20 @@ ordered_ids <- engine_clin_sub$Subject_ID[order_idx]
 # 4. Map to 0-100 Percentile Rank
 hm_df <- data.frame(Subject_ID = ordered_ids, HM_Rank = 1:length(ordered_ids)) %>%
   mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
-  inner_join(engine_clin_sub %>% select(Subject_ID, cohort_group), by="Subject_ID")
+  inner_join(engine_clin_sub %>% select(Subject_ID, ACTIVE_AI), by="Subject_ID")
 
 # 5. Polarity Check & Correction
-mean_active <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$active])
-mean_control <- mean(hm_df$HM_Percentile[hm_df$cohort_group == groups$control])
+mean_active <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$active])
+mean_control <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$control])
 
 if (mean_active < mean_control) { hm_df$HM_Active_Score <- 100 - hm_df$HM_Percentile } else { hm_df$HM_Active_Score <- hm_df$HM_Percentile }
 
 # --- Extract Control Threshold BEFORE filtering ---
-control_scores <- hm_df %>% filter(cohort_group == groups$control) %>% pull(HM_Active_Score)
+control_scores <- hm_df %>% filter(ACTIVE_AI == groups$control) %>% pull(HM_Active_Score)
 cutoff_cb <- quantile(control_scores, probs = split_conf$control_bound_percentile, na.rm=TRUE)
 
 # Filter down to Non-Actives
-hm_final <- hm_df %>% filter(cohort_group == groups$target) %>% select(Subject_ID, HM_Active_Score)
+hm_final <- hm_df %>% filter(ACTIVE_AI == groups$target) %>% select(Subject_ID, HM_Active_Score)
 
 # 6. Calculate Internal Thresholds & Append Binary Columns
 cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
