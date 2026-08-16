@@ -513,14 +513,19 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
   set.seed(42)
 
-  # 1. Base GSEA Calculation
-  gsea_res <- clusterProfiler::GSEA(
-    geneList = ranked_vec,
-    TERM2GENE = go_db,
-    pvalueCutoff = 1, # Keep EVERYTHING initially
-    minGSSize = omics_config$gsea_min_size,
-    verbose = FALSE
-  )
+  # 1. Base GSEA Calculation with Safety Net
+  gsea_res <- tryCatch({
+    clusterProfiler::GSEA(
+      geneList = ranked_vec,
+      TERM2GENE = go_db,
+      pvalueCutoff = 1, # Keep EVERYTHING initially
+      minGSSize = omics_config$gsea_min_size,
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    message(sprintf("Skipping %s: %s (Likely too few overlapping proteins for GSEA)", db_name, e$message))
+    return(NULL)
+  })
 
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
