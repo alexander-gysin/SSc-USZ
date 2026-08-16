@@ -324,7 +324,7 @@ for (job_id in names(dea_configs)) {
 }
 ```
 
-# Binary Lipid Set Enrichment Analysis
+# Binary Lipid Set Enrichment Analysis {.tabset}
 
 `r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using a 'Binary Burden' approach.", "Iterates across three distinct biological ontologies (Precursor, Class, Function) to provide orthogonal views of lipidomic shifts.", "Applies Category-Specific FDR correction to maximize statistical power while controlling for false positives.")`
 
@@ -368,7 +368,7 @@ for (job_id in names(dea_configs)) {
   }
   
   # Set up the parent tabset for the ontologies
-  cat(sprintf("### LSEA Burden {.tabset .unlisted .unnumbered}\n\n"))
+  cat(sprintf("### LSEA Burden {.tabset .unlisted .unnumbered .tabset-pills}\n\n"))
   
   # 3. Nested Execution Loop (Ontologies)
   for (ontology in ontologies) {
@@ -418,7 +418,7 @@ for (job_id in names(dea_configs)) {
 } # End Job Loop
 ```
 
-# Absolute Lipid Set Enrichment Analysis
+# Absolute Lipid Set Enrichment Analysis {.tabset}
 
 `r what_this_does("Executes a Lipid Set Enrichment Analysis (LSEA) using an 'Absolute Burden' approach.", "Aggregates raw continuous MS intensities within an ontology (imputing NAs to 0), serving as a quantitative complement to the presence/absence binary LSEA.", "Applies Category-Specific FDR correction identically to the binary pipeline.")`
 
@@ -456,7 +456,7 @@ for (job_id in names(dea_configs)) {
   }
   
   # Set up the parent tabset for the ontologies
-  cat(sprintf("### Absolute Burden {.tabset .unlisted .unnumbered}\n\n"))
+  cat(sprintf("### Absolute Burden {.tabset .unlisted .unnumbered .tabset-pills}\n\n"))
   
   # 3. Nested Execution Loop (Ontologies)
   for (ontology in ontologies) {
