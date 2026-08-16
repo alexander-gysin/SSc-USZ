@@ -14,6 +14,10 @@ GRP_NON_ACTIVE <- "Non-Active"
 GRP_CONTROL    <- "Control"
 SEX_MALE       <- "Male"
 SEX_FEMALE     <- "Female"
+EUSTAR_1   <- "1"
+EUSTAR_0   <- "0"
+EUSTAR_ctrl   <- "-1"
+
 
 # 4. GLOBAL COLOR PALETTE
 COLOR_ACTIVE     <- "#D55E00"
@@ -22,6 +26,9 @@ COLOR_CONTROL    <- "#999999"
 COLOR_MALE       <- "#56B4E9"
 COLOR_FEMALE     <- "#E69F00"
 COLOR_HIGHLIGHT  <- "#E6007E" # Magenta/Pink for shared trajectory drivers
+COLOR_EUSTAR_1   <- "magenta"
+COLOR_EUSTAR_0   <- "limegreen"
+COLOR_EUSTAR_ctrl   <- "#999999"
 
 # Age Gradient (Purple)
 COLOR_AGE_LOW <- "white"
@@ -155,8 +162,8 @@ get_project_colors <- function(requested_levels, custom_map = NULL) {
   requested_levels <- as.character(requested_levels)
 
   base_map <- setNames(
-    c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE),
-    c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE)
+    c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE, COLOR_EUSTAR_0, COLOR_EUSTAR_1, COLOR_EUSTAR_ctrl),
+    c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE, EUSTAR_0, EUSTAR_1, EUSTAR_ctrl )
   )
 
   # Combine with custom overrides (custom takes precedence)
