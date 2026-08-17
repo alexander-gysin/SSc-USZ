@@ -468,7 +468,7 @@ run_limma_engine <- function(omics_mat, clin_df, dea_conf, project_colors) {
 
   fit <- lmFit(mat_sub, design)
   contrast_mat <- makeContrasts(Target - Reference, levels = design)
-  fit2 <- eBayes(contrasts.fit(fit, contrast_mat))
+  fit2 <- limma::eBayes(contrasts.fit(fit, contrast_mat), trend = isTRUE(dea_conf$trend))
 
   dea_res <- topTable(fit2, coef = 1, number = Inf, sort.by = "P") %>%
     rownames_to_column("Feature") %>%
