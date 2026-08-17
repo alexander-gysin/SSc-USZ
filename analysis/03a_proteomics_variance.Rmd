@@ -575,11 +575,17 @@ invisible(gc())
 
 ```{r scedasticity_plot, fig.width=9, fig.height=8}
 # Plot A: Raw Data
-msd_npx <- meanSdPlot(as.matrix(olink_mat), plot = FALSE)
-p_msd_npx <- msd_npx$gg + 
-  ggtitle("NPX Values") +
+msd_npx_ranked <- meanSdPlot(as.matrix(olink_mat), plot = FALSE)
+p_msd_npx_ranked <- msd_npx$gg + 
+  ggtitle("NPX Values Ranked") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
-p_msd_npx
+p_msd_npx_ranked
+
+msd_npx_scale <- meanSdPlot(as.matrix(olink_mat), plot = FALSE, ranks = FALSE)
+p_msd_npx_scale <- msd_npx$gg + 
+  ggtitle("NPX Values original scale") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+p_msd_npx_scale
 ```
 
 
