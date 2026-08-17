@@ -51,7 +51,6 @@ omics_mat <- readRDS(here::here("output", "01a_data_import_and_qc", "clean_olink
 pathway_dbs <- list(
   "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
   "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
-  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
   "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
 )
 ```
@@ -83,18 +82,8 @@ contrast_configs <- list(
     is_continuous = FALSE,
     covariates = c("Age", "Sex"),
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
-  
-    ssc_vs_control_sample_age = list(
-    title = "SSc vs Control",
-    group_col = "cohort_group",
-    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    ref_groups = c(GRP_CONTROL),
-    is_continuous = FALSE,
-    covariates = c("Age", "Sex", "Sample_Age"),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   ),
   
   active_vs_nonactive = list(
@@ -105,10 +94,11 @@ contrast_configs <- list(
     is_continuous = FALSE,
     covariates = c("Age", "Sex"),
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.2
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   ),
   
-  eustar_aactive_vs_nonactive = list(
+  eustar_active_vs_nonactive = list(
     title = "EUSTAR Act vs Nonact",
     group_col = "ACTIVE_AI",
     target_groups = c("1"), 
@@ -116,18 +106,19 @@ contrast_configs <- list(
     is_continuous = FALSE,
     covariates = c("Age", "Sex"), 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   )
 )
 
 ## 4. Cross-Contrast Trajectory Plots
 cross_contrast_configs <- list(
-  cc_svc_vs_svc_sa_cor = list(
-    title = "SSc vs Control contrasted with SSc vs Control (Sample_Age corrected)",
-    x_source = "ssc_vs_control",                # Must map to the variable name loaded in Setup
-    y_source = "ssc_vs_control_sample_age",    # Generated dynamically: f_id + algo_name + contrast_name
-    x_label = "SSc vs Control",
-    y_label = "SSc vs Control Sample_Age corrected",
+  cc_cosimo_vs_eustar = list(
+    title = "Cosimo vs EUSTAR",
+    x_source = "active_vs_nonactive",                # Must map to the variable name loaded in Setup
+    y_source = "eustar_active_vs_nonactive",    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = "Cosimo classification",
+    y_label = "EUSTAR classification",
     color_x = "#e67e22",                      # Orange
     color_y = "#2980b9",                      # Blue
     highlight_color = "#27ae60",              # Green
@@ -135,7 +126,7 @@ cross_contrast_configs <- list(
     top_n_shared = 8,
     p_cutoff = 0.05,   
     fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
-  )
+  ) 
 )
 
 # 5. Heatmap Configuration
