@@ -140,6 +140,8 @@ heatmap_config <- list(
 
 
 # Differential Expression Analysis & GSEA {.tabset}
+`r analysis_decision("Used trend = TRUE to account for heteroskedasticity.")`
+
 `r what_this_does("Executed linear modeling (limma) for each defined contrast to identify differentially expressed proteins while adjusting for covariates.", "Generated Volcano plots and static Heatmaps to visualize significant fold changes and expression clusters.", "Performed Gene Set Enrichment Analysis (GSEA) on full fold-change ranked lists and rendered Dot and Ridge plots for biological interpretation.")`
 
 ```{r execution_engine_DEA_GSEA, fig.width=8, fig.height=8, results='asis'}
