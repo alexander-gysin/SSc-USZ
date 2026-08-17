@@ -1131,7 +1131,7 @@ worker_run_plsda <- function(mat_sub, clin_vec) {
   Y <- as.factor(clin_vec)
 
   # Auto-scaling is handled by scaleC = "standard". figI = 0 silences default plots.
-  plsda_res <- try(ropls::opls(x = X, y = Y, predI = 1, orthoI = NA, scaleC = "standard", fig.pdfC = "none", info.txtC = "none"), silent = TRUE)
+  plsda_res <- try(ropls::opls(x = X, y = Y, predI = 2, scaleC = "standard", fig.pdfC = "none", info.txtC = "none"), silent = TRUE)
 
   # Print the ACTUAL error instead of a generic one
   if (inherits(plsda_res, "try-error")) {

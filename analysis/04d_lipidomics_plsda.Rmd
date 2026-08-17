@@ -108,6 +108,10 @@ mat_triage <- lipid_mat[testable_lipids, , drop = FALSE]
 imputation_res <- worker_impute_min_fifth(mat_triage)
 mat_imputed <- imputation_res$mat
 
+# --- LOG TRANSFORMATION STEP ---
+# mat_imputed <- log2(mat_imputed + 1)
+# -----------------------------------
+
 cat(c(sprintf("### Triage & Imputation Audit {.unlisted .unnumbered}\n\n"), 
     sprintf("* **Starting Lipids:** %d\n", nrow(lipid_mat)),
     sprintf("* **Removed by Triage (Failed %.0f%% threshold):** %d\n", conf$min_detect_rate * 100, length(removed_lipids)),
@@ -123,7 +127,7 @@ invisible(gc())
 ```
 
 # Discriminant Analysis {.tabset}
-`r what_this_does("Performs sub-setting and data wrangling for the specific contrast.", "Calculates variance to dynamically exclude constant features.", "Executes auto-scaled Partial Least Squares Discriminant Analysis (PLS-DA).", "Extracts and visualizes Variable Importance in Projection (VIP) scores to identify primary driving biomarkers.")`
+`r what_this_does("Performs sub-setting and data wrangling for the specific contrast.", "Calculates variance to dynamically exclude constant features.", "Executes pareto-scaled Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA).", "Extracts and visualizes Variable Importance in Projection (VIP) scores to identify primary driving biomarkers.")`
 
 ```{r discriminant_analysis}
 # Global storage for VIP lists
@@ -218,7 +222,6 @@ for (job_id in names(plsda_configs)) {
   rm(temp_spine, res)
 }
 ```
-`r key_insight("These models are not good.", "R2Y which is the explained variance in the responce variable is too low.", "Negative Q2 means the model is performing worse than pure guessing", "pR2Y is the permutation test ie the probability that randomly shuffled explanatory variables perform at least as good as the model.", "Same for pQ2.", "RMSEE is the root mean square error of estimation.)`
 
 # Appendix
 

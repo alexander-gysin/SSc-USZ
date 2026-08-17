@@ -26,8 +26,8 @@ COLOR_CONTROL    <- "#999999"
 COLOR_MALE       <- "#56B4E9"
 COLOR_FEMALE     <- "#E69F00"
 COLOR_HIGHLIGHT  <- "#E6007E" # Magenta/Pink for shared trajectory drivers
-COLOR_EUSTAR_1   <- "magenta"
-COLOR_EUSTAR_0   <- "limegreen"
+COLOR_EUSTAR_1   <- "#CC79A7"
+COLOR_EUSTAR_0   <- "#009E73"
 COLOR_EUSTAR_ctrl   <- "#999999"
 
 # Age Gradient (Purple)
