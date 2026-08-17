@@ -328,45 +328,6 @@ p_msd_npx_scale
 
 
 # Appendix
-
-`r what_this_does("Generates collapsible visual evidence (Before-State Multi-VPA and PCA) for any variables that were manually rejected from the automated draft models.")`
-
-```{r diagnostic_graveyard, results='asis'}
-for (id in names(final_locked_models)) {
-  m <- final_locked_models[[id]]
-  
-  if (length(m$dropped_vars) > 0) {
-    cat(sprintf("### Rejected Diagnostics: %s\n\n", m$title))
-    
-    # Render Dropdown wrapper
-    cat(sprintf("<details><summary style='cursor: pointer; font-weight: bold; color: #2c3e50; font-size: 1.2em;'>▶ Click to view 'Before' State Visuals (Dropped: %s)</summary>\n<div style='padding: 15px; border-left: 3px solid #c0392b; margin-top: 10px; background-color: #fcfcfc;'>\n\n", paste(m$dropped_vars, collapse=", ")))
-    
-    cat("> **Note:** The plots below show the *Automated Draft* model before manual exclusion. They demonstrate how the dropped variables behaved in the context of the full draft model.\n\n")
-    
-    # 1. Run 'Before' VPA
-    cat("#### Multi-VPA (Draft State)\n\n")
-    draft_vpa_conf <- list(title = sprintf("Draft VPA: %s", m$title), variables = c(m$group_col, m$auto_vars))
-    vpa_res <- wrap_vpa_pipeline(olink_mat, master_spine, draft_vpa_conf, paste0("Draft_", id), output_dir_data)
-    if(!is.null(vpa_res) && vpa_res$status == "success") { print(vpa_res$plots$bar); cat("\n\n") }
-    
-    # 2. Run 'Before' PCA
-    cat("#### PCA (Draft State)\n\n")
-    draft_pca_conf <- list(title = sprintf("Draft PCA: %s", m$title), subset_to_contrast = list(group_col = m$group_col, target_groups = c(m$target_groups, m$ref_groups)), color_vars = c(m$group_col, m$auto_vars))
-    pca_res <- wrap_pca_pipeline(olink_mat, master_spine, draft_pca_conf, paste0("Draft_", id), output_dir_data, get_project_colors)
-    if (!interactive()) {
-      cat(sprintf("![](%s)\n\n![](%s)\n\n![](%s)\n\n", pca_res$paths[["scree"]], pca_res$paths[["loadings"]], pca_res$paths[["merged_drivers"]]))
-      if (!is.null(pca_res$paths[["merged_overlays"]])) cat(sprintf("![](%s)\n\n", pca_res$paths[["merged_overlays"]]))
-    } else {
-      print(pca_res$plots[["scree"]]); print(pca_res$plots[["loadings"]]); print(pca_res$plots[["merged_drivers"]])
-      for (c_var in draft_pca_conf$color_vars) { if (!is.null(pca_res$plots[[paste0("PCA_Plot_", c_var)]])) print(pca_res$plots[[paste0("PCA_Plot_", c_var)]]) }
-    }
-    
-    # Close Dropdown
-    cat("\n</div>\n</details>\n\n<hr>\n\n")
-  }
-}
-```
-
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
 ```{r print_engine, code=c(readLines(here::here("code", "01_general_engines.R")), readLines(here::here("code", "02_proteomics_engines.R"))), eval=FALSE}
