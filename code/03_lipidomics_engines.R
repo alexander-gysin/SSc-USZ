@@ -1123,25 +1123,22 @@ worker_impute_min_fifth <- function(mat) {
 }
 
 #' Worker: Run ropls PLS-DA & Extract VIP
-#' @param mat_sub Imputed, subset matrix
-#' @param clin_vec Character vector of group assignments
 worker_run_plsda <- function(mat_sub, clin_vec) {
-  # ropls expects samples as rows, variables (lipids) as columns
   X <- t(mat_sub)
   Y <- as.factor(clin_vec)
 
-  # Auto-scaling is handled by scaleC = "standard". figI = 0 silences default plots.
+  # Standard PLS-DA (predI = 2)
   plsda_res <- try(ropls::opls(x = X, y = Y, predI = 2, scaleC = "standard", fig.pdfC = "none", info.txtC = "none"), silent = TRUE)
 
-  # Print the ACTUAL error instead of a generic one
   if (inherits(plsda_res, "try-error")) {
     return(list(status = "error", error_msg = paste("ropls crash:", as.character(plsda_res))))
   }
 
-  # Extract VIP scores
-  vip_comp1 <- ropls::getVipVn(plsda_res)
+  vip_comp1 <- try(ropls::getVipVn(plsda_res), silent = TRUE)
+  if (inherits(vip_comp1, "try-error") || is.null(vip_comp1)) {
+    return(list(status = "error", error_msg = "Model failed to extract VIP scores (likely zero components)."))
+  }
 
-  # Determine which group has the highest mean for biological context
   group_means <- apply(X, 2, function(col) tapply(col, Y, mean, na.rm = TRUE))
   enriched_group <- apply(group_means, 2, function(col) names(which.max(col)))
 
@@ -1157,7 +1154,6 @@ worker_run_plsda <- function(mat_sub, clin_vec) {
 
 #' Worker: Plot PLS-DA Scores
 worker_plot_plsda_scores <- function(model, Y, config, col_map) {
-  # Extract variates (scores) using ropls accessors
   scores_mat <- ropls::getScoreMN(model)
 
   df_scores <- data.frame(
@@ -1166,7 +1162,6 @@ worker_plot_plsda_scores <- function(model, Y, config, col_map) {
     Group = Y
   )
 
-  # Extract variance explained per component
   var_expl <- round(model@modelDF$R2X * 100, 1)
 
   p <- ggplot(df_scores, aes(x = Comp1, y = Comp2, color = Group, fill = Group)) +
@@ -1177,10 +1172,7 @@ worker_plot_plsda_scores <- function(model, Y, config, col_map) {
     scale_color_manual(values = col_map) +
     scale_fill_manual(values = col_map) +
     theme_minimal() +
-    theme(
-      legend.position = "right",
-      panel.grid.minor = element_blank()
-    ) +
+    theme(legend.position = "right", panel.grid.minor = element_blank()) +
     labs(
       title = paste("PLS-DA:", config$title),
       x = sprintf("Component 1 (%.1f%%)", var_expl[1]),
@@ -1215,6 +1207,7 @@ worker_plot_vip <- function(vip_df, config, col_map, top_n = 20) {
 
   return(p)
 }
+
 
 # PART 9: PLS-DA WRAPPER ------------------------------------------------------
 
@@ -1281,6 +1274,7 @@ wrap_plsda_pipeline <- function(mat, clin_df, config, job_name, out_dir, assets_
   base_levels <- c(config$target_groups[1], config$ref_groups[1])
   assigned_colors <- project_colors_func(base_levels)
   col_map <- setNames(assigned_colors, c(target_name, ref_name))
+
 
   # 5. Math Worker
   res <- worker_run_plsda(mat_sub, clin_sub$Plot_Group)

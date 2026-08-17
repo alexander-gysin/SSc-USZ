@@ -222,6 +222,7 @@ for (job_id in names(plsda_configs)) {
   rm(temp_spine, res)
 }
 ```
+`r key_insight("There is no PLS-DA detectable difference between the current contrasts.", "Log2 transforming, Man-Whitney U pre filtering, pareto scaling and switching to OPLS-DA have all not made the model better Q2 remains negative")`
 
 # Appendix
 
