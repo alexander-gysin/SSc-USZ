@@ -61,25 +61,25 @@ sparsity_configs <- list(
 # 2. PLS-DA Routing Configs ---------------------------
 plsda_configs <- list(
   job_active_vs_nonactive = list(
-    title = "Active vs. Non-Active",
-    test_var = "cohort_group",
-    target_groups = c("Active"),
-    ref_groups = c("Non-Active"),
+    title = "Active vs. Non-Active (EUSTAR)",
+    test_var = "ACTIVE_AI",
+    target_groups = c("1"),
+    ref_groups = c("0"),
     bin_continuous = FALSE,
     vip_top_n = 20
   ),
   
   job_ssc_vs_ctrl = list(
     title = "SSc vs. Control",
-    test_var = "cohort_group",
-    target_groups = c("Active", "Non-Active"),
-    ref_groups = c("Control"),
+    test_var = "ACTIVE_AI",
+    target_groups = c("1", "0"),
+    ref_groups = c("-1"),
     bin_continuous = FALSE,
     vip_top_n = 20
   ),
   
   job_act_vs_ctrl = list(
-    title = "Active vs. Control",
+    title = "Active vs. Control (EUSTAR)",
     test_var = "ACTIVE_AI",
     target_groups = c("1"),
     ref_groups = c("-1"),
@@ -128,6 +128,7 @@ invisible(gc())
 ```{r discriminant_analysis}
 # Global storage for VIP lists
 vip_results_list <- list()
+model_results_list <- list()
 
 for (job_id in names(plsda_configs)) {
   job <- plsda_configs[[job_id]]
@@ -166,6 +167,7 @@ for (job_id in names(plsda_configs)) {
   if (res$status == "success") {
     
     vip_results_list[[job_id]] <- res$tables$vip
+    model_results_list[[job_id]] <- res$model
     saveRDS(res$tables$vip, file.path(output_dir_data, sprintf("%s_vip_stats.rds", job_id)))
     
     # Render Plots Individually
@@ -184,6 +186,16 @@ for (job_id in names(plsda_configs)) {
       print(res$plots$vip)
       cat("\n\n") 
     }
+    
+    # Render Diagnostic Table
+    cat(sprintf("### Diagnostic Table {.unlisted .unnumbered}\n\n"))
+    
+    tbl <- getSummaryDF(res$model) %>% 
+      kableExtra::kbl(format = "html", caption = sprintf("Diagnostics: %s", job$title)) %>% 
+      kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+    
+    print(tbl)
+    cat("\n\n")
     
     # Render Table
     cat(sprintf("### Top VIP Biomarkers Table {.unlisted .unnumbered}\n\n"))
@@ -206,6 +218,7 @@ for (job_id in names(plsda_configs)) {
   rm(temp_spine, res)
 }
 ```
+`r key_insight("These models are not good.", "R2Y which is the explained variance in the responce variable is too low.", "Negative Q2 means the model is performing worse than pure guessing", "pR2Y is the permutation test ie the probability that randomly shuffled explanatory variables perform at least as good as the model.", "Same for pQ2.", "RMSEE is the root mean square error of estimation.)`
 
 # Appendix
 
