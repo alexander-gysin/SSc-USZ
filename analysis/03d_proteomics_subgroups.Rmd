@@ -349,6 +349,7 @@ for (f_id in names(feature_configs)) {
         }
       }
 
+      # Build configurations with trend categorically set to true
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
@@ -356,7 +357,8 @@ for (f_id in names(feature_configs)) {
         ref_groups = c_conf$ref,
         covariates = valid_covs,
         dea_p_cutoff = conf$dea_p_cutoff,
-        dea_fc_cutoff = conf$dea_fc_cutoff
+        dea_fc_cutoff = conf$dea_fc_cutoff,
+        trend = TRUE
       )
       
       job_name_full <- sprintf("%s_%s_%s", f_id, algo_name, contrast_name)

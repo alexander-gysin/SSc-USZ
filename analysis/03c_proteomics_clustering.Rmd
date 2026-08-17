@@ -1077,6 +1077,7 @@ for (f_id in names(feature_configs)) {
       }
       
       # Build the config mapped explicitly to your config naming convention
+      # trend is categorically set to true
       dea_conf <- list(
         title = sprintf("%s | Alg: %s", c_conf$title, toupper(algo_name)),
         group_col = "Dynamic_Cluster",
@@ -1084,7 +1085,8 @@ for (f_id in names(feature_configs)) {
         ref_groups = c_conf$ref,
         covariates = conf$covariates,
         dea_p_cutoff = conf$dea_p_cutoff,
-        dea_fc_cutoff = conf$dea_fc_cutoff
+        dea_fc_cutoff = conf$dea_fc_cutoff,
+        trend = TRUE
       )
       
       # Capture the exact job name to use for standardizing image paths
