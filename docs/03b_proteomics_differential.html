@@ -510,7 +510,7 @@ div.tocify {
 <h4 class="author">alexander-gysin (<a
 href="mailto:alexander.gysin@usz.ch"
 class="email">alexander.gysin@usz.ch</a>)</h4>
-<h4 class="date">07 August, 2026</h4>
+<h4 class="date">17 August, 2026</h4>
 
 </div>
 
@@ -539,7 +539,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-08-07
+<strong>Last updated:</strong> 2026-08-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -670,15 +670,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeef9a7c63108f0090f9cc37ee59e7967837c396a1targetblankef9a7c6a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/ef9a7c63108f0090f9cc37ee59e7967837c396a1" target="_blank">ef9a7c6</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree0d583463ec1712bfd689660c48ff4abdce54b99etargetblank0d58346a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtreeef9a7c63108f0090f9cc37ee59e7967837c396a1targetblankef9a7c6a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -688,7 +688,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/alexander-gysin/SSc-USZ/tree/0d583463ec1712bfd689660c48ff4abdce54b99e" target="_blank">0d58346</a>.
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/ef9a7c63108f0090f9cc37ee59e7967837c396a1" target="_blank">ef9a7c6</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -737,10 +737,8 @@ Untracked files:
     Untracked:  analysis/05d_sRNA_differential.Rmd
 
 Unstaged changes:
-    Modified:   analysis/04d_lipidomics_plsda.Rmd
-    Deleted:    analysis/05a_qc_and_preprocessing.Rmd
-    Modified:   analysis/_site.yml
-    Modified:   protocols/miRNA_Analysis_Plan.Rmd
+    Modified:   analysis/03a_proteomics_variance.Rmd
+    Modified:   code/02_proteomics_engines.R
 
 </code></pre>
 <p>
@@ -786,6 +784,41 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/ef9a7c63108f0090f9cc37ee59e7967837c396a1/analysis/03b_proteomics_differential.Rmd" target="_blank">ef9a7c6</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-17
+</td>
+<td>
+added trend to limma ebayes to account for heteroscedasticity, does not
+change much. removed immunologcal signatures since it was useless
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/alexander-gysin/SSc-USZ/3ab2ab47a0f761ec1c100a31b122b48b84ee98d6/docs/03b_proteomics_differential.html" target="_blank">3ab2ab4</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1649,7 +1682,6 @@ omics_mat &lt;- readRDS(here::here(&quot;output&quot;, &quot;01a_data_import_and
 pathway_dbs &lt;- list(
   &quot;Hallmark&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;H&quot;) %&gt;% select(gs_name, gene_symbol),
   &quot;GO_BP&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C5&quot;, subcategory = &quot;BP&quot;) %&gt;% select(gs_name, gene_symbol),
-  &quot;Immunologic_Signature&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C7&quot;) %&gt;% select(gs_name, gene_symbol),
   &quot;Reactome&quot; = msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C2&quot;, subcategory = &quot;CP:REACTOME&quot;) %&gt;% select(gs_name, gene_symbol)
 )</code></pre>
 </div>
@@ -1697,18 +1729,8 @@ contrast_configs &lt;- list(
     is_continuous = FALSE,
     covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
-  ),
-  
-    ssc_vs_control_sample_age = list(
-    title = &quot;SSc vs Control&quot;,
-    group_col = &quot;cohort_group&quot;,
-    target_groups = c(GRP_ACTIVE, GRP_NON_ACTIVE),
-    ref_groups = c(GRP_CONTROL),
-    is_continuous = FALSE,
-    covariates = c(&quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;),
-    dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   ),
   
   active_vs_nonactive = list(
@@ -1719,10 +1741,11 @@ contrast_configs &lt;- list(
     is_continuous = FALSE,
     covariates = c(&quot;Age&quot;, &quot;Sex&quot;),
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.2
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   ),
   
-  eustar_aactive_vs_nonactive = list(
+  eustar_active_vs_nonactive = list(
     title = &quot;EUSTAR Act vs Nonact&quot;,
     group_col = &quot;ACTIVE_AI&quot;,
     target_groups = c(&quot;1&quot;), 
@@ -1730,18 +1753,19 @@ contrast_configs &lt;- list(
     is_continuous = FALSE,
     covariates = c(&quot;Age&quot;, &quot;Sex&quot;), 
     dea_p_cutoff = 0.05,
-    dea_fc_cutoff = 0.5
+    dea_fc_cutoff = 0.58,
+        trend = TRUE
   )
 )
 
 ## 4. Cross-Contrast Trajectory Plots
 cross_contrast_configs &lt;- list(
-  cc_svc_vs_svc_sa_cor = list(
-    title = &quot;SSc vs Control contrasted with SSc vs Control (Sample_Age corrected)&quot;,
-    x_source = &quot;ssc_vs_control&quot;,                # Must map to the variable name loaded in Setup
-    y_source = &quot;ssc_vs_control_sample_age&quot;,    # Generated dynamically: f_id + algo_name + contrast_name
-    x_label = &quot;SSc vs Control&quot;,
-    y_label = &quot;SSc vs Control Sample_Age corrected&quot;,
+  cc_cosimo_vs_eustar = list(
+    title = &quot;Cosimo vs EUSTAR&quot;,
+    x_source = &quot;active_vs_nonactive&quot;,                # Must map to the variable name loaded in Setup
+    y_source = &quot;eustar_active_vs_nonactive&quot;,    # Generated dynamically: f_id + algo_name + contrast_name
+    x_label = &quot;Cosimo classification&quot;,
+    y_label = &quot;EUSTAR classification&quot;,
     color_x = &quot;#e67e22&quot;,                      # Orange
     color_y = &quot;#2980b9&quot;,                      # Blue
     highlight_color = &quot;#27ae60&quot;,              # Green
@@ -1749,7 +1773,7 @@ cross_contrast_configs &lt;- list(
     top_n_shared = 8,
     p_cutoff = 0.05,   
     fc_cutoff = 0.58    # Set to 0 if you want overlapping based solely on FDR
-  )
+  ) 
 )
 
 # 5. Heatmap Configuration
@@ -2090,7 +2114,7 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>Significant Proteins (57 total)</p>
+<p>Significant Proteins (42 total)</p>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
@@ -2256,20 +2280,6 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-NT5C1A
-</td>
-<td style="text-align:center;">
-0.5061
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 S100A12
 </td>
 <td style="text-align:center;">
@@ -2312,20 +2322,6 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-NOS3
-</td>
-<td style="text-align:center;">
-0.5334
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 CD300E
 </td>
 <td style="text-align:center;">
@@ -2354,20 +2350,6 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-TK1
-</td>
-<td style="text-align:center;">
-0.5731
-</td>
-<td style="text-align:center;">
-0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 TNFRSF6B
 </td>
 <td style="text-align:center;">
@@ -2375,20 +2357,6 @@ TNFRSF6B
 </td>
 <td style="text-align:center;">
 0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-KRT19
-</td>
-<td style="text-align:center;">
-0.5639
-</td>
-<td style="text-align:center;">
-0.0003
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2416,7 +2384,7 @@ CXCL9
 0.7970
 </td>
 <td style="text-align:center;">
-0.0004
+0.0003
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2428,20 +2396,6 @@ LMNB1
 </td>
 <td style="text-align:center;">
 0.7446
-</td>
-<td style="text-align:center;">
-0.0004
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CLEC7A
-</td>
-<td style="text-align:center;">
-0.5118
 </td>
 <td style="text-align:center;">
 0.0004
@@ -2480,20 +2434,6 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-ANXA2
-</td>
-<td style="text-align:center;">
-0.5483
-</td>
-<td style="text-align:center;">
-0.0007
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 SLAMF8
 </td>
 <td style="text-align:center;">
@@ -2501,62 +2441,6 @@ SLAMF8
 </td>
 <td style="text-align:center;">
 0.0009
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-PDCD1
-</td>
-<td style="text-align:center;">
-0.5232
-</td>
-<td style="text-align:center;">
-0.0010
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IDO1
-</td>
-<td style="text-align:center;">
-0.5598
-</td>
-<td style="text-align:center;">
-0.0010
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-DAPK2
-</td>
-<td style="text-align:center;">
-0.5381
-</td>
-<td style="text-align:center;">
-0.0011
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TPR
-</td>
-<td style="text-align:center;">
-0.5972
-</td>
-<td style="text-align:center;">
-0.0014
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2578,13 +2462,13 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-APEX1
+TPR
 </td>
 <td style="text-align:center;">
-0.5222
+0.5972
 </td>
 <td style="text-align:center;">
-0.0020
+0.0015
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2612,7 +2496,7 @@ SFTPA2
 0.7588
 </td>
 <td style="text-align:center;">
-0.0024
+0.0025
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2626,7 +2510,7 @@ POMC
 -0.6129
 </td>
 <td style="text-align:center;">
-0.0028
+0.0027
 </td>
 <td style="text-align:center;">
 Down-regulated
@@ -2640,7 +2524,7 @@ TYMS
 0.7673
 </td>
 <td style="text-align:center;">
-0.0029
+0.0030
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2654,7 +2538,7 @@ IL17C
 0.6782
 </td>
 <td style="text-align:center;">
-0.0031
+0.0030
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2668,21 +2552,7 @@ BAX
 0.6612
 </td>
 <td style="text-align:center;">
-0.0046
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MKI67
-</td>
-<td style="text-align:center;">
-0.5019
-</td>
-<td style="text-align:center;">
-0.0056
+0.0045
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2696,7 +2566,7 @@ CCL20
 0.7558
 </td>
 <td style="text-align:center;">
-0.0056
+0.0058
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2710,21 +2580,7 @@ CCL7
 0.8425
 </td>
 <td style="text-align:center;">
-0.0071
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HNRNPA0
-</td>
-<td style="text-align:center;">
-0.7939
-</td>
-<td style="text-align:center;">
-0.0123
+0.0070
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2738,7 +2594,7 @@ CXCL11
 0.6894
 </td>
 <td style="text-align:center;">
-0.0123
+0.0122
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2746,13 +2602,13 @@ Up-regulated
 </tr>
 <tr>
 <td style="text-align:center;">
-GRPEL1
+HNRNPA0
 </td>
 <td style="text-align:center;">
-0.5588
+0.7939
 </td>
 <td style="text-align:center;">
-0.0145
+0.0125
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2766,7 +2622,7 @@ MYO1E
 0.6559
 </td>
 <td style="text-align:center;">
-0.0164
+0.0166
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2780,21 +2636,7 @@ IL17A
 0.6618
 </td>
 <td style="text-align:center;">
-0.0181
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-ACAA1
-</td>
-<td style="text-align:center;">
-0.5083
-</td>
-<td style="text-align:center;">
-0.0239
+0.0182
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2808,21 +2650,7 @@ MUC16
 0.5820
 </td>
 <td style="text-align:center;">
-0.0255
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HAO1
-</td>
-<td style="text-align:center;">
-0.8248
-</td>
-<td style="text-align:center;">
-0.0277
+0.0251
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2836,10 +2664,24 @@ GPA33
 -0.7611
 </td>
 <td style="text-align:center;">
-0.0277
+0.0272
 </td>
 <td style="text-align:center;">
 Down-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+HAO1
+</td>
+<td style="text-align:center;">
+0.8248
+</td>
+<td style="text-align:center;">
+0.0272
+</td>
+<td style="text-align:center;">
+Up-regulated
 </td>
 </tr>
 <tr>
@@ -2850,35 +2692,7 @@ CSRP3
 0.6586
 </td>
 <td style="text-align:center;">
-0.0373
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SCARB1
-</td>
-<td style="text-align:center;">
-0.5096
-</td>
-<td style="text-align:center;">
-0.0384
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-BAIAP2
-</td>
-<td style="text-align:center;">
-0.5236
-</td>
-<td style="text-align:center;">
-0.0423
+0.0372
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2892,7 +2706,7 @@ IL10RA
 0.5891
 </td>
 <td style="text-align:center;">
-0.0430
+0.0446
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -2906,7 +2720,7 @@ IFIT3
 0.5893
 </td>
 <td style="text-align:center;">
-0.0459
+0.0457
 </td>
 <td style="text-align:center;">
 Up-regulated
@@ -4488,8 +4302,8 @@ alexander-gysin
 </div>
 </div>
 </div>
-<div id="immunologic_signature" class="section level4">
-<h4>Immunologic_Signature</h4>
+<div id="reactome" class="section level4">
+<h4>Reactome</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-9.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-9">
@@ -4951,6 +4765,12 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+</div>
+</div>
+<div id="active-vs-nonactive" class="section level2">
+<h2>Active vs Nonactive</h2>
+<p><em>Diagnostic: Samples used: 47 Target, 48 Reference</em></p>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-11.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-11">
@@ -5187,9 +5007,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-<div id="reactome" class="section level4">
-<h4>Reactome</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-12.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-12">
@@ -5415,6 +5232,11 @@ alexander-gysin
 </table>
 </div>
 </div>
+<div id="pathway-enrichment-1"
+class="section level3 tabset tabset-pills toc-ignore">
+<h3 class="tabset tabset-pills toc-ignore">Pathway Enrichment</h3>
+<div id="hallmark-1" class="section level4">
+<h4>Hallmark</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-13.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-13">
@@ -5651,12 +5473,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div id="ssc-vs-control-1" class="section level2">
-<h2>SSc vs Control</h2>
-<p><em>Diagnostic: Samples used: 95 Target, 35 Reference</em></p>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-14.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-14">
@@ -5893,929 +5709,9 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>Significant Proteins (64 total)</p>
-<div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Significant Results: SSc vs Control
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Feature
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-adj.P.Val
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Significance
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-LMNB2
-</td>
-<td style="text-align:center;">
-0.7618
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-AFAP1L1
-</td>
-<td style="text-align:center;">
-0.9705
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-RBFOX3
-</td>
-<td style="text-align:center;">
-0.6944
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TNFRSF10B
-</td>
-<td style="text-align:center;">
-0.7336
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IFI30
-</td>
-<td style="text-align:center;">
-0.7068
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-AKAP2
-</td>
-<td style="text-align:center;">
-0.5342
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-EDA2R
-</td>
-<td style="text-align:center;">
-0.7643
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CAPG
-</td>
-<td style="text-align:center;">
-0.6446
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-NT5C1A
-</td>
-<td style="text-align:center;">
-0.5382
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-DPY30
-</td>
-<td style="text-align:center;">
-0.6148
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-S100A12
-</td>
-<td style="text-align:center;">
-1.2884
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAMP3
-</td>
-<td style="text-align:center;">
-0.7798
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MAD1L1
-</td>
-<td style="text-align:center;">
-0.7195
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL6
-</td>
-<td style="text-align:center;">
-1.7326
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL19
-</td>
-<td style="text-align:center;">
-1.0632
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-NOS3
-</td>
-<td style="text-align:center;">
-0.5467
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TNFRSF6B
-</td>
-<td style="text-align:center;">
-0.8631
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CD300E
-</td>
-<td style="text-align:center;">
-0.6104
-</td>
-<td style="text-align:center;">
-0.0000
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-PALM2
-</td>
-<td style="text-align:center;">
-0.5336
-</td>
-<td style="text-align:center;">
-0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-ZBTB17
-</td>
-<td style="text-align:center;">
-0.5007
-</td>
-<td style="text-align:center;">
-0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-FKBP15
-</td>
-<td style="text-align:center;">
-0.5969
-</td>
-<td style="text-align:center;">
-0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TK1
-</td>
-<td style="text-align:center;">
-0.5886
-</td>
-<td style="text-align:center;">
-0.0001
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAYN
-</td>
-<td style="text-align:center;">
-0.5039
-</td>
-<td style="text-align:center;">
-0.0002
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-KRT19
-</td>
-<td style="text-align:center;">
-0.5850
-</td>
-<td style="text-align:center;">
-0.0002
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL10
-</td>
-<td style="text-align:center;">
-0.8320
-</td>
-<td style="text-align:center;">
-0.0002
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL3
-</td>
-<td style="text-align:center;">
-0.6225
-</td>
-<td style="text-align:center;">
-0.0003
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CLEC7A
-</td>
-<td style="text-align:center;">
-0.5309
-</td>
-<td style="text-align:center;">
-0.0003
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-ANXA2
-</td>
-<td style="text-align:center;">
-0.5853
-</td>
-<td style="text-align:center;">
-0.0003
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LMNB1
-</td>
-<td style="text-align:center;">
-0.7580
-</td>
-<td style="text-align:center;">
-0.0003
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL9
-</td>
-<td style="text-align:center;">
-0.7988
-</td>
-<td style="text-align:center;">
-0.0004
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL2
-</td>
-<td style="text-align:center;">
-0.5004
-</td>
-<td style="text-align:center;">
-0.0004
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TPR
-</td>
-<td style="text-align:center;">
-0.6357
-</td>
-<td style="text-align:center;">
-0.0007
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-DAPK2
-</td>
-<td style="text-align:center;">
-0.5615
-</td>
-<td style="text-align:center;">
-0.0007
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MMP12
-</td>
-<td style="text-align:center;">
-0.6304
-</td>
-<td style="text-align:center;">
-0.0008
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-RAB44
-</td>
-<td style="text-align:center;">
-0.5880
-</td>
-<td style="text-align:center;">
-0.0009
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SLAMF8
-</td>
-<td style="text-align:center;">
-0.5997
-</td>
-<td style="text-align:center;">
-0.0011
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IDO1
-</td>
-<td style="text-align:center;">
-0.5595
-</td>
-<td style="text-align:center;">
-0.0012
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SFTPA2
-</td>
-<td style="text-align:center;">
-0.8017
-</td>
-<td style="text-align:center;">
-0.0013
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-PDCD1
-</td>
-<td style="text-align:center;">
-0.5111
-</td>
-<td style="text-align:center;">
-0.0014
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-APEX1
-</td>
-<td style="text-align:center;">
-0.5382
-</td>
-<td style="text-align:center;">
-0.0015
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-BAX
-</td>
-<td style="text-align:center;">
-0.7132
-</td>
-<td style="text-align:center;">
-0.0022
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAIR2
-</td>
-<td style="text-align:center;">
-1.0183
-</td>
-<td style="text-align:center;">
-0.0023
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TYMS
-</td>
-<td style="text-align:center;">
-0.7642
-</td>
-<td style="text-align:center;">
-0.0032
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL20
-</td>
-<td style="text-align:center;">
-0.7979
-</td>
-<td style="text-align:center;">
-0.0036
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL17C
-</td>
-<td style="text-align:center;">
-0.6742
-</td>
-<td style="text-align:center;">
-0.0037
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL7
-</td>
-<td style="text-align:center;">
-0.8883
-</td>
-<td style="text-align:center;">
-0.0046
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-POMC
-</td>
-<td style="text-align:center;">
--0.5787
-</td>
-<td style="text-align:center;">
-0.0050
-</td>
-<td style="text-align:center;">
-Down-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL11
-</td>
-<td style="text-align:center;">
-0.7408
-</td>
-<td style="text-align:center;">
-0.0072
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HNRNPA0
-</td>
-<td style="text-align:center;">
-0.8342
-</td>
-<td style="text-align:center;">
-0.0086
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MMP10
-</td>
-<td style="text-align:center;">
-0.5365
-</td>
-<td style="text-align:center;">
-0.0086
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-GRPEL1
-</td>
-<td style="text-align:center;">
-0.5707
-</td>
-<td style="text-align:center;">
-0.0134
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MYO1E
-</td>
-<td style="text-align:center;">
-0.6769
-</td>
-<td style="text-align:center;">
-0.0138
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-ACAA1
-</td>
-<td style="text-align:center;">
-0.5364
-</td>
-<td style="text-align:center;">
-0.0176
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL36G
-</td>
-<td style="text-align:center;">
-0.5424
-</td>
-<td style="text-align:center;">
-0.0187
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL17A
-</td>
-<td style="text-align:center;">
-0.6389
-</td>
-<td style="text-align:center;">
-0.0254
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HAO1
-</td>
-<td style="text-align:center;">
-0.8302
-</td>
-<td style="text-align:center;">
-0.0288
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MUC16
-</td>
-<td style="text-align:center;">
-0.5640
-</td>
-<td style="text-align:center;">
-0.0331
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SCARB1
-</td>
-<td style="text-align:center;">
-0.5270
-</td>
-<td style="text-align:center;">
-0.0341
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-GPA33
-</td>
-<td style="text-align:center;">
--0.7396
-</td>
-<td style="text-align:center;">
-0.0345
-</td>
-<td style="text-align:center;">
-Down-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-BAIAP2
-</td>
-<td style="text-align:center;">
-0.5463
-</td>
-<td style="text-align:center;">
-0.0353
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IFIT3
-</td>
-<td style="text-align:center;">
-0.6205
-</td>
-<td style="text-align:center;">
-0.0366
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CSRP3
-</td>
-<td style="text-align:center;">
-0.6548
-</td>
-<td style="text-align:center;">
-0.0391
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-DTX3L
-</td>
-<td style="text-align:center;">
-0.5267
-</td>
-<td style="text-align:center;">
-0.0433
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TRIM21
-</td>
-<td style="text-align:center;">
--0.7304
-</td>
-<td style="text-align:center;">
-0.0445
-</td>
-<td style="text-align:center;">
-Down-regulated
-</td>
-</tr>
-</tbody>
-</table>
 </div>
+<div id="go_bp-1" class="section level4">
+<h4>GO_BP</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-15.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-15">
@@ -7052,11 +5948,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-<div id="pathway-enrichment-1"
-class="section level3 tabset tabset-pills toc-ignore">
-<h3 class="tabset tabset-pills toc-ignore">Pathway Enrichment</h3>
-<div id="hallmark-1" class="section level4">
-<h4>Hallmark</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-16.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-16">
@@ -7293,6 +6184,9 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="reactome-1" class="section level4">
+<h4>Reactome</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-17.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-17">
@@ -7744,8 +6638,11 @@ alexander-gysin
 </div>
 </div>
 </div>
-<div id="go_bp-1" class="section level4">
-<h4>GO_BP</h4>
+</div>
+</div>
+<div id="eustar-act-vs-nonact" class="section level2">
+<h2>EUSTAR Act vs Nonact</h2>
+<p><em>Diagnostic: Samples used: 32 Target, 63 Reference</em></p>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-19.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-19">
@@ -7970,6 +6867,75 @@ alexander-gysin
 </tbody>
 </table>
 </div>
+</div>
+<p>Significant Proteins (3 total)</p>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
+<caption>
+Significant Results: EUSTAR Act vs Nonact
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Feature
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+logFC
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+adj.P.Val
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
+Significance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+EDA2R
+</td>
+<td style="text-align:center;">
+0.6062
+</td>
+<td style="text-align:center;">
+0.0033
+</td>
+<td style="text-align:center;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+CEACAM5
+</td>
+<td style="text-align:center;">
+0.6151
+</td>
+<td style="text-align:center;">
+0.0261
+</td>
+<td style="text-align:center;">
+Up-regulated
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+SFTPA2
+</td>
+<td style="text-align:center;">
+0.7080
+</td>
+<td style="text-align:center;">
+0.0479
+</td>
+<td style="text-align:center;">
+Up-regulated
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-20.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
@@ -8196,6 +7162,11 @@ alexander-gysin
 </table>
 </div>
 </div>
+<div id="pathway-enrichment-2"
+class="section level3 tabset tabset-pills toc-ignore">
+<h3 class="tabset tabset-pills toc-ignore">Pathway Enrichment</h3>
+<div id="hallmark-2" class="section level4">
+<h4>Hallmark</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-21.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-21">
@@ -8399,9 +7370,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-<div id="immunologic_signature-1" class="section level4">
-<h4>Immunologic_Signature</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-22.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-22">
@@ -8605,6 +7573,9 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="go_bp-2" class="section level4">
+<h4>GO_BP</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-23.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-23">
@@ -9011,9 +7982,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-<div id="reactome-1" class="section level4">
-<h4>Reactome</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-25.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-25">
@@ -9217,6 +8185,9 @@ alexander-gysin
 </table>
 </div>
 </div>
+</div>
+<div id="reactome-2" class="section level4">
+<h4>Reactome</h4>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-26.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-26">
@@ -9409,12 +8380,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div id="active-vs-nonactive" class="section level2">
-<h2>Active vs Nonactive</h2>
-<p><em>Diagnostic: Samples used: 47 Target, 48 Reference</em></p>
 <p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-27.png" alt="" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-27">
@@ -9618,3513 +8583,6 @@ alexander-gysin
 </table>
 </div>
 </div>
-<p>Significant Proteins (2 total)</p>
-<div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Significant Results: Active vs Nonactive
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Feature
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-adj.P.Val
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Significance
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-CLEC5A
-</td>
-<td style="text-align:center;">
-0.3782
-</td>
-<td style="text-align:center;">
-0.044
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-C1QTNF6
-</td>
-<td style="text-align:center;">
-0.5019
-</td>
-<td style="text-align:center;">
-0.044
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-28">
-Past versions of execution_engine_DEA_GSEA-28.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-28" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6e35125344a5e35013a7079a5e0db9c852bd584d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">6e35125</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/d482994a46136faedf190418feb7b923ca1b9400/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">d482994</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/6f1a74a60f950c5b03ccb78b95076d5e647e8c3c/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-28.png" target="_blank">6f1a74a</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-05-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="pathway-enrichment-2"
-class="section level3 tabset tabset-pills toc-ignore">
-<h3 class="tabset tabset-pills toc-ignore">Pathway Enrichment</h3>
-<div id="hallmark-2" class="section level4">
-<h4>Hallmark</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-29">
-Past versions of execution_engine_DEA_GSEA-29.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-29" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-29.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-30">
-Past versions of execution_engine_DEA_GSEA-30.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-30" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-30.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="go_bp-2" class="section level4">
-<h4>GO_BP</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-31">
-Past versions of execution_engine_DEA_GSEA-31.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-31" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-31.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-32">
-Past versions of execution_engine_DEA_GSEA-32.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-32" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-32.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="immunologic_signature-2" class="section level4">
-<h4>Immunologic_Signature</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-33">
-Past versions of execution_engine_DEA_GSEA-33.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-33" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-33.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-34">
-Past versions of execution_engine_DEA_GSEA-34.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-34" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-34.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="reactome-2" class="section level4">
-<h4>Reactome</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-35">
-Past versions of execution_engine_DEA_GSEA-35.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-35" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-35.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-36">
-Past versions of execution_engine_DEA_GSEA-36.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-36" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-36.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="eustar-act-vs-nonact" class="section level2">
-<h2>EUSTAR Act vs Nonact</h2>
-<p><em>Diagnostic: Samples used: 32 Target, 63 Reference</em></p>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-37">
-Past versions of execution_engine_DEA_GSEA-37.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-37" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-37.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Significant Proteins (8 total)</p>
-<div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Significant Results: EUSTAR Act vs Nonact
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Feature
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-adj.P.Val
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Significance
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-RBFOX3
-</td>
-<td style="text-align:center;">
-0.5471
-</td>
-<td style="text-align:center;">
-0.0009
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TNFRSF10B
-</td>
-<td style="text-align:center;">
-0.5741
-</td>
-<td style="text-align:center;">
-0.0015
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-EDA2R
-</td>
-<td style="text-align:center;">
-0.6062
-</td>
-<td style="text-align:center;">
-0.0026
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAYN
-</td>
-<td style="text-align:center;">
-0.5059
-</td>
-<td style="text-align:center;">
-0.0041
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CD300E
-</td>
-<td style="text-align:center;">
-0.5051
-</td>
-<td style="text-align:center;">
-0.0106
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAMP3
-</td>
-<td style="text-align:center;">
-0.5519
-</td>
-<td style="text-align:center;">
-0.0144
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CEACAM5
-</td>
-<td style="text-align:center;">
-0.6151
-</td>
-<td style="text-align:center;">
-0.0265
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SFTPA2
-</td>
-<td style="text-align:center;">
-0.7080
-</td>
-<td style="text-align:center;">
-0.0448
-</td>
-<td style="text-align:center;">
-Up-regulated
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-38">
-Past versions of execution_engine_DEA_GSEA-38.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-38" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-38.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="pathway-enrichment-3"
-class="section level3 tabset tabset-pills toc-ignore">
-<h3 class="tabset tabset-pills toc-ignore">Pathway Enrichment</h3>
-<div id="hallmark-3" class="section level4">
-<h4>Hallmark</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-39">
-Past versions of execution_engine_DEA_GSEA-39.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-39" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-39.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-40">
-Past versions of execution_engine_DEA_GSEA-40.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-40" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-40.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="go_bp-3" class="section level4">
-<h4>GO_BP</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-41">
-Past versions of execution_engine_DEA_GSEA-41.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-41" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-41.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-42">
-Past versions of execution_engine_DEA_GSEA-42.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-42" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/233c20679064e97bdaf65fbb1d05bd507e2d8757/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-42.png" target="_blank">233c206</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-43">
-Past versions of execution_engine_DEA_GSEA-43.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-43" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/21c26893ee28d26c4aadc31373f2a7c786cdb34e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">21c2689</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/28cc4b45a2756db88ffe5efc2cc4848af3f1d81d/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-43.png" target="_blank">28cc4b4</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-06-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="immunologic_signature-3" class="section level4">
-<h4>Immunologic_Signature</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-44">
-Past versions of execution_engine_DEA_GSEA-44.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-44" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-44.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-45">
-Past versions of execution_engine_DEA_GSEA-45.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-45" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-45.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="reactome-3" class="section level4">
-<h4>Reactome</h4>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-46">
-Past versions of execution_engine_DEA_GSEA-46.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-46" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-46.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" alt="" width="768" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-execution_engine_DEA_GSEA-47">
-Past versions of execution_engine_DEA_GSEA-47.png
-</button>
-</p>
-<div id="fig-execution_engine_DEA_GSEA-47" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/c622179c53be7051996b92ad8434d7e43c23da96/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">c622179</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/7c5ab5ef0c65a35de5997e38af56bb9ea8ec1466/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">7c5ab5e</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/a851fc011191d80bbf6ada5aa0ddb5838701e996/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">a851fc0</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/1f75602a8a4215a21dab1a494ba2c7a8325a044b/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">1f75602</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-08-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/8c9dd9d27456d18cf1a53878ee35dcb3976b600a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">8c9dd9d</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/fc0052103beffbd12cb0cc4b872d7788923cc698/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">fc00521</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/62c7b8c2f0f067c6ee3e5e25e8bafdfb152bad8e/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">62c7b8c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/51e879692636e57dd5a0790c3a7f31c755c4997a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">51e8796</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/b9f8f6cb79db3c151a1790d544d935ed3b47b82a/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">b9f8f6c</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/alexander-gysin/SSc-USZ/blob/0842246e5a62d48e6f39425cafffb9253bf107ac/docs/figure/03b_proteomics_differential.Rmd/execution_engine_DEA_GSEA-47.png" target="_blank">0842246</a>
-</td>
-<td>
-alexander-gysin
-</td>
-<td>
-2026-07-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -13259,22 +8717,29 @@ for (cc_id in names(cross_contrast_configs)) {
     cat(&quot;*No significant overlapping drivers found between these datasets.* \n\n&quot;)
   }
 }</code></pre>
-<div
-id="ssc-vs-control-contrasted-with-ssc-vs-control-sample_age-corrected"
-class="section level2 tabset tabset-pills">
-<h2 class="tabset tabset-pills">SSc vs Control contrasted with SSc vs
-Control (Sample_Age corrected)</h2>
+<div id="cosimo-vs-eustar" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Cosimo vs EUSTAR</h2>
 <div id="scatter-plot" class="section level3">
 <h3>Scatter Plot</h3>
-<p><img src='assets/03c_proteomics_clustering/cc_svc_vs_svc_sa_cor_cross_contrast.png' width='100%' /></p>
+<p><img src='assets/03c_proteomics_clustering/cc_cosimo_vs_eustar_cross_contrast.png' width='100%' /></p>
 </div>
 <div id="driver-tables" class="section level3">
 <h3>Driver Tables</h3>
+<blockquote>
+<p>No features met the significance criteria for <strong>Shared
+Drivers</strong>.</p>
+</blockquote>
+<p><br></p>
+<blockquote>
+<p>No features met the significance criteria for <strong>Cosimo
+classification Specific</strong>.</p>
+</blockquote>
+<p><br></p>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
 <caption>
-Target Category: Shared Drivers
+Target Category: EUSTAR classification Specific
 </caption>
 <thead>
 <tr>
@@ -13282,16 +8747,16 @@ Target Category: Shared Drivers
 Feature
 </th>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control)
+logFC (Cosimo classification)
 </th>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control)
+FDR (Cosimo classification)
 </th>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control Sample_Age corrected)
+logFC (EUSTAR classification)
 </th>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control Sample_Age corrected)
+FDR (EUSTAR classification)
 </th>
 <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
 Quadrant
@@ -13301,179 +8766,19 @@ Quadrant
 <tbody>
 <tr>
 <td style="text-align:center;">
-IL6
-</td>
-<td style="text-align:center;">
-1.675
-</td>
-<td style="text-align:center;">
-3.61e-05
-</td>
-<td style="text-align:center;">
-1.733
-</td>
-<td style="text-align:center;">
-2.50e-05
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-AFAP1L1
-</td>
-<td style="text-align:center;">
-0.897
-</td>
-<td style="text-align:center;">
-9.99e-08
-</td>
-<td style="text-align:center;">
-0.971
-</td>
-<td style="text-align:center;">
-5.32e-09
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-S100A12
-</td>
-<td style="text-align:center;">
-1.202
-</td>
-<td style="text-align:center;">
-2.75e-05
-</td>
-<td style="text-align:center;">
-1.288
-</td>
-<td style="text-align:center;">
-5.59e-06
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LMNB2
-</td>
-<td style="text-align:center;">
-0.728
-</td>
-<td style="text-align:center;">
-3.79e-08
-</td>
-<td style="text-align:center;">
-0.762
-</td>
-<td style="text-align:center;">
-5.32e-09
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TNFRSF10B
-</td>
-<td style="text-align:center;">
-0.707
-</td>
-<td style="text-align:center;">
-9.99e-08
-</td>
-<td style="text-align:center;">
-0.734
-</td>
-<td style="text-align:center;">
-3.42e-08
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-RBFOX3
-</td>
-<td style="text-align:center;">
-0.652
-</td>
-<td style="text-align:center;">
-9.99e-08
-</td>
-<td style="text-align:center;">
-0.694
-</td>
-<td style="text-align:center;">
-7.60e-09
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL19
-</td>
-<td style="text-align:center;">
-1.039
-</td>
-<td style="text-align:center;">
-3.58e-05
-</td>
-<td style="text-align:center;">
-1.063
-</td>
-<td style="text-align:center;">
-3.02e-05
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 EDA2R
 </td>
 <td style="text-align:center;">
-0.723
+0.466
 </td>
 <td style="text-align:center;">
-1.80e-06
+1.35e-01
 </td>
 <td style="text-align:center;">
-0.764
+0.606
 </td>
 <td style="text-align:center;">
-3.89e-07
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IFI30
-</td>
-<td style="text-align:center;">
-0.688
-</td>
-<td style="text-align:center;">
-4.61e-07
-</td>
-<td style="text-align:center;">
-0.707
-</td>
-<td style="text-align:center;">
-2.70e-07
+3.32e-03
 </td>
 <td style="text-align:center;">
 Up-Up
@@ -13481,219 +8786,19 @@ Up-Up
 </tr>
 <tr>
 <td style="text-align:center;">
-LAMP3
+CEACAM5
 </td>
 <td style="text-align:center;">
-0.765
+0.382
 </td>
 <td style="text-align:center;">
-7.37e-06
-</td>
-<td style="text-align:center;">
-0.780
-</td>
-<td style="text-align:center;">
-5.59e-06
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CAPG
-</td>
-<td style="text-align:center;">
-0.634
-</td>
-<td style="text-align:center;">
-1.16e-06
-</td>
-<td style="text-align:center;">
-0.645
-</td>
-<td style="text-align:center;">
-9.64e-07
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MAD1L1
-</td>
-<td style="text-align:center;">
-0.693
-</td>
-<td style="text-align:center;">
-1.61e-05
-</td>
-<td style="text-align:center;">
-0.720
-</td>
-<td style="text-align:center;">
-7.93e-06
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TNFRSF6B
-</td>
-<td style="text-align:center;">
-0.806
-</td>
-<td style="text-align:center;">
-1.33e-04
-</td>
-<td style="text-align:center;">
-0.863
-</td>
-<td style="text-align:center;">
-4.32e-05
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-DPY30
-</td>
-<td style="text-align:center;">
-0.589
-</td>
-<td style="text-align:center;">
-1.34e-05
+3.61e-01
 </td>
 <td style="text-align:center;">
 0.615
 </td>
 <td style="text-align:center;">
-5.59e-06
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL10
-</td>
-<td style="text-align:center;">
-0.804
-</td>
-<td style="text-align:center;">
-3.27e-04
-</td>
-<td style="text-align:center;">
-0.832
-</td>
-<td style="text-align:center;">
-2.25e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LAIR2
-</td>
-<td style="text-align:center;">
-1.056
-</td>
-<td style="text-align:center;">
-1.41e-03
-</td>
-<td style="text-align:center;">
-1.018
-</td>
-<td style="text-align:center;">
-2.30e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL9
-</td>
-<td style="text-align:center;">
-0.797
-</td>
-<td style="text-align:center;">
-3.58e-04
-</td>
-<td style="text-align:center;">
-0.799
-</td>
-<td style="text-align:center;">
-3.71e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-LMNB1
-</td>
-<td style="text-align:center;">
-0.745
-</td>
-<td style="text-align:center;">
-3.72e-04
-</td>
-<td style="text-align:center;">
-0.758
-</td>
-<td style="text-align:center;">
-3.09e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CD300E
-</td>
-<td style="text-align:center;">
-0.592
-</td>
-<td style="text-align:center;">
-6.45e-05
-</td>
-<td style="text-align:center;">
-0.610
-</td>
-<td style="text-align:center;">
-4.68e-05
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-FKBP15
-</td>
-<td style="text-align:center;">
-0.591
-</td>
-<td style="text-align:center;">
-8.65e-05
-</td>
-<td style="text-align:center;">
-0.597
-</td>
-<td style="text-align:center;">
-8.52e-05
+2.61e-02
 </td>
 <td style="text-align:center;">
 Up-Up
@@ -13704,585 +8809,19 @@ Up-Up
 SFTPA2
 </td>
 <td style="text-align:center;">
-0.759
+0.634
 </td>
 <td style="text-align:center;">
-2.42e-03
+1.75e-01
 </td>
 <td style="text-align:center;">
-0.802
+0.708
 </td>
 <td style="text-align:center;">
-1.33e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL3
-</td>
-<td style="text-align:center;">
-0.594
-</td>
-<td style="text-align:center;">
-4.07e-04
-</td>
-<td style="text-align:center;">
-0.623
-</td>
-<td style="text-align:center;">
-2.53e-04
+4.79e-02
 </td>
 <td style="text-align:center;">
 Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL7
-</td>
-<td style="text-align:center;">
-0.843
-</td>
-<td style="text-align:center;">
-7.05e-03
-</td>
-<td style="text-align:center;">
-0.888
-</td>
-<td style="text-align:center;">
-4.64e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TYMS
-</td>
-<td style="text-align:center;">
-0.767
-</td>
-<td style="text-align:center;">
-2.90e-03
-</td>
-<td style="text-align:center;">
-0.764
-</td>
-<td style="text-align:center;">
-3.23e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TPR
-</td>
-<td style="text-align:center;">
-0.597
-</td>
-<td style="text-align:center;">
-1.36e-03
-</td>
-<td style="text-align:center;">
-0.636
-</td>
-<td style="text-align:center;">
-7.09e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-RAB44
-</td>
-<td style="text-align:center;">
-0.594
-</td>
-<td style="text-align:center;">
-6.97e-04
-</td>
-<td style="text-align:center;">
-0.588
-</td>
-<td style="text-align:center;">
-9.35e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CCL20
-</td>
-<td style="text-align:center;">
-0.756
-</td>
-<td style="text-align:center;">
-5.65e-03
-</td>
-<td style="text-align:center;">
-0.798
-</td>
-<td style="text-align:center;">
-3.63e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-SLAMF8
-</td>
-<td style="text-align:center;">
-0.601
-</td>
-<td style="text-align:center;">
-9.47e-04
-</td>
-<td style="text-align:center;">
-0.600
-</td>
-<td style="text-align:center;">
-1.12e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MMP12
-</td>
-<td style="text-align:center;">
-0.581
-</td>
-<td style="text-align:center;">
-2.21e-03
-</td>
-<td style="text-align:center;">
-0.630
-</td>
-<td style="text-align:center;">
-8.42e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-BAX
-</td>
-<td style="text-align:center;">
-0.661
-</td>
-<td style="text-align:center;">
-4.57e-03
-</td>
-<td style="text-align:center;">
-0.713
-</td>
-<td style="text-align:center;">
-2.16e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL17C
-</td>
-<td style="text-align:center;">
-0.678
-</td>
-<td style="text-align:center;">
-3.10e-03
-</td>
-<td style="text-align:center;">
-0.674
-</td>
-<td style="text-align:center;">
-3.66e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HNRNPA0
-</td>
-<td style="text-align:center;">
-0.794
-</td>
-<td style="text-align:center;">
-1.23e-02
-</td>
-<td style="text-align:center;">
-0.834
-</td>
-<td style="text-align:center;">
-8.61e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CXCL11
-</td>
-<td style="text-align:center;">
-0.689
-</td>
-<td style="text-align:center;">
-1.23e-02
-</td>
-<td style="text-align:center;">
-0.741
-</td>
-<td style="text-align:center;">
-7.19e-03
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-HAO1
-</td>
-<td style="text-align:center;">
-0.825
-</td>
-<td style="text-align:center;">
-2.77e-02
-</td>
-<td style="text-align:center;">
-0.830
-</td>
-<td style="text-align:center;">
-2.88e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MYO1E
-</td>
-<td style="text-align:center;">
-0.656
-</td>
-<td style="text-align:center;">
-1.64e-02
-</td>
-<td style="text-align:center;">
-0.677
-</td>
-<td style="text-align:center;">
-1.38e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-GPA33
-</td>
-<td style="text-align:center;">
--0.761
-</td>
-<td style="text-align:center;">
-2.77e-02
-</td>
-<td style="text-align:center;">
--0.740
-</td>
-<td style="text-align:center;">
-3.45e-02
-</td>
-<td style="text-align:center;">
-Down-Down
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL17A
-</td>
-<td style="text-align:center;">
-0.662
-</td>
-<td style="text-align:center;">
-1.81e-02
-</td>
-<td style="text-align:center;">
-0.639
-</td>
-<td style="text-align:center;">
-2.54e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-CSRP3
-</td>
-<td style="text-align:center;">
-0.659
-</td>
-<td style="text-align:center;">
-3.73e-02
-</td>
-<td style="text-align:center;">
-0.655
-</td>
-<td style="text-align:center;">
-3.91e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IFIT3
-</td>
-<td style="text-align:center;">
-0.589
-</td>
-<td style="text-align:center;">
-4.59e-02
-</td>
-<td style="text-align:center;">
-0.620
-</td>
-<td style="text-align:center;">
-3.66e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><br></p>
-<div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Target Category: SSc vs Control Specific
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Feature
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control Sample_Age corrected)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control Sample_Age corrected)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Quadrant
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-POMC
-</td>
-<td style="text-align:center;">
--0.613
-</td>
-<td style="text-align:center;">
-2.83e-03
-</td>
-<td style="text-align:center;">
--0.579
-</td>
-<td style="text-align:center;">
-4.99e-03
-</td>
-<td style="text-align:center;">
-Down-Down
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-MUC16
-</td>
-<td style="text-align:center;">
-0.582
-</td>
-<td style="text-align:center;">
-2.55e-02
-</td>
-<td style="text-align:center;">
-0.564
-</td>
-<td style="text-align:center;">
-3.31e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-IL10RA
-</td>
-<td style="text-align:center;">
-0.589
-</td>
-<td style="text-align:center;">
-4.30e-02
-</td>
-<td style="text-align:center;">
-0.574
-</td>
-<td style="text-align:center;">
-5.18e-02
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><br></p>
-<div
-style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<caption>
-Target Category: SSc vs Control Sample_Age corrected Specific
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Feature
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-logFC (SSc vs Control Sample_Age corrected)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-FDR (SSc vs Control Sample_Age corrected)
-</th>
-<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;">
-Quadrant
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-TK1
-</td>
-<td style="text-align:center;">
-0.573
-</td>
-<td style="text-align:center;">
-1.22e-04
-</td>
-<td style="text-align:center;">
-0.589
-</td>
-<td style="text-align:center;">
-8.94e-05
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-KRT19
-</td>
-<td style="text-align:center;">
-0.564
-</td>
-<td style="text-align:center;">
-3.27e-04
-</td>
-<td style="text-align:center;">
-0.585
-</td>
-<td style="text-align:center;">
-2.15e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-ANXA2
-</td>
-<td style="text-align:center;">
-0.548
-</td>
-<td style="text-align:center;">
-6.97e-04
-</td>
-<td style="text-align:center;">
-0.585
-</td>
-<td style="text-align:center;">
-3.01e-04
-</td>
-<td style="text-align:center;">
-Up-Up
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-TRIM21
-</td>
-<td style="text-align:center;">
--0.691
-</td>
-<td style="text-align:center;">
-5.87e-02
-</td>
-<td style="text-align:center;">
--0.730
-</td>
-<td style="text-align:center;">
-4.45e-02
-</td>
-<td style="text-align:center;">
-Down-Down
 </td>
 </tr>
 </tbody>
@@ -16627,7 +11166,7 @@ run_limma_engine &lt;- function(omics_mat, clin_df, dea_conf, project_colors) {
 
   fit &lt;- lmFit(mat_sub, design)
   contrast_mat &lt;- makeContrasts(Target - Reference, levels = design)
-  fit2 &lt;- eBayes(contrasts.fit(fit, contrast_mat))
+  fit2 &lt;- limma::eBayes(contrasts.fit(fit, contrast_mat), trend = isTRUE(dea_conf$trend))
 
   dea_res &lt;- topTable(fit2, coef = 1, number = Inf, sort.by = &quot;P&quot;) %&gt;%
     rownames_to_column(&quot;Feature&quot;) %&gt;%
@@ -16672,14 +11211,19 @@ run_gsea_engine &lt;- function(dea_res, go_db, omics_config, title, db_name) {
   ranked_vec &lt;- setNames(dea_res$t, dea_res$Feature) %&gt;% sort(decreasing = TRUE)
   set.seed(42)
 
-  # 1. Base GSEA Calculation
-  gsea_res &lt;- clusterProfiler::GSEA(
-    geneList = ranked_vec,
-    TERM2GENE = go_db,
-    pvalueCutoff = 1, # Keep EVERYTHING initially
-    minGSSize = omics_config$gsea_min_size,
-    verbose = FALSE
-  )
+  # 1. Base GSEA Calculation with Safety Net
+  gsea_res &lt;- tryCatch({
+    clusterProfiler::GSEA(
+      geneList = ranked_vec,
+      TERM2GENE = go_db,
+      pvalueCutoff = 1, # Keep EVERYTHING initially
+      minGSSize = omics_config$gsea_min_size,
+      verbose = FALSE
+    )
+  }, error = function(e) {
+    message(sprintf(&quot;Skipping %s: %s (Likely too few overlapping proteins for GSEA)&quot;, db_name, e$message))
+    return(NULL)
+  })
 
   if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
 
@@ -16850,6 +11394,11 @@ run_heatmap_engine &lt;- function(mat, clin, dea_res, title, n_top = 50, split_b
   # Explicit Trap: Age
   if (&quot;Age&quot; %in% valid_vars) {
     col_list[[&quot;Age&quot;]] &lt;- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
+  }
+
+  # Explicit Trap: ACTIVE_AI
+  if (&quot;ACTIVE_AI&quot; %in% valid_vars) {
+    col_list[[&quot;ACTIVE_AI&quot;]] &lt;- get_project_colors(as.character(unique(clin_sub[[&quot;ACTIVE_AI&quot;]])))
   }
 
 
