@@ -110,8 +110,7 @@ highlights <- list(
       list(var = "Age", source = "master_spine"),
       list(var = "Sex", source = "master_spine"),
       list(var = "Sample_Age", source = "master_spine"),
-      list(var = "cohort_group", source = "master_spine"), 
-      list(var = "kmeans_Cluster", source = "clustering_res")
+      list(var = "ACTIVE_AI", source = "master_spine")
       )
 
 # 3. Job Definitions
