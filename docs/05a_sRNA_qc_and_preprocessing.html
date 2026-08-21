@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Alexander Gysin(alexander.gysin@usz.ch)" />
+
+
+<title>05a: miRNA-Seq QC and Preprocessing</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">SSc-USZ</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_data_import_and_qc.html">Import</a>
+    </li>
+    <li>
+      <a href="01b_clinical_feature_engineering.html">Clinical Features</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Clinical
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="02a_cohort_characterization.html">Charcterization</a>
+    </li>
+    <li>
+      <a href="02b_clinical_clustering.html">Clustering</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Proteomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03a_proteomics_variance.html">Variance</a>
+    </li>
+    <li>
+      <a href="03b_proteomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="03c_proteomics_clustering.html">Clustering</a>
+    </li>
+    <li>
+      <a href="03d_proteomics_subgroups.html">Subgroups</a>
+    </li>
+    <li>
+      <a href="03e_proteomics_correlations.html">Correlations</a>
+    </li>
+    <li>
+      <a href="03f_proteomics_machine_learning.html">Machine Learning</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Lipidomics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="04a_lipidomics_topography.html">Topography</a>
+    </li>
+    <li>
+      <a href="04b_lipidomics_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="04c_lipidomics_machine_learning.html">Machine Learning</a>
+    </li>
+    <li>
+      <a href="04d_lipidomics_plsda.html">PLS-DA</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    sRNA
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="05a_sRNA_qc_and_preprocessing.html">QC &amp; Preprocessing</a>
+    </li>
+    <li>
+      <a href="05b_sRNA_align_and_count.html">Align &amp; Count</a>
+    </li>
+    <li>
+      <a href="05c_sRNA_norm_and_explore.html">Normalization &amp; Exploration</a>
+    </li>
+    <li>
+      <a href="05d_sRNA_differential.html">Differential</a>
+    </li>
+    <li>
+      <a href="05e_sRNA_machine_learning.html">Machine Learning</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Multi-Omics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="06a_investigator.html">Investigator</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Side Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="z01_sideproject_ellen.html">Vascular</a>
+    </li>
+    <li>
+      <a href="z02_sideproject_vascular_2.html">Vascular 2</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/alexander-gysin/SSc-USZ">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">05a: miRNA-Seq QC and Preprocessing</h1>
+<h4 class="author">Alexander Gysin(<a
+href="mailto:alexander.gysin@usz.ch"
+class="email">alexander.gysin@usz.ch</a>)</h4>
+<h4 class="date">21 August, 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-08-21
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>SSc-USZ/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260331code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260331)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260331code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260331)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4a826f80dd472470c328dc9ea9e9eb4c3aca2ed5targetblank4a826f8a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4a826f80dd472470c328dc9ea9e9eb4c3aca2ed5" target="_blank">4a826f8</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomalexandergysinSScUSZtree4a826f80dd472470c328dc9ea9e9eb4c3aca2ed5targetblank4a826f8a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/alexander-gysin/SSc-USZ/tree/4a826f80dd472470c328dc9ea9e9eb4c3aca2ed5" target="_blank">4a826f8</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/01a_data_import_and_qc/
+    Ignored:    output/01a_data_import_and_qc_lod_filtered/
+    Ignored:    output/01b_clinical_feature_engineering/
+    Ignored:    output/02a_cohort_characterization/
+    Ignored:    output/02b_clinical_clustering/
+    Ignored:    output/03a_proteomics_variance/
+    Ignored:    output/03b_proteomics_differential/
+    Ignored:    output/03b_proteomics_differential_lod_filtered/
+    Ignored:    output/03c_proteomics_clustering/
+    Ignored:    output/03c_proteomics_clustering_lod_filtered/
+    Ignored:    output/03d_proteomics_subgroups/
+    Ignored:    output/03e_proteomics_correlations/
+    Ignored:    output/04a_lipidomics_topography/
+    Ignored:    output/04b_lipidomics_differential/
+    Ignored:    output/04d_lipidomics_plsda/
+    Ignored:    output/05_machine_learning/
+    Ignored:    output/05a_sRNA_qc_and_preprocessing/
+    Ignored:    output/05b_alignment_and_counting/
+    Ignored:    output/06a_investigator/
+    Ignored:    output/manual_html_saves/
+    Ignored:    output/nonact_extraction/
+    Ignored:    output/z01_sideproject_ellen/
+    Ignored:    output/z02_sideproject_vascular_2/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Unstaged changes:
+    Modified:   analysis/05b_sRNA_align_and_count.Rmd
+    Modified:   code/05_sRNA_engines.R
+    Modified:   code/nonact_extraction.R
+    Modified:   protocols/Coding_SOP
+    Modified:   protocols/miRNA_Analysis_Plan.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/05a_sRNA_qc_and_preprocessing.Rmd</code>) and HTML
+(<code>docs/05a_sRNA_qc_and_preprocessing.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/4a826f80dd472470c328dc9ea9e9eb4c3aca2ed5/analysis/05a_sRNA_qc_and_preprocessing.Rmd" target="_blank">4a826f8</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-21
+</td>
+<td>
+first publish of 05a
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/546b743a902f57ad144c227ec34614c783f24c21/analysis/05a_sRNA_qc_and_preprocessing.Rmd" target="_blank">546b743</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-17
+</td>
+<td>
+added quality_cutoff and max_length to adapter timming, max length set
+to 999 to act as if there was no maximum
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/alexander-gysin/SSc-USZ/blob/5fd4edad4eb18ed90e54c20a2fe968283c4532bb/analysis/05a_sRNA_qc_and_preprocessing.Rmd" target="_blank">5fd4eda</a>
+</td>
+<td>
+alexander-gysin
+</td>
+<td>
+2026-08-17
+</td>
+<td>
+wflow_git_commit(all = TRUE)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="setup-and-import" class="section level1">
+<h1>Setup and Import</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Loaded essential libraries and sourced custom command-line tool engines.
+</li>
+<li>
+Established storage separation: heavy processing files map to the
+scratch drive, while lightweight web assets map to the local project.
+</li>
+<li>
+Located the raw R1 FastQ files on the scratch drive.
+</li>
+</ul>
+</div>
+<pre class="r"><code>library(tidyverse)
+library(here)
+library(pbmcapply)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file    &lt;- &quot;05a_sRNA_qc_and_preprocessing&quot;
+output_dir_data &lt;- here::here(&quot;output&quot;, current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Web Assets Path (Lightweight HTML reports only)
+docs_asset_dir  &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, current_file, &quot;qc_reports&quot;)
+
+# Scratch Directory (Heavy I/O: FastQ files and raw FastQC data)
+scratch_out_dir &lt;- file.path(&quot;~/scratch/miRNA_project&quot;, current_file)
+
+# Source Engines
+source(here::here(&quot;code&quot;, &quot;05_sRNA_engines.R&quot;))
+
+# Locate raw FastQ files on Scratch
+raw_fastq_dir &lt;- &quot;~/scratch/o42057_NovaSeq_260623_X506&quot;
+raw_files &lt;- list.files(raw_fastq_dir, pattern = &quot;R1.*\\.fastq\\.gz$&quot;, full.names = TRUE)
+
+if(length(raw_files) == 0) {
+  warning(&quot;No raw fastq files found. Please verify the scratch raw_fastq_dir path.&quot;)
+}</code></pre>
+</div>
+<div id="analysis-configurator" class="section level1">
+<h1>Analysis Configurator</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Introduced a test-run toggle to safely evaluate the pipeline on a subset
+of samples.
+</li>
+<li>
+Defined system resource limits to dynamically harness the supercomputer
+without causing I/O bottlenecks.
+</li>
+<li>
+Configured UMI-tools with a PCRE regex pattern to extract the 12bp UMI
+following the exact 19bp QIAseq 3’ adapter.
+</li>
+<li>
+Set Cutadapt parameters to trim the adapter and filter degraded reads
+(&lt;18nt).
+</li>
+</ul>
+</div>
+<pre class="r"><code>preprocessing_config &lt;- list(
+  
+  # 0. Pipeline Run Mode
+  run_mode = list(
+    test_run = FALSE,    # Toggle to TRUE to only process a small subset
+    test_samples = 1    # Number of samples to process if test_run is TRUE
+  ),
+  
+  # 1. HPC System Limits
+  system = list(
+    max_cores  = 128,   # This is currently configured for the HPC
+    core_ratio = 0.75   # Use 75% of available cores up to the max_cap
+  ),
+  
+  # 2. UMI Extraction (QIAseq Kit Regex)
+  umi = list(
+    pattern = &quot;.*AACTGTAGGCACCATCAAT(?P&lt;umi_1&gt;.{12}).*&quot;
+  ),
+  
+ # 3. Cropping, Quality and Adapter Trimming, length filtering
+  cutadapt = list(
+    hard_crop = 100, # Crops all sequences to 100bp
+    quality_cutoff = 35,  # 3&#39; Quality trimming threshold (Phred &gt;= x)
+    adapter        = &quot;AACTGTAGGCACCATCAAT&quot;, # Target Sequence which should be removed including following 3&#39;end
+    min_length     = 18, # Discard reads smaller than typical mature miRNAs
+    max_length     = 45 # Discard untrimmed junk or long non-miRNA fragments
+   
+  )
+)
+
+# Estimation per sample per core: 20min
+# Estimation for all samples on HPC: 60min</code></pre>
+</div>
+<div id="preprocessing-execution" class="section level1">
+<h1>Preprocessing Execution</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Evaluated the test-run toggle to dynamically route outputs and subset
+input files if active.
+</li>
+<li>
+Executed the parallelized preprocessing pipeline.
+</li>
+<li>
+Ran FastQC and aggregated via MultiQC for raw reads.
+</li>
+<li>
+Extracted UMIs to the header and trimmed the 3’ adapters.
+</li>
+<li>
+Ran FastQC and aggregated via MultiQC for the final processed reads.
+</li>
+</ul>
+</div>
+<pre class="r"><code># 1. Dynamically route folders based on test mode (FIXED path logic)
+folder_suffix &lt;- ifelse(preprocessing_config$run_mode$test_run, &quot;_test&quot;, &quot;&quot;)
+target_folder &lt;- paste0(current_file, folder_suffix)
+
+scratch_out_dir &lt;- file.path(&quot;~/scratch/miRNA_project&quot;, target_folder)
+docs_asset_dir  &lt;- here::here(&quot;docs&quot;, &quot;assets&quot;, target_folder, &quot;qc_reports&quot;)
+
+# 2. Subset files if testing
+if(preprocessing_config$run_mode$test_run) {
+  cat(&quot;&gt; **Notice:** TEST RUN ACTIVE. Processing only&quot;, preprocessing_config$run_mode$test_samples, &quot;samples.\n\n&quot;)
+  raw_files &lt;- head(raw_files, preprocessing_config$run_mode$test_samples)
+}
+
+# 3. Execute
+if(length(raw_files) &gt; 0) {
+  
+  pipeline_res &lt;- wrap_preprocessing_pipeline(
+    fastq_files  = raw_files, 
+    config       = preprocessing_config, 
+    scratch_dir  = scratch_out_dir,
+    docs_dir     = docs_asset_dir
+  )
+  
+  if(pipeline_res$status == &quot;complete&quot;) {
+    cat(sprintf(&quot;&gt; **Success:** Processed %d/%d samples successfully.\n\n&quot;, 
+                pipeline_res$diagnostics$successful_processed, 
+                pipeline_res$diagnostics$total_samples))
+    
+    cat(&quot;Processed reads are stored on the scratch drive at: `&quot;, pipeline_res$paths$processed_fastq_dir, &quot;`\n\n&quot;)
+    
+    # Print trapped errors if any failed
+    if(length(pipeline_res$diagnostics$errors) &gt; 0) {
+      cat(&quot;### Error Logs from Failed Samples\n\n```text\n&quot;)
+      cat(head(pipeline_res$diagnostics$errors, 3), sep = &quot;\n\n-----------------\n\n&quot;)
+      cat(&quot;\n```\n\n&quot;)
+    }
+  }
+} else {
+  cat(&quot;&gt; **Notice:** Execution skipped. No raw fastq files loaded.\n\n&quot;)
+}</code></pre>
+</div>
+<div id="quality-control-dashboards" class="section level1 tabset">
+<h1 class="tabset">Quality Control Dashboards</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Embedded the interactive MultiQC HTML reports directly into the
+workflowr page using iframe shielding, isolating their complex CSS/JS
+from Pandoc’s DOM parser.
+</li>
+</ul>
+</div>
+<pre class="r"><code># Dynamically map relative paths based on test mode
+folder_suffix &lt;- ifelse(preprocessing_config$run_mode$test_run, &quot;_test&quot;, &quot;&quot;)
+target_folder &lt;- paste0(current_file, folder_suffix)
+
+raw_qc_rel_path &lt;- file.path(&quot;assets&quot;, target_folder, &quot;qc_reports&quot;, &quot;raw_multiqc_report.html&quot;)
+pro_qc_rel_path &lt;- file.path(&quot;assets&quot;, target_folder, &quot;qc_reports&quot;, &quot;processed_multiqc_report.html&quot;)
+
+cat(&quot;## Raw Reads QC\n\n&quot;)</code></pre>
+<div id="raw-reads-qc" class="section level2">
+<h2>Raw Reads QC</h2>
+<pre class="r"><code>if(file.exists(here::here(&quot;docs&quot;, raw_qc_rel_path))) {
+  cat(sprintf(&#39;&lt;iframe src=&quot;%s&quot; width=&quot;100%%&quot; height=&quot;800px&quot; style=&quot;border:none;&quot;&gt;&lt;/iframe&gt;\n\n&#39;, raw_qc_rel_path))
+} else {
+  cat(&quot;*Raw QC report not yet generated.*\n\n&quot;)
+}</code></pre>
+<iframe src="assets/05a_sRNA_qc_and_preprocessing/qc_reports/raw_multiqc_report.html" width="100%" height="800px" style="border:none;">
+</iframe>
+<pre class="r"><code>cat(&quot;## Processed Reads QC\n\n&quot;)</code></pre>
+</div>
+<div id="processed-reads-qc" class="section level2">
+<h2>Processed Reads QC</h2>
+<pre class="r"><code>if(file.exists(here::here(&quot;docs&quot;, pro_qc_rel_path))) {
+  cat(sprintf(&#39;&lt;iframe src=&quot;%s&quot; width=&quot;100%%&quot; height=&quot;800px&quot; style=&quot;border:none;&quot;&gt;&lt;/iframe&gt;\n\n&#39;, pro_qc_rel_path))
+} else {
+  cat(&quot;*Processed QC report not yet generated.*\n\n&quot;)
+}</code></pre>
+<iframe src="assets/05a_sRNA_qc_and_preprocessing/qc_reports/processed_multiqc_report.html" width="100%" height="800px" style="border:none;">
+</iframe>
+</div>
+</div>
+<div id="export-and-cleanup" class="section level1">
+<h1>Export and Cleanup</h1>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Exported the processed data paths to RDS so Script 05b can seamlessly
+load them from the scratch drive, accounting for test mode names.
+</li>
+<li>
+Purged unneeded variables and enforced garbage collection to free RAM.
+</li>
+</ul>
+</div>
+<pre class="r"><code>if(exists(&quot;pipeline_res&quot;) &amp;&amp; pipeline_res$status == &quot;complete&quot;) {
+  # Save ONLY the pointer path locally to the home directory (append _test if active)
+  file_suffix &lt;- ifelse(preprocessing_config$run_mode$test_run, &quot;_test&quot;, &quot;&quot;)
+  export_name &lt;- paste0(&quot;processed_fastq_dir_path&quot;, file_suffix, &quot;.rds&quot;)
+  
+  saveRDS(
+    pipeline_res$paths$processed_fastq_dir, 
+    file.path(output_dir_data, export_name)
+  )
+}
+
+# Strict Memory Optimization
+rm(list = ls(pattern = &quot;^raw_|^pipeline_&quot;))
+gc()</code></pre>
+<pre><code>          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 5612250 299.8    9352148 499.5  7290963 389.4
+Vcells 9801843  74.8   14887572 113.6 12339611  94.2</code></pre>
+<p>Appendix</p>
+<div class="info-box">
+<strong>What this code does:</strong>
+<ul>
+<li>
+Appended the raw underlying R code from the custom omics engines to the
+HTML report’s appendix to ensure complete analytical transparency and
+reproducibility.
+</li>
+</ul>
+</div>
+<pre class="r"><code># scratch directory
+scratch_dir &lt;- &quot;~/scratch/SSc-USZ&quot;
+
+
+# 1. GLOBAL LIBRARIES REQUIRED FOR CONFIG
+library(ggplot2)
+
+# 2. GLOBAL SEED
+set.seed(2026)
+
+# 3. GLOBAL GROUP DEFINITIONS
+GRP_ACTIVE     &lt;- &quot;Active&quot;
+GRP_NON_ACTIVE &lt;- &quot;Non-Active&quot;
+GRP_CONTROL    &lt;- &quot;Control&quot;
+SEX_MALE       &lt;- &quot;Male&quot;
+SEX_FEMALE     &lt;- &quot;Female&quot;
+EUSTAR_1   &lt;- &quot;1&quot;
+EUSTAR_0   &lt;- &quot;0&quot;
+EUSTAR_ctrl   &lt;- &quot;-1&quot;
+
+
+# 4. GLOBAL COLOR PALETTE
+COLOR_ACTIVE     &lt;- &quot;#D55E00&quot;
+COLOR_NON_ACTIVE &lt;- &quot;#0072B2&quot;
+COLOR_CONTROL    &lt;- &quot;#999999&quot;
+COLOR_MALE       &lt;- &quot;#56B4E9&quot;
+COLOR_FEMALE     &lt;- &quot;#E69F00&quot;
+COLOR_HIGHLIGHT  &lt;- &quot;#E6007E&quot; # Magenta/Pink for shared trajectory drivers
+COLOR_EUSTAR_1   &lt;- &quot;#CC79A7&quot;
+COLOR_EUSTAR_0   &lt;- &quot;#009E73&quot;
+COLOR_EUSTAR_ctrl   &lt;- &quot;#999999&quot;
+
+# Age Gradient (Purple)
+COLOR_AGE_LOW &lt;- &quot;white&quot;
+COLOR_AGE_HIGH &lt;- &quot;purple4&quot;
+
+# Heatmap Aesthetics
+HM_Z_LOW  &lt;- &quot;dodgerblue4&quot;
+HM_Z_MID  &lt;- &quot;white&quot;
+HM_Z_HIGH &lt;- &quot;firebrick4&quot;
+
+
+# Fallback Palettes for Exploratory Plotting (PCA, etc.)
+# Used automatically when a variable doesn&#39;t have a strict color mapped above
+FALLBACK_CAT_PALETTE  &lt;- c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#CC79A7&quot;, &quot;#009E73&quot;, &quot;#D55E00&quot;, &quot;#0072B2&quot;, &quot;#F0E442&quot;, &quot;#999999&quot;)
+FALLBACK_CONT_PALETTE &lt;- &quot;viridis&quot; # Continuous fallback palette (viridis, plasma, magma, etc.)
+
+# 5. CLINICAL VARIABLES SUBSETS
+# Clinical description of SSC:
+ssc_clinical_parameters &lt;- c(&quot;EULAR/ACR 2013 Criteria&quot;,
+                             &quot;Abnormal Capillaroscopy&quot;,
+                             &quot;Raynaud phenomenon&quot;,
+                             &quot;Modified rodnan skin score&quot;,
+                             &quot;Subset_diffuse&quot;,
+                             &quot;Puffy fingers&quot;,
+                             &quot;Digital ulcer&quot;,
+                             &quot;Telangiectasia (any)&quot;,
+                             &quot;Joint involvement&quot;,
+                             &quot;Tendon friction rubs&quot;,
+                             &quot;Proximal muscle weakness&quot;,
+                             &quot;Anti-centromere (ACA)&quot;,
+                             &quot;Anti-Scl70&quot;,
+                             &quot;Anti-RNA polymerase III&quot;,
+                             &quot;CRP&quot;,
+                             &quot;CK value in serum (U/L)&quot;,
+                             &quot;ILD diagnosed via HRCT&quot;,
+                             &quot;DLCO (SB) (% predicted)&quot;,
+                             &quot;FVC %pred&quot;,
+                             &quot;Diastolic Dysf. (Echo)&quot;,
+                             &quot;LVEF %&quot;,
+                             &quot;Esophageal symptom at the time of visit&quot;,
+                             &quot;Stomach Symptoms&quot;,
+                             &quot;Intestinal Symptoms&quot;,
+                             &quot;eustarAI&quot;
+)
+
+ssc_clinical_parameters_categorical &lt;- c(&quot;EULAR/ACR 2013 Criteria&quot;,
+                                         &quot;Abnormal Capillaroscopy&quot;,
+                                         &quot;Raynaud phenomenon&quot;,
+                                         &quot;Subset_diffuse&quot;,
+                                         &quot;Puffy fingers&quot;,
+                                         &quot;Digital ulcer&quot;,
+                                         &quot;Telangiectasia (any)&quot;,
+                                         &quot;Joint involvement&quot;,
+                                         &quot;Tendon friction rubs&quot;,
+                                         &quot;Proximal muscle weakness&quot;,
+                                         &quot;Anti-centromere (ACA)&quot;,
+                                         &quot;Anti-Scl70&quot;,
+                                         &quot;Anti-RNA polymerase III&quot;,
+                                         &quot;ILD diagnosed via HRCT&quot;,
+                                         &quot;Diastolic Dysf. (Echo)&quot;,
+                                         &quot;Esophageal symptom at the time of visit&quot;,
+                                         &quot;Stomach Symptoms&quot;,
+                                         &quot;Intestinal Symptoms&quot;
+)
+
+ssc_clinical_parameters_continuous &lt;- c(&quot;Modified rodnan skin score&quot;,
+                                        &quot;CRP&quot;,
+                                        &quot;CK value in serum (U/L)&quot;,
+                                        &quot;DLCO (SB) (% predicted)&quot;,
+                                        &quot;FVC %pred&quot;,
+                                        &quot;LVEF %&quot;,
+                                        &quot;eustarAI&quot;
+)
+
+clinical_domains &lt;- list(
+  Demographics_and_Scores = c(
+    &quot;Age&quot;, &quot;Sex&quot;, &quot;Sample_Age&quot;, &quot;cohort_group&quot;, &quot;Total Score&quot;,
+    &quot;eustarAI&quot;, &quot;ACTIVE_AI&quot;, &quot;Active_our&quot;, &quot;Inflamm_active&quot;, &quot;fibrotic_active&quot;, &quot;vascular_active&quot;
+  ),
+  Cutaneous_and_Vascular = c(
+    &quot;Subset_diffuse&quot;,
+    &quot;Modified rodnan skin score&quot;, &quot;mRSS_a&quot;, &quot;mRSS Worsening (1yr)&quot;,
+    &quot;Raynaud phenomenon&quot;, &quot;Score : Raynaud phenomenon&quot;, &quot;Raynaud&#39;s present&quot;, &quot;Raynaud VAS&quot;,
+    &quot;Digital Tip Ulcers&quot;, &quot;Digital ulcer&quot;, &quot;Fingertip pitting scars&quot;, &quot;Pitting scars on finger tips&quot;,
+    &quot;Telangiectasia&quot;, &quot;Telangiectasia (any)&quot;, &quot;Abnormal Capillaroscopy&quot;, &quot;Capillaroscopy Score&quot;,
+    &quot;Capillaroscopy Pattern&quot;, &quot;Giant capillaries&quot;, &quot;Hemorrhages&quot;, &quot;Capillary loss&quot;, &quot;Ramified bushy capillaries&quot;,
+    &quot;Puffy fingers&quot;, &quot;Sclerodactyly&quot;, &quot;Skin Thickening (Ext. MCP)&quot;, &quot;Skin Thickening (Prox. MCP)&quot;,
+    &quot;Subcutaneous Calcinosis&quot;, &quot;Gangrene&quot;, &quot;log_Modified_rodnan_skin_score&quot;
+  ),
+  Musculoskeletal = c(
+    &quot;Joint involvement&quot;, &quot;Joint Contractures&quot;, &quot;Tendon friction rubs&quot;,
+    &quot;Proximal muscle weakness&quot;, &quot;Myalgia&quot;, &quot;Muscle atrophy&quot;, &quot;Activity of arthritis during the past week&quot;
+  ),
+  Pulmonary = c(
+    &quot;PAH/ILD&quot;, &quot;ILD diagnosed via HRCT&quot;, &quot;FVC %pred&quot;, &quot;Forced Vital Capacity (ml)&quot;,
+    &quot;DLCO (SB) (% predicted)&quot;, &quot;DLCO/VA (% predicted)&quot;, &quot;TLC %pred&quot;,
+    &quot;O2-saturation at rest (%)&quot;, &quot;Min SpO2 (Exercise)&quot;,
+    &quot;Dyspnea NYHA Stage&quot;, &quot;Max Borg Dyspnea&quot;, &quot;Distance in m&quot;, &quot;New PAH&quot;
+  ),
+  Cardiac = c(
+    &quot;New Cardiac Manifest.&quot;,
+    &quot;Right bundle branch block&quot;, &quot;Right axis deviation&quot;, &quot;Right ventricular hypertrophy&quot;,
+    &quot;Ventricular arrhythmias&quot;, &quot;Auricular arrhythmias&quot;, &quot;Conduction blocks&quot;, &quot;Arrhythmias requiring therapy&quot;,
+    &quot;Right atrium area (cm2)&quot;, &quot;Right ventricular area (cm2)&quot;, &quot;TAPSE (cm)&quot;,
+    &quot;Pericardial effusion on echo&quot;, &quot;Diastolic Dysf. (Echo)&quot;, &quot;LVEF %&quot;,&quot;log_Right_atrium_area__cm2&quot;, &quot;log_TAPSE__cm&quot;
+  ),
+  Gastrointestinal = c(
+    &quot;Stomach Symptoms&quot;, &quot;GAVE&quot;, &quot;Intestinal Symptoms&quot;, &quot;Malabsorption syndrome&quot;, &quot;Proximal Dysphagia&quot;
+  ),
+  Labs_and_Biomarkers = c(
+    &quot;CRP&quot;, &quot;Creatinine&quot;, &quot;NT-proBNP (pg/ml)&quot;, &quot;Uric Acid (mg/dl)&quot;,
+    &quot;Hemoglobin (g/dl)&quot;, &quot;CK value in serum (U/L)&quot;, &quot;Proteinuria (&gt;300mg/d)&quot;,
+    &quot;SSc Antibodies&quot;, &quot;SSc Antibody Score&quot;,  &quot;log_CRP&quot;,
+    &quot;log_CK_value_in_serum__U_L&quot;, &quot;log_Creatinine&quot;, &quot;log_NT_proBNP__pg_ml&quot;, &quot;log_Uric_Acid__mg_dl&quot;
+  ),
+  Medications = c(
+    &quot;Med_rituximab&quot;,
+    &quot;Med_tocilizumab&quot;,                            &quot;Med_mmf&quot;,                                    &quot;Med_mtx&quot;,
+    &quot;Med_jaki&quot;,                                   &quot;Med_abatacept&quot;,                              &quot;Med_sildenafil&quot;,
+    &quot;Med_tadalafil&quot;,                              &quot;Med_bosentan&quot;,                               &quot;Med_iloprost&quot;,
+    &quot;Med_macitentan&quot;,                             &quot;Med_ambrisentan&quot;,                            &quot;Med_ppi&quot;,
+    &quot;Med_acei&quot;,                                   &quot;Med_nintedanib&quot;,                             &quot;Med_asa&quot;,
+    &quot;Med_ccb&quot;,                                    &quot;Med_arb&quot;,                                    &quot;Med_oac&quot;,
+    &quot;Immunosuppressants&quot;, &quot;Major vascular&quot;, &quot;Steroids&quot;, &quot;Other_medication&quot;
+    )
+)
+
+# NEW: MASTER COLOR DICTIONARY
+# A single, unified function that can map colors for any variable in the project
+get_project_colors &lt;- function(requested_levels, custom_map = NULL) {
+  requested_levels &lt;- as.character(requested_levels)
+
+  base_map &lt;- setNames(
+    c(COLOR_ACTIVE, COLOR_NON_ACTIVE, COLOR_CONTROL, COLOR_MALE, COLOR_FEMALE, COLOR_EUSTAR_0, COLOR_EUSTAR_1, COLOR_EUSTAR_ctrl),
+    c(GRP_ACTIVE, GRP_NON_ACTIVE, GRP_CONTROL, SEX_MALE, SEX_FEMALE, EUSTAR_0, EUSTAR_1, EUSTAR_ctrl )
+  )
+
+  # Combine with custom overrides (custom takes precedence)
+  if (!is.null(custom_map)) {
+    full_map &lt;- c(custom_map, base_map)
+    full_map &lt;- full_map[!duplicated(names(full_map))]
+  } else {
+    full_map &lt;- base_map
+  }
+
+  out_colors &lt;- full_map[requested_levels]
+
+  # Smart Fallback for completely unknown levels (prevents dark grey blobs)
+  unknown_idx &lt;- is.na(out_colors)
+  if (any(unknown_idx)) {
+    num_unknown &lt;- sum(unknown_idx)
+    safe_pal &lt;- if(exists(&quot;FALLBACK_CAT_PALETTE&quot;)) FALLBACK_CAT_PALETTE else c(&quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;)
+    out_colors[unknown_idx] &lt;- rep(safe_pal, length.out = num_unknown)
+  }
+
+  names(out_colors) &lt;- requested_levels
+  return(out_colors)
+}
+
+# GLOBAL GGPLOT THEME OVERRIDE
+theme_project_base &lt;- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.title = element_text(face = &quot;bold&quot;, size = rel(1.2)),
+      plot.subtitle = element_text(color = &quot;grey30&quot;, size = rel(0.9)),
+      axis.title = element_text(face = &quot;bold&quot;),
+      legend.position = &quot;bottom&quot;,
+      legend.title = element_blank(),
+      panel.grid.minor = element_blank(),
+      strip.text = element_text(face = &quot;bold&quot;, size = rel(1.1))
+    )
+}
+
+# Custom Box Generators
+what_this_does &lt;- function(...) {
+  points &lt;- list(...)
+  li_items &lt;- paste0(&quot;    &lt;li&gt;&quot;, unlist(points), &quot;&lt;/li&gt;&quot;, collapse = &quot;\n&quot;)
+  html &lt;- sprintf(&#39;
+&lt;div class=&quot;info-box&quot;&gt;
+  &lt;strong&gt;What this code does:&lt;/strong&gt;
+  &lt;ul&gt;
+%s
+  &lt;/ul&gt;
+&lt;/div&gt;&#39;, li_items)
+  return(html)
+}
+
+analysis_decision &lt;- function(...) {
+  points &lt;- list(...)
+  li_items &lt;- paste0(&quot;    &lt;li&gt;&quot;, unlist(points), &quot;&lt;/li&gt;&quot;, collapse = &quot;\n&quot;)
+  html &lt;- sprintf(&#39;
+&lt;div class=&quot;decision-box&quot;&gt;
+  &lt;strong&gt;Analysis Decisions:&lt;/strong&gt;
+  &lt;ul&gt;
+%s
+  &lt;/ul&gt;
+&lt;/div&gt;&#39;, li_items)
+  return(html)
+}
+
+key_insight &lt;- function(...) {
+  points &lt;- list(...)
+  li_items &lt;- paste0(&quot;    &lt;li&gt;&quot;, unlist(points), &quot;&lt;/li&gt;&quot;, collapse = &quot;\n&quot;)
+  html &lt;- sprintf(&#39;
+&lt;div class=&quot;insight-box&quot;&gt;
+  &lt;strong&gt;Key Insight:&lt;/strong&gt;
+  &lt;ul&gt;
+%s
+  &lt;/ul&gt;
+&lt;/div&gt;&#39;, li_items)
+  return(html)
+}
+
+why_is_this_done &lt;- function(...) {
+  points &lt;- list(...)
+  li_items &lt;- paste0(&quot;    &lt;li&gt;&quot;, unlist(points), &quot;&lt;/li&gt;&quot;, collapse = &quot;\n&quot;)
+  html &lt;- sprintf(&#39;
+&lt;div class=&quot;why-box&quot;&gt;
+  &lt;strong&gt;Why is this done?&lt;/strong&gt;
+  &lt;ul&gt;
+%s
+  &lt;/ul&gt;
+&lt;/div&gt;&#39;, li_items)
+  return(html)
+}
+# 05_sRNA_engines.R
+# Engine functions for miRNA-Seq QC and Preprocessing via Command-Line Tools
+
+# Packages -------------------------------------------------------
+library(Rsamtools)
+library(Rsubread)
+
+# Preprocessing Wrapper ------------------------------------------
+
+#&#39; Master Orchestrator: Runs FastQC, UMI-Tools, Cutadapt, and MultiQC
+#&#39; @param fastq_files Character vector of absolute paths to raw R1 fastq files
+#&#39; @param config Nested list of configurations from RMarkdown
+#&#39; @param scratch_dir Directory on the scratch drive for heavy I/O files
+#&#39; @param docs_dir Directory in the workflowr project to copy lightweight MultiQC HTMLs
+#&#39; @return List containing diagnostics and absolute paths to processed scratch files
+wrap_preprocessing &lt;- function(fastq_files, config, scratch_dir, docs_dir) {
+
+  # --- Absolute paths to isolated Miniconda tools ---
+  conda_bin    &lt;- path.expand(&quot;~/miniconda3/envs/mirna_env/bin&quot;)
+  cmd_fastqc   &lt;- file.path(conda_bin, &quot;fastqc&quot;)
+  cmd_multiqc  &lt;- file.path(conda_bin, &quot;multiqc&quot;)
+  cmd_umi      &lt;- file.path(conda_bin, &quot;umi_tools&quot;)
+  cmd_cutadapt &lt;- file.path(conda_bin, &quot;cutadapt&quot;)
+
+  # 1. Directory Management
+  dirs &lt;- worker_setup_directories(scratch_dir, docs_dir)
+
+  # 2. Compute Safe Parallel Cores
+  n_cores &lt;- worker_calculate_cores(fastq_files, config)
+
+  message(sprintf(&quot;\nStarting pipeline: %d files. Allocating %d cores&quot;, length(fastq_files), n_cores))
+  message(sprintf(&quot;(Limits - Hard: %d, Relative: %d, File-driven: %d)&quot;,
+                  config$system$max_cores,
+                  max(1, floor(parallel::detectCores() * config$system$core_ratio)),
+                  max(1, ceiling(length(fastq_files) / 2))))
+
+  # 3. Phase 1: Raw FastQC
+  message(&quot;\n--- Phase 1: Raw FastQC ---&quot;)
+  raw_qc_res &lt;- pbmcapply::pbmclapply(fastq_files, function(fq) {
+    worker_fastqc(fq, dirs$raw_qc, cmd_fastqc)
+  }, mc.cores = n_cores)
+
+  # 4. Phase 2: Raw MultiQC
+  message(&quot;\n--- Phase 2: Raw MultiQC ---&quot;)
+  worker_multiqc(dirs$raw_qc, &quot;raw_multiqc_report.html&quot;, docs_dir, cmd_multiqc)
+
+  # 5. Phase 3 &amp; 4: UMI Extraction and Adapter Trimming (Per Sample)
+  message(&quot;\n--- Phase 3 &amp; 4: UMI Extract &amp; Cutadapt ---&quot;)
+  process_res &lt;- pbmcapply::pbmclapply(fastq_files, function(fq) {
+    worker_umi_cutadapt(fq, dirs$umi, dirs$trim, config, cmd_umi, cmd_cutadapt)
+  }, mc.cores = n_cores, mc.preschedule = FALSE) # DYNAMIC TASK SCHEDULING APPLIED HERE
+
+  # Extract successful trimmed files and capture errors
+  processed_files &lt;- sapply(process_res, function(x) x$processed)[sapply(process_res, function(x) x$status == &quot;success&quot;)]
+  error_logs &lt;- sapply(process_res, function(x) x$error)[sapply(process_res, function(x) x$status != &quot;success&quot;)]
+
+  # 6. Phase 5: Processed FastQC
+  message(&quot;\n--- Phase 5: Processed FastQC ---&quot;)
+  pro_qc_res &lt;- pbmcapply::pbmclapply(processed_files, function(fq) {
+    worker_fastqc(fq, dirs$pro_qc, cmd_fastqc)
+  }, mc.cores = n_cores)
+
+  # 7. Phase 6: Processed MultiQC
+  message(&quot;\n--- Phase 6: Processed MultiQC ---&quot;)
+  worker_multiqc(dirs$pro_qc, &quot;processed_multiqc_report.html&quot;, docs_dir, cmd_multiqc)
+
+  # Return absolute paths pointing to the scratch drive and diagnostics
+  return(list(
+    status = &quot;complete&quot;,
+    diagnostics = list(
+      total_samples = length(fastq_files),
+      successful_processed = length(processed_files),
+      errors = error_logs
+    ),
+    paths = list(
+      processed_fastq_dir = dirs$trim
+    )
+  ))
+}
+
+# Legacy Alias Support
+wrap_preprocessing_pipeline &lt;- wrap_preprocessing
+
+# Preprocessing Workers -----------------------------------------------
+
+#&#39; Worker: Directory Management
+#&#39; @param scratch_dir Directory on the scratch drive
+#&#39; @param docs_dir Directory for lightweight MultiQC HTMLs
+#&#39; @return Named list of directory paths
+worker_setup_directories &lt;- function(scratch_dir, docs_dir) {
+  dirs &lt;- list(
+    raw_qc = file.path(scratch_dir, &quot;01_raw_fastqc&quot;),
+    umi    = file.path(scratch_dir, &quot;02_umi_extracted&quot;),
+    trim   = file.path(scratch_dir, &quot;03_trimmed_reads&quot;),
+    pro_qc = file.path(scratch_dir, &quot;04_processed_fastqc&quot;)
+  )
+
+  # Create scratch directories
+  lapply(dirs, function(x) {
+    if (!dir.exists(x)) dir.create(x, recursive = TRUE)
+  })
+
+  # Create docs directory for lightweight HTMLs
+  if (!dir.exists(docs_dir)) dir.create(docs_dir, recursive = TRUE)
+
+  return(dirs)
+}
+
+#&#39; Worker: Compute Safe Parallel Cores
+#&#39; @param fastq_files Character vector of fastq files
+#&#39; @param config Nested list of configurations
+#&#39; @return Integer representing the number of cores to use
+worker_calculate_cores &lt;- function(fastq_files, config) {
+  available_cores &lt;- parallel::detectCores()
+
+  hard_cap     &lt;- config$system$max_cores
+  relative_cap &lt;- max(1, floor(available_cores * config$system$core_ratio)) # Relative cap is rounded down
+  file_cap     &lt;- max(1, ceiling(length(fastq_files) / 2)) # Half-file rule, rounding up
+
+  # The lowest limit wins
+  return(min(hard_cap, relative_cap, file_cap))
+}
+
+#&#39; Worker: Run FastQC on a single file
+#&#39; @param fq Path to fastq file
+#&#39; @param out_dir Output directory for FastQC results
+#&#39; @param cmd_fastqc Path to FastQC executable
+#&#39; @return List with file path and status
+worker_fastqc &lt;- function(fq, out_dir, cmd_fastqc) {
+  args &lt;- c(fq, &quot;-o&quot;, out_dir, &quot;-t&quot;, &quot;1&quot;) # 1 thread per job, parallelized over samples
+  res &lt;- system2(cmd_fastqc, args, stdout = TRUE, stderr = TRUE)
+  return(list(
+    file = fq,
+    status = ifelse(is.null(attr(res, &quot;status&quot;)), &quot;success&quot;, &quot;failed&quot;)
+  ))
+}
+
+#&#39; Worker: Run MultiQC and copy report
+#&#39; @param target_dir Directory containing FastQC results and where MultiQC will run
+#&#39; @param report_name Name of the output HTML report
+#&#39; @param docs_dir Destination directory for the HTML report
+#&#39; @param cmd_multiqc Path to MultiQC executable
+worker_multiqc &lt;- function(target_dir, report_name, docs_dir, cmd_multiqc) {
+  multiqc_args &lt;- c(target_dir, &quot;-f&quot;, &quot;-n&quot;, report_name, &quot;-o&quot;, target_dir)
+  system2(cmd_multiqc, multiqc_args)
+
+  # Copy ONLY the HTML file to the workflowr docs folder
+  file.copy(
+    from = file.path(target_dir, report_name),
+    to = file.path(docs_dir, report_name),
+    overwrite = TRUE
+  )
+}
+
+#&#39; Worker: UMI Extraction and Adapter Trimming for a single file
+#&#39; @param fq Path to raw fastq file
+#&#39; @param dir_umi Directory for UMI output
+#&#39; @param dir_trim Directory for trimmed output
+#&#39; @param config Configuration list
+#&#39; @param cmd_umi Path to umi_tools executable
+#&#39; @param cmd_cutadapt Path to cutadapt executable
+#&#39; @return List with input, processed path, status code, and error log
+worker_umi_cutadapt &lt;- function(fq, dir_umi, dir_trim, config, cmd_umi, cmd_cutadapt) {
+  base_name &lt;- tools::file_path_sans_ext(basename(fq))
+  if(grepl(&quot;\\.fastq\\.gz$&quot;, basename(fq))) base_name &lt;- tools::file_path_sans_ext(base_name)
+
+  umi_out  &lt;- file.path(dir_umi, paste0(base_name, &quot;_umi.fastq.gz&quot;))
+  trim_out &lt;- file.path(dir_trim, paste0(base_name, &quot;_processed.fastq.gz&quot;))
+
+  err_log &lt;- &quot;&quot;
+
+  # 5a. UMI-Tools Extract (Single-threaded by default)
+  umi_args &lt;- c(&quot;extract&quot;,
+                &quot;--extract-method=regex&quot;,
+                paste0(&quot;--bc-pattern=&quot;, shQuote(config$umi$pattern)),
+                &quot;--stdin&quot;, fq,
+                &quot;--stdout&quot;, umi_out)
+  umi_status &lt;- system2(cmd_umi, umi_args, stdout = TRUE, stderr = TRUE)
+
+  # Aggressive check: Did UMI tools succeed and create a valid file?
+  if (is.null(attr(umi_status, &quot;status&quot;)) &amp;&amp; file.exists(umi_out) &amp;&amp; file.info(umi_out)$size &gt; 0) {
+
+    # 5b. Cutadapt with Strict Thread Pinning (-j 1), Quality Trimming, and Max/Min Length
+    cut_args &lt;- c(&quot;-a&quot;, config$cutadapt$adapter,
+                  &quot;-m&quot;, config$cutadapt$min_length,
+                  &quot;-M&quot;, config$cutadapt$max_length,
+                  &quot;-q&quot;, config$cutadapt$quality_cutoff,
+                  &quot;-l&quot;, config$cutadapt$hard_crop,
+                  &quot;-j&quot;, &quot;1&quot;, # Force 1 core per cutadapt instance
+                  &quot;-o&quot;, trim_out,
+                  umi_out)
+    cut_status &lt;- system2(cmd_cutadapt, cut_args, stdout = TRUE, stderr = TRUE)
+
+    # Aggressive check: Did Cutadapt succeed and create a valid file?
+    if (is.null(attr(cut_status, &quot;status&quot;)) &amp;&amp; file.exists(trim_out) &amp;&amp; file.info(trim_out)$size &gt; 0) {
+      status_code &lt;- &quot;success&quot;
+    } else {
+      status_code &lt;- &quot;failed_cutadapt&quot;
+      err_log &lt;- paste(cut_status, collapse = &quot;\n&quot;)
+    }
+
+  } else {
+    status_code &lt;- &quot;failed_umi&quot;
+    err_log &lt;- paste(umi_status, collapse = &quot;\n&quot;)
+  }
+
+  return(list(input = fq, processed = trim_out, status = status_code, error = err_log))
+}
+
+# Alignment and Feature Counting Wrapper -------------------------
+
+#&#39; Master Orchestrator: Runs Alignment, BAM Sorting, and UMI Deduplication
+#&#39; @param fastq_files Character vector of absolute paths to processed fastq files
+#&#39; @param config Nested list of configurations from RMarkdown
+#&#39; @param scratch_dir Directory on the scratch drive for heavy I/O files
+#&#39; @return List containing diagnostics and absolute paths to deduplicated BAM files
+wrap_alignment_dedup &lt;- function(fastq_files, config, scratch_dir) {
+
+  # Absolute path to isolated Miniconda tools
+  conda_bin &lt;- path.expand(&quot;~/miniconda3/envs/mirna_env/bin&quot;)
+  cmd_umi   &lt;- file.path(conda_bin, &quot;umi_tools&quot;)
+
+  # 1. Directory Management
+  dirs &lt;- worker_setup_align_directories(scratch_dir)
+
+  # 2. Compute Safe Parallel Cores
+  n_cores &lt;- worker_calculate_cores(fastq_files, config)
+
+  message(sprintf(&quot;\nStarting Alignment &amp; Dedup: %d files. Allocating %d cores&quot;, length(fastq_files), n_cores))
+
+  # 3. Phase 1-3: Align, Sort, and Dedup (Per Sample)
+  message(&quot;\n--- Executing Align -&gt; Sort -&gt; Dedup ---&quot;)
+
+  process_res &lt;- pbmcapply::pbmclapply(fastq_files, function(fq) {
+
+    # 3a. Align
+    align_res &lt;- worker_rsubread_align(fq, dirs$raw, config)
+    if(align_res$status != &quot;success&quot;) return(align_res)
+
+    # 3b. Sort and Index
+    sort_res &lt;- worker_sort_index_bam(align_res$processed, dirs$sorted)
+    if(sort_res$status != &quot;success&quot;) return(sort_res)
+
+    # 3c. UMI Dedup
+    dedup_res &lt;- worker_umi_dedup(sort_res$processed, dirs$dedup, cmd_umi)
+    return(dedup_res)
+
+  }, mc.cores = n_cores, mc.preschedule = FALSE)
+
+  # Extract successful deduplicated BAM files and capture errors
+  dedup_files &lt;- sapply(process_res, function(x) x$processed)[sapply(process_res, function(x) x$status == &quot;success&quot;)]
+  error_logs  &lt;- sapply(process_res, function(x) x$error)[sapply(process_res, function(x) x$status != &quot;success&quot;)]
+
+  return(list(
+    status = &quot;complete&quot;,
+    diagnostics = list(
+      total_samples = length(fastq_files),
+      successful_processed = length(dedup_files),
+      errors = error_logs
+    ),
+    paths = list(
+      dedup_bam_files = dedup_files,
+      dedup_bam_dir   = dirs$dedup
+    )
+  ))
+}
+
+# Alignment and Feature Counting Workers -------------------------------
+
+#&#39; Worker: Directory Management for Alignment
+#&#39; @param scratch_dir Directory on the scratch drive
+#&#39; @return Named list of directory paths
+worker_setup_align_directories &lt;- function(scratch_dir) {
+  dirs &lt;- list(
+    raw    = file.path(scratch_dir, &quot;05_bam_raw&quot;),
+    sorted = file.path(scratch_dir, &quot;06_bam_sorted&quot;),
+    dedup  = file.path(scratch_dir, &quot;07_bam_dedup&quot;)
+  )
+
+  lapply(dirs, function(x) {
+    if (!dir.exists(x)) dir.create(x, recursive = TRUE)
+  })
+
+  return(dirs)
+}
+
+#&#39; Worker: Align single FastQ using Rsubread
+#&#39; @param fq Path to processed fastq file
+#&#39; @param out_dir Directory for raw BAM output
+#&#39; @param config Configuration list containing reference and align parameters
+#&#39; @return List with input, processed path, status code, and error log
+worker_rsubread_align &lt;- function(fq, out_dir, config) {
+  base_name &lt;- tools::file_path_sans_ext(basename(fq))
+  if(grepl(&quot;\\.fastq\\.gz$&quot;, basename(fq))) base_name &lt;- tools::file_path_sans_ext(base_name)
+  base_name &lt;- sub(&quot;_processed$&quot;, &quot;&quot;, base_name)
+
+  bam_out &lt;- file.path(out_dir, paste0(base_name, &quot;_raw.bam&quot;))
+  err_log &lt;- &quot;&quot;
+  status_code &lt;- &quot;failed_align&quot;
+
+  tryCatch({
+    # Strictly limit to 1 thread here to prevent core overloading in parallel loop
+    Rsubread::align(
+      index          = config$reference$index_path,
+      readfile1      = fq,
+      output_file    = bam_out,
+      nthreads       = 1,
+      type           = config$align$type,
+      maxMismatches  = config$align$maxMismatches,
+      unique         = config$align$unique,
+      nBestLocations = config$align$nBestLocations
+    )
+
+    if (file.exists(bam_out) &amp;&amp; file.info(bam_out)$size &gt; 0) {
+      status_code &lt;- &quot;success&quot;
+    } else {
+      err_log &lt;- &quot;Align complete but BAM file missing or empty.&quot;
+    }
+  }, error = function(e) {
+    err_log &lt;&lt;- paste(&quot;Rsubread::align failed:&quot;, e$message)
+  })
+
+  return(list(input = fq, processed = bam_out, status = status_code, error = err_log))
+}
+
+#&#39; Worker: Sort and Index BAM file
+#&#39; @param bam_in Path to raw BAM file
+#&#39; @param out_dir Directory for sorted BAM output
+#&#39; @return List with input, processed path, status code, and error log
+worker_sort_index_bam &lt;- function(bam_in, out_dir) {
+  base_name &lt;- tools::file_path_sans_ext(basename(bam_in))
+  base_name &lt;- sub(&quot;_raw$&quot;, &quot;&quot;, base_name)
+
+  sort_prefix &lt;- file.path(out_dir, paste0(base_name, &quot;_sorted&quot;))
+  sorted_bam  &lt;- paste0(sort_prefix, &quot;.bam&quot;)
+  err_log     &lt;- &quot;&quot;
+  status_code &lt;- &quot;failed_sort&quot;
+
+  tryCatch({
+    Rsamtools::sortBam(file = bam_in, destination = sort_prefix)
+    Rsamtools::indexBam(file = sorted_bam)
+
+    if (file.exists(sorted_bam) &amp;&amp; file.exists(paste0(sorted_bam, &quot;.bai&quot;))) {
+      status_code &lt;- &quot;success&quot;
+    } else {
+      err_log &lt;- &quot;Sort/Index complete but BAM or BAI missing.&quot;
+    }
+  }, error = function(e) {
+    err_log &lt;&lt;- paste(&quot;Rsamtools sort/index failed:&quot;, e$message)
+  })
+
+  return(list(input = bam_in, processed = sorted_bam, status = status_code, error = err_log))
+}
+
+#&#39; Worker: UMI Deduplication via UMI-tools
+#&#39; @param sorted_bam Path to sorted and indexed BAM file
+#&#39; @param out_dir Directory for deduplicated BAM output
+#&#39; @param cmd_umi Path to umi_tools executable
+#&#39; @return List with input, processed path, status code, and error log
+worker_umi_dedup &lt;- function(sorted_bam, out_dir, cmd_umi) {
+  base_name &lt;- tools::file_path_sans_ext(basename(sorted_bam))
+  base_name &lt;- sub(&quot;_sorted$&quot;, &quot;&quot;, base_name)
+
+  dedup_out &lt;- file.path(out_dir, paste0(base_name, &quot;_dedup.bam&quot;))
+
+  umi_args &lt;- c(&quot;dedup&quot;,
+                &quot;--stdin&quot;, sorted_bam,
+                &quot;--stdout&quot;, dedup_out)
+
+  umi_status &lt;- system2(cmd_umi, umi_args, stdout = TRUE, stderr = TRUE)
+
+  if (is.null(attr(umi_status, &quot;status&quot;)) &amp;&amp; file.exists(dedup_out) &amp;&amp; file.info(dedup_out)$size &gt; 0) {
+    status_code &lt;- &quot;success&quot;
+    err_log &lt;- &quot;&quot;
+  } else {
+    status_code &lt;- &quot;failed_umi_dedup&quot;
+    err_log &lt;- paste(umi_status, collapse = &quot;\n&quot;)
+  }
+
+  return(list(input = sorted_bam, processed = dedup_out, status = status_code, error = err_log))
+}
+
+#&#39; Worker: Run FeatureCounts on all deduplicated BAMs
+#&#39; @param bam_files Character vector of absolute paths to deduplicated BAM files
+#&#39; @param config Configuration list containing feature_counts parameters
+#&#39; @return List containing the final Rsubread featureCounts object
+worker_feature_counts &lt;- function(bam_files, config) {
+  n_cores &lt;- worker_calculate_cores(bam_files, config)
+
+  message(sprintf(&quot;Running featureCounts on %d BAM files using %d cores...&quot;, length(bam_files), n_cores))
+
+  fc_res &lt;- Rsubread::featureCounts(
+    files                  = bam_files,
+    annot.ext              = config$reference$gtf_path,
+    isGTFAnnotationFile    = config$feature_counts$isGTFAnnotationFile,
+    GTF.featureType        = config$feature_counts$GTF.featureType,
+    GTF.attrType           = config$feature_counts$GTF.attrType,
+    nthreads               = n_cores,
+    strandSpecific         = config$feature_counts$strandSpecific,
+    countMultiMappingReads = config$feature_counts$countMultiMappingReads,
+    fraction               = config$feature_counts$fraction
+  )
+
+  return(fc_res)
+}
+
+#&#39; Worker: Download External Reference Databases
+#&#39; @param url Character URL of the file
+#&#39; @param dest_file Character absolute path to the destination file
+#&#39; @return Logical TRUE if successful or already exists
+worker_download_reference &lt;- function(url, dest_file) {
+  if (file.exists(dest_file)) {
+    message(sprintf(&quot;File already exists: %s&quot;, dest_file))
+    return(TRUE)
+  }
+
+  dir.create(dirname(dest_file), recursive = TRUE, showWarnings = FALSE)
+  message(sprintf(&quot;Downloading %s ...&quot;, basename(dest_file)))
+
+  old_timeout &lt;- getOption(&quot;timeout&quot;)
+  options(timeout = max(3600, old_timeout))
+
+  tryCatch({
+    download.file(url, destfile = dest_file, mode = &quot;wb&quot;)
+    options(timeout = old_timeout)
+    return(file.exists(dest_file))
+  }, error = function(e) {
+    options(timeout = old_timeout)
+    stop(paste(&quot;Download failed:&quot;, e$message))
+  })
+}</code></pre>
+<pre class="r"><code>cat(&quot;Script 05a Complete! \n&quot;)</code></pre>
+<pre><code>Script 05a Complete! </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.2 (2025-10-31)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    parallel  stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] Rsubread_2.24.0      Rsamtools_2.26.0     Biostrings_2.78.0   
+ [4] XVector_0.50.0       GenomicRanges_1.62.1 IRanges_2.44.0      
+ [7] S4Vectors_0.48.1     Seqinfo_1.0.0        BiocGenerics_0.56.0 
+[10] generics_0.1.4       pbmcapply_1.5.1      here_1.0.2          
+[13] lubridate_1.9.5      forcats_1.0.1        stringr_1.6.0       
+[16] dplyr_1.2.1          purrr_1.2.2          readr_2.2.0         
+[19] tidyr_1.3.2          tibble_3.3.1         tidyverse_2.0.0     
+[22] ggplot2_4.0.3        workflowr_1.7.2     
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        xfun_0.60           bslib_0.11.0       
+ [4] processx_3.9.0      lattice_0.22-9      callr_3.8.0        
+ [7] tzdb_0.5.0          bitops_1.0-9        vctrs_0.7.3        
+[10] tools_4.5.2         ps_1.9.3            pkgconfig_2.0.3    
+[13] Matrix_1.7-5        RColorBrewer_1.1-3  S7_0.2.2           
+[16] lifecycle_1.0.5     compiler_4.5.2      farver_2.1.2       
+[19] git2r_0.36.2        codetools_0.2-20    getPass_0.2-4      
+[22] httpuv_1.6.17       htmltools_0.5.9     sass_0.4.10        
+[25] yaml_2.3.12         crayon_1.5.3        later_1.4.8        
+[28] pillar_1.11.1       jquerylib_0.1.4     whisker_0.4.1      
+[31] BiocParallel_1.44.0 cachem_1.1.0        tidyselect_1.2.1   
+[34] digest_0.6.39       stringi_1.8.7       rprojroot_2.1.1    
+[37] fastmap_1.2.0       grid_4.5.2          cli_3.6.6          
+[40] magrittr_2.0.5      withr_3.0.3         scales_1.4.0       
+[43] promises_1.5.0      timechange_0.4.0    rmarkdown_2.31     
+[46] httr_1.4.8          otel_0.2.0          hms_1.1.4          
+[49] evaluate_1.0.5      knitr_1.51          rlang_1.3.0        
+[52] Rcpp_1.1.2          glue_1.8.1          BiocManager_1.30.27
+[55] renv_1.2.3          rstudioapi_0.19.0   jsonlite_2.0.0     
+[58] R6_2.6.1            fs_2.1.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
