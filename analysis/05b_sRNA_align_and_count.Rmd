@@ -1,15 +1,229 @@
 ---
-title: "05b_sRNA_align_and_count"
-author: "alexander-gysin"
-date: "2026-08-07"
+title: "sRNA Alignment and Counting"
+author: "Alexander Gysin (alexander.gysin@usz.ch)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
-## Introduction
+```{r setup_boxes, include=FALSE}
+rm(list = ls())
+source(here::here("code", "00_config.R"))
+```
 
-```{r}
+# Setup and Import
+`r what_this_does("Loaded essential libraries and sourced custom engines.", "Dynamically imported the scratch drive path containing the processed FastQ files from Script 05a.")`
+
+```{r setup_and_import, message=FALSE}
+library(tidyverse)
+library(here)
+library(pbmcapply)
+library(Rsubread)
+library(Rsamtools)
+
+# Knitr Config
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+
+# Output paths
+current_file    <- "05b_alignment_and_counting"
+output_dir_data <- here::here("output", current_file)
+if (!dir.exists(output_dir_data)) dir.create(output_dir_data, recursive = TRUE)
+
+# Source Engines
+source(here::here("code", "05_sRNA_engines.R"))
+
+# Always read the pointer saved by 05a
+rds_path <- here::here("output", "05a_sRNA_qc_and_preprocessing", "processed_fastq_dir_path.rds")
+# Fallback for test mode inheritance if run separately
+test_rds_path <- here::here("output", "05a_sRNA_qc_and_preprocessing", "processed_fastq_dir_path_test.rds")
+
+if(file.exists(rds_path)) {
+  processed_fastq_dir <- readRDS(rds_path)
+} else if(file.exists(test_rds_path)) {
+  processed_fastq_dir <- readRDS(test_rds_path)
+} else {
+  stop("Could not find RDS output from 05a. Please run 05a_sRNA_qc_and_preprocessing.Rmd first.")
+}
+
+processed_files <- list.files(processed_fastq_dir, pattern = "\\.fastq\\.gz$", full.names = TRUE)
+
+if(length(processed_files) == 0) {
+  warning("No processed fastq files found in the inherited scratch directory.")
+}
+```
+
+# Analysis Configurator
+`r what_this_does("Set up references and downloaded them directly to the scratch drive to avoid GitHub bloat.", "Enforced multimapping limits in alignment to capture miRNAs from identical genomic loci.", "Enabled fractional counting in featureCounts to evenly distribute multi-mapped reads without inflating absolute total counts.")`
+
+`r analysis_decision("Disabled Rsubread's strict unique mapping to prevent discarding identical mature miRNAs transcribed from multiple loci. Enabled featureCounts fraction = TRUE to correctly weight these assignments.")`
+
+```{r analysis_configurator}
+align_count_config <- list(
+  
+  # 0. Pipeline Run Mode
+  run_mode = list(
+    test_run = TRUE,        # Toggle to TRUE to only process a small subset
+    test_samples = 2         # Number of samples to process if test_run is TRUE
+  ),
+  
+  # 1. HPC System Limits
+  system = list(
+    max_cores  = 128,  
+    core_ratio = 0.75  
+  ),
+  
+  # 2. Reference Genomes & Annotations (Placed on scratch drive!)
+  reference = list(
+    fasta_url  = "ftp://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz",
+    # Official MirGeneDB 3.0 Human Annotation
+    gtf_url    = "https://mirgenedb.org/gff/hsa?all=1",
+ 
+    fasta_path = "~/scratch/miRNA_project/resources/genomes/GRCh38/GRCh38.primary_assembly.genome.fa.gz",
+    index_path = "~/scratch/miRNA_project/resources/genomes/GRCh38/Rsubread_index/GRCh38_index",
+    gtf_path   = "~/scratch/miRNA_project/resources/annotations/miRBase/hsa.gff3" 
+  ),
+  
+  # 3. Alignment Parameters (Rsubread)
+  align = list(
+    type = 0,               # 0 for RNA
+    maxMismatches = 1,      # Strict mismatch allowance for short reads
+    unique = FALSE,         # Allow multimapping
+    nBestLocations = 10     # Keep up to 10 best alignments for identical loci
+  ),
+  
+  # 4. Feature Counts Parameters
+  feature_counts = list(
+    isGTFAnnotationFile    = TRUE,
+    GTF.featureType        = "miRNA", 
+    GTF.attrType           = "Name",  
+    strandSpecific         = 1,       # 1 for stranded
+    countMultiMappingReads = TRUE,    # Tally the multimapped reads
+    fraction               = TRUE     # Distribute fractional weight (e.g., 1 read mapped to 2 loci = 0.5 counts each)
+  )
+)
+
+# Apply Test Subset
+if (align_count_config$run_mode$test_run) {
+  cat("> **Notice:** TEST RUN ACTIVE. Processing only", align_count_config$run_mode$test_samples, "samples.\n\n")
+  processed_files <- head(processed_files, align_count_config$run_mode$test_samples)
+}
+```
+
+# Download Reference and Build Genome Index
+`r what_this_does("Downloaded the reference genome and annotations to the scratch drive if missing. Verified the Rsubread genome index and generated it if missing.")`
+
+```{r build_genome_index, eval = FALSE}
+# 1. Download
+worker_download_reference(align_count_config$reference$fasta_url, align_count_config$reference$fasta_path)
+worker_download_reference(align_count_config$reference$gtf_url, align_count_config$reference$gtf_path)
+
+# 2. Build Index (Checks for the .reads file to see if it's already built)
+if (!file.exists(paste0(align_count_config$reference$index_path, ".reads"))) {
+  message("Genome index not found. Building index (this will take time and memory)...")
+  
+  dir.create(dirname(align_count_config$reference$index_path), recursive = TRUE, showWarnings = FALSE)
+  
+  Rsubread::buildindex(
+    basename   = align_count_config$reference$index_path,
+    reference  = align_count_config$reference$fasta_path,
+    indexSplit = FALSE # FALSE is faster if your HPC has >16GB RAM
+  )
+  message("Genome index built successfully.")
+} else {
+  message("Genome index found. Skipping build step.")
+}
+```
+
+# Align, Sort and Dedup
+`r what_this_does("Executed the per-sample parallelized orchestrator to map reads, sort the resulting BAMs, and deduplicate UMIs using UMI-tools."))`
+
+```{r align_sort_dedup, eval = FALSE}
+folder_suffix   <- ifelse(align_count_config$run_mode$test_run, "_test", "")
+target_folder   <- paste0(current_file, folder_suffix)
+scratch_out_dir <- file.path("~/scratch/miRNA_project", target_folder)
+
+if(length(processed_files) > 0) {
+  
+  align_res <- wrap_alignment_dedup(
+    fastq_files = processed_files, 
+    config      = align_count_config, 
+    scratch_dir = scratch_out_dir
+  )
+  
+  if(align_res$status == "complete") {
+    cat(sprintf("> **Success:** Aligned and deduplicated %d/%d samples successfully.\n\n", 
+                align_res$diagnostics$successful_processed, 
+                align_res$diagnostics$total_samples))
+    
+    cat("Deduplicated BAM files stored at: `", align_res$paths$dedup_bam_dir, "`\n\n")
+    
+    if(length(align_res$diagnostics$errors) > 0) {
+      cat("### Error Logs from Failed Samples\n\n```text\n")
+      cat(head(align_res$diagnostics$errors, 3), sep = "\n\n-----------------\n\n")
+      cat("\n```\n\n")
+    }
+  }
+} else {
+  cat("> **Notice:** Execution skipped. No preprocessed fastq files loaded.\n\n")
+}
+```
+
+# Feature Counting
+`r what_this_does("Aggregated all deduplicated BAM files to generate the final fractional count matrix. Cleaned up column names for downstream analysis.")`
+
+```{r feature_counting, eval = FALSE}
+# Use short-circuiting && to safely check existence before evaluating properties
+if(exists("align_res") && align_res$status == "complete" && length(align_res$paths$dedup_bam_files) > 0) {
+  
+  fc_data <- worker_feature_counts(
+    bam_files = align_res$paths$dedup_bam_files,
+    config    = align_count_config
+  )
+  
+  # Clean up column names 
+  clean_colnames <- tools::file_path_sans_ext(basename(colnames(fc_data$counts)))
+  clean_colnames <- sub("_dedup$", "", clean_colnames)
+  colnames(fc_data$counts) <- clean_colnames
+  colnames(fc_data$stat)   <- c("Status", clean_colnames)
+  
+  cat("> **Success:** Feature matrix generated for", ncol(fc_data$counts), "samples across", nrow(fc_data$counts), "miRNAs.\n\n")
+  
+} else {
+  cat("> **Notice:** Feature counting skipped due to missing BAM files.\n\n")
+}
+```
+
+# Export 
+`r what_this_does("Exported the final count matrix and mapping statistics as RDS and CSV for downstream Differential Expression analysis.")`
+
+```{r export}
+if(exists("fc_data")) {
+  
+  file_suffix <- ifelse(align_count_config$run_mode$test_run, "_test", "")
+  
+  # Export Count Matrix (RDS for data integrity)
+  matrix_path <- file.path(output_dir_data, paste0("raw_count_matrix", file_suffix, ".rds"))
+  saveRDS(fc_data$counts, matrix_path)
+  
+  # Export Mapping Stats (CSV for easy viewing)
+  stats_path <- file.path(output_dir_data, paste0("feature_counts_stats", file_suffix, ".csv"))
+  readr::write_csv(as.data.frame(fc_data$stat), stats_path)
+  
+}
+```
+
+Appendix
+`r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
+
+```{r appendix, code=c(readLines(here::here("code", "0_config.R")), readLines(here::here("code", "05_sRNA_engines.R"))), eval=FALSE}
 
 ```
 
+
+```{r complete}
+cat("Script 05b Complete! \n")
+```

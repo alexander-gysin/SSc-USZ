@@ -2,45 +2,58 @@
 Coding SOP
 ===================================
 
-I. Coding Style
+I. Coding Style & Documentation
 --------------------------------------------------------------------------------
 * DRY Principle: Do not repeat yourself. Code must be fully parameterized with zero hardcoded values deep within scripts.
-* Configurations: Provide fully commented-out example configurations detailing all available features.
-* Documentation: Maintain clear, explanatory in-line comments for logic comprehension.
+* Configurations: Provide fully commented-out example configurations detailing all available features. All parameters must be stored in hierarchical nested lists.
+* Strict Function Documentation: All custom functions (both orchestrators and workers) must be documented using strict Roxygen2 syntax (#' @title, #' @param, #' @return) directly above the function definition to clearly define inputs, outputs, and purpose.
+* In-line Documentation: Maintain clear, explanatory in-line comments for logic comprehension within complex loops or math operations.
+* Chunk Summaries: Begin every code chunk with an accurate `what_this_does()` function call.
+* Decision Tracking: Explicitly highlight all critical analysis decisions (e.g., exclusions, thresholds, patient filtering) using the `analysis_decision()` function.
 * Memory Optimization: Actively declutter the workspace. Variables unneeded outside their local chunk must be deleted (via `rm()` and `gc()`) to save RAM.
 * Output Standardization: Save plots/figures as dynamically and comprehensibly named .png files, and tables as .csv files, inside the script's output folder (creating dynamic subfolders if necessary).
 * Audit Trails: Enforce detailed audit logs exclusively for data cleanup and manipulation steps. Omit forced logging for non-transformative chunks.
 * Global Environments: Source all global configurations (e.g., colors) and universal functions (e.g., `what_this_does()`) from the centralized `00_config.R` file.
-* Modularity: Isolate reusable engines into corresponding engine files (e.g., general, proteomics, lipidomics, machine_learning and multi-omics).
-* Functions should be divided into the wrappers (paralelized, they recieve the list of jobs from the configuration) and workers they execute the math orchestrated by the wrapper
-* Engines should perform computationaly hevy or many tasks at once should be parallelized using the furrr package (max CPU cores <- min(1, max(32, 0.75 * available cores, number_of_tasks)) to minimalize overhead cost and not overload the computer)
-* Chunk Summaries: Begin every code chunk with an accurate `what_this_does()` function call.
-* Decision Tracking: Explicitly highlight all critical analysis decisions (e.g., exclusions, thresholds, patient filtering) using the `analysis_decision()` function.
 
 II. Architecture
+--------------------------------------------------------------------------------
+* Modularity: Isolate reusable engines into corresponding engine files (e.g., general, proteomics, lipidomics, machine_learning, multi_omics, sRNA_engines).
+* Master Orchestrators (Wrappers): Monolithic pipelines must be avoided. The orchestrator serves purely as the traffic cop. It receives the global configuration list, manages directory setup, determines safe parallelization limits, iterates over the job list, traps errors, and compiles the final structured output/diagnostics.
+* Atomic Workers: Complex logic must be broken down into small, single-responsibility functions (e.g., worker_fastqc, worker_cutadapt). Workers execute the specific math or command-line operations and return standardized lists (e.g., input, output, status, error) to the orchestrator.
+* Defensive Pathing: Workers should never guess paths. The orchestrator must build absolute paths and pass them directly to the workers.
+* Smart Parallelization: Engines that perform computationally heavy or highly repetitive tasks should be parallelized (e.g., via the furrr or pbmcapply package). Always calculate safe cores using the "lowest limit wins" rule to prevent I/O bottlenecks and HPC overloading. Use this function available in 05_sRNA_engines.R:
+    #' Worker: Compute Safe Parallel Cores
+    #' @param fastq_files Character vector of fastq files
+    #' @param config Nested list of configurations
+    #' @return Integer representing the number of cores to use
 
+    worker_calculate_cores <- function(fastq_files, config) {
+      available_cores <- parallel::detectCores()
 
-II. Data Visualization (Plots)
+      hard_cap     <- config$system$max_cores
+      relative_cap <- max(1, floor(available_cores * config$system$core_ratio)) # Relative cap is rounded down
+      file_cap     <- max(1, ceiling(length(fastq_files) / 2)) # Half-file rule, rounding up
+
+      # The lowest limit wins
+      return(min(hard_cap, relative_cap, file_cap))
+    }
+
+III. Data Visualization (Plots)
 --------------------------------------------------------------------------------
 * Parameterization: Store all plot configurations in hierarchical nested lists (e.g., `histograms <- list(histogram_1 <- list(histogram_1_configs))`).
-* Project wide colors: Use the custom get_project_colors <- function(requested_levels, custom_map = NULL) to get project wide colors
+* Project wide colors: Use the custom get_project_colors <- function(requested_levels, custom_map = NULL) to get project wide colors.
 
-
-III. HTML Report Generation & Rendering Stability
+IV. HTML Report Generation & Rendering Stability
 --------------------------------------------------------------------------------
 * Report Aesthetics: Ensure tables are highly legible and header structures (#, ##, ###) remain minimal, logical, and devoid of unnecessary subheaders.
-* Chunk Cohesion: Prevent code fragmentation (which spawns excessive "show code" buttons) by consolidating all `cat()` commands strictly at the end of the code chunk.
+* Chunk Cohesion: Prevent code fragmentation (which spawns excessive "show code" buttons) by consolidating all `cat()` commands strictly at the end of the code chunk. e.g. by creating cummulative log variables.
 * Tables: kableExtra Tables in `results='asis'`
     - Primary Shielding Strategy: To prevent Pandoc DOM corruption, leverage knitr's native HTML preservation tags by directly calling `print(table_object)` at the end of the chunk rather than converting to strings.
     - Fallback Shielding Strategy: If string conversion via `as.character()` is strictly necessary, manually shield the naked HTML from the Pandoc parser by wrapping the `cat()` output inside Pandoc raw HTML blocks (```{=html} ... ```).
     - workflowr Interactive Trap: Never rely solely on `interactive()` for Viewer pane testing, as wflow_build() executes interactively. To prevent premature HTML dumping during compilation, strictly evaluate conditional prints using: `interactive() && !isTRUE(getOption('knitr.in.progress'))`.
 
-
-IV. Continuity
+V. Continuity
 --------------------------------------------------------------------------------
-* At the end of each workday push to github with an extensive commit message
+* At the end of each workday push to github with an extensive commit message using wflowsync::sync()
 * Keep lockfile up to date
 * Publish only when a script is finished to avoid unnecessary publishing
-
-# Ideas for future improvements
-- in order to prevent the "side-effect trap" never delete any output or assets, if you do remove the cache = TRUE from the corresponding chunk header

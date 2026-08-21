@@ -42,8 +42,7 @@ Illumina adapter: 34bp long? (does not really matter)
 2.  is there a difference between Act vs Nonactive?
 3.  Is there a difference between C1 vs C2?
 4.  Is there a difference between N1 vs N2?
-5.  Does unsupervised clustering on sRNA agree with the proteomics
-    clustering?
+5.  Can we cluster on the miRNA?
 6.  Which sRNAs correlate with which clinical features?
 7.  Can we predict organ involvement?
 8.  Cell-of-origin inference (enriched for certain cell type signature)
