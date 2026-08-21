@@ -56,8 +56,8 @@ preprocessing_config <- list(
   
   # 0. Pipeline Run Mode
   run_mode = list(
-    test_run = TRUE,    # Toggle to TRUE to only process a small subset
-    test_samples = 2    # Number of samples to process if test_run is TRUE
+    test_run = FALSE,    # Toggle to TRUE to only process a small subset
+    test_samples = 1    # Number of samples to process if test_run is TRUE
   ),
   
   # 1. HPC System Limits
@@ -71,16 +71,19 @@ preprocessing_config <- list(
     pattern = ".*AACTGTAGGCACCATCAAT(?P<umi_1>.{12}).*"
   ),
   
- # 3. Adapter Trimming
+ # 3. Cropping, Quality and Adapter Trimming, length filtering
   cutadapt = list(
-    adapter        = "AACTGTAGGCACCATCAAT",
+    hard_crop = 100, # Crops all sequences to 100bp
+    quality_cutoff = 35,  # 3' Quality trimming threshold (Phred >= x)
+    adapter        = "AACTGTAGGCACCATCAAT", # Target Sequence which should be removed including following 3'end
     min_length     = 18, # Discard reads smaller than typical mature miRNAs
-    max_length     = 999, # Discard untrimmed junk or long non-miRNA fragments
-    quality_cutoff = 25  # 3' Quality trimming threshold (Phred >= x)
+    max_length     = 45 # Discard untrimmed junk or long non-miRNA fragments
+   
   )
 )
 
-# Estimation per sample: 20min
+# Estimation per sample per core: 20min
+# Estimation for all samples on HPC: 60min
 ```
 
 # Preprocessing Execution 
@@ -177,7 +180,7 @@ gc()
 Appendix
 `r what_this_does("Appended the raw underlying R code from the custom omics engines to the HTML report's appendix to ensure complete analytical transparency and reproducibility.")`
 
-```{r appendix, code=c(readLines(here::here("code", "0_config.R")), readLines(here::here("code", "05_sRNA_engines.R"))), eval=FALSE}
+```{r appendix, code=c(readLines(here::here("code", "00_config.R")), readLines(here::here("code", "05_sRNA_engines.R"))), eval=FALSE}
 
 ```
 
