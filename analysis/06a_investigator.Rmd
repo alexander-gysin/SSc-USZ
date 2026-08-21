@@ -56,7 +56,6 @@ clustering_res <- readRDS(here::here("output", "03c_proteomics_clustering", "Clu
 pathway_dbs <- list(
   "Hallmark" = msigdbr(species = "Homo sapiens", category = "H") %>% select(gs_name, gene_symbol),
   "GO_BP" = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP") %>% select(gs_name, gene_symbol),
-  "Immunologic_Signature" = msigdbr(species = "Homo sapiens", category = "C7") %>% select(gs_name, gene_symbol),
   "Reactome" = msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME") %>% select(gs_name, gene_symbol)
 )
 

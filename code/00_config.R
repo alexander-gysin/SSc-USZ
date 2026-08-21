@@ -202,6 +202,21 @@ theme_project_base <- function(base_size = 14) {
     )
 }
 
+#' Worker: Compute Safe Parallel Cores
+#' @param fastq_files Character vector of fastq files
+#' @param config Nested list of configurations
+#' @return Integer representing the number of cores to use
+worker_calculate_cores <- function(fastq_files, config) {
+  available_cores <- parallel::detectCores()
+
+  hard_cap     <- config$system$max_cores
+  relative_cap <- max(1, floor(available_cores * config$system$core_ratio)) # Relative cap is rounded down
+  file_cap     <- max(1, ceiling(length(fastq_files) / 2)) # Half-file rule, rounding up
+
+  # The lowest limit wins
+  return(min(hard_cap, relative_cap, file_cap))
+}
+
 # Custom Box Generators
 what_this_does <- function(...) {
   points <- list(...)

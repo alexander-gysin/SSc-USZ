@@ -21,7 +21,9 @@ II. Architecture
 * Master Orchestrators (Wrappers): Monolithic pipelines must be avoided. The orchestrator serves purely as the traffic cop. It receives the global configuration list, manages directory setup, determines safe parallelization limits, iterates over the job list, traps errors, and compiles the final structured output/diagnostics.
 * Atomic Workers: Complex logic must be broken down into small, single-responsibility functions (e.g., worker_fastqc, worker_cutadapt). Workers execute the specific math or command-line operations and return standardized lists (e.g., input, output, status, error) to the orchestrator.
 * Defensive Pathing: Workers should never guess paths. The orchestrator must build absolute paths and pass them directly to the workers.
-* Smart Parallelization: Engines that perform computationally heavy or highly repetitive tasks should be parallelized (e.g., via the furrr or pbmcapply package). Always calculate safe cores using the "lowest limit wins" rule to prevent I/O bottlenecks and HPC overloading. Use this function available in 05_sRNA_engines.R:
+* Smart Parallelization: Engines that perform computationally heavy or highly repetitive tasks should be parallelized (e.g., via the furrr or pbmcapply package). Always calculate safe cores using the "lowest limit wins" rule to prevent I/O bottlenecks and HPC overloading.
+* Smart Parallelization: Scripts that define a lot of lightweight jobs should parallelize the jobs instead of the engines. Never parallelize both to avoid oversubscription of cores.
+    Use this function available in 00_config.R to determine the safe number of cores to use:
     #' Worker: Compute Safe Parallel Cores
     #' @param fastq_files Character vector of fastq files
     #' @param config Nested list of configurations
