@@ -148,6 +148,110 @@ investigation_jobs <- list(
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
     residualize_conf = NULL
+  ),
+  
+  job_IFIT1 = list(
+    title = "Investigate IFIT1",
+    targets = c("IFIT1"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_IFIT3 = list(
+    title = "Investigate IFIT3",
+    targets = c("IFIT3"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_RIGI = list(
+    title = "Investigate RIGI",
+    targets = c("RIGI"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_DTX3L = list(
+    title = "Investigate DTX3L",
+    targets = c("DTX3L"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_CXCL10 = list(
+    title = "Investigate CXCL10",
+    targets = c("CXCL10"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_CXCL11 = list(
+    title = "Investigate CXCL11",
+    targets = c("CXCL11"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_IL6 = list(
+    title = "Investigate IL6",
+    targets = c("IL6"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_IFNG = list(
+    title = "Investigate IFNG",
+    targets = c("IFNG"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_IL18 = list(
+    title = "Investigate IL18",
+    targets = c("IL18"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_CXCL8 = list(
+    title = "Investigate CXCL8",
+    targets = c("CXCL8"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_CCL19 = list(
+    title = "Investigate CCL19",
+    targets = c("CCL19"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_LAMP3 = list(
+    title = "Investigate LAMP3",
+    targets = c("LAMP3"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
+  ),
+  
+    job_IFI30 = list(
+    title = "Investigate IFI30",
+    targets = c("IFI30"),
+    highlight_vars = highlights,
+    clin_test_list = ssc_clinical_parameters,
+    residualize_conf = NULL
   )
 )
 
