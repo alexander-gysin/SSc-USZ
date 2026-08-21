@@ -118,7 +118,7 @@ highlights <- list(
 investigation_jobs <- list(
 
   job_casp4 = list(
-    title = "Investigate CASP4",
+    title = "CASP4",
     targets = c("CASP4"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -126,7 +126,7 @@ investigation_jobs <- list(
   ),
   
   job_ido1 = list(
-    title = "Investigate IDO1",
+    title = "IDO1",
     targets = c("IDO1"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -134,7 +134,7 @@ investigation_jobs <- list(
   ),
   
     job_eda2r = list(
-    title = "Investigate EDA2R",
+    title = "EDA2R",
     targets = c("EDA2R"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -142,7 +142,7 @@ investigation_jobs <- list(
   ),
   
     job_RNF213 = list(
-    title = "Investigate RNF213",
+    title = "RNF213",
     targets = c("RNF213"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -150,7 +150,7 @@ investigation_jobs <- list(
   ),
   
   job_IFIT1 = list(
-    title = "Investigate IFIT1",
+    title = "IFIT1",
     targets = c("IFIT1"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -158,7 +158,7 @@ investigation_jobs <- list(
   ),
   
     job_IFIT3 = list(
-    title = "Investigate IFIT3",
+    title = "IFIT3",
     targets = c("IFIT3"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -166,7 +166,7 @@ investigation_jobs <- list(
   ),
   
     job_RIGI = list(
-    title = "Investigate RIGI",
+    title = "RIGI",
     targets = c("RIGI"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -174,7 +174,7 @@ investigation_jobs <- list(
   ),
   
     job_DTX3L = list(
-    title = "Investigate DTX3L",
+    title = "DTX3L",
     targets = c("DTX3L"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -182,7 +182,7 @@ investigation_jobs <- list(
   ),
   
     job_CXCL10 = list(
-    title = "Investigate CXCL10",
+    title = "CXCL10",
     targets = c("CXCL10"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -190,7 +190,7 @@ investigation_jobs <- list(
   ),
   
     job_CXCL11 = list(
-    title = "Investigate CXCL11",
+    title = "CXCL11",
     targets = c("CXCL11"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -198,7 +198,7 @@ investigation_jobs <- list(
   ),
   
     job_IL6 = list(
-    title = "Investigate IL6",
+    title = "IL6",
     targets = c("IL6"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -206,7 +206,7 @@ investigation_jobs <- list(
   ),
   
     job_IFNG = list(
-    title = "Investigate IFNG",
+    title = "IFNG",
     targets = c("IFNG"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -214,7 +214,7 @@ investigation_jobs <- list(
   ),
   
     job_IL18 = list(
-    title = "Investigate IL18",
+    title = "IL18",
     targets = c("IL18"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -222,7 +222,7 @@ investigation_jobs <- list(
   ),
   
     job_CXCL8 = list(
-    title = "Investigate CXCL8",
+    title = "CXCL8",
     targets = c("CXCL8"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -230,7 +230,7 @@ investigation_jobs <- list(
   ),
   
     job_CCL19 = list(
-    title = "Investigate CCL19",
+    title = "CCL19",
     targets = c("CCL19"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -238,7 +238,7 @@ investigation_jobs <- list(
   ),
   
     job_LAMP3 = list(
-    title = "Investigate LAMP3",
+    title = "LAMP3",
     targets = c("LAMP3"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
@@ -246,7 +246,7 @@ investigation_jobs <- list(
   ),
   
     job_IFI30 = list(
-    title = "Investigate IFI30",
+    title = "IFI30",
     targets = c("IFI30"),
     highlight_vars = highlights,
     clin_test_list = ssc_clinical_parameters,
