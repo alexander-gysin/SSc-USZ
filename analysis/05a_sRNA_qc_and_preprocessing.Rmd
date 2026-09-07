@@ -77,7 +77,7 @@ preprocessing_config <- list(
     quality_cutoff = 35,  # 3' Quality trimming threshold (Phred >= x)
     adapter        = "AACTGTAGGCACCATCAAT", # Target Sequence which should be removed including following 3'end
     min_length     = 18, # Discard reads smaller than typical mature miRNAs
-    max_length     = 45 # Discard untrimmed junk or long non-miRNA fragments
+    max_length     = 30 # Discard untrimmed junk or long non-miRNA fragments
    
   )
 )

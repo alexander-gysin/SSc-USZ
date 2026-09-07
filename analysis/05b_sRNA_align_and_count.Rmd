@@ -57,17 +57,15 @@ if(length(processed_files) == 0) {
 ```
 
 # Analysis Configurator
-`r what_this_does("Set up references and downloaded them directly to the scratch drive to avoid GitHub bloat.", "Enforced multimapping limits in alignment to capture miRNAs from identical genomic loci.", "Enabled fractional counting in featureCounts to evenly distribute multi-mapped reads without inflating absolute total counts.")`
-
-`r analysis_decision("Disabled Rsubread's strict unique mapping to prevent discarding identical mature miRNAs transcribed from multiple loci. Enabled featureCounts fraction = TRUE to correctly weight these assignments.")`
+`r what_this_does("Shifted reference index to strictly target the miRNAome using miRBase annotations.", "Utilized Bowtie 1 parameters tailored for short reads to retain optimal mappings and allow miRDeep2 weighting.", "Automated deduplication and Fastx formatting prior to cohort-level miRDeep2 quantification.")`
 
 ```{r analysis_configurator}
 align_count_config <- list(
   
   # 0. Pipeline Run Mode
   run_mode = list(
-    test_run = TRUE,        # Toggle to TRUE to only process a small subset
-    test_samples = 2         # Number of samples to process if test_run is TRUE
+    test_run = FALSE,        
+    test_samples = 2         
   ),
   
   # 1. HPC System Limits
@@ -76,33 +74,23 @@ align_count_config <- list(
     core_ratio = 0.75  
   ),
   
-  # 2. Reference Genomes & Annotations (Placed on scratch drive!)
+  # 2. Reference Genomes & Annotations (miRNAome specifically)
   reference = list(
-    fasta_url  = "ftp://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz",
-    # Official MirGeneDB 3.0 Human Annotation
-    gtf_url    = "https://mirgenedb.org/gff/hsa?all=1",
- 
-    fasta_path = "~/scratch/miRNA_project/resources/genomes/GRCh38/GRCh38.primary_assembly.genome.fa.gz",
-    index_path = "~/scratch/miRNA_project/resources/genomes/GRCh38/Rsubread_index/GRCh38_index",
-    gtf_path   = "~/scratch/miRNA_project/resources/annotations/miRBase/hsa.gff3" 
+    hairpin_url = "[https://www.mirbase.org/ftp/CURRENT/hairpin.fa](https://www.mirbase.org/ftp/CURRENT/hairpin.fa)",
+    mature_url  = "[https://www.mirbase.org/ftp/CURRENT/mature.fa](https://www.mirbase.org/ftp/CURRENT/mature.fa)",
+    
+    hairpin_path = "~/scratch/miRNA_project/resources/genomes/miRBase/hairpin.fa",
+    mature_path  = "~/scratch/miRNA_project/resources/genomes/miRBase/mature.fa",
+    index_path   = "~/scratch/miRNA_project/resources/genomes/miRBase/bowtie_index/hairpin_index"
   ),
   
-  # 3. Alignment Parameters (Rsubread)
+  # 3. Alignment Parameters (Bowtie 1)
   align = list(
-    type = 0,               # 0 for RNA
-    maxMismatches = 1,      # Strict mismatch allowance for short reads
-    unique = FALSE,         # Allow multimapping
-    nBestLocations = 10     # Keep up to 10 best alignments for identical loci
-  ),
-  
-  # 4. Feature Counts Parameters
-  feature_counts = list(
-    isGTFAnnotationFile    = TRUE,
-    GTF.featureType        = "miRNA", 
-    GTF.attrType           = "Name",  
-    strandSpecific         = 1,       # 1 for stranded
-    countMultiMappingReads = TRUE,    # Tally the multimapped reads
-    fraction               = TRUE     # Distribute fractional weight (e.g., 1 read mapped to 2 loci = 0.5 counts each)
+    # -v 0: 0 mismatches allowed (strict)
+    # -a: report all valid alignments (required for miRDeep2 multimapping weight)
+    # --best --strata: group best hits
+    # --norc: no reverse complement (highly strand specific)
+    bowtie_params = "-v 0 -a --best --strata --norc"
   )
 )
 
@@ -113,57 +101,59 @@ if (align_count_config$run_mode$test_run) {
 }
 ```
 
-# Download Reference and Build Genome Index
-`r what_this_does("Downloaded the reference genome and annotations to the scratch drive if missing. Verified the Rsubread genome index and generated it if missing.")`
+# Download Reference and Build Bowtie Index
+`r what_this_does("Downloaded the hairpin and mature FASTA sequences directly to the scratch drive.", "Generated the specialized Bowtie 1 index required for short-read alignment.")`
 
-```{r build_genome_index, eval = FALSE}
+```{r reference}
 # 1. Download
-worker_download_reference(align_count_config$reference$fasta_url, align_count_config$reference$fasta_path)
-worker_download_reference(align_count_config$reference$gtf_url, align_count_config$reference$gtf_path)
+worker_download_reference(align_count_config$reference$hairpin_url, align_count_config$reference$hairpin_path)
+worker_download_reference(align_count_config$reference$mature_url, align_count_config$reference$mature_path)
 
-# 2. Build Index (Checks for the .reads file to see if it's already built)
-if (!file.exists(paste0(align_count_config$reference$index_path, ".reads"))) {
-  message("Genome index not found. Building index (this will take time and memory)...")
+# 2. Build Bowtie 1 Index
+# Bowtie 1 indices typically end with .1.ebwt
+if (!file.exists(paste0(align_count_config$reference$index_path, ".1.ebwt"))) {
+  message("Bowtie 1 index not found. Building index for hairpin sequences...")
   
   dir.create(dirname(align_count_config$reference$index_path), recursive = TRUE, showWarnings = FALSE)
   
-  Rsubread::buildindex(
-    basename   = align_count_config$reference$index_path,
-    reference  = align_count_config$reference$fasta_path,
-    indexSplit = FALSE # FALSE is faster if your HPC has >16GB RAM
-  )
-  message("Genome index built successfully.")
+  conda_bin  <- path.expand("~/miniconda3/envs/mirna_env/bin")
+  cmd_build  <- file.path(conda_bin, "bowtie-build")
+  
+  # Execute bowtie-build
+  system2(cmd_build, args = c(align_count_config$reference$hairpin_path, align_count_config$reference$index_path))
+  message("Bowtie index built successfully.")
 } else {
-  message("Genome index found. Skipping build step.")
+  message("Bowtie index found. Skipping build step.")
 }
 ```
 
-# Align, Sort and Dedup
-`r what_this_does("Executed the per-sample parallelized orchestrator to map reads, sort the resulting BAMs, and deduplicate UMIs using UMI-tools."))`
+# Align, Format and Quantify
+`r what_this_does("Executed the parallelized orchestrator to map reads via Bowtie, sort via Samtools, and deduplicate UMIs via UMICollapse.", "Converted BAMs back to collapsed FastQ files.", "Passed the cohort to miRDeep2 for weighted quantification.")`
 
-```{r align_sort_dedup, eval = FALSE}
+```{r align_format_quantify, eval = FALSE}
 folder_suffix   <- ifelse(align_count_config$run_mode$test_run, "_test", "")
 target_folder   <- paste0(current_file, folder_suffix)
 scratch_out_dir <- file.path("~/scratch/miRNA_project", target_folder)
 
 if(length(processed_files) > 0) {
   
-  align_res <- wrap_alignment_dedup(
+  # This wrapper now runs the pipeline end-to-end and returns the miRDeep2 count matrix natively
+  quant_res <- wrap_alignment_dedup(
     fastq_files = processed_files, 
     config      = align_count_config, 
     scratch_dir = scratch_out_dir
   )
   
-  if(align_res$status == "complete") {
-    cat(sprintf("> **Success:** Aligned and deduplicated %d/%d samples successfully.\n\n", 
-                align_res$diagnostics$successful_processed, 
-                align_res$diagnostics$total_samples))
+  if(quant_res$status == "complete") {
+    cat(sprintf("> **Success:** Aligned, deduplicated, and quantified %d/%d samples successfully.\n\n", 
+                quant_res$diagnostics$successful_processed, 
+                quant_res$diagnostics$total_samples))
     
-    cat("Deduplicated BAM files stored at: `", align_res$paths$dedup_bam_dir, "`\n\n")
+    cat("Quantification files stored at: `", quant_res$paths$quant_dir, "`\n\n")
     
-    if(length(align_res$diagnostics$errors) > 0) {
+    if(length(quant_res$diagnostics$errors) > 0) {
       cat("### Error Logs from Failed Samples\n\n```text\n")
-      cat(head(align_res$diagnostics$errors, 3), sep = "\n\n-----------------\n\n")
+      cat(head(quant_res$diagnostics$errors, 3), sep = "\n\n-----------------\n\n")
       cat("\n```\n\n")
     }
   }
@@ -172,47 +162,25 @@ if(length(processed_files) > 0) {
 }
 ```
 
-# Feature Counting
-`r what_this_does("Aggregated all deduplicated BAM files to generate the final fractional count matrix. Cleaned up column names for downstream analysis.")`
-
-```{r feature_counting, eval = FALSE}
-# Use short-circuiting && to safely check existence before evaluating properties
-if(exists("align_res") && align_res$status == "complete" && length(align_res$paths$dedup_bam_files) > 0) {
-  
-  fc_data <- worker_feature_counts(
-    bam_files = align_res$paths$dedup_bam_files,
-    config    = align_count_config
-  )
-  
-  # Clean up column names 
-  clean_colnames <- tools::file_path_sans_ext(basename(colnames(fc_data$counts)))
-  clean_colnames <- sub("_dedup$", "", clean_colnames)
-  colnames(fc_data$counts) <- clean_colnames
-  colnames(fc_data$stat)   <- c("Status", clean_colnames)
-  
-  cat("> **Success:** Feature matrix generated for", ncol(fc_data$counts), "samples across", nrow(fc_data$counts), "miRNAs.\n\n")
-  
-} else {
-  cat("> **Notice:** Feature counting skipped due to missing BAM files.\n\n")
-}
-```
 
 # Export 
-`r what_this_does("Exported the final count matrix and mapping statistics as RDS and CSV for downstream Differential Expression analysis.")`
+`r what_this_does("Extracted the clean raw count matrix generated by miRDeep2 and exported it for downstream Differential Expression analysis.")`
 
 ```{r export}
-if(exists("fc_data")) {
+# The matrix is already loaded into R memory by the wrapper function
+if(exists("quant_res") && quant_res$status == "complete" && !is.null(quant_res$counts)) {
   
   file_suffix <- ifelse(align_count_config$run_mode$test_run, "_test", "")
   
-  # Export Count Matrix (RDS for data integrity)
+  # Export Count Matrix (RDS for data integrity in downstream R scripts)
   matrix_path <- file.path(output_dir_data, paste0("raw_count_matrix", file_suffix, ".rds"))
-  saveRDS(fc_data$counts, matrix_path)
+  saveRDS(quant_res$counts, matrix_path)
   
-  # Export Mapping Stats (CSV for easy viewing)
-  stats_path <- file.path(output_dir_data, paste0("feature_counts_stats", file_suffix, ".csv"))
-  readr::write_csv(as.data.frame(fc_data$stat), stats_path)
+  # Export as CSV for quick viewing/sharing
+  csv_path <- file.path(output_dir_data, paste0("raw_count_matrix", file_suffix, ".csv"))
+  write.csv(quant_res$counts, csv_path, row.names = FALSE)
   
+  cat("> **Export Complete:** Raw count matrix saved to `", matrix_path, "`\n")
 }
 ```
 

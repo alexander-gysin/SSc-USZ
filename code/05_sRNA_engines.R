@@ -194,16 +194,22 @@ worker_umi_cutadapt <- function(fq, dir_umi, dir_trim, config, cmd_umi, cmd_cuta
 
 # Alignment and Feature Counting Wrapper -------------------------
 
-#' Master Orchestrator: Runs Alignment, BAM Sorting, and UMI Deduplication
+#' Master Orchestrator: Runs Bowtie, UMICollapse, Fastx, and miRDeep2
 #' @param fastq_files Character vector of absolute paths to processed fastq files
 #' @param config Nested list of configurations from RMarkdown
 #' @param scratch_dir Directory on the scratch drive for heavy I/O files
-#' @return List containing diagnostics and absolute paths to deduplicated BAM files
+#' @return List containing diagnostics, paths, and the final parsed count matrix
 wrap_alignment_dedup <- function(fastq_files, config, scratch_dir) {
 
-  # Absolute path to isolated Miniconda tools
-  conda_bin <- path.expand("~/miniconda3/envs/mirna_env/bin")
-  cmd_umi   <- file.path(conda_bin, "umi_tools")
+  # Absolute path to isolated Miniconda tools and jars
+  conda_bin    <- path.expand("~/miniconda3/envs/mirna_env/bin")
+  cmd_bowtie   <- file.path(conda_bin, "bowtie")
+  cmd_samtools <- file.path(conda_bin, "samtools")
+  cmd_fastx    <- file.path(conda_bin, "fastx_collapser")
+  cmd_mirdeep  <- file.path(conda_bin, "quantifier.pl")
+
+  # Assuming UMICollapse jar is stored in the environment or a specific resource folder
+  jar_umicollapse <- path.expand("~/miniconda3/envs/mirna_env/share/umicollapse/umicollapse.jar")
 
   # 1. Directory Management
   dirs <- worker_setup_align_directories(scratch_dir)
@@ -211,182 +217,232 @@ wrap_alignment_dedup <- function(fastq_files, config, scratch_dir) {
   # 2. Compute Safe Parallel Cores
   n_cores <- worker_calculate_cores(fastq_files, config)
 
-  message(sprintf("\nStarting Alignment & Dedup: %d files. Allocating %d cores", length(fastq_files), n_cores))
+  message(sprintf("\nStarting sRNA Alignment & Dedup: %d files. Allocating %d cores", length(fastq_files), n_cores))
+  message("\n--- Phase 1-3: Bowtie Align -> Sort -> UMICollapse -> Fastx (Per Sample) ---")
 
-  # 3. Phase 1-3: Align, Sort, and Dedup (Per Sample)
-  message("\n--- Executing Align -> Sort -> Dedup ---")
-
+  # 3. Parallel Execution: Align, Dedup, and format for miRDeep2
   process_res <- pbmcapply::pbmclapply(fastq_files, function(fq) {
 
-    # 3a. Align
-    align_res <- worker_rsubread_align(fq, dirs$raw, config)
+    # 3a. Align and Sort (Piped directly to avoid heavy I/O)
+    align_res <- worker_bowtie_align_sort(fq, dirs$sorted, config, cmd_bowtie, cmd_samtools)
     if(align_res$status != "success") return(align_res)
 
-    # 3b. Sort and Index
-    sort_res <- worker_sort_index_bam(align_res$processed, dirs$sorted)
-    if(sort_res$status != "success") return(sort_res)
+    # 3b. UMI Deduplication (Java memory strictly capped)
+    dedup_res <- worker_umicollapse(align_res$processed, dirs$dedup, jar_umicollapse)
+    if(dedup_res$status != "success") return(dedup_res)
 
-    # 3c. UMI Dedup
-    dedup_res <- worker_umi_dedup(sort_res$processed, dirs$dedup, cmd_umi)
-    return(dedup_res)
+    # 3c. Revert to FASTA and Collapse identical reads for miRDeep2
+    fastx_res <- worker_bam_to_collapsed_fasta(dedup_res$processed, dirs$collapsed, cmd_samtools, cmd_fastx)
+    return(fastx_res)
 
   }, mc.cores = n_cores, mc.preschedule = FALSE)
 
-  # Extract successful deduplicated BAM files and capture errors
-  dedup_files <- sapply(process_res, function(x) x$processed)[sapply(process_res, function(x) x$status == "success")]
-  error_logs  <- sapply(process_res, function(x) x$error)[sapply(process_res, function(x) x$status != "success")]
+  # Extract successful FASTA files and capture errors
+  collapsed_fastas <- sapply(process_res, function(x) x$processed)[sapply(process_res, function(x) x$status == "success")]
+  error_logs       <- sapply(process_res, function(x) x$error)[sapply(process_res, function(x) x$status != "success")]
+
+  if(length(collapsed_fastas) == 0) {
+    stop("All samples failed preprocessing. Check error logs.")
+  }
+
+  # 4. Phase 4: Cohort-level Quantification with miRDeep2
+  message("\n--- Phase 4: miRDeep2 Cohort Quantification ---")
+  quant_res <- worker_mirdeep_quantify(collapsed_fastas, dirs$quant, config, cmd_mirdeep)
 
   return(list(
     status = "complete",
     diagnostics = list(
       total_samples = length(fastq_files),
-      successful_processed = length(dedup_files),
-      errors = error_logs
+      successful_processed = length(collapsed_fastas),
+      errors = error_logs,
+      quantification_log = quant_res$log
     ),
     paths = list(
-      dedup_bam_files = dedup_files,
-      dedup_bam_dir   = dirs$dedup
-    )
+      collapsed_fasta_dir = dirs$collapsed,
+      quant_dir = dirs$quant
+    ),
+    counts = quant_res$count_matrix # Automatically parsed back into R
   ))
 }
 
 # Alignment and Feature Counting Workers -------------------------------
 
 #' Worker: Directory Management for Alignment
-#' @param scratch_dir Directory on the scratch drive
-#' @return Named list of directory paths
 worker_setup_align_directories <- function(scratch_dir) {
   dirs <- list(
-    raw    = file.path(scratch_dir, "05_bam_raw"),
-    sorted = file.path(scratch_dir, "06_bam_sorted"),
-    dedup  = file.path(scratch_dir, "07_bam_dedup")
+    sorted    = file.path(scratch_dir, "05_bam_sorted"),
+    dedup     = file.path(scratch_dir, "06_bam_dedup"),
+    collapsed = file.path(scratch_dir, "07_fasta_collapsed"),
+    quant     = file.path(scratch_dir, "08_mirdeep_quant")
   )
 
   lapply(dirs, function(x) {
     if (!dir.exists(x)) dir.create(x, recursive = TRUE)
   })
-
   return(dirs)
 }
 
-#' Worker: Align single FastQ using Rsubread
-#' @param fq Path to processed fastq file
-#' @param out_dir Directory for raw BAM output
-#' @param config Configuration list containing reference and align parameters
-#' @return List with input, processed path, status code, and error log
-worker_rsubread_align <- function(fq, out_dir, config) {
+#' Worker: Bowtie1 Alignment Piped to Samtools Sort
+#' @description Streams SAM output directly to BAM and sorts to bypass writing huge SAMs to disk.
+worker_bowtie_align_sort <- function(fq, out_dir, config, cmd_bowtie, cmd_samtools) {
   base_name <- tools::file_path_sans_ext(basename(fq))
   if(grepl("\\.fastq\\.gz$", basename(fq))) base_name <- tools::file_path_sans_ext(base_name)
   base_name <- sub("_processed$", "", base_name)
 
-  bam_out <- file.path(out_dir, paste0(base_name, "_raw.bam"))
+  sorted_bam <- file.path(out_dir, paste0(base_name, "_sorted.bam"))
   err_log <- ""
-  status_code <- "failed_align"
+  status_code <- "failed_align_sort"
+
+  # Construct piped command: bowtie | samtools view | samtools sort
+  # Strictly single-threaded across the pipe to allow scaling across samples
+  cmd <- sprintf(
+    "%s %s %s %s | %s view -bS -@ 1 - | %s sort -@ 1 -o %s -",
+    cmd_bowtie,
+    config$align$bowtie_params,
+    config$reference$index_path,
+    fq,
+    cmd_samtools,
+    cmd_samtools,
+    sorted_bam
+  )
 
   tryCatch({
-    # Strictly limit to 1 thread here to prevent core overloading in parallel loop
-    Rsubread::align(
-      index          = config$reference$index_path,
-      readfile1      = fq,
-      output_file    = bam_out,
-      nthreads       = 1,
-      type           = config$align$type,
-      maxMismatches  = config$align$maxMismatches,
-      unique         = config$align$unique,
-      nBestLocations = config$align$nBestLocations
-    )
+    sys_res <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
 
-    if (file.exists(bam_out) && file.info(bam_out)$size > 0) {
+    # Create BAM index required for UMICollapse
+    system2(cmd_samtools, c("index", sorted_bam))
+
+    if (file.exists(sorted_bam) && file.info(sorted_bam)$size > 0) {
       status_code <- "success"
     } else {
-      err_log <- "Align complete but BAM file missing or empty."
+      err_log <- paste("Pipeline finished but BAM missing. Log:", paste(sys_res, collapse = "\n"))
     }
   }, error = function(e) {
-    err_log <<- paste("Rsubread::align failed:", e$message)
+    err_log <<- paste("Bowtie->Samtools pipe failed:", e$message)
   })
 
-  return(list(input = fq, processed = bam_out, status = status_code, error = err_log))
+  return(list(input = fq, processed = sorted_bam, status = status_code, error = err_log))
 }
 
-#' Worker: Sort and Index BAM file
-#' @param bam_in Path to raw BAM file
-#' @param out_dir Directory for sorted BAM output
-#' @return List with input, processed path, status code, and error log
-worker_sort_index_bam <- function(bam_in, out_dir) {
-  base_name <- tools::file_path_sans_ext(basename(bam_in))
-  base_name <- sub("_raw$", "", base_name)
-
-  sort_prefix <- file.path(out_dir, paste0(base_name, "_sorted"))
-  sorted_bam  <- paste0(sort_prefix, ".bam")
-  err_log     <- ""
-  status_code <- "failed_sort"
-
-  tryCatch({
-    Rsamtools::sortBam(file = bam_in, destination = sort_prefix)
-    Rsamtools::indexBam(file = sorted_bam)
-
-    if (file.exists(sorted_bam) && file.exists(paste0(sorted_bam, ".bai"))) {
-      status_code <- "success"
-    } else {
-      err_log <- "Sort/Index complete but BAM or BAI missing."
-    }
-  }, error = function(e) {
-    err_log <<- paste("Rsamtools sort/index failed:", e$message)
-  })
-
-  return(list(input = bam_in, processed = sorted_bam, status = status_code, error = err_log))
-}
-
-#' Worker: UMI Deduplication via UMI-tools
-#' @param sorted_bam Path to sorted and indexed BAM file
-#' @param out_dir Directory for deduplicated BAM output
-#' @param cmd_umi Path to umi_tools executable
-#' @return List with input, processed path, status code, and error log
-worker_umi_dedup <- function(sorted_bam, out_dir, cmd_umi) {
+#' Worker: UMI Deduplication via UMICollapse
+#' @description Runs UMICollapse with a strict JVM heap limit to prevent HPC Out-of-Memory crashes.
+worker_umicollapse <- function(sorted_bam, out_dir, jar_umicollapse) {
   base_name <- tools::file_path_sans_ext(basename(sorted_bam))
   base_name <- sub("_sorted$", "", base_name)
 
-  dedup_out <- file.path(out_dir, paste0(base_name, "_dedup.bam"))
+  dedup_bam <- file.path(out_dir, paste0(base_name, "_dedup.bam"))
 
-  umi_args <- c("dedup",
-                "--stdin", sorted_bam,
-                "--stdout", dedup_out)
+  # Strict memory cap (-Xmx4G) per sample to ensure we don't blow up the node
+  umi_cmd <- sprintf("java -Xmx4G -jar %s bam -i %s -o %s",
+                     jar_umicollapse, sorted_bam, dedup_bam)
 
-  umi_status <- system2(cmd_umi, umi_args, stdout = TRUE, stderr = TRUE)
+  tryCatch({
+    sys_res <- system(umi_cmd, intern = TRUE, ignore.stderr = FALSE)
+    if (file.exists(dedup_bam) && file.info(dedup_bam)$size > 0) {
+      status_code <- "success"
+      err_log <- ""
+    } else {
+      status_code <- "failed_umicollapse"
+      err_log <- paste(sys_res, collapse = "\n")
+    }
+  }, error = function(e) {
+    status_code <<- "failed_umicollapse"
+    err_log <<- paste("UMICollapse failed:", e$message)
+  })
 
-  if (is.null(attr(umi_status, "status")) && file.exists(dedup_out) && file.info(dedup_out)$size > 0) {
-    status_code <- "success"
-    err_log <- ""
-  } else {
-    status_code <- "failed_umi_dedup"
-    err_log <- paste(umi_status, collapse = "\n")
-  }
-
-  return(list(input = sorted_bam, processed = dedup_out, status = status_code, error = err_log))
+  return(list(input = sorted_bam, processed = dedup_bam, status = status_code, error = err_log))
 }
 
-#' Worker: Run FeatureCounts on all deduplicated BAMs
-#' @param bam_files Character vector of absolute paths to deduplicated BAM files
-#' @param config Configuration list containing feature_counts parameters
-#' @return List containing the final Rsubread featureCounts object
-worker_feature_counts <- function(bam_files, config) {
-  n_cores <- worker_calculate_cores(bam_files, config)
+#' Worker: Convert BAM to FastQ and Collapse via Fastx
+#' @description Prepares the format required by miRDeep2 (>seq_1_xCount format)
+worker_bam_to_collapsed_fasta <- function(dedup_bam, out_dir, cmd_samtools, cmd_fastx) {
+  base_name <- tools::file_path_sans_ext(basename(dedup_bam))
+  base_name <- sub("_dedup$", "", base_name)
 
-  message(sprintf("Running featureCounts on %d BAM files using %d cores...", length(bam_files), n_cores))
+  collapsed_fasta <- file.path(out_dir, paste0(base_name, "_collapsed.fa"))
 
-  fc_res <- Rsubread::featureCounts(
-    files                  = bam_files,
-    annot.ext              = config$reference$gtf_path,
-    isGTFAnnotationFile    = config$feature_counts$isGTFAnnotationFile,
-    GTF.featureType        = config$feature_counts$GTF.featureType,
-    GTF.attrType           = config$feature_counts$GTF.attrType,
-    nthreads               = n_cores,
-    strandSpecific         = config$feature_counts$strandSpecific,
-    countMultiMappingReads = config$feature_counts$countMultiMappingReads,
-    fraction               = config$feature_counts$fraction
+  # Pipe samtools fastq directly into fastx_collapser to avoid intermediate files
+  cmd <- sprintf(
+    "%s fastq %s | %s -o %s",
+    cmd_samtools, dedup_bam, cmd_fastx, collapsed_fasta
   )
 
-  return(fc_res)
+  tryCatch({
+    sys_res <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
+    if (file.exists(collapsed_fasta) && file.info(collapsed_fasta)$size > 0) {
+      status_code <- "success"
+      err_log <- ""
+    } else {
+      status_code <- "failed_fastx"
+      err_log <- paste("Samtools->Fastx pipe failed.", collapse = "\n")
+    }
+  }, error = function(e) {
+    status_code <<- "failed_fastx"
+    err_log <<- paste("Conversion error:", e$message)
+  })
+
+  return(list(input = dedup_bam, processed = collapsed_fasta, status = status_code, error = err_log))
+}
+
+#' Worker: miRDeep2 Quantifier Execution
+#' @description Generates the cohort config file and runs quantifier.pl
+worker_mirdeep_quantify <- function(collapsed_fastas, out_dir, config, cmd_mirdeep) {
+
+  # 1. Generate Config.txt mapping file
+  sample_ids <- sub("_collapsed\\.fa$", "", basename(collapsed_fastas))
+  config_df <- data.frame(
+    File = collapsed_fastas,
+    Sample = sample_ids
+  )
+  config_path <- file.path(out_dir, "mirdeep_config.txt")
+  write.table(config_df, config_path, sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+  # 2. Setup Quantifier environment
+  # miRDeep outputs into the current working directory, so we temporarily switch to out_dir
+  orig_dir <- getwd()
+  setwd(out_dir)
+
+  # Construct execution arguments based on requested flags
+  mirdeep_args <- c(
+    "-p", config$reference$hairpin_path,
+    "-m", config$reference$mature_path,
+    "-r", config_path,
+    "-W", # maps to -weighted
+    "-U", # maps to -mature5p3p (depends on miRDeep2 fork, but typically -U or strict mapping used)
+    "-c", # map to -config
+    "-N"  # map to -norpm
+  )
+
+  log_out <- ""
+  count_df <- NULL
+
+  tryCatch({
+    sys_res <- system2(cmd_mirdeep, args = mirdeep_args, stdout = TRUE, stderr = TRUE)
+    log_out <- paste(sys_res, collapse = "\n")
+
+    # 3. Locate and parse the generated Count Matrix
+    # miRDeep2 names output like: miRNAs_expressed_all_samples_<timestamp>.csv
+    out_files <- list.files(out_dir, pattern = "miRNAs_expressed_all_samples_.*\\.csv", full.names = TRUE)
+
+    if (length(out_files) > 0) {
+      latest_file <- out_files[which.max(file.info(out_files)$mtime)]
+      # Read the file (miRDeep2 splits IDs via tabs in its CSV output often)
+      count_df <- read.delim(latest_file, sep = "\t", check.names = FALSE)
+    } else {
+      warning("Quantifier.pl completed, but no expression CSV was found.")
+    }
+
+  }, error = function(e) {
+    log_out <<- paste("miRDeep2 Quantifier failed:", e$message)
+  }, finally = {
+    setwd(orig_dir) # Always revert to original working directory
+  })
+
+  return(list(
+    status = ifelse(is.null(count_df), "failed", "success"),
+    log = log_out,
+    count_matrix = count_df
+  ))
 }
 
 #' Worker: Download External Reference Databases
