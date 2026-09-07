@@ -76,8 +76,8 @@ align_count_config <- list(
   
   # 2. Reference Genomes & Annotations (miRNAome specifically)
   reference = list(
-    hairpin_url = "[https://www.mirbase.org/ftp/CURRENT/hairpin.fa](https://www.mirbase.org/ftp/CURRENT/hairpin.fa)",
-    mature_url  = "[https://www.mirbase.org/ftp/CURRENT/mature.fa](https://www.mirbase.org/ftp/CURRENT/mature.fa)",
+    hairpin_url = "[https://www.mirbase.org/download/CURRENT/hairpin.fa](https://www.mirbase.org/download/CURRENT/hairpin.fa)",
+    mature_url  = "[https://www.mirbase.org/download/CURRENT/mature.fa](https://www.mirbase.org/download/CURRENT/mature.fa)",
     
     hairpin_path = "~/scratch/miRNA_project/resources/genomes/miRBase/hairpin.fa",
     mature_path  = "~/scratch/miRNA_project/resources/genomes/miRBase/mature.fa",
