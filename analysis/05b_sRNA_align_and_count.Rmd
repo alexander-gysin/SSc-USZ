@@ -76,8 +76,9 @@ align_count_config <- list(
   
   # 2. Reference Genomes & Annotations (miRNAome specifically)
   reference = list(
-    hairpin_url = "[https://www.mirbase.org/download/CURRENT/hairpin.fa](https://www.mirbase.org/download/CURRENT/hairpin.fa)",
-    mature_url  = "[https://www.mirbase.org/download/CURRENT/mature.fa](https://www.mirbase.org/download/CURRENT/mature.fa)",
+    # Pointing to the raw, compressed data files instead of the web-viewer HTML links
+    hairpin_url = "https://zenodo.org/records/3502314/files/hairpin.fa.gz",
+    mature_url  = "https://zenodo.org/records/3502314/files/mature.fa.gz",
     
     hairpin_path = "~/scratch/miRNA_project/resources/genomes/miRBase/hairpin.fa",
     mature_path  = "~/scratch/miRNA_project/resources/genomes/miRBase/mature.fa",
@@ -86,11 +87,12 @@ align_count_config <- list(
   
   # 3. Alignment Parameters (Bowtie 1)
   align = list(
+    # -S: This forces Bowtie 1 to output SAM format instead of its default text format!
     # -v 0: 0 mismatches allowed (strict)
     # -a: report all valid alignments (required for miRDeep2 multimapping weight)
     # --best --strata: group best hits
     # --norc: no reverse complement (highly strand specific)
-    bowtie_params = "-v 0 -a --best --strata --norc"
+    bowtie_params = "-S -v 0 -a --best --strata --norc"
   )
 )
 
@@ -104,7 +106,7 @@ if (align_count_config$run_mode$test_run) {
 # Download Reference and Build Bowtie Index
 `r what_this_does("Downloaded the hairpin and mature FASTA sequences directly to the scratch drive.", "Generated the specialized Bowtie 1 index required for short-read alignment.")`
 
-```{r reference}
+```{r build_genome_index}
 # 1. Download
 worker_download_reference(align_count_config$reference$hairpin_url, align_count_config$reference$hairpin_path)
 worker_download_reference(align_count_config$reference$mature_url, align_count_config$reference$mature_path)
@@ -114,14 +116,26 @@ worker_download_reference(align_count_config$reference$mature_url, align_count_c
 if (!file.exists(paste0(align_count_config$reference$index_path, ".1.ebwt"))) {
   message("Bowtie 1 index not found. Building index for hairpin sequences...")
   
+  # Ensure the fasta file actually exists before trying to build an index!
+  if (!file.exists(align_count_config$reference$hairpin_path)) {
+    stop("Cannot build index: hairpin.fa is missing!")
+  }
+  
   dir.create(dirname(align_count_config$reference$index_path), recursive = TRUE, showWarnings = FALSE)
   
   conda_bin  <- path.expand("~/miniconda3/envs/mirna_env/bin")
   cmd_build  <- file.path(conda_bin, "bowtie-build")
   
-  # Execute bowtie-build
-  system2(cmd_build, args = c(align_count_config$reference$hairpin_path, align_count_config$reference$index_path))
-  message("Bowtie index built successfully.")
+  # Execute bowtie-build and capture the exit status
+  build_status <- system2(cmd_build, args = c(align_count_config$reference$hairpin_path, align_count_config$reference$index_path))
+  
+  # Check if Bowtie actually succeeded (0 means success in Linux)
+  if (build_status != 0) {
+    stop("bowtie-build failed! Check the console output for errors.")
+  } else {
+    message("Bowtie index built successfully.")
+  }
+  
 } else {
   message("Bowtie index found. Skipping build step.")
 }

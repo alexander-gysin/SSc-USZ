@@ -446,27 +446,52 @@ worker_mirdeep_quantify <- function(collapsed_fastas, out_dir, config, cmd_mirde
 }
 
 #' Worker: Download External Reference Databases
-#' @param url Character URL of the file
-#' @param dest_file Character absolute path to the destination file
+#' @param url Character URL of the file (e.g., .gz link)
+#' @param dest_file Character absolute path to the uncompressed destination file (.fa)
 #' @return Logical TRUE if successful or already exists
 worker_download_reference <- function(url, dest_file) {
-  if (file.exists(dest_file)) {
-    message(sprintf("File already exists: %s", dest_file))
+
+  # EXPLICITLY expand the ~ so bash doesn't get confused
+  dest_file <- path.expand(dest_file)
+
+  # 1. Skip if valid file already exists
+  if (file.exists(dest_file) && file.info(dest_file)$size > 100000) {
+    message(sprintf("Valid file already exists: %s", dest_file))
     return(TRUE)
   }
 
   dir.create(dirname(dest_file), recursive = TRUE, showWarnings = FALSE)
-  message(sprintf("Downloading %s ...", basename(dest_file)))
+  temp_gz <- paste0(dest_file, ".gz")
 
-  old_timeout <- getOption("timeout")
-  options(timeout = max(3600, old_timeout))
+  message(sprintf("Downloading %s via wget...", basename(temp_gz)))
 
   tryCatch({
-    download.file(url, destfile = dest_file, mode = "wb")
-    options(timeout = old_timeout)
-    return(file.exists(dest_file))
+    # 2. Force system wget instead of R's internal downloader
+    wget_cmd <- sprintf("wget -q -O %s %s", shQuote(temp_gz), shQuote(url))
+    wget_status <- system(wget_cmd)
+
+    if (wget_status != 0 || !file.exists(temp_gz)) {
+      stop("wget failed to download the file.")
+    }
+
+    # 3. Extract the file
+    message("Extracting sequences to raw fasta format...")
+    system2("gunzip", args = c("-c", temp_gz), stdout = dest_file)
+
+    # 4. Cleanup the compressed version
+    unlink(temp_gz)
+
+    # 5. Strict Validation: Is it actually biological data (at least > 100KB)?
+    if (file.exists(dest_file) && file.info(dest_file)$size > 100000) {
+      return(TRUE)
+    } else {
+      # If the file is 0 bytes or tiny, delete it so it doesn't trick the script next time
+      unlink(dest_file)
+      stop("Extraction resulted in an empty or invalid file.")
+    }
+
   }, error = function(e) {
-    options(timeout = old_timeout)
-    stop(paste("Download failed:", e$message))
+    if(file.exists(temp_gz)) unlink(temp_gz)
+    stop(paste("Worker execution failed:", e$message))
   })
 }
