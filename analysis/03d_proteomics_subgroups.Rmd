@@ -74,7 +74,7 @@ hm_conf <- list(
 
 split_conf <- list(
   Split_50_50 = 0.50,
-  control_bound_percentile = 1.00 
+  control_bound_percentile = 0.94
 )
 
 # 2. Variable Definitions
@@ -92,23 +92,43 @@ clin_vars_to_include <- list(
 
 custom_colors <- setNames(c("#c0392b", "#2980b9"), c("Active-Like", "Control-Like"))
 
-# 3. Clinical Phenotyping Configs (Duplicated for Raw & Residualized)
+# 3. Clinical Phenotyping Configs 
 pheno_configs <- list(
-  pheno_raw = list(
+  pheno_non_active_raw = list(
     target_job = "job_splits_raw",
     title = "Non-Active Phenotyping (Raw Matrix)",
     target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
-    subset_filter = NULL,
+    subset_filter = list(var = "ACTIVE_AI", val = groups$target), # <--- DYNAMIC SUBSET
     variables = clin_vars_to_include,
     highlight_variables = clin_vars_to_highlight,
     p_cutoff = 0.05,
     must_include_vars = c()
   ),
-  pheno_resid = list(
-    target_job = "job_splits_resid",
-    title = "Non-Active Phenotyping (Age-Residualized)",
+  pheno_active_raw = list(
+    target_job = "job_splits_raw",
+    title = "Active Phenotyping (Raw Matrix)",
     target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
-    subset_filter = NULL,
+    subset_filter = list(var = "ACTIVE_AI", val = groups$active), # <--- DYNAMIC SUBSET
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+  ),
+  pheno_non_active_resid = list(
+    target_job = "job_splits_resid",
+    title = "Non-Active Phenotyping (Residualized Matrix)",
+    target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
+    subset_filter = list(var = "ACTIVE_AI", val = groups$target), # <--- DYNAMIC SUBSET
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+  ),
+  pheno_active_resid = list(
+    target_job = "job_splits_resid",
+    title = "Active Phenotyping (Residualized Matrix)",
+    target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
+    subset_filter = list(var = "ACTIVE_AI", val = groups$active), # <--- DYNAMIC SUBSET
     variables = clin_vars_to_include,
     highlight_variables = clin_vars_to_highlight,
     p_cutoff = 0.05,
@@ -116,13 +136,39 @@ pheno_configs <- list(
   )
 )
 
-# 4. Feature Phenotyping Targets (DEA - Age Covariate Dropped for Resid)
+# 4. Feature Phenotyping Targets (DEA)
 common_algorithms <- list(
   Split_50_50 = list(
-    contrasts = list(active_vs_control = list(title = "50/50: Active-Like vs Control-Like", desc = "Split at median", target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
+    contrasts = list(
+      non_active_subset = list(
+        title = "50/50: Non-Actives only", 
+        desc = "Split at global median, tested ONLY in Non-Actives", 
+        target=c("Active-Like"), ref=c("Control-Like"), 
+        subset_filter = list(var = "ACTIVE_AI", val = groups$target) # <--- DYNAMIC SUBSET
+      ),
+      active_subset = list(
+        title = "50/50: Actives only", 
+        desc = "Split at global median, tested ONLY in Actives", 
+        target=c("Active-Like"), ref=c("Control-Like"), 
+        subset_filter = list(var = "ACTIVE_AI", val = groups$active) # <--- DYNAMIC SUBSET
+      )
+    )
   ),
   Split_Control_Bound = list( 
-    contrasts = list(active_vs_control = list(title = "Control-Bound: Active-Like vs Control-Like", desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls"), target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
+    contrasts = list(
+      non_active_subset = list(
+        title = "Control-Bound: Non-Actives", 
+        desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls, tested ONLY in Non-Actives"), 
+        target=c("Active-Like"), ref=c("Control-Like"), 
+        subset_filter = list(var = "ACTIVE_AI", val = groups$target)
+      ),
+      active_subset = list(
+        title = "Control-Bound: Actives", 
+        desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls, tested ONLY in Actives"), 
+        target=c("Active-Like"), ref=c("Control-Like"), 
+        subset_filter = list(var = "ACTIVE_AI", val = groups$active)
+      )
+    )
   )
 )
 
@@ -162,11 +208,70 @@ omics_config <- list(
 )
 
 # 6. Cross-Contrast Configs (Comparing Control-Bound Raw vs Resid)
+# Maps the stability of DEA signatures between two different analytical tracks
 cross_contrast_configs <- list(
-  cc_cb_raw_vs_resid = list( 
-    title = "Stability: Control-Bound Split (Raw vs Age-Residualized)",
-    x_source = "feat_raw_Split_Control_Bound_active_vs_control", 
-    y_source = "feat_resid_Split_Control_Bound_active_vs_control",
+  
+  # ------------------------------------------------------------------
+  # Comparison 1: Non-Active Cohort Stability (Raw vs Age-Residualized)
+  # ------------------------------------------------------------------
+  cc_cb_non_active_raw_vs_resid = list( 
+    title = "Stability: Control-Bound Split in Non-Actives (Raw vs Age-Residualized)",
+    
+    # The naming convention is: [Feature_Config_ID]_[Algorithm_ID]_[Contrast_ID]
+    x_source = "feat_raw_Split_Control_Bound_non_active_subset", 
+    y_source = "feat_resid_Split_Control_Bound_non_active_subset",
+    
+    # Aesthetic & Labeling Parameters
+    x_label = "Raw Matrix Split",       # Axis label and table header for the X-axis source
+    y_label = "Residualized Split",     # Axis label and table header for the Y-axis source
+    color_x = "#e67e22",                # Color for proteins exclusively significant in the Raw matrix
+    color_y = "#2980b9",                # Color for proteins exclusively significant in the Residualized matrix
+    highlight_color = "#27ae60",        # Color for shared drivers (significant in both)
+    
+    # Text Repel & Table Limits
+    top_n_specific = 10,                # Max number of unique top drivers to label on plot/extract to table
+    top_n_shared = 10,                  # Max number of shared top drivers to label on plot/extract to table
+    
+    # Mathematical Cutoffs for defining "Significance" in this specific cross-comparison
+    p_cutoff = 0.05,                    # FDR threshold 
+    fc_cutoff = 0.58                    # Log2 Fold Change threshold (0.58 = ~1.5x fold change)
+  ),
+
+  # ------------------------------------------------------------------
+  # Comparison 3: Non-Active Cohort Stability - 50/50 (Raw vs Age-Residualized)
+  # ------------------------------------------------------------------
+  cc_50_50_non_active_raw_vs_resid = list( 
+    title = "Stability: 50/50 Split in Non-Actives (Raw vs Age-Residualized)",
+    
+    # The naming convention is: [Feature_Config_ID]_[Algorithm_ID]_[Contrast_ID]
+    x_source = "feat_raw_Split_50_50_non_active_subset", 
+    y_source = "feat_resid_Split_50_50_non_active_subset",
+    
+    # Aesthetic & Labeling Parameters
+    x_label = "Raw Matrix Split",       # Axis label and table header for the X-axis source
+    y_label = "Residualized Split",     # Axis label and table header for the Y-axis source
+    color_x = "#e67e22",                # Color for proteins exclusively significant in the Raw matrix
+    color_y = "#2980b9",                # Color for proteins exclusively significant in the Residualized matrix
+    highlight_color = "#27ae60",        # Color for shared drivers (significant in both)
+    
+    # Text Repel & Table Limits
+    top_n_specific = 10,                # Max number of unique top drivers to label on plot/extract to table
+    top_n_shared = 10,                  # Max number of shared top drivers to label on plot/extract to table
+    
+    # Mathematical Cutoffs for defining "Significance" in this specific cross-comparison
+    p_cutoff = 0.05,                    # FDR threshold 
+    fc_cutoff = 0.58                    # Log2 Fold Change threshold (0.58 = ~1.5x fold change)
+  ),
+
+  # ------------------------------------------------------------------
+  # Comparison 4: Active Cohort Stability - 50/50 (Raw vs Age-Residualized)
+  # ------------------------------------------------------------------
+  cc_50_50_active_raw_vs_resid = list( 
+    title = "Stability: 50/50 Split in Actives (Raw vs Age-Residualized)",
+    
+    x_source = "feat_raw_Split_50_50_active_subset", 
+    y_source = "feat_resid_Split_50_50_active_subset",
+    
     x_label = "Raw Matrix Split",
     y_label = "Residualized Split",
     color_x = "#e67e22", 
@@ -195,7 +300,7 @@ resid_res <- wrap_matrix_factory(omics_mat = olink_mat, clin_df = hm_clin, conf 
 olink_mat_resid <- resid_res$matrix
 
 # 3. Setup Iteration Over Both Matrices
-matrices <- list(raw = olink_mat, resid = olink_mat_resid)
+matrices <- list(raw = olink_mat, resid = olink_mat_resid) #delete unused matrix here if necessary
 global_cluster_payloads <- list()
 all_splits <- list()
 
@@ -203,33 +308,24 @@ for (m_name in names(matrices)) {
   cat(sprintf("\n=== Processing Scoring for %s matrix ===\n", toupper(m_name)))
   current_mat <- matrices[[m_name]]
   
-  # Generate Heatmap via Engine
   hm_obj <- run_heatmap_engine(
-    mat = current_mat,
-    clin = hm_clin,
-    dea_res = svc_dea,
+    mat = current_mat, clin = hm_clin, dea_res = svc_dea,
     title = sprintf("Global SSc Disease Signature (%s)", m_name),
-    n_top = hm_conf$top_n_prot,
-    split_by_group = FALSE, 
-    show_top_n_title = TRUE,
-    annotation_vars = heatmap_config$annotation_vars
+    n_top = hm_conf$top_n_prot, split_by_group = FALSE, 
+    show_top_n_title = TRUE, annotation_vars = heatmap_config$annotation_vars
   )
 
-  # Draw Heatmap & Extract Order
   hm_drawn <- draw(hm_obj, padding = unit(c(2, 2, 2, 2), "mm"))
   order_idx <- column_order(hm_drawn)
 
-  # Reconstruct subset and map indices safely
   valid_ids <- intersect(hm_clin$Subject_ID, colnames(current_mat))
   engine_clin_sub <- hm_clin %>% filter(Subject_ID %in% valid_ids)
   ordered_ids <- engine_clin_sub$Subject_ID[order_idx]
 
-  # Map to 0-100 Percentile Rank
   hm_df <- data.frame(Subject_ID = ordered_ids, HM_Rank = 1:length(ordered_ids)) %>%
     mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
     inner_join(engine_clin_sub %>% select(Subject_ID, ACTIVE_AI), by="Subject_ID")
 
-  # Polarity Check & Correction
   mean_active <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$active])
   mean_control <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$control])
 
@@ -239,27 +335,26 @@ for (m_name in names(matrices)) {
     hm_df$HM_Active_Score <- hm_df$HM_Percentile 
   }
 
-  # Extract Control Threshold BEFORE filtering
+  # 1. Calculate Threshold for Healthy Control Bound
   control_scores <- hm_df %>% filter(ACTIVE_AI == groups$control) %>% pull(HM_Active_Score)
   cutoff_cb <- quantile(control_scores, probs = split_conf$control_bound_percentile, na.rm=TRUE)
 
-  # Filter down to Non-Actives
-  hm_final <- hm_df %>% filter(ACTIVE_AI == groups$target) %>% select(Subject_ID, HM_Active_Score)
-  cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
+  # 2. Calculate Threshold for Global 50/50 SSc Split (Actives + Non-Actives combined)
+  ssc_scores <- hm_df %>% filter(ACTIVE_AI %in% c(groups$active, groups$target)) %>% pull(HM_Active_Score)
+  
+  cutoff_50 <- quantile(ssc_scores, probs = split_conf$Split_50_50, na.rm=TRUE)
 
-  # Calculate Internal Thresholds & Append Binary Columns
-  split_spine <- hm_final %>%
+  # 3. Apply labels to the ENTIRE cohort
+  split_spine <- hm_df %>%
     mutate(
       Split_50_50 = ifelse(HM_Active_Score > cutoff_50, "Active-Like", "Control-Like"),
       Split_Control_Bound = ifelse(HM_Active_Score > cutoff_cb, "Active-Like", "Control-Like") 
     )
     
-  # Store for later Master Spine appending (rename cols to avoid overwrite)
   spine_to_append <- split_spine %>% select(-HM_Active_Score)
   colnames(spine_to_append)[2:3] <- paste0(colnames(spine_to_append)[2:3], "_", m_name)
   all_splits[[m_name]] <- spine_to_append
 
-  # Append to Global Target Dummy Payload
   job_id <- paste0("job_splits_", m_name)
   global_cluster_payloads[[job_id]] <- list(
     status = "success",
@@ -271,19 +366,15 @@ for (m_name in names(matrices)) {
     )
   )
 
-  # Diagnostics
-  cat(sprintf("50/50 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_50_50=="Active-Like"), sum(split_spine$Split_50_50=="Control-Like")))
-  cat(sprintf("Control-Bound Split: %d Active-Like | %d Control-Like\n\n", sum(split_spine$Split_Control_Bound=="Active-Like"), sum(split_spine$Split_Control_Bound=="Control-Like")))
+  cat(sprintf("Global 50/50 Cutoff: %.1f | Global Control-Bound Cutoff: %.1f\n\n", cutoff_50, cutoff_cb))
 }
 
-# Update Master Spine globally for downstream engines (Joining both raw and resid cols)
+
+
 for(spl in all_splits) {
   master_spine <- master_spine %>% left_join(spl, by="Subject_ID")
 }
-
 saveRDS(all_splits, file.path(output_dir_data, "non_active_splits_raw_and_resid.rds"))
-
-# Cleanup
 rm(hm_obj, hm_drawn, hm_df, resid_res); invisible(gc())
 ```
 
@@ -300,7 +391,20 @@ for (p_id in names(pheno_configs)) {
   payload <- global_cluster_payloads[[conf$target_job]]
   if (is.null(payload)) next
   
-  res <- wrap_clinical_phenotyping(payload, master_spine, data_dict, conf, p_id, output_dir_data)
+  # ---> DYNAMIC COHORT SUBSETTING <---
+  temp_spine <- master_spine
+  if (!is.null(conf$subset_filter)) {
+    # Dynamically filters the data right here in the execution loop
+    temp_spine <- temp_spine %>% filter(!!sym(conf$subset_filter$var) %in% conf$subset_filter$val)
+  }
+
+  # ---> LEGACY BYPASS <---
+  # The dataframe is already cleanly subsetted. 
+  # We nullify the filter config so the legacy engine doesn't crash trying to parse it.
+  engine_conf <- conf
+  engine_conf$subset_filter <- NULL 
+
+  res <- wrap_clinical_phenotyping(payload, temp_spine, data_dict, engine_conf, p_id, output_dir_data)
   
   if (res$status == "success") {
     for (algo in names(res$plots)) {
@@ -346,7 +450,7 @@ for (p_id in names(pheno_configs)) {
 `r analysis_decision("Dynamic Covariate Validation: Before executing Limma for each split, the script dynamically verifies variance for requested covariates. If a covariate lacks variance within a specific split, it is dropped to prevent algebraic crashes.")`
 `r what_this_does("Runs Differential Expression Analysis directly comparing Active-Like vs Control-Like groups across all requested splits.", "Calculates pathway enrichment via GSEA engine.")`
 
-```{r differential_expression, fig.width=12, fig.height=10, results='asis'}
+```{r differential_expression, fig.width=16, fig.height=12, results='asis'}
 global_dea_payloads <- list()
 
 for (f_id in names(feature_configs)) {
@@ -377,6 +481,11 @@ for (f_id in names(feature_configs)) {
       cat(sprintf("**Description:** %s\n\n", c_conf$desc))
 
       contrast_df <- temp_spine
+
+      # ---> DYNAMIC COHORT SUBSETTING <---
+      if (!is.null(c_conf$subset_filter)) {
+        contrast_df <- contrast_df %>% filter(!!sym(c_conf$subset_filter$var) %in% c_conf$subset_filter$val)
+      }
 
       # Failsafe Covariate Check
       valid_covs <- c()
