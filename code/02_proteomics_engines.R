@@ -505,9 +505,13 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
 
   if (is.null(go_db)) return(NULL)
 
-  # Ensure ggnewscale is available for the dual color gradients
   if (!requireNamespace("ggnewscale", quietly = TRUE)) {
     warning("Package 'ggnewscale' is required for dual color gradients. Installing is recommended.")
+  }
+
+  if (nrow(dea_res) == 0) {
+    message(sprintf("Skipping GSEA '%s' (%s): DEA result is empty, no features to rank.", title, db_name))
+    return(NULL)
   }
 
   ranked_vec <- setNames(dea_res$t, dea_res$Feature) %>% sort(decreasing = TRUE)
@@ -523,122 +527,151 @@ run_gsea_engine <- function(dea_res, go_db, omics_config, title, db_name) {
       verbose = FALSE
     )
   }, error = function(e) {
-    message(sprintf("Skipping %s: %s (Likely too few overlapping proteins for GSEA)", db_name, e$message))
+    message(sprintf("Skipping GSEA '%s' (%s): %s (Likely too few overlapping proteins)", title, db_name, e$message))
     return(NULL)
   })
 
-  if (is.null(gsea_res) || nrow(gsea_res) == 0) return(NULL)
+  if (is.null(gsea_res) || nrow(gsea_res) == 0) {
+    message(sprintf("Skipping GSEA '%s' (%s): No pathways returned by clusterProfiler.", title, db_name))
+    return(NULL)
+  }
 
   # Clean up descriptions
   gsea_res@result$Description <- gsub("GOBP_", "", gsea_res@result$Description) %>% gsub("_", " ", .)
 
   # 2. Pi-Score Calculation & Sorting
-  # Pi-score formula: |NES| * -log10(FDR)
-  # We use a tiny offset for p.adjust == 0 to avoid Inf values
   gsea_res@result <- gsea_res@result %>%
     mutate(
       Status = ifelse(NES > 0, "Up-regulated", "Down-regulated"),
       safe_p = ifelse(p.adjust == 0, 1e-10, p.adjust),
       pi_score = abs(NES) * -log10(safe_p)
     ) %>%
-    arrange(desc(pi_score)) # Highest Pi-score permanently at the top
+    arrange(desc(pi_score))
 
   res_df <- as.data.frame(gsea_res)
   warning_tag <- if(sum(res_df$p.adjust < omics_config$gsea_p_cutoff) == 0) "\n(Exploratory: No paths passed FDR)" else ""
 
-  # 3. DOTPLOT (Exploratory: Top 10 Up/Down by Pi-Score)
-  # Select Top 10 per direction strictly based on Pi-score
+  # 3. DOTPLOT
   plot_df <- res_df %>%
     group_by(Status) %>%
     slice_max(pi_score, n = 10, with_ties = FALSE) %>%
     ungroup() %>%
     mutate(Description = stringr::str_wrap(Description, width = 45))
 
-  dot_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
+  if (nrow(plot_df) == 0) {
+    message(sprintf("Skipping Dotplot '%s' (%s): No data available after filtering.", title, db_name))
+    p_dot <- NULL
+  } else {
+    dot_title <- str_wrap(sprintf("GSEA (%s): %s", db_name, title), width = 60)
 
-  # Build Dotplot with DUAL gradients (Significant vs Exploratory)
-  p_dot <- ggplot(mapping = aes(x = NES, y = reorder(Description, pi_score))) +
-    # Layer 1: Significant Pathways (Passes gsea_p_cutoff)
-    geom_point(
-      data = filter(plot_df, p.adjust < omics_config$gsea_p_cutoff),
-      aes(size = setSize, color = p.adjust)
-    ) +
-    scale_color_gradient(
-      low = "firebrick3", high = "navy",
-      limits = c(0, omics_config$gsea_p_cutoff),
-      name = "Significant FDR"
-    ) +
-    # Layer 2: Exploratory Pathways (Fails gsea_p_cutoff)
-    ggnewscale::new_scale_color() +
-    geom_point(
-      data = filter(plot_df, p.adjust >= omics_config$gsea_p_cutoff),
-      aes(size = setSize, color = p.adjust)
-    ) +
-    scale_color_gradient(
-      low = "grey50", high = "grey85",
-      limits = c(omics_config$gsea_p_cutoff, 1),
-      name = "Exploratory FDR\n(Warning)"
-    ) +
-    scale_x_continuous(expand = expansion(mult = c(0.05, 0.2))) +
-    theme_project_base() +
-    theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
-    labs(title = paste0(dot_title, warning_tag), y = NULL)
+    # Split dataframe to prevent ggnewscale from crashing on empty layers
+    df_sig <- filter(plot_df, p.adjust < omics_config$gsea_p_cutoff)
+    df_exp <- filter(plot_df, p.adjust >= omics_config$gsea_p_cutoff)
 
-  # 4. RIDGEPLOT (Exploratory: Top 15 by Pi-Score)
-  # Because gsea_res is pre-sorted by Pi-score, showCategory = 15 grabs the Top 15 Pi-scores
-  # We extract just the top 15 rows to feed into enrichplot to override the default p-value sorting
+    p_dot <- ggplot(mapping = aes(x = NES, y = reorder(Description, pi_score)))
+
+    # Layer 1: Significant Pathways (Dynamically added only if data exists)
+    if (nrow(df_sig) > 0) {
+      p_dot <- p_dot +
+        geom_point(data = df_sig, aes(size = setSize, color = p.adjust)) +
+        scale_color_gradient(
+          low = "firebrick3", high = "navy",
+          limits = c(0, max(1e-10, omics_config$gsea_p_cutoff)),
+          name = "Significant FDR"
+        )
+    }
+
+    # Layer 2: Exploratory Pathways (Dynamically added only if data exists)
+    if (nrow(df_exp) > 0) {
+      # Only add new_scale_color if the first scale was actually drawn
+      if (nrow(df_sig) > 0) p_dot <- p_dot + ggnewscale::new_scale_color()
+
+      p_dot <- p_dot +
+        geom_point(data = df_exp, aes(size = setSize, color = p.adjust)) +
+        scale_color_gradient(
+          low = "grey50", high = "grey85",
+          limits = c(omics_config$gsea_p_cutoff, 1),
+          name = "Exploratory FDR\n(Warning)"
+        )
+    }
+
+    p_dot <- p_dot +
+      scale_x_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+      theme_project_base() +
+      theme(plot.title.position = "plot", plot.title = element_text(hjust = 0)) +
+      labs(title = paste0(dot_title, warning_tag), y = NULL)
+  }
+
+  # 4. RIDGEPLOT
   top_15_gsea <- gsea_res
   top_15_gsea@result <- head(gsea_res@result, 15)
 
-  ridge_title <- str_wrap(sprintf("Top 15 Pathways (%s): %s | Ranked by Pi-score", db_name, title), width = 60)
+  if (nrow(top_15_gsea@result) == 0) {
+    message(sprintf("Skipping Ridgeplot '%s' (%s): No top pathways available.", title, db_name))
+    p_ridge <- NULL
+  } else {
+    ridge_title <- str_wrap(sprintf("Top 15 Pathways (%s): %s | Ranked by Pi-score", db_name, title), width = 60)
 
-  p_ridge <- if(nrow(top_15_gsea@result) > 0) {
-    enrichplot::ridgeplot(top_15_gsea, showCategory = 15) +
-      scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 40)) +
-      # Overwrite the default fill scale with a sharp dual-gradient (Color for Sig, Grey for Exp)
-      scale_fill_gradientn(
-        colors = c("firebrick3", "navy", "grey50", "grey85"),
-        values = scales::rescale(c(0, omics_config$gsea_p_cutoff - 1e-5, omics_config$gsea_p_cutoff, 1)),
-        limits = c(0, 1),
-        name = "FDR"
-      ) +
-      theme_project_base() +
-      # Applied custom title alignment and smaller y-axis text from previous discussion
-      theme(
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0),
-        axis.text.y = element_text(size = 8)
-      ) +
-      labs(title = ridge_title)
-  } else NULL
+    p_ridge <- tryCatch({
+      enrichplot::ridgeplot(top_15_gsea, showCategory = 15) +
+        scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 40)) +
+        scale_fill_gradientn(
+          colors = c("firebrick3", "navy", "grey50", "grey85"),
+          values = scales::rescale(c(0, omics_config$gsea_p_cutoff - 1e-5, omics_config$gsea_p_cutoff, 1)),
+          limits = c(0, 1),
+          name = "FDR"
+        ) +
+        theme_project_base() +
+        theme(
+          plot.title.position = "plot",
+          plot.title = element_text(hjust = 0),
+          axis.text.y = element_text(size = 8)
+        ) +
+        labs(title = ridge_title)
+    }, error = function(e) {
+      message(sprintf("Skipping Ridgeplot '%s' (%s): Render failure (%s).", title, db_name, e$message))
+      return(NULL)
+    })
+  }
 
-  # 5. EMAP (Strictly Gated by network_p_cutoff)
-  # Clone the sorted object and hard-filter out anything failing the network cutoff
+  # 5. EMAP
   gsea_sig <- gsea_res
   gsea_sig@result <- gsea_sig@result %>% filter(p.adjust < omics_config$network_p_cutoff)
 
-  gsea_sim <- if(nrow(gsea_sig@result) >= 2) enrichplot::pairwise_termsim(gsea_sig) else NULL
-
-  p_emap <- NULL
-  if(!is.null(gsea_sim)) {
+  if (nrow(gsea_sig@result) < 2) {
+    message(sprintf("Skipping Enrichment Map '%s' (%s): Not enough significant pathways (found %d, need >= 2).", title, db_name, nrow(gsea_sig@result)))
+    p_emap <- NULL
+  } else {
+    gsea_sim <- enrichplot::pairwise_termsim(gsea_sig)
     sim_mat <- gsea_sim@termsim
-    if (!is.null(sim_mat) && nrow(sim_mat) > 1) {
+
+    if (is.null(sim_mat) || nrow(sim_mat) < 2) {
+      message(sprintf("Skipping Enrichment Map '%s' (%s): Term similarity matrix is empty or too small.", title, db_name))
+      p_emap <- NULL
+    } else {
       valid_edges <- sum(sim_mat[upper.tri(sim_mat)] >= 0.3, na.rm = TRUE)
 
-      if (valid_edges > 0) {
+      if (valid_edges == 0) {
+        message(sprintf("Skipping Enrichment Map '%s' (%s): No edges passed similarity threshold.", title, db_name))
+        p_emap <- NULL
+      } else {
         emap_title <- str_wrap(sprintf("Enrichment Map (%s): %s | FDR < %.2f", db_name, title, omics_config$network_p_cutoff), width = 60)
 
-        # showCategory = 40 will grab the Top 40 Pi-Scores from the STRICTLY FILTERED list
-        p_emap <- enrichplot::emapplot(
-          gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
-          size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
-        ) +
-          theme_project_base() +
-          theme(
-            plot.title.position = "plot",
-            plot.title = element_text(hjust = 0)
+        p_emap <- tryCatch({
+          enrichplot::emapplot(
+            gsea_sim, color = "NES", showCategory = 40, node_label_size = 2.5,
+            size_category = 0.8, size_edge = 0.1, color_edge = "grey60", min_edge = 0.3
           ) +
-          labs(title = emap_title, subtitle = "Nodes = Top 40 Significant Pathways (by Pi-Score) | Edges = Shared Genes")
+            theme_project_base() +
+            theme(
+              plot.title.position = "plot",
+              plot.title = element_text(hjust = 0)
+            ) +
+            labs(title = emap_title, subtitle = "Nodes = Top 40 Significant Pathways (by Pi-Score) | Edges = Shared Genes")
+        }, error = function(e) {
+          message(sprintf("Skipping Enrichment Map '%s' (%s): Render failure (%s).", title, db_name, e$message))
+          return(NULL)
+        })
       }
     }
   }
@@ -652,19 +685,32 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
   valid_ids <- intersect(clin$Subject_ID, colnames(mat))
   clin_sub <- clin %>% filter(Subject_ID %in% valid_ids)
 
+  # Check 1: Enough clinical samples
+  if (nrow(clin_sub) < 2) {
+    message(sprintf("Skipping Heatmap '%s': Not enough valid subjects (found %d, need >= 2).", title, nrow(clin_sub)))
+    return(NULL)
+  }
+
+  # Check 2: Enough DEA features
   top_feats <- dea_res %>% mutate(pi = abs(logFC) * -log10(adj.P.Val)) %>% slice_max(pi, n = n_top) %>% pull(Feature)
 
-  if (length(top_feats) < 2) return(NULL) # Safety catch
+  if (length(top_feats) < 2) {
+    message(sprintf("Skipping Heatmap '%s': Not enough significant features (found %d, need >= 2).", title, length(top_feats)))
+    return(NULL)
+  }
 
-  plot_mat <- t(scale(t(mat[top_feats, clin_sub$Subject_ID])))
+  plot_mat <- t(scale(t(mat[top_feats, clin_sub$Subject_ID, drop = FALSE])))
 
+  # Check 3: Matrix dimension validation post-scaling
+  if (nrow(plot_mat) < 2 || ncol(plot_mat) < 2) {
+    message(sprintf("Skipping Heatmap '%s': Processed matrix dimensions too small (%d rows x %d cols).", title, nrow(plot_mat), ncol(plot_mat)))
+    return(NULL)
+  }
 
   # 1. Determine which variables to extract for the top annotation
   if (is.null(annotation_vars)) {
-    # Legacy Support: Default to the split column, Sex, and Age
     req_vars <- unique(c(split_col, "Sex", "Age"))
   } else {
-    # Dynamic Mode: Ensure the split column is always included to visualize the contrast
     req_vars <- unique(c(split_col, annotation_vars))
   }
 
@@ -678,32 +724,25 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
   # 3. Dynamically Assign Colors based on your global constants
   col_list <- list()
 
-  # Handle the primary split column (e.g., Dynamic_Cluster)
   if (!is.null(split_col) && split_col %in% valid_vars) {
     col_list[[split_col]] <- get_project_colors(as.character(unique(clin_sub[[split_col]])), custom_map = custom_color_map)
   }
 
-  # EXPLICIT TRAP: Force cohort_group to ALWAYS use the official project palette
   if ("cohort_group" %in% valid_vars) {
     col_list[["cohort_group"]] <- get_project_colors(as.character(unique(clin_sub[["cohort_group"]])))
   }
 
-  # Explicit Trap: Sex (Now correctly utilizing get_project_colors)
   if ("Sex" %in% valid_vars) {
     col_list[["Sex"]] <- get_project_colors(as.character(unique(clin_sub[["Sex"]])))
   }
 
-  # Explicit Trap: Age
   if ("Age" %in% valid_vars) {
     col_list[["Age"]] <- circlize::colorRamp2(c(min(clin_sub$Age, na.rm=T), max(clin_sub$Age, na.rm=T)), c(COLOR_AGE_LOW, COLOR_AGE_HIGH))
   }
 
-  # Explicit Trap: ACTIVE_AI
   if ("ACTIVE_AI" %in% valid_vars) {
     col_list[["ACTIVE_AI"]] <- get_project_colors(as.character(unique(clin_sub[["ACTIVE_AI"]])))
   }
-
-
 
   # 4. Construct the HeatmapAnnotation object dynamically
   if (ncol(anno_df) > 0) {
@@ -716,12 +755,17 @@ run_heatmap_engine <- function(mat, clin, dea_res, title, n_top = 50, split_by_g
     ha <- NULL
   }
 
-  final_title <- if(show_top_n_title) sprintf("%s: Top %d Proteins", title, n_top) else title
+  final_title <- if(show_top_n_title) sprintf("%s: Top %d Proteins", title, length(top_feats)) else title
 
   # 5. Draw the Heatmap
-  ComplexHeatmap::Heatmap(plot_mat, name = "Z-Score", column_title = final_title,
-                          top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub[[split_col]] else NULL,
-                          col = circlize::colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
+  tryCatch({
+    ComplexHeatmap::Heatmap(plot_mat, name = "Z-Score", column_title = final_title,
+                            top_annotation = ha, show_column_names = FALSE, column_split = if(split_by_group) clin_sub[[split_col]] else NULL,
+                            col = circlize::colorRamp2(c(-2, 0, 2), c(HM_Z_LOW, HM_Z_MID, HM_Z_HIGH)))
+  }, error = function(e) {
+    message(sprintf("Skipping Heatmap '%s': ComplexHeatmap render failed (%s).", title, e$message))
+    return(NULL)
+  })
 }
 
 # w1.4 Pre-DEA Validation Engine (Variable-Level Profiler)

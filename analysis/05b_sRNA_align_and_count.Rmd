@@ -70,7 +70,7 @@ align_count_config <- list(
   
   # 1. HPC System Limits
   system = list(
-    max_cores  = 128,  
+    max_cores  = 16,  
     core_ratio = 0.75  
   ),
   
@@ -107,9 +107,20 @@ if (align_count_config$run_mode$test_run) {
 `r what_this_does("Downloaded the hairpin and mature FASTA sequences directly to the scratch drive.", "Generated the specialized Bowtie 1 index required for short-read alignment.")`
 
 ```{r build_genome_index}
-# 1. Download
-worker_download_reference(align_count_config$reference$hairpin_url, align_count_config$reference$hairpin_path)
-worker_download_reference(align_count_config$reference$mature_url, align_count_config$reference$mature_path)
+# 1. Download, Filter (hsa), and Translate (U to T)
+worker_download_reference(
+  url = align_count_config$reference$hairpin_url, 
+  dest_file = align_count_config$reference$hairpin_path,
+  species_prefix = "hsa",
+  convert_u_to_t = TRUE
+)
+
+worker_download_reference(
+  url = align_count_config$reference$mature_url, 
+  dest_file = align_count_config$reference$mature_path,
+  species_prefix = "hsa",
+  convert_u_to_t = TRUE
+)
 
 # 2. Build Bowtie 1 Index
 # Bowtie 1 indices typically end with .1.ebwt

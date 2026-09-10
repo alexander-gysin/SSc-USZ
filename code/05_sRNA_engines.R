@@ -215,9 +215,11 @@ wrap_alignment_dedup <- function(fastq_files, config, scratch_dir) {
   dirs <- worker_setup_align_directories(scratch_dir)
 
   # 2. Compute Safe Parallel Cores
+  # Calculate standard cores, then strictly cap at 32 for Java RAM safety (32 jobs * 8GB = 256GB max RAM)
   n_cores <- worker_calculate_cores(fastq_files, config)
 
-  message(sprintf("\nStarting sRNA Alignment & Dedup: %d files. Allocating %d cores", length(fastq_files), n_cores))
+  message(sprintf("\nStarting sRNA Alignment & Dedup: %d files. Allocating %d safely throttled cores",
+                  length(fastq_files), n_cores))
   message("\n--- Phase 1-3: Bowtie Align -> Sort -> UMICollapse -> Fastx (Per Sample) ---")
 
   # 3. Parallel Execution: Align, Dedup, and format for miRDeep2
@@ -294,9 +296,10 @@ worker_bowtie_align_sort <- function(fq, out_dir, config, cmd_bowtie, cmd_samtoo
   status_code <- "failed_align_sort"
 
   # Construct piped command: bowtie | samtools view | samtools sort
-  # Strictly single-threaded across the pipe to allow scaling across samples
+  # Strictly single-threaded across the pipe to allow scaling across samples.
+  # Added explicit -x flag for the Bowtie index path to prevent warnings.
   cmd <- sprintf(
-    "%s %s %s %s | %s view -bS -@ 1 - | %s sort -@ 1 -o %s -",
+    "%s %s -x %s %s | %s view -bS -@ 1 - | %s sort -@ 1 -o %s -",
     cmd_bowtie,
     config$align$bowtie_params,
     config$reference$index_path,
@@ -325,15 +328,15 @@ worker_bowtie_align_sort <- function(fq, out_dir, config, cmd_bowtie, cmd_samtoo
 }
 
 #' Worker: UMI Deduplication via UMICollapse
-#' @description Runs UMICollapse with a strict JVM heap limit to prevent HPC Out-of-Memory crashes.
+#' @description Runs UMICollapse with a strict JVM heap limit and large stack to prevent HPC crashes.
 worker_umicollapse <- function(sorted_bam, out_dir, jar_umicollapse) {
   base_name <- tools::file_path_sans_ext(basename(sorted_bam))
   base_name <- sub("_sorted$", "", base_name)
 
   dedup_bam <- file.path(out_dir, paste0(base_name, "_dedup.bam"))
 
-  # Strict memory cap (-Xmx4G) per sample to ensure we don't blow up the node
-  umi_cmd <- sprintf("java -Xmx4G -jar %s bam -i %s -o %s",
+  # Strict memory cap (-Xmx8G) and massive stack cap (-Xss256M) per sample
+  umi_cmd <- sprintf("java -Xmx12G -Xss256M -jar %s bam -i %s -o %s",
                      jar_umicollapse, sorted_bam, dedup_bam)
 
   tryCatch({
@@ -448,25 +451,27 @@ worker_mirdeep_quantify <- function(collapsed_fastas, out_dir, config, cmd_mirde
 #' Worker: Download External Reference Databases
 #' @param url Character URL of the file (e.g., .gz link)
 #' @param dest_file Character absolute path to the uncompressed destination file (.fa)
+#' @param species_prefix Character prefix to filter FASTA (e.g., "hsa"). NULL to skip.
+#' @param convert_u_to_t Logical. If TRUE, converts RNA to DNA in sequences.
 #' @return Logical TRUE if successful or already exists
-worker_download_reference <- function(url, dest_file) {
+worker_download_reference <- function(url, dest_file, species_prefix = NULL, convert_u_to_t = FALSE) {
 
-  # EXPLICITLY expand the ~ so bash doesn't get confused
   dest_file <- path.expand(dest_file)
 
-  # 1. Skip if valid file already exists
-  if (file.exists(dest_file) && file.info(dest_file)$size > 100000) {
+  # 1. Skip if valid file already exists (threshold lowered to 10KB for filtered files)
+  if (file.exists(dest_file) && file.info(dest_file)$size > 10000) {
     message(sprintf("Valid file already exists: %s", dest_file))
     return(TRUE)
   }
 
   dir.create(dirname(dest_file), recursive = TRUE, showWarnings = FALSE)
   temp_gz <- paste0(dest_file, ".gz")
+  temp_fa <- paste0(dest_file, ".tmp")
 
   message(sprintf("Downloading %s via wget...", basename(temp_gz)))
 
   tryCatch({
-    # 2. Force system wget instead of R's internal downloader
+    # 2. Force system wget
     wget_cmd <- sprintf("wget -q -O %s %s", shQuote(temp_gz), shQuote(url))
     wget_status <- system(wget_cmd)
 
@@ -474,24 +479,43 @@ worker_download_reference <- function(url, dest_file) {
       stop("wget failed to download the file.")
     }
 
-    # 3. Extract the file
+    # 3. Extract the file to a temporary FASTA
     message("Extracting sequences to raw fasta format...")
-    system2("gunzip", args = c("-c", temp_gz), stdout = dest_file)
-
-    # 4. Cleanup the compressed version
+    system2("gunzip", args = c("-c", temp_gz), stdout = temp_fa)
     unlink(temp_gz)
 
-    # 5. Strict Validation: Is it actually biological data (at least > 100KB)?
-    if (file.exists(dest_file) && file.info(dest_file)$size > 100000) {
+    # 4. Process FASTA: Filter by species and/or convert U to T
+    message("Processing FASTA (filtering species and/or translating U to T)...")
+
+    # Build Awk script dynamically
+    awk_script <- ""
+    if (!is.null(species_prefix)) {
+      awk_script <- sprintf('/^>%s/ {p=1; print; next} /^>/ {p=0; next} ', species_prefix)
+    } else {
+      awk_script <- '/^>/ {p=1; print; next} '
+    }
+
+    if (convert_u_to_t) {
+      awk_script <- paste0(awk_script, 'p {gsub(/U/,"T"); gsub(/u/,"t"); print}')
+    } else {
+      awk_script <- paste0(awk_script, 'p {print}')
+    }
+
+    # Execute Awk directly on the temp file and write to the final destination
+    system2("awk", args = c(shQuote(awk_script), temp_fa), stdout = dest_file)
+    unlink(temp_fa)
+
+    # 5. Strict Validation
+    if (file.exists(dest_file) && file.info(dest_file)$size > 10000) {
       return(TRUE)
     } else {
-      # If the file is 0 bytes or tiny, delete it so it doesn't trick the script next time
       unlink(dest_file)
-      stop("Extraction resulted in an empty or invalid file.")
+      stop("Extraction resulted in an empty or invalid file (check species prefix).")
     }
 
   }, error = function(e) {
     if(file.exists(temp_gz)) unlink(temp_gz)
+    if(file.exists(temp_fa)) unlink(temp_fa)
     stop(paste("Worker execution failed:", e$message))
   })
 }

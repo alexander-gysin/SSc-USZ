@@ -11,6 +11,7 @@ editor_options:
 Goal: To define a robust molecular boundary differentiating "Active-like" from "Control-like" profiles within the clinical "Non-Active" SSc cohort. 
 
 ```{r setup_boxes, include=FALSE}
+rm(list = ls())
 source(here::here("code", "00_config.R"))
 ```
 
@@ -76,11 +77,7 @@ hm_conf <- list(
 )
 
 split_conf <- list(
-  # Standard Percentile Cutoff (Higher Score = Active-Like)
   Split_50_50 = 0.50,
-  
-  # Control-Bound Cutoff
-  # 1.00 = 100th percentile (Strict Max). Change to 0.95 to drop top 5% of healthy outliers.
   control_bound_percentile = 1.00 
 )
 
@@ -97,14 +94,23 @@ clin_vars_to_include <- list(
   "Exploratory" = c(clinical_domains$Pulmonary, clinical_domains$Cardiac, clinical_domains$Labs_and_Biomarkers, clinical_domains$Cutaneous_and_Vascular, clinical_domains$Musculoskeletal, clinical_domains$Gastrointestinal, clinical_domains$Medications) 
 )
 
-# Map dynamic variables to custom colors wrapper
 custom_colors <- setNames(c("#c0392b", "#2980b9"), c("Active-Like", "Control-Like"))
 
-# 3. Clinical Phenotyping Configs
+# 3. Clinical Phenotyping Configs (Duplicated for Raw & Residualized)
 pheno_configs <- list(
-  pheno_splits = list(
-    target_job = "job_splits",
-    title = "Non-Active Subgroup Phenotyping",
+  pheno_raw = list(
+    target_job = "job_splits_raw",
+    title = "Non-Active Phenotyping (Raw Matrix)",
+    target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
+    subset_filter = NULL,
+    variables = clin_vars_to_include,
+    highlight_variables = clin_vars_to_highlight,
+    p_cutoff = 0.05,
+    must_include_vars = c()
+  ),
+  pheno_resid = list(
+    target_job = "job_splits_resid",
+    title = "Non-Active Phenotyping (Age-Residualized)",
     target_algorithms = c("Split_50_50", "Split_Control_Bound"), 
     subset_filter = NULL,
     variables = clin_vars_to_include,
@@ -114,21 +120,32 @@ pheno_configs <- list(
   )
 )
 
-# 4. Feature Phenotyping Targets (DEA)
+# 4. Feature Phenotyping Targets (DEA - Age Covariate Dropped for Resid)
+common_algorithms <- list(
+  Split_50_50 = list(
+    contrasts = list(active_vs_control = list(title = "50/50: Active-Like vs Control-Like", desc = "Split at median", target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
+  ),
+  Split_Control_Bound = list( 
+    contrasts = list(active_vs_control = list(title = "Control-Bound: Active-Like vs Control-Like", desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls"), target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
+  )
+)
+
 feature_configs <- list(
-  feat_splits = list(
-    target_job = "job_splits",
-    title = "Subgroup Differential Expression",
+  feat_raw = list(
+    target_job = "job_splits_raw",
+    title = "DEA (Raw Matrix)",
     input_matrix = "raw", 
     covariates = c("Age", "Sex"),
-    algorithms = list(
-      Split_50_50 = list(
-        contrasts = list(active_vs_control = list(title = "50/50: Active-Like vs Control-Like", desc = "Split at median", target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
-      ),
-      Split_Control_Bound = list( 
-        contrasts = list(active_vs_control = list(title = "Control-Bound: Active-Like vs Control-Like", desc = paste0("Split at ", split_conf$control_bound_percentile * 100, "th percentile of Controls"), target=c("Active-Like"), ref=c("Control-Like"), subset_filter = NULL))
-      )
-    ),
+    algorithms = common_algorithms,
+    dea_p_cutoff = 0.05,
+    dea_fc_cutoff = 0.58
+  ),
+  feat_resid = list(
+    target_job = "job_splits_resid",
+    title = "DEA (Age-Residualized)",
+    input_matrix = "residualized", 
+    covariates = c("Sex"), # AGE DROPPED HERE
+    algorithms = common_algorithms,
     dea_p_cutoff = 0.05,
     dea_fc_cutoff = 0.58
   )
@@ -148,14 +165,14 @@ omics_config <- list(
   network_p_cutoff = 0.05
 )
 
-# 6. Cross-Contrast Configs (Stability Analysis)
+# 6. Cross-Contrast Configs (Comparing Control-Bound Raw vs Resid)
 cross_contrast_configs <- list(
-  cc_50_vs_cb = list( 
-    title = "Stability: 50/50 vs Control-Bound Split",
-    x_source = "feat_splits_Split_50_50_active_vs_control", 
-    y_source = "feat_splits_Split_Control_Bound_active_vs_control",
-    x_label = "50/50 Split",
-    y_label = "Control Bound",
+  cc_cb_raw_vs_resid = list( 
+    title = "Stability: Control-Bound Split (Raw vs Age-Residualized)",
+    x_source = "feat_raw_Split_Control_Bound_active_vs_control", 
+    y_source = "feat_resid_Split_Control_Bound_active_vs_control",
+    x_label = "Raw Matrix Split",
+    y_label = "Residualized Split",
     color_x = "#e67e22", 
     color_y = "#2980b9", 
     highlight_color = "#27ae60", 
@@ -176,79 +193,102 @@ cross_contrast_configs <- list(
 # 1. Prepare Clinical Data
 hm_clin <- master_spine %>% filter(!is.na(ACTIVE_AI)) %>% droplevels()
 
-# 2. Generate Heatmap via Engine (Uses Pi-score & Project Aesthetics)
-hm_obj <- run_heatmap_engine(
-  mat = olink_mat,
-  clin = hm_clin,
-  dea_res = svc_dea,
-  title = "Global SSc Disease Signature",
-  n_top = hm_conf$top_n_prot,
-  split_by_group = FALSE, # MUST be FALSE to maintain an unbroken dendrogram for ranking
-  show_top_n_title = TRUE,
-  annotation_vars = heatmap_config$annotation_vars
-)
+# 2. Generate Residualized Matrix
+mat_conf <- list(transform = list(method = "residualize", covariates = c("Age")))
+resid_res <- wrap_matrix_factory(omics_mat = olink_mat, clin_df = hm_clin, conf = mat_conf, prep_id = "age_resid")
+olink_mat_resid <- resid_res$matrix
 
-# 3. Draw Heatmap & Extract Order
-hm_drawn <- draw(hm_obj, padding = unit(c(2, 2, 2, 2), "mm"))
+# 3. Setup Iteration Over Both Matrices
+matrices <- list(raw = olink_mat, resid = olink_mat_resid)
+global_cluster_payloads <- list()
+all_splits <- list()
 
-order_idx <- column_order(hm_drawn)
-
-# Reconstruct the exact clinical subset used inside the engine to map indices safely
-valid_ids <- intersect(hm_clin$Subject_ID, colnames(olink_mat))
-engine_clin_sub <- hm_clin %>% filter(Subject_ID %in% valid_ids)
-ordered_ids <- engine_clin_sub$Subject_ID[order_idx]
-
-# 4. Map to 0-100 Percentile Rank
-hm_df <- data.frame(Subject_ID = ordered_ids, HM_Rank = 1:length(ordered_ids)) %>%
-  mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
-  inner_join(engine_clin_sub %>% select(Subject_ID, ACTIVE_AI), by="Subject_ID")
-
-# 5. Polarity Check & Correction
-mean_active <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$active])
-mean_control <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$control])
-
-if (mean_active < mean_control) { hm_df$HM_Active_Score <- 100 - hm_df$HM_Percentile } else { hm_df$HM_Active_Score <- hm_df$HM_Percentile }
-
-# --- Extract Control Threshold BEFORE filtering ---
-control_scores <- hm_df %>% filter(ACTIVE_AI == groups$control) %>% pull(HM_Active_Score)
-cutoff_cb <- quantile(control_scores, probs = split_conf$control_bound_percentile, na.rm=TRUE)
-
-# Filter down to Non-Actives
-hm_final <- hm_df %>% filter(ACTIVE_AI == groups$target) %>% select(Subject_ID, HM_Active_Score)
-
-# 6. Calculate Internal Thresholds & Append Binary Columns
-cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
-
-split_spine <- hm_final %>%
-  mutate(
-    Split_50_50 = ifelse(HM_Active_Score > cutoff_50, "Active-Like", "Control-Like"),
-    Split_Control_Bound = ifelse(HM_Active_Score > cutoff_cb, "Active-Like", "Control-Like") 
+for (m_name in names(matrices)) {
+  cat(sprintf("\n=== Processing Scoring for %s matrix ===\n", toupper(m_name)))
+  current_mat <- matrices[[m_name]]
+  
+  # Generate Heatmap via Engine
+  hm_obj <- run_heatmap_engine(
+    mat = current_mat,
+    clin = hm_clin,
+    dea_res = svc_dea,
+    title = sprintf("Global SSc Disease Signature (%s)", m_name),
+    n_top = hm_conf$top_n_prot,
+    split_by_group = FALSE, 
+    show_top_n_title = TRUE,
+    annotation_vars = heatmap_config$annotation_vars
   )
 
-# Update Master Spine globally for downstream engines
-master_spine <- master_spine %>% left_join(split_spine %>% select(-HM_Active_Score), by="Subject_ID")
+  # Draw Heatmap & Extract Order
+  hm_drawn <- draw(hm_obj, padding = unit(c(2, 2, 2, 2), "mm"))
+  order_idx <- column_order(hm_drawn)
 
-# 7. Initialize Global Target Dummy Payload
-global_cluster_payloads <- list()
-global_cluster_payloads[["job_splits"]] <- list(
-  status = "success",
-  data = list(
-    assignments = list(
-      Split_50_50 = setNames(split_spine$Split_50_50, split_spine$Subject_ID),
-      Split_Control_Bound = setNames(split_spine$Split_Control_Bound, split_spine$Subject_ID) 
+  # Reconstruct subset and map indices safely
+  valid_ids <- intersect(hm_clin$Subject_ID, colnames(current_mat))
+  engine_clin_sub <- hm_clin %>% filter(Subject_ID %in% valid_ids)
+  ordered_ids <- engine_clin_sub$Subject_ID[order_idx]
+
+  # Map to 0-100 Percentile Rank
+  hm_df <- data.frame(Subject_ID = ordered_ids, HM_Rank = 1:length(ordered_ids)) %>%
+    mutate(HM_Percentile = (HM_Rank / max(HM_Rank)) * 100) %>%
+    inner_join(engine_clin_sub %>% select(Subject_ID, ACTIVE_AI), by="Subject_ID")
+
+  # Polarity Check & Correction
+  mean_active <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$active])
+  mean_control <- mean(hm_df$HM_Percentile[hm_df$ACTIVE_AI == groups$control])
+
+  if (mean_active < mean_control) { 
+    hm_df$HM_Active_Score <- 100 - hm_df$HM_Percentile 
+  } else { 
+    hm_df$HM_Active_Score <- hm_df$HM_Percentile 
+  }
+
+  # Extract Control Threshold BEFORE filtering
+  control_scores <- hm_df %>% filter(ACTIVE_AI == groups$control) %>% pull(HM_Active_Score)
+  cutoff_cb <- quantile(control_scores, probs = split_conf$control_bound_percentile, na.rm=TRUE)
+
+  # Filter down to Non-Actives
+  hm_final <- hm_df %>% filter(ACTIVE_AI == groups$target) %>% select(Subject_ID, HM_Active_Score)
+  cutoff_50 <- quantile(hm_final$HM_Active_Score, probs = split_conf$Split_50_50, na.rm=TRUE)
+
+  # Calculate Internal Thresholds & Append Binary Columns
+  split_spine <- hm_final %>%
+    mutate(
+      Split_50_50 = ifelse(HM_Active_Score > cutoff_50, "Active-Like", "Control-Like"),
+      Split_Control_Bound = ifelse(HM_Active_Score > cutoff_cb, "Active-Like", "Control-Like") 
+    )
+    
+  # Store for later Master Spine appending (rename cols to avoid overwrite)
+  spine_to_append <- split_spine %>% select(-HM_Active_Score)
+  colnames(spine_to_append)[2:3] <- paste0(colnames(spine_to_append)[2:3], "_", m_name)
+  all_splits[[m_name]] <- spine_to_append
+
+  # Append to Global Target Dummy Payload
+  job_id <- paste0("job_splits_", m_name)
+  global_cluster_payloads[[job_id]] <- list(
+    status = "success",
+    data = list(
+      assignments = list(
+        Split_50_50 = setNames(split_spine$Split_50_50, split_spine$Subject_ID),
+        Split_Control_Bound = setNames(split_spine$Split_Control_Bound, split_spine$Subject_ID) 
+      )
     )
   )
-)
 
-saveRDS(split_spine, file.path(output_dir_data, "non_active_splits.rds"))
+  # Diagnostics
+  cat(sprintf("50/50 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_50_50=="Active-Like"), sum(split_spine$Split_50_50=="Control-Like")))
+  cat(sprintf("Control-Bound Split: %d Active-Like | %d Control-Like\n\n", sum(split_spine$Split_Control_Bound=="Active-Like"), sum(split_spine$Split_Control_Bound=="Control-Like")))
+}
 
-# Print Diagnostics to verify group sizes
-cat("=== Subgroup Sizes ===\n")
-cat(sprintf("50/50 Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_50_50=="Active-Like"), sum(split_spine$Split_50_50=="Control-Like")))
-cat(sprintf("Control-Bound Split: %d Active-Like | %d Control-Like\n", sum(split_spine$Split_Control_Bound=="Active-Like"), sum(split_spine$Split_Control_Bound=="Control-Like")))
+# Update Master Spine globally for downstream engines (Joining both raw and resid cols)
+for(spl in all_splits) {
+  master_spine <- master_spine %>% left_join(spl, by="Subject_ID")
+}
+
+saveRDS(all_splits, file.path(output_dir_data, "non_active_splits_raw_and_resid.rds"))
 
 # Cleanup
-rm(hm_obj, hm_drawn, hm_df); invisible(gc())
+rm(hm_obj, hm_drawn, hm_df, resid_res); invisible(gc())
 ```
 
 # Clinical Phenotyping {.tabset}
@@ -319,6 +359,9 @@ for (f_id in names(feature_configs)) {
   
   if (is.null(payload)) next
 
+  # ---> DYNAMIC MATRIX SELECTION <---
+  current_omics_mat <- if(conf$input_matrix == "residualized") olink_mat_resid else olink_mat
+
   cat(sprintf("\n\n## %s {.tabset}\n\n", conf$title))
 
   for (algo_name in names(conf$algorithms)) {
@@ -365,7 +408,7 @@ for (f_id in names(feature_configs)) {
       
       res <- suppressWarnings(suppressMessages(
         wrap_dea_pipeline(
-                omics_mat = olink_mat, 
+                omics_mat = current_omics_mat, # ---> PASSING DYNAMIC MATRIX <---
                 clin_df = contrast_df, 
                 dea_conf = dea_conf, 
                 dea_id = job_name_full, 

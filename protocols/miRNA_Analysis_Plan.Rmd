@@ -19,6 +19,9 @@ UMI: start at 0bp after 3'-Adaptor, length 12bp (source:
 <https://resources.qiagenbioinformatics.com/manuals/biomedicalgenomicsanalysis/2600/index.php?manual=Create_UMI_Reads_miRNA.html>)
 Illumina adapter: 34bp long? (does not really matter)
 
+zenodo documentation:
+https://zenodo.org/records/3502314
+
 ## Tech
 
 -   Only use R1
