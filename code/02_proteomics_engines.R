@@ -72,13 +72,23 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
   results$data$dea <- limma_res$data
   results$plots$volcano <- limma_res$volcano
 
-  # Save Legacy
-  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(dea_id, "_DEA_Full_Results.csv")))
-  ggsave(file.path(dea_sub_dir, paste0(dea_id, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300)
 
-  # Dual-Save Asset (normalized name)
-  if (!is.null(assets_dir)) {
-    ggsave(file.path(assets_dir, paste0(dea_id, "_volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300, bg="white")
+  # Save Legacy DEA Results
+  write_csv(limma_res$data, file.path(dea_sub_dir, paste0(dea_id, "_DEA_Full_Results.csv")))
+
+  # Safely Save Volcano Plot
+  if (!is.null(limma_res$volcano)) {
+    tryCatch({
+      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_Volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300)
+      if (!is.null(assets_dir)) {
+        ggsave(file.path(assets_dir, paste0(dea_id, "_volcano.png")), limma_res$volcano, width = 8, height = 7, dpi=300, bg="white")
+      }
+    }, error = function(e) {
+      message(sprintf("Skipping volcano plot save for %s: render failed (%s).", dea_id, e$message))
+      results$plots$volcano <<- NULL # CRITICAL: Prevents knitr from crashing when it tries to print it later
+    })
+  } else {
+    message(sprintf("Skipping volcano plot save for %s: plot object is NULL.", dea_id))
   }
 
   # B. Significant Table extraction
@@ -101,17 +111,33 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
                                               custom_color_map = custom_map,
                                               annotation_vars = heatmap_config$annotation_vars)
 
-  # Save Legacy
-  png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
-      width=10, height=12, units="in", res=300)
-  ComplexHeatmap::draw(results$plots$heatmap)
-  invisible(dev.off())
+  # Safely Save Heatmap
+  if (!is.null(results$plots$heatmap)) {
+    # Save Legacy
+    png(file.path(dea_sub_dir, paste0(dea_id, "_Heatmap_Top", heatmap_config$top_n, ".png")),
+        width=10, height=12, units="in", res=300)
+    tryCatch({
+      ComplexHeatmap::draw(results$plots$heatmap)
+    }, error = function(e) {
+      message(sprintf("Skipping legacy heatmap save for %s: render failed (%s).", dea_id, e$message))
+      results$plots$heatmap <<- NULL # Nullify so RMarkdown skips it
+    }, finally = {
+      invisible(dev.off()) # Guaranteed to execute and close the ghost device
+    })
 
-  # Dual-Save Asset (normalized name)
-  if (!is.null(assets_dir)) {
-    png(file.path(assets_dir, paste0(dea_id, "_heatmap.png")), width=10, height=12, units="in", res=300)
-    ComplexHeatmap::draw(results$plots$heatmap)
-    invisible(dev.off())
+    # Dual-Save Asset (normalized name)
+    if (!is.null(assets_dir) && !is.null(results$plots$heatmap)) {
+      png(file.path(assets_dir, paste0(dea_id, "_heatmap.png")), width=10, height=12, units="in", res=300)
+      tryCatch({
+        ComplexHeatmap::draw(results$plots$heatmap)
+      }, error = function(e) {
+        message(sprintf("Skipping asset heatmap save for %s: render failed (%s).", dea_id, e$message))
+      }, finally = {
+        invisible(dev.off()) # Guaranteed to execute and close the ghost device
+      })
+    }
+  } else {
+    message(sprintf("Skipping heatmap save for %s: heatmap object is NULL.", dea_id))
   }
 
   # D. Multi-Database GSEA
@@ -131,33 +157,49 @@ wrap_dea_pipeline <- function(omics_mat, clin_df, dea_conf, dea_id, base_output_
       # Save Legacy CSV
       write_csv(gsea_res$data, file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Results.csv")))
 
-      # Plot 1: Dotplot
-      ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
-      if (!is.null(assets_dir)) {
-        ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+      # Safely Plot 1: Dotplot
+      if (!is.null(gsea_res$dotplot)) {
+        tryCatch({
+          ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+          if (!is.null(assets_dir)) {
+            ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_dotplot.png")), gsea_res$dotplot, width = 9, height = 7, dpi=300, bg="white")
+          }
+        }, error = function(e) {
+          message(sprintf("Skipping dotplot save for %s (%s): render failed (%s).", dea_id, db_name, e$message))
+          results$plots$gsea[[db_name]]$dotplot <<- NULL
+        })
       }
 
-      # Plot 2: Ridgeplot
+      # Safely Plot 2: Ridgeplot
       if(!is.null(gsea_res$ridgeplot)) {
-        ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
-        if (!is.null(assets_dir)) {
-          ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
-        }
+        tryCatch({
+          ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
+          if (!is.null(assets_dir)) {
+            ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_ridgeplot.png")), gsea_res$ridgeplot, width = 9, height = 8, dpi=300, bg="white")
+          }
+        }, error = function(e) {
+          message(sprintf("Skipping ridgeplot save for %s (%s): render failed (%s).", dea_id, db_name, e$message))
+          results$plots$gsea[[db_name]]$ridgeplot <<- NULL
+        })
       }
 
-      # Plot 3: Emap
+      # Safely Plot 3: Emap
       if(!is.null(gsea_res$emap)) {
-        ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
-        if (!is.null(assets_dir)) {
-          ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
-        }
+        tryCatch({
+          ggsave(file.path(dea_sub_dir, paste0(dea_id, "_", db_name, "_GSEA_Emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
+          if (!is.null(assets_dir)) {
+            ggsave(file.path(assets_dir, paste0(dea_id, "_", db_name, "_emap.png")), gsea_res$emap, width = 10, height = 10, dpi=300, bg="white")
+          }
+        }, error = function(e) {
+          message(sprintf("Skipping emap save for %s (%s): render failed (%s).", dea_id, db_name, e$message))
+          results$plots$gsea[[db_name]]$emap <<- NULL
+        })
       }
     }
   }
 
   return(results)
 }
-
 # 1.2 Pre-DEA Validation Wrapper & Formatter
 # Description:
 #   Wraps the validate_dea_design mathematical engine. Parses the raw results
