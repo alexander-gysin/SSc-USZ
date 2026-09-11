@@ -401,35 +401,29 @@ worker_mirdeep_quantify <- function(collapsed_fastas, out_dir, config, cmd_mirde
   write.table(config_df, config_path, sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
   # 2. Setup Quantifier environment
-  # miRDeep outputs into the current working directory, so we temporarily switch to out_dir
   orig_dir <- getwd()
   setwd(out_dir)
-
-  # Construct execution arguments based on requested flags
-  mirdeep_args <- c(
-    "-p", config$reference$hairpin_path,
-    "-m", config$reference$mature_path,
-    "-r", config_path,
-    "-W", # maps to -weighted
-    "-U", # maps to -mature5p3p (depends on miRDeep2 fork, but typically -U or strict mapping used)
-    "-c", # map to -config
-    "-N"  # map to -norpm
-  )
 
   log_out <- ""
   count_df <- NULL
 
   tryCatch({
-    sys_res <- system2(cmd_mirdeep, args = mirdeep_args, stdout = TRUE, stderr = TRUE)
+    # FIX: Explicitly call 'perl', and run inside a bash shell that activates conda first.
+    # This guarantees miRDeep2 has access to all its dependencies.
+    cmd <- sprintf("bash -c 'source ~/miniconda3/etc/profile.d/conda.sh && conda activate mirna_env && perl %s -p %s -m %s -r %s -W -U -c -N'",
+                   cmd_mirdeep,
+                   config$reference$hairpin_path,
+                   config$reference$mature_path,
+                   config_path)
+
+    sys_res <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
     log_out <- paste(sys_res, collapse = "\n")
 
     # 3. Locate and parse the generated Count Matrix
-    # miRDeep2 names output like: miRNAs_expressed_all_samples_<timestamp>.csv
     out_files <- list.files(out_dir, pattern = "miRNAs_expressed_all_samples_.*\\.csv", full.names = TRUE)
 
     if (length(out_files) > 0) {
       latest_file <- out_files[which.max(file.info(out_files)$mtime)]
-      # Read the file (miRDeep2 splits IDs via tabs in its CSV output often)
       count_df <- read.delim(latest_file, sep = "\t", check.names = FALSE)
     } else {
       warning("Quantifier.pl completed, but no expression CSV was found.")
