@@ -220,3 +220,35 @@ Appendix
 ```{r complete}
 cat("Script 05b Complete! \n")
 ```
+
+
+```{r bug_fix_temp_code}
+# 1. Point to your successfully processed collapsed fastas
+scratch_collapsed_dir <- "~/scratch/miRNA_project/05b_alignment_and_counting/06_bam_collapsed" # <-- VERIFY THIS NAME
+collapsed_fastas <- list.files(scratch_collapsed_dir, pattern = "_collapsed\\.fa$", full.names = TRUE)
+
+# 2. Setup quantification paths
+scratch_quant_dir <- "~/scratch/miRNA_project/05b_alignment_and_counting/07_mirdeep_quant"
+dir.create(scratch_quant_dir, showWarnings = FALSE)
+cmd_mirdeep <- path.expand("~/miniconda3/envs/mirna_env/bin/quantifier.pl")
+
+# 3. Run ONLY the Quantification phase!
+message("Running miRDeep2 Quantification on ", length(collapsed_fastas), " samples...")
+quant_res <- worker_mirdeep_quantify(collapsed_fastas, scratch_quant_dir, align_count_config, cmd_mirdeep)
+
+# 4. Save the matrix!
+if(quant_res$status == "success") {
+  file_suffix <- ifelse(align_count_config$run_mode$test_run, "_test", "")
+  
+  matrix_path <- file.path(output_dir_data, paste0("raw_count_matrix", file_suffix, ".rds"))
+  saveRDS(quant_res$count_matrix, matrix_path)
+  
+  csv_path <- file.path(output_dir_data, paste0("raw_count_matrix", file_suffix, ".csv"))
+  write.csv(quant_res$count_matrix, csv_path, row.names = TRUE)
+  
+  cat("> **Success!** Matrix saved to", matrix_path, "\n")
+} else {
+  cat("> **Failed.** Here is the error log:\n", quant_res$log)
+}
+```
+
